@@ -1,4 +1,5 @@
 ---
 - hosts: local_machine 
   roles:
-  - geerlingguy.homebrew 
+    - geerlingguy.homebrew 
+    - dock

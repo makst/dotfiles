@@ -5,6 +5,7 @@ homebrew_installed_packages:
   - ansible
   - openssl
   - tmux 
+  - dockutil 
 
 homebrew_cask_appdir: /Applications
 
