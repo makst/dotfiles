@@ -1,0 +1,14 @@
+homebrew_installed_packages:
+  - git
+  - zsh
+  - wget
+  - ansible
+  - openssl
+  - tmux 
+
+homebrew_cask_appdir: /Applications
+
+homebrew_cask_apps:
+  - docker
+  - spotify
+  - brave
