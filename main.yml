@@ -1,5 +1,5 @@
 ---
-- hosts: local_machine 
+- hosts: local_machine
   roles:
     - geerlingguy.homebrew 
     - osx-defaults

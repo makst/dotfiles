@@ -1,4 +1,5 @@
 ---
+# setup the environment
 - name: "Mission Control - Automatically rearrange Spaces based on most recent use"
   osx_defaults:
     domain: com.apple.dock
@@ -12,5 +13,9 @@
     domain: com.apple.Finder
     key: AppleShowAllFiles
     type: bool 
-    value: true 
+    value: '{{ Finder_AppleShowAllFiles }}' 
     state: present
+
+- name: "Import GPG key if not yet imported"
+  # list secret key || batch import it to avoid prompting for passphrase
+  shell: gpg -K '{{ gpg_key_id }}' >/dev/null 2>&1 || gpg --batch --import '{{ gpg_key_file }}'

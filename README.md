@@ -3,5 +3,6 @@ It also uses ansible to setup mac.
 
 Installation
 ===
-First, refer to the installation section of the beforementioned repo.
+1. Copy GPG key to location, specified in `gpg_key_file` variable.
+2. Refer to the installation section of the beforementioned repo.
 

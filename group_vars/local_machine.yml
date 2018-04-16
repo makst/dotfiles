@@ -6,6 +6,7 @@ homebrew_installed_packages:
   - openssl
   - tmux 
   - dockutil 
+  - pass
 
 homebrew_cask_appdir: /Applications
 
@@ -14,5 +15,13 @@ homebrew_cask_apps:
   - spotify
   - brave
   - iterm2
+  - visual-studio-code
+  - gpg-suite
+
+#homebrew_cask_uninstalled_apps:
+
+gpg_key_file: /Users/makst/Documents/gpg.asc
+gpg_key_id: CF909698
 
 MissionControl_MruSpaces: 0 # Automatically rearrange Spaces based on most recent use
+Finder_AppleShowAllFiles: true # Show all files in finder, including hidden ones
