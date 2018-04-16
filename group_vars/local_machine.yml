@@ -13,3 +13,6 @@ homebrew_cask_apps:
   - docker
   - spotify
   - brave
+  - iterm2
+
+MissionControl_MruSpaces: 0 # Automatically rearrange Spaces based on most recent use

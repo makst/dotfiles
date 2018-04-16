@@ -1,0 +1,7 @@
+---
+- name: "Mission Control - Automatically rearrange Spaces based on most recent use"
+  osx_defaults:
+    domain: com.apple.dock
+    key: mru-spaces 
+    type: int
+    value: '{{ MissionControl_MruSpaces }}' 

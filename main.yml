@@ -2,4 +2,5 @@
 - hosts: local_machine 
   roles:
     - geerlingguy.homebrew 
+    - osx-defaults
     - dock
