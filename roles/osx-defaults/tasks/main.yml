@@ -5,3 +5,12 @@
     key: mru-spaces 
     type: int
     value: '{{ MissionControl_MruSpaces }}' 
+    state: present
+
+- name: "Finder - Show all files"
+  osx_defaults:
+    domain: com.apple.Finder
+    key: AppleShowAllFiles
+    type: bool 
+    value: true 
+    state: present
