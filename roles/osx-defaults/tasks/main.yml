@@ -19,3 +19,23 @@
 - name: "Import GPG key if not yet imported"
   # list secret key || batch import it to avoid prompting for passphrase
   shell: gpg -K '{{ gpg_key_id }}' >/dev/null 2>&1 || gpg --batch --import '{{ gpg_key_file }}'
+
+- name: "Check whether pass has remote defined"
+  shell: pass git remote -v
+  register: pass_remote_check_result
+  ignore_errors: True
+  tags: 
+    - pass
+
+- pause: prompt='Remote for pass (e.g. git@host/user/repo)'
+  # it's failed when pass has not remote yet
+  when: pass_remote_check_result is failed
+  register: pass_remote
+  tags: 
+    - pass
+
+- name: 'Define pass remote if needed'
+  when: pass_remote['user_input'] is defined
+  shell: pass init 'password store' && pass git init && pass git remote add origin '{{ pass_remote['user_input'] }}'
+  tags: 
+    - pass
