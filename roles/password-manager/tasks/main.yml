@@ -1,4 +1,4 @@
-
+---
 - name: "Check pass git remote existence"
   shell: pass git remote -v
   register: pass_remote_check
