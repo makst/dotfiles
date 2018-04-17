@@ -8,14 +8,14 @@
 
 - name: 'Ensure home dir has correct permissions'
   file: 
-    path: '/Users/{{ user_name }}'
+    path: '{{ home_dir }}'
     # so that public can't read user's home directory
     mode: 0751
   tags:
     - permissions
 
 - name: 'Check ssh keys existence'
-  shell: ls -lh '/Users/{{ user_name }}/.ssh'
+  shell: ls -lh '{{ home_dir }}/.ssh'
   register: ssh_key_check
   ignore_errors: True
   tags:
@@ -24,7 +24,7 @@
 
 - name: 'Ensure .ssh directory has correct structure'
   file: 
-      path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}'
+      path: '{{ home_dir }}/.ssh/identities/{{ item.identity }}'
       state: directory
       mode: 0700
   when: ssh_key_check is failed
@@ -44,7 +44,7 @@
     - ssh
 
 - name: 'Create 4096-bit SSH keys for all keys, defined in ssh_keys variable'
-  shell: ssh-keygen -t rsa -b 4096 -C '{{ item.item.label }}' -N '{{ item.user_input }}' -f '/Users/{{ user_name }}/.ssh/identities/{{ item.item.identity }}/id_rsa'
+  shell: ssh-keygen -t rsa -b 4096 -C '{{ item.item.label }}' -N '{{ item.user_input }}' -f '{{ home_dir }}/.ssh/identities/{{ item.item.identity }}/id_rsa'
   when: ssh_key_check is failed
   with_items: '{{ ssh_key_passphrases.results }}'
   tags:
@@ -52,7 +52,7 @@
 
 - name: 'Ensure ssh public keys have correct permissions'
   file: 
-    path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}/id_rsa.pub'
+    path: '{{ home_dir }}/.ssh/identities/{{ item.identity }}/id_rsa.pub'
     mode: 0644
   with_items: '{{ ssh_keys }}'
   tags:
@@ -61,7 +61,7 @@
 
 - name: 'Ensure ssh private keys have correct permissions'
   file: 
-    path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}/id_rsa'
+    path: '{{ home_dir }}/.ssh/identities/{{ item.identity }}/id_rsa'
     mode: 0600
   with_items: '{{ ssh_keys }}'
   tags:

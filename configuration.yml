@@ -1,5 +1,7 @@
 ---
 - hosts: local_machine
+  vars:
+    home_dir: "{{ lookup('env','HOME') }}"
   roles:
     - geerlingguy.homebrew 
     - osx-host

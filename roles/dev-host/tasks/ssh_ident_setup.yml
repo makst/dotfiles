@@ -10,7 +10,7 @@
 # article: https://www.ct-unlimited.org/posts/ssh-ident/
 
 - name: Check ssh-ident existence
-  shell: ls -lh '/Users/{{ user_name }}/bin/ssh-ident'
+  shell: ls -lh '{{ home_dir }}/bin/ssh-ident'
   register: ssh_ident_check
   ignore_errors: True
   tags:
@@ -18,7 +18,7 @@
   
 - name: Ensure ~/bin directory exists
   file: 
-    path: '/Users/{{ user_name }}/bin'
+    path: '{{ home_dir }}/bin'
     state: directory
     # so that public can't read user's directory
     mode: 0751
@@ -29,7 +29,7 @@
 - name: Download ssh-ident
   get_url:
     url: https://raw.githubusercontent.com/ccontavalli/ssh-ident/master/ssh-ident
-    dest: '/Users/{{ user_name }}/bin/ssh-ident'
+    dest: '{{ home_dir }}/bin/ssh-ident'
     mode: 0755
   when: ssh_ident_check is failed
   tags:
@@ -38,8 +38,8 @@
 # read about it in ssh-ident repo's README.md
 - name: Symlink ssh, scp and sftp to ssh-ident
   file:
-    src: /Users/{{ user_name }}/bin/ssh-ident
-    dest: /Users/{{ user_name }}/bin/{{ item }}
+    src: '{{ home_dir }}/bin/ssh-ident'
+    dest: '{{ home_dir }}/bin/{{ item }}'
     state: link
   with_items:
     - 'ssh'
@@ -52,7 +52,7 @@
 - name: Generate .ssh-ident file
   template: 
     src: ssh-ident.j2
-    dest: /Users/{{ user_name }}/.ssh-ident
+    dest: '{{ home_dir }}/.ssh-ident'
     mode: 0644
   when: ssh_ident_check is failed
   tags:

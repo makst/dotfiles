@@ -19,5 +19,3 @@ homebrew_cask_apps:
   - gpg-suite
 
 #homebrew_cask_uninstalled_apps:
-
-user_name: makst
