@@ -2,6 +2,6 @@
 - hosts: local_machine
   roles:
     - geerlingguy.homebrew 
-    - osx-defaults
+    - osx-host
     - keys-manager
     - password-manager
