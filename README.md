@@ -4,7 +4,7 @@ It also uses ansible to setup mac.
 Fresh installation
 ===
 1. Copy GPG key to location, specified in `gpg_key_file` variable.
-2. Refer to the installation section of the beforementioned repo.
+2. Refer to the installation section of the beforementioned repo (even though nothing from it is used directly)
 3. Switch pass remote from https one to git
 4. Add newly generated ssh keys to github/etc.
 5. Fetch repositories (these dotfiles only setup dir structure and add origins to repos, you have to `git fetch`).

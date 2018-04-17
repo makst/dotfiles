@@ -1,0 +1,27 @@
+homebrew_cask_appdir: /Applications
+
+recipes_for_roles:
+  dev-host:
+    installed_packages:
+      - git
+      - zsh
+      - wget
+      - ansible
+      - openssl
+      - tmux 
+      - dockutil 
+      - pass
+    uninstalled_packages: []
+    cask_installed_apps:
+      - docker
+      - iterm2
+      - visual-studio-code
+      - gpg-suite
+    cask_uninstalled_apps: []
+  osx-host:
+    installed_packages: []
+    uninstalled_packages: []
+    cask_installed_apps:
+      - spotify
+      - brave
+    cask_uninstalled_apps: []

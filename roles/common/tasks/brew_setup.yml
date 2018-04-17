@@ -1,0 +1,34 @@
+---
+- name: '[{{ brew_for_role }}] =>  Install brew packages'
+  homebrew:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ recipes_for_roles[brew_for_role].installed_packages }}'
+  tags:
+    - brew
+
+- name: '[{{ brew_for_role }}] =>  Uninstall brew packages'
+  homebrew:
+    name: '{{ item }}'
+    state: absent
+  with_items: '{{ recipes_for_roles[brew_for_role].uninstalled_packages }}'
+  tags:
+    - brew
+
+- name: '[{{ brew_for_role }}] =>  Install brew cask apps'
+  homebrew_cask:
+    name: '{{ item }}'
+    state: present
+    install_options: 'appdir={{ homebrew_cask_appdir }}'
+  with_items: '{{ recipes_for_roles[brew_for_role].cask_installed_apps }}'
+  tags:
+    - brew
+
+- name: '[{{ brew_for_role }}] =>  Uninstall brew cask apps'
+  homebrew_cask:
+    name: '{{ item }}'
+    state: absent
+    install_options: 'appdir={{ homebrew_cask_appdir }}'
+  with_items: '{{ recipes_for_roles[brew_for_role].cask_uninstalled_apps }}'
+  tags:
+    - brew

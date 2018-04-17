@@ -3,6 +3,7 @@
   vars:
     home_dir: "{{ lookup('env','HOME') }}"
   roles:
-    - geerlingguy.homebrew 
+    - { role: common, brew_for_role: "osx-host" }
     - osx-host
+    - { role: common, brew_for_role: "dev-host" }
     - dev-host
