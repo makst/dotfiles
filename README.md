@@ -20,5 +20,5 @@ TODO
 - setup zsh
 - add dotfiles (git, zsh, vscode)
 - setup repos
-- setup git hook to automatically encrypt/decrypt encrypted dotfiles (brave)
-- change github and gitlab passwords to the ones easier to use ( as it has to be easy to set this up on new machine)
+- create installation script for fresh install
+- extend usage section
