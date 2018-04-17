@@ -10,6 +10,7 @@ Fresh installation
 5. Fetch repositories (these dotfiles only setup dir structure and add origins to repos, you have to `git fetch`).
 6. Save passphrase[s] of newly generated ssh keys to your password manager (`pass`, in case of this repo).
 7. Change PATH to `~/bin:$PATH` after `ssh-ident` installation
+8. Change the shell to zsh `chsh -s /bin/zsh`
 
 Usage
 ===
@@ -18,7 +19,7 @@ Usage
 TODO
 ===
 - setup zsh
-- add dotfiles (git, zsh, vscode)
+- add dotfiles (git, zsh, vscode, vim)
 - setup repos
 - create installation script for fresh install
 - extend usage section
