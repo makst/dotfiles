@@ -1,6 +1,8 @@
 ssh_keys:
   - identity: <identityName>
     label: <sshKeyLabel>
+    # for generation of ~/.ssh-ident
+    argv_match: <argvMatch>
 
 gpg_key_file: /Users/<userName>/Documents/gpg.asc
 gpg_key_id: AA000000

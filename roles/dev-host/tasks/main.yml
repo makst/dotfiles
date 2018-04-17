@@ -1,0 +1,2 @@
+---
+- import_tasks: ssh_ident_setup.yml

@@ -3,5 +3,6 @@
   roles:
     - geerlingguy.homebrew 
     - osx-host
+    - dev-host
     - keys-manager
     - password-manager

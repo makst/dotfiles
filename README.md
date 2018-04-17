@@ -9,6 +9,7 @@ Fresh installation
 4. Add newly generated ssh keys to github/etc.
 5. Fetch repositories (these dotfiles only setup dir structure and add origins to repos, you have to `git fetch`).
 6. Save passphrase[s] of newly generated ssh keys to your password manager (`pass`, in case of this repo).
+7. Change PATH to `~/bin:$PATH` after `ssh-ident` installation
 
 Usage
 ===

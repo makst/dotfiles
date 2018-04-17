@@ -1,0 +1,59 @@
+---
+# https://unix.stackexchange.com/a/90869
+# ssh-ident is a utility that can manage ssh-agent on your behalf and load identities as necessary. 
+# It adds keys only once as they are needed, regardless of how many terminals, ssh or login sessions 
+# that require access to an ssh-agent. It can also add and use a different agent and different set of 
+# keys depending on the host being connected to, or the directory ssh is invoked from. 
+# This allows for isolating keys when using agent forwarding with different hosts. 
+# It also allows to use multiple accounts on sites like GitHub.
+# repo: https://github.com/ccontavalli/ssh-ident
+# article: https://www.ct-unlimited.org/posts/ssh-ident/
+
+- name: Check ssh-ident existence
+  shell: ls -lh '/Users/{{ user_name }}/bin/ssh-ident'
+  register: ssh_ident_check
+  ignore_errors: True
+  tags:
+    - ssh-ident
+  
+- name: Ensure ~/bin directory exists
+  file: 
+    path: '/Users/{{ user_name }}/bin'
+    state: directory
+    # so that public can't read user's directory
+    mode: 0751
+  tags:
+    - permissions
+    - ssh-ident
+
+- name: Download ssh-ident
+  get_url:
+    url: https://raw.githubusercontent.com/ccontavalli/ssh-ident/master/ssh-ident
+    dest: '/Users/{{ user_name }}/bin/ssh-ident'
+    mode: 0755
+  when: ssh_ident_check is failed
+  tags:
+    - ssh-ident
+
+# read about it in ssh-ident repo's README.md
+- name: Symlink ssh, scp and sftp to ssh-ident
+  file:
+    src: /Users/{{ user_name }}/bin/ssh-ident
+    dest: /Users/{{ user_name }}/bin/{{ item }}
+    state: link
+  with_items:
+    - 'ssh'
+    - 'scp'
+    - 'sftp'
+  when: ssh_ident_check is failed
+  tags:
+    - ssh-ident
+
+- name: Generate .ssh-ident file
+  template: 
+    src: ssh-ident.j2
+    dest: /Users/{{ user_name }}/.ssh-ident
+    mode: 0644
+  when: ssh_ident_check is failed
+  tags:
+    - ssh-ident
