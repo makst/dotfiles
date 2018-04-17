@@ -19,17 +19,85 @@
 - name: "Import GPG key if not yet imported"
   # list secret key || batch import it to avoid prompting for passphrase
   shell: gpg -K '{{ gpg_key_id }}' >/dev/null 2>&1 || gpg --batch --import '{{ gpg_key_file }}'
+  tags:
+    - gpg
 
-- name: "Check whether pass has remote defined"
+- name: 'Ensure home dir has correct permissions'
+  file: 
+    path: '/Users/{{ user_name }}'
+    # so that public can't read user's home directory
+    mode: 0751
+  tags:
+    - privacy
+
+- name: 'Check ssh keys existence'
+  shell: ls -lh '/Users/{{ user_name }}/.ssh'
+  register: ssh_key_check
+  ignore_errors: True
+  tags:
+    - privacy 
+    - ssh
+
+- name: 'Ensure .ssh directory has correct structure'
+  file: 
+      path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}'
+      state: directory
+      mode: 0700
+  when: ssh_key_check is failed
+  with_items: '{{ ssh_keys }}'
+  tags:
+    - privacy
+    - ssh
+
+- name: 'Enter ssh key passphrase if needed'
+  pause: 
+    prompt: "Passphrase for new ssh key ('{{ item.identity }}')"
+    echo: no
+  when: ssh_key_check is failed
+  register: ssh_key_passphrases
+  with_items: '{{ ssh_keys }}'
+  tags: 
+    - privacy
+    - ssh
+
+- name: 'Create 4096-bit SSH keys for all keys, defined in ssh_keys variable'
+  shell: ssh-keygen -t rsa -b 4096 -C '{{ item.item.label }}' -N '{{ item.user_input }}' -f '/Users/{{ user_name }}/.ssh/identities/{{ item.item.identity }}/id_rsa'
+  when: ssh_key_check is failed
+  with_items: '{{ ssh_key_passphrases.results }}'
+  tags:
+    - privacy
+    - ssh
+
+- name: 'Ensure ssh public keys have correct permissions'
+  file: 
+    path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}/id_rsa.pub'
+    mode: 0644
+  with_items: '{{ ssh_keys }}'
+  tags:
+    - privacy
+    - ssh
+
+- name: 'Ensure ssh private keys have correct permissions'
+  file: 
+    path: '/Users/{{ user_name }}/.ssh/identities/{{ item.identity }}/id_rsa'
+    mode: 0600
+  with_items: '{{ ssh_keys }}'
+  tags:
+    - privacy
+    - ssh
+
+- name: "Check pass git remote existence"
   shell: pass git remote -v
-  register: pass_remote_check_result
+  register: pass_remote_check
   ignore_errors: True
   tags: 
     - pass
 
-- pause: prompt='Remote for pass (e.g. git@host/user/repo)'
+# it's easier to set it up initially with https remote to avoid creation of ssh keys
+# at this point
+- pause: prompt='Remote for pass (e.g. https://user:access_token@host/user/repo'
   # it's failed when pass has not remote yet
-  when: pass_remote_check_result is failed
+  when: pass_remote_check is failed
   register: pass_remote
   tags: 
     - pass

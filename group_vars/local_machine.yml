@@ -20,6 +20,13 @@ homebrew_cask_apps:
 
 #homebrew_cask_uninstalled_apps:
 
+user_name: makst
+ssh_keys:
+  - identity: github
+    label: makst@github
+  - identity: gitlab
+    label: makst@gitlab
+
 gpg_key_file: /Users/makst/Documents/gpg.asc
 gpg_key_id: CF909698
 
