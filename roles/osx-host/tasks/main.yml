@@ -1,4 +1,12 @@
 ---
+- name: 'Ensure home dir has correct permissions'
+  file: 
+    path: '{{ home_dir }}'
+    # so that public can't read user's home directory
+    mode: 0751
+  tags:
+    - permissions
+
 # setup the environment
 - name: "Mission Control - Automatically rearrange Spaces based on most recent use"
   osx_defaults:

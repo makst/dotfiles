@@ -1,2 +1,4 @@
 ---
+- import_tasks: gpg_import.yml
+- import_tasks: ssh_setup.yml
 - import_tasks: ssh_ident_setup.yml

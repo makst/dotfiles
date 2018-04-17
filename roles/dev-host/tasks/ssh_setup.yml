@@ -1,19 +1,5 @@
 
 ---
-- name: "Import GPG key if not yet imported"
-  # list secret key || batch import it to avoid prompting for passphrase
-  shell: gpg -K '{{ gpg_key_id }}' >/dev/null 2>&1 || gpg --batch --import '{{ gpg_key_file }}'
-  tags:
-    - gpg
-
-- name: 'Ensure home dir has correct permissions'
-  file: 
-    path: '{{ home_dir }}'
-    # so that public can't read user's home directory
-    mode: 0751
-  tags:
-    - permissions
-
 - name: 'Check ssh keys existence'
   shell: ls -lh '{{ home_dir }}/.ssh'
   register: ssh_key_check
