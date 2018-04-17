@@ -19,7 +19,7 @@ Usage
 TODO
 ===
 - setup zsh
-- add dotfiles (git, zsh, vscode, vim)
+- add dotfiles (git, ~~zsh~~, vscode, vim)
 - setup repos
 - create installation script for fresh install
 - extend usage section

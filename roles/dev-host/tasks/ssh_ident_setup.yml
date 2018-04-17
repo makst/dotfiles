@@ -42,9 +42,9 @@
     dest: '{{ home_dir }}/bin/{{ item }}'
     state: link
   with_items:
-    - 'ssh'
-    - 'scp'
-    - 'sftp'
+    - ssh
+    - scp
+    - sftp
   when: ssh_ident_check is failed
   tags:
     - ssh-ident
