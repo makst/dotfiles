@@ -28,14 +28,14 @@
     # so that public can't read user's home directory
     mode: 0751
   tags:
-    - privacy
+    - permissions
 
 - name: 'Check ssh keys existence'
   shell: ls -lh '/Users/{{ user_name }}/.ssh'
   register: ssh_key_check
   ignore_errors: True
   tags:
-    - privacy 
+    - permissions
     - ssh
 
 - name: 'Ensure .ssh directory has correct structure'
@@ -46,7 +46,7 @@
   when: ssh_key_check is failed
   with_items: '{{ ssh_keys }}'
   tags:
-    - privacy
+    - permissions
     - ssh
 
 - name: 'Enter ssh key passphrase if needed'
@@ -57,7 +57,6 @@
   register: ssh_key_passphrases
   with_items: '{{ ssh_keys }}'
   tags: 
-    - privacy
     - ssh
 
 - name: 'Create 4096-bit SSH keys for all keys, defined in ssh_keys variable'
@@ -65,7 +64,6 @@
   when: ssh_key_check is failed
   with_items: '{{ ssh_key_passphrases.results }}'
   tags:
-    - privacy
     - ssh
 
 - name: 'Ensure ssh public keys have correct permissions'
@@ -74,7 +72,7 @@
     mode: 0644
   with_items: '{{ ssh_keys }}'
   tags:
-    - privacy
+    - permissions
     - ssh
 
 - name: 'Ensure ssh private keys have correct permissions'
@@ -83,7 +81,7 @@
     mode: 0600
   with_items: '{{ ssh_keys }}'
   tags:
-    - privacy
+    - permissions
     - ssh
 
 - name: "Check pass git remote existence"
