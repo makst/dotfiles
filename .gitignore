@@ -1,0 +1,3 @@
+*.retry
+# do not include extra vars, as this might contain secret information
+roles/*/vars/main.yml
