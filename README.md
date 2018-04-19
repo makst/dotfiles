@@ -23,7 +23,6 @@ Inspired by lots of repositories and articles, but most importantly, next ones:
 
 TODO
 ===
-- setup zsh
 - add dotfiles (git, ~~zsh~~, vscode, vim)
 - setup repos
 - create installation script for fresh install
