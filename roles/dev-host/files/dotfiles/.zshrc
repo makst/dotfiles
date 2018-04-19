@@ -56,6 +56,14 @@ plugins=(git npm node docker docker-compose osx history z zsh-syntax-highlightin
 
 source $ZSH/oh-my-zsh.sh
 
+# ----- Functions ------
+
+# Change iterm2 profile. Usage it2prof ProfileName (case sensitive)
+# https://coderwall.com/p/s-2_nw/change-iterm2-color-profile-from-the-cli
+it2prof() { echo -e "\033]50;SetProfile=$1\a" }
+
+# ----------------------
+
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
