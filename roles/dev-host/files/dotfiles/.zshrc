@@ -51,7 +51,7 @@ ZSH_THEME="ys"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git npm node docker docker-compose osx history zsh-syntax-highlighting z)
+plugins=(git npm node docker docker-compose osx history z zsh-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 

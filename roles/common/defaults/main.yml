@@ -5,6 +5,7 @@ recipes_for_roles:
     installed_packages:
       - git
       - zsh
+      - zsh-completions
       - wget
       - ansible
       - openssl
