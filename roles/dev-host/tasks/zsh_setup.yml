@@ -38,7 +38,7 @@
 
 - name: Symlink .zshrc
   file:
-    src: '{{ role_path }}/files/dotfiles/.zshrc'
+    src: '{{ role_path }}/files/.zshrc'
     dest: '{{ home_dir }}/.zshrc'
     state: link
     force: yes
