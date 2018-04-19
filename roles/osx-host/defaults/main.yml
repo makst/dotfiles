@@ -24,5 +24,8 @@ dock_items:
       path: /Applications/Brave.app
       pos: 2
 
-MissionControl_MruSpaces: 0 # Automatically rearrange Spaces based on most recent use
-Finder_AppleShowAllFiles: true # Show all files in finder, including hidden ones
+mission_control:
+  mru_spaces: 0 # Automatically rearrange Spaces based on most recent use
+
+finder:
+  show_all_files: true # Show all files in finder, including hidden ones

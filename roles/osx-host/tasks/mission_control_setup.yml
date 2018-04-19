@@ -4,5 +4,7 @@
     domain: com.apple.dock
     key: mru-spaces 
     type: int
-    value: '{{ MissionControl_MruSpaces }}' 
+    value: '{{ mission_control.mru_spaces }}' 
     state: present
+  tags:
+    - mission-control

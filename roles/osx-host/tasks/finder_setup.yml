@@ -4,5 +4,7 @@
     domain: com.apple.Finder
     key: AppleShowAllFiles
     type: bool 
-    value: '{{ Finder_AppleShowAllFiles }}' 
+    value: '{{ finder.show_all_files }}' 
     state: present
+  tags:
+    - finder
