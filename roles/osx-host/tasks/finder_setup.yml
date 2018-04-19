@@ -1,0 +1,8 @@
+---
+- name: "Finder - Show all files"
+  osx_defaults:
+    domain: com.apple.Finder
+    key: AppleShowAllFiles
+    type: bool 
+    value: '{{ Finder_AppleShowAllFiles }}' 
+    state: present

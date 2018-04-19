@@ -7,38 +7,6 @@
   tags:
     - permissions
 
-# setup the environment
-- name: "Mission Control - Automatically rearrange Spaces based on most recent use"
-  osx_defaults:
-    domain: com.apple.dock
-    key: mru-spaces 
-    type: int
-    value: '{{ MissionControl_MruSpaces }}' 
-    state: present
-
-- name: "Finder - Show all files"
-  osx_defaults:
-    domain: com.apple.Finder
-    key: AppleShowAllFiles
-    type: bool 
-    value: '{{ Finder_AppleShowAllFiles }}' 
-    state: present
-
-# setup dock
-- name: Remove not needed items from Dock
-  shell: dockutil --remove '{{ item }}'
-  with_items: '{{ dockitems_to_remove }}'
-  tags:
-    - dock
-
-- name: Check if items in dock exist
-  shell: dockutil --find '{{ item.name }}' || dockutil --add '{{ item.path }}'
-  with_items: '{{ dockitems_to_persist }}'
-  tags:
-    - dock
-
-- name: Fix order
-  shell: dockutil --move '{{ item.name }}' --position {{ item.pos }}
-  with_items: '{{ dockitems_to_persist }}'
-  tags:
-    - dock
+- import_tasks: mission_control_setup.yml
+- import_tasks: finder_setup.yml
+- import_tasks: dock_setup.yml
