@@ -1,0 +1,9 @@
+---
+- name: Symlink .gitconfig
+  file:
+    src: '{{ role_path }}/files/.gitconfig'
+    dest: '{{ home_dir }}/.gitconfig'
+    state: link
+    force: yes
+  tags:
+    - git
