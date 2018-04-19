@@ -2,6 +2,10 @@ homebrew_cask_appdir: /Applications
 
 recipes_for_roles:
   dev-host:
+    tap:
+      # for 'font-source-code-pro' cask
+      - caskroom/fonts
+    untap: []
     installed_packages:
       - git
       - zsh
@@ -16,10 +20,14 @@ recipes_for_roles:
     cask_installed_apps:
       - docker
       - iterm2
+      # https://github.com/adobe-fonts/source-code-pro
+      - font-source-code-pro
       - visual-studio-code
       - gpg-suite
     cask_uninstalled_apps: []
   osx-host:
+    tap: []
+    untap: []
     installed_packages: []
     uninstalled_packages: []
     cask_installed_apps:

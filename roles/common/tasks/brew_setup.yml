@@ -1,4 +1,20 @@
 ---
+- name: '[{{ brew_for_role }}] =>  Brew tap'
+  homebrew_tap:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ recipes_for_roles[brew_for_role].tap }}'
+  tags:
+    - brew
+
+- name: '[{{ brew_for_role }}] =>  Brew untap'
+  homebrew_tap:
+    name: '{{ item }}'
+    state: absent
+  with_items: '{{ recipes_for_roles[brew_for_role].untap }}'
+  tags:
+    - brew
+
 - name: '[{{ brew_for_role }}] =>  Install brew packages'
   homebrew:
     name: '{{ item }}'
