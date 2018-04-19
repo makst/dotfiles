@@ -29,3 +29,28 @@ mission_control:
 
 finder:
   show_all_files: true # Show all files in finder, including hidden ones
+
+# check the current state:
+# $ defaults read com.apple.systemuiserver
+systemuiserver:
+  - name: battery
+    visible: 1
+    nsStatusItem: 'com.apple.menuextra.battery'
+    menuExtrasPath: '/System/Library/CoreServices/Menu Extras/Battery.menu'
+    itemKeys:
+      - name: 'ShowPercent'
+        type: 'string'
+        value: 'YES'
+  - name: clock
+    visible: 1
+    nsStatusItem: 'com.apple.menuextra.clock'
+    menuExtrasPath: '/System/Library/CoreServices/Menu Extras/Clock.menu'
+    itemKeys:
+      - name: 'IsAnalog'
+        type: 'int'
+        value: 0
+  - name: bluetooth
+    visible: 1
+    nsStatusItem: 'com.apple.menuextra.bluetooth'
+    menuExtrasPath: '/System/Library/CoreServices/Menu Extras/Bluetooth.menu'
+    itemKeys: []

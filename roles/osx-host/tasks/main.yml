@@ -7,6 +7,18 @@
   tags:
     - permissions
 
-- import_tasks: mission_control_setup.yml
-- import_tasks: finder_setup.yml
-- import_tasks: dock_setup.yml
+- include_tasks: mission_control_setup.yml
+- include_tasks: finder_setup.yml
+- include_tasks: dock_setup.yml
+
+# systemuiserver setup
+- include_tasks: systemuiserver_setup.yml
+  loop: '{{ systemuiserver }}'
+  loop_control:
+    loop_var: systemuiserver_item
+  tags:
+    - systemuiserver
+- name: Refresh SystemUiServer
+  shell: killall SystemUIServer -HUP
+  tags:
+    - systemuiserver
