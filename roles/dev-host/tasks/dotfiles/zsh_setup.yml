@@ -28,6 +28,14 @@
   tags:
     - zsh
 
+# https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md#oh-my-zsh
+- name: Install zsh-syntax-highlighting plugin
+  git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: '{{ home_dir }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+  tags:
+    - zsh
+
 - name: Symlink .zshrc
   file:
     src: '{{ role_path }}/files/dotfiles/.zshrc'
