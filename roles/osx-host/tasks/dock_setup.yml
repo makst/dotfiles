@@ -1,18 +1,18 @@
 ---
 - name: Remove not needed items from Dock
   shell: dockutil --remove '{{ item }}'
-  with_items: '{{ dockitems_to_remove }}'
+  with_items: '{{ dock_items.remove }}'
   tags:
     - dock
 
 - name: Check if items in dock exist
   shell: dockutil --find '{{ item.name }}' || dockutil --add '{{ item.path }}'
-  with_items: '{{ dockitems_to_persist }}'
+  with_items: '{{ dock_items.persist }}'
   tags:
     - dock
 
 - name: Fix order
   shell: dockutil --move '{{ item.name }}' --position {{ item.pos }}
-  with_items: '{{ dockitems_to_persist }}'
+  with_items: '{{ dock_items.persist }}'
   tags:
     - dock

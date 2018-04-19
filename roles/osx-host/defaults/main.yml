@@ -1,30 +1,28 @@
-dockitems_to_remove:
-  - Launchpad
-  - Mail
-  - Contacts
-  - Notes
-  - Reminders
-  - Maps
-  - Photos
-  - Messages
-  - FaceTime
-  - iTunes
-  - iBooks
-  - App Store
-  - System Preferences
-  - Calendar
-  - Finder
-
-dockitems_to_persist:
-  - name: Spotify
-    path: /Applications/Spotify.app
-    pos: 1
-  - name: Brave
-    path: /Applications/Brave.app
-    pos: 2
-  - name: Safari
-    path: /Applications/Safari.app
-    pos: 3
+dock_items:
+  remove:
+    - Launchpad
+    - Mail
+    - Contacts
+    - Notes
+    - Reminders
+    - Maps
+    - Photos
+    - Messages
+    - FaceTime
+    - iTunes
+    - iBooks
+    - App Store
+    - System Preferences
+    - Calendar
+    - Finder
+    - Safari
+  persist:
+    - name: Spotify
+      path: /Applications/Spotify.app
+      pos: 1
+    - name: Brave
+      path: /Applications/Brave.app
+      pos: 2
 
 MissionControl_MruSpaces: 0 # Automatically rearrange Spaces based on most recent use
 Finder_AppleShowAllFiles: true # Show all files in finder, including hidden ones
