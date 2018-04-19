@@ -16,6 +16,11 @@ Usage
 ===
 `roles/<role>/vars/main.yml` in each role is supposed to contain secret information. The format of the secret information is described in `roles/<role>/vars/main.example.yml` file. It's loaded automatically by ansible.
 
+Acknowledgements
+===
+Inspired by lots of repositories and articles, but most importantly, next ones:
+* https://github.com/mathiasbynens/dotfiles
+
 TODO
 ===
 - setup zsh
