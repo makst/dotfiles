@@ -3,4 +3,5 @@
 - import_tasks: ssh_setup.yml
 - import_tasks: ssh_ident_setup.yml
 - import_tasks: password_manager_setup.yml
+- import_tasks: iterm2_setup.yml
 - import_tasks: dotfiles/zsh_setup.yml
