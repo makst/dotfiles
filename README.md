@@ -20,6 +20,7 @@ Acknowledgements
 ===
 Inspired by lots of repositories and articles, but most importantly, next ones:
 * https://github.com/mathiasbynens/dotfiles
+* https://github.com/stephenmckinney/dotfiles (I've got an inspiration for iterm settings from here)
 
 TODO
 ===

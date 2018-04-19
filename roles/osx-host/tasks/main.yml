@@ -7,9 +7,9 @@
   tags:
     - permissions
 
-- include_tasks: mission_control_setup.yml
-- include_tasks: finder_setup.yml
-- include_tasks: dock_setup.yml
+- import_tasks: mission_control_setup.yml
+- import_tasks: finder_setup.yml
+- import_tasks: dock_setup.yml
 
 # systemuiserver setup
 - include_tasks: systemuiserver_setup.yml

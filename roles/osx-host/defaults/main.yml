@@ -23,6 +23,9 @@ dock_items:
     - name: Brave
       path: /Applications/Brave.app
       pos: 2
+    - name: iTerm
+      path: /Applications/iTerm.app
+      pos: 3
 
 mission_control:
   mru_spaces: 0 # Automatically rearrange Spaces based on most recent use
