@@ -1,0 +1,22 @@
+---
+- name: Check nvm existence
+  shell: ls -lh '{{ home_dir }}/.nvm'
+  register: nvm_check
+  ignore_errors: True
+  tags:
+    - nvm
+
+- name: Download nvm installer
+  get_url:
+    url: https://raw.githubusercontent.com/creationix/nvm/v0.31.1/install.sh
+    dest: '/tmp/nvm-installer.sh'
+    mode: 0755
+  when: nvm_check is failed
+  tags:
+    - nvm
+
+- name: Execute nvm installer
+  shell: /tmp/nvm-installer.sh
+  when: nvm_check is failed
+  tags:
+    - nvm
