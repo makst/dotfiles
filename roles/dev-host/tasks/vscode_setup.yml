@@ -1,0 +1,13 @@
+---
+- name: Symlink VSCode settings
+  file:
+    src: '{{ role_path }}/files/VSCode/{{ item }}'
+    dest: '{{ home_dir }}/Library/Application Support/Code/User/{{ item }}'
+    state: link
+    force: yes
+  with_items:
+    - keybindings.json
+    - settings.json
+    - snippets
+  tags:
+    - vscode

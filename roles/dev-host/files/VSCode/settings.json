@@ -1,0 +1,73 @@
+// Place your settings in this file to overwrite the default settings
+{
+    // ------------- Editor
+    // Insert snippets when their prefix matches. Works best when 'quickSuggestions' aren't enabled.
+    "editor.tabCompletion": true,
+
+    // Render vertical rulers after a certain number of monospace characters. Use multiple values for multiple rulers. No rulers are drawn if array is empty
+    "editor.rulers": [100],
+
+    // ------------- Files
+    // When enabled, will trim trailing whitespace when saving a file.
+    "files.trimTrailingWhitespace": true,
+
+     // When enabled, insert a final new line at the end of the file when saving it.
+    "files.insertFinalNewline": true,
+
+    // ------------- Window
+    "window.zoomLevel": 0,
+
+    // ------------- Workbench
+    "workbench.iconTheme": "file-icons",
+
+    // -------------------------
+    // -------------- Extensions
+    // -------------------------
+    // ------------- GitLens
+    "gitlens.gitExplorer.files.layout": "tree",
+    "gitlens.blame.line.enabled": false,
+
+    // ------------- Vim
+    "vim.disableAnnoyingNeovimMessage": true,
+    // What key should <leader> map to in remappings?
+    "vim.leader": ",",
+    "vim.surround": true,
+      // Override VSCode's copy command with our own copy command, which works better with VSCodeVim. Turn this off if copying is not working.
+    "vim.overrideCopy": false,
+    "vim.insertModeKeyBindings": [
+        {
+            "before": ["j","j"],
+            "after": ["<Esc>"]
+        }
+    ],
+    "vim.otherModesKeyBindingsNonRecursive": [
+        {
+            "before": ["leader", "w"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.files.save",
+                    "args": []
+                }
+            ]
+        }
+    ],
+    "extensions.ignoreRecommendations": false,
+    "gitlens.advanced.messages": {
+        "suppressCommitHasNoPreviousCommitWarning": false,
+        "suppressCommitNotFoundWarning": false,
+        "suppressFileNotUnderSourceControlWarning": false,
+        "suppressGitVersionWarning": false,
+        "suppressLineUncommittedWarning": false,
+        "suppressNoRepositoryWarning": false,
+        "suppressResultsExplorerNotice": true,
+        "suppressShowKeyBindingsNotice": true,
+        "suppressUpdateNotice": false,
+        "suppressWelcomeNotice": true
+    },
+    "workbench.panel.location": "bottom",
+    "explorer.confirmDelete": false,
+    "gitlens.currentLine.enabled": false,
+    "gitlens.hovers.currentLine.enabled": false,
+    "gitlens.keymap": "chorded",
+}
