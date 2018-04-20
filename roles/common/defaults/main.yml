@@ -8,6 +8,7 @@ recipes_for_roles:
     untap: []
     installed_packages:
       - git
+      - diff-so-fancy
       - zsh
       - zsh-completions
       - wget
