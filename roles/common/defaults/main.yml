@@ -9,6 +9,8 @@ recipes_for_roles:
     installed_packages:
       - git
       - diff-so-fancy
+      # https://beyondgrep.com/why-ack/
+      - ack
       - zsh
       - zsh-completions
       - wget
