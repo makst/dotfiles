@@ -20,6 +20,7 @@ Acknowledgements
 ===
 Inspired by lots of repositories and articles, but most importantly, next ones:
 * https://github.com/mathiasbynens/dotfiles
+* https://github.com/geerlingguy/mac-dev-playbook and https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with-ansible/ (inspiration to create dotfiles in ansible)
 * https://github.com/stephenmckinney/dotfiles (I've got an inspiration for iterm settings from here)
 
 TODO
