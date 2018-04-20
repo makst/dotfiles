@@ -38,6 +38,14 @@
 	log = true
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
+	editor = code --wait
+
+[diff]
+    tool = default-difftool
+
+[difftool "default-difftool"]
+    cmd = code --wait --diff $LOCAL $REMOTE
+
 [color "diff-highlight"]
 	oldNormal = red bold
 	oldHighlight = red bold 52
