@@ -20,3 +20,14 @@
   when: nvm_check is failed
   tags:
     - nvm
+
+- name: Install node
+  shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }}'
+  args:
+    executable: /bin/zsh
+  with_items:
+    - v6
+    - v8
+    - v9
+  tags:
+    - nvm
