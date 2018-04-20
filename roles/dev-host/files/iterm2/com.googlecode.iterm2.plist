@@ -1440,6 +1440,34 @@
 					<key>Text</key>
 					<string>0x7f</string>
 				</dict>
+				<key>0x5a-0x120000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x18 0x1f</string>
+				</dict>
+				<key>0x7a-0x100000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x1f</string>
+				</dict>
+				<key>0x7f-0x100000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x15</string>
+				</dict>
+				<key>0x7f-0x80000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x1b 0x08</string>
+				</dict>
 				<key>0xf700-0x220000</key>
 				<dict>
 					<key>Action</key>
@@ -1522,7 +1550,7 @@
 					<key>Action</key>
 					<integer>11</integer>
 					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x44</string>
+					<string>0x1b 0x62</string>
 				</dict>
 				<key>0xf703-0x220000</key>
 				<dict>
@@ -1550,7 +1578,7 @@
 					<key>Action</key>
 					<integer>11</integer>
 					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x43</string>
+					<string>0x1b 0x66</string>
 				</dict>
 				<key>0xf704-0x20000</key>
 				<dict>
@@ -1639,9 +1667,9 @@
 				<key>0xf729-0x20000</key>
 				<dict>
 					<key>Action</key>
-					<integer>10</integer>
+					<integer>11</integer>
 					<key>Text</key>
-					<string>[1;2H</string>
+					<string>0x01</string>
 				</dict>
 				<key>0xf729-0x40000</key>
 				<dict>
@@ -1653,9 +1681,9 @@
 				<key>0xf72b-0x20000</key>
 				<dict>
 					<key>Action</key>
-					<integer>10</integer>
+					<integer>11</integer>
 					<key>Text</key>
-					<string>[1;2F</string>
+					<string>0x05</string>
 				</dict>
 				<key>0xf72b-0x40000</key>
 				<dict>
@@ -2002,7 +2030,7 @@
 				<real>0.32436618208885193</real>
 			</dict>
 			<key>Guid</key>
-			<string>CCD83E28-943F-4977-A1D0-B6E8C3303531</string>
+			<string>46598301-4D11-483E-9A15-2A8E2650390D</string>
 			<key>Horizontal Spacing</key>
 			<real>1</real>
 			<key>Idle Code</key>
@@ -2071,6 +2099,34 @@
 					<integer>11</integer>
 					<key>Text</key>
 					<string>0x7f</string>
+				</dict>
+				<key>0x5a-0x120000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x18 0x1f</string>
+				</dict>
+				<key>0x7a-0x100000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x1f</string>
+				</dict>
+				<key>0x7f-0x100000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x15</string>
+				</dict>
+				<key>0x7f-0x80000</key>
+				<dict>
+					<key>Action</key>
+					<integer>11</integer>
+					<key>Text</key>
+					<string>0x1b 0x08</string>
 				</dict>
 				<key>0xf700-0x220000</key>
 				<dict>
@@ -2154,7 +2210,7 @@
 					<key>Action</key>
 					<integer>11</integer>
 					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x44</string>
+					<string>0x1b 0x62</string>
 				</dict>
 				<key>0xf703-0x220000</key>
 				<dict>
@@ -2182,7 +2238,7 @@
 					<key>Action</key>
 					<integer>11</integer>
 					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x43</string>
+					<string>0x1b 0x66</string>
 				</dict>
 				<key>0xf704-0x20000</key>
 				<dict>
@@ -2271,9 +2327,9 @@
 				<key>0xf729-0x20000</key>
 				<dict>
 					<key>Action</key>
-					<integer>10</integer>
+					<integer>11</integer>
 					<key>Text</key>
-					<string>[1;2H</string>
+					<string>0x01</string>
 				</dict>
 				<key>0xf729-0x40000</key>
 				<dict>
@@ -2285,9 +2341,9 @@
 				<key>0xf72b-0x20000</key>
 				<dict>
 					<key>Action</key>
-					<integer>10</integer>
+					<integer>11</integer>
 					<key>Text</key>
-					<string>[1;2F</string>
+					<string>0x05</string>
 				</dict>
 				<key>0xf72b-0x40000</key>
 				<dict>
