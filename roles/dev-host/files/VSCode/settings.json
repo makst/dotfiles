@@ -15,7 +15,7 @@
     "files.insertFinalNewline": true,
 
     // ------------- Window
-    "window.zoomLevel": 0,
+    "window.zoomLevel": 1,
 
     // ------------- Workbench
     "workbench.iconTheme": "file-icons",

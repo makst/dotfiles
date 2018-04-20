@@ -11,3 +11,15 @@
     - snippets
   tags:
     - vscode
+
+- name: Register VSCode extensions list
+  shell: 'cat {{ role_path }}/files/VSCode/extensions_list'
+  register: cat_vscode_extensions
+  tags:
+    - vscode
+
+- name: Install VSCode extensions
+  shell: 'code --install-extension {{ item }}'
+  with_items: '{{ cat_vscode_extensions.stdout_lines }}'
+  tags:
+    - vscode
