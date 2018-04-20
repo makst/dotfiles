@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AlternateMouseScroll</key>
+	<true/>
 	<key>AppleAntiAliasingThreshold</key>
 	<integer>1</integer>
 	<key>AppleScrollAnimationEnabled</key>
@@ -482,9 +484,9 @@
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>605 1031 1280 274 -675 800 2560 1417 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>334 228 796 473 0 0 1280 777 </string>
+	<string>334 176 937 512 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 68 1280 709 0 0 1280 777 </string>
+	<string>0 175 890 602 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>152 325 570 452 0 0 1280 777 </string>
 	<key>New Bookmarks</key>
@@ -2503,7 +2505,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2018-04-19T15:45:55Z</date>
+	<date>2018-04-20T21:56:48Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>TabStyle</key>
