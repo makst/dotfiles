@@ -7,3 +7,19 @@
     force: yes
   tags:
     - git
+
+# It is used to simplify tracking of some changes, like:
+# * installed/uninstalled VSCode extensions
+- name: Setup git hooks for dotfiles repo
+  template:
+    src: dotfiles_git_hooks/{{ item }}.j2
+    dest: '{{ playbook_dir }}/.git/hooks/{{ item }}'
+    # "yes" - replace the remote file when contents are different than the source.
+    # "no" - the file will only be transferred if the destination does not exist.
+    force: yes
+    mode: 0700
+  with_items:
+    - pre-commit
+    - post-merge
+  tags:
+    - git
