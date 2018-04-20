@@ -434,7 +434,7 @@
 		</dict>
 	</dict>
 	<key>Default Bookmark Guid</key>
-	<string>8FACB7E2-1F63-46A8-9299-6D337933AA95</string>
+	<string>7A0C73DE-CDB0-46D4-85BE-05BC5D7C4D9E</string>
 	<key>HotkeyMigratedFromSingleToMulti</key>
 	<true/>
 	<key>LoadPrefsFromCustomFolder</key>
@@ -484,7 +484,7 @@
 	<key>NSWindow Frame SharedPreferences</key>
 	<string>334 228 796 473 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>-21 1357 890 602 -675 800 2560 1417 </string>
+	<string>0 68 1280 709 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>152 325 570 452 0 0 1280 777 </string>
 	<key>New Bookmarks</key>
