@@ -24,7 +24,6 @@ Inspired by lots of repositories and articles, but most importantly, next ones:
 
 TODO
 ===
-- add dotfiles (git, ~~zsh~~, vscode, vim)
-- setup repos
+- add dotfiles (~~git, zsh~~, vscode, vim)
 - create installation script for fresh install
 - extend usage section
