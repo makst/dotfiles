@@ -16,8 +16,8 @@ recipes_for_roles:
       - wget
       - ansible
       - openssl
-      - tmux 
-      - dockutil 
+      - tmux
+      - dockutil
       - pass
     uninstalled_packages: []
     cask_installed_apps:
@@ -36,5 +36,5 @@ recipes_for_roles:
     cask_installed_apps:
       - spotify
       - brave
+      - skype
     cask_uninstalled_apps: []
-  
