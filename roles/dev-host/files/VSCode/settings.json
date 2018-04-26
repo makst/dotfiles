@@ -70,4 +70,5 @@
     "gitlens.currentLine.enabled": false,
     "gitlens.hovers.currentLine.enabled": false,
     "gitlens.keymap": "chorded",
+    "workbench.colorTheme": "Quiet Light",
 }
