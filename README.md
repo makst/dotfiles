@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/makst/dotfiles.svg?branch=master)](https://travis-ci.org/makst/dotfiles)
+
 About
 ---
 `dotfiles` on [ansible](https://www.ansible.com/) fully automate configuration of Mac OS X development machine, inlcuding setting up non-dev apps and settings (check [osx-host](roles/osx-host) role).
@@ -54,6 +56,5 @@ Inspired by lots of repositories and articles, but most importantly:
 
 TODO
 ---
-- travis.yml
 - tmux setup
 - change setup to a single `sh` file, which should guide the user during the first installation
