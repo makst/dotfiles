@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+
+alias sn="spotify next"
+alias sp="spotify prev"

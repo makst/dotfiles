@@ -483,10 +483,12 @@
 	</dict>
 	<key>NSWindow Frame NSFontPanel</key>
 	<string>605 1031 1280 274 -675 800 2560 1417 </string>
+	<key>NSWindow Frame SUUpdateAlert</key>
+	<string>330 305 620 392 0 0 1280 777 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>334 176 937 512 0 0 1280 777 </string>
+	<string>334 137 796 473 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>0 175 890 602 0 0 1280 777 </string>
+	<string>0 160 890 602 0 0 1280 777 </string>
 	<key>NSWindow Frame iTerm Window 1</key>
 	<string>152 325 570 452 0 0 1280 777 </string>
 	<key>New Bookmarks</key>
@@ -2461,6 +2463,8 @@
 		<string>000</string>
 		<string>0000</string>
 	</array>
+	<key>PMPrintingExpandedStateForPrint2</key>
+	<false/>
 	<key>PointerActions</key>
 	<dict>
 		<key>Button,1,1,,</key>
@@ -2496,6 +2500,10 @@
 	</dict>
 	<key>PrefsCustomFolder</key>
 	<string>/Users/makst/repos/dotfiles/roles/dev-host/files/iterm2</string>
+	<key>Print In Black And White</key>
+	<true/>
+	<key>PromptOnQuit</key>
+	<false/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedAlternateAppNameKey</key>
@@ -2505,7 +2513,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2018-04-20T21:56:48Z</date>
+	<date>2018-04-26T09:41:53Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>TabStyle</key>
