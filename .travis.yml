@@ -1,0 +1,19 @@
+---
+sudo: required
+language: objective-c
+# 10.13 (see  https://docs.travis-ci.com/user/osx-ci-environment/#OS-X-Version)
+osx_image: xcode9.3
+
+install:
+  # Install pip.
+  - sudo easy_install pip
+
+  # Install Ansible.
+  - sudo pip install ansible
+
+
+script:
+  # Skip:
+  # * pass, ssh, gpg - requires input from the user
+  # * ssh-ident - depends on ssh
+  - "ansible-playbook -i hosts playbooks/setup_dev_env.yml --skip-tags=pass,ssh,ssh-ident,gpg"
