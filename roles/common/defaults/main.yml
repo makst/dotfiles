@@ -17,7 +17,6 @@ recipes_for_roles:
       - ansible
       - openssl
       - tmux
-      - dockutil
       - pass
     uninstalled_packages: []
     cask_installed_apps:
@@ -31,7 +30,8 @@ recipes_for_roles:
   osx-host:
     tap: []
     untap: []
-    installed_packages: []
+    installed_packages:
+      - dockutil
     uninstalled_packages: []
     cask_installed_apps:
       - spotify
