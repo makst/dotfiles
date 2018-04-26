@@ -1,0 +1,9 @@
+---
+- hosts: local_machine
+  vars:
+    home_dir: "{{ lookup('env','HOME') }}"
+  roles:
+    - { role: roles/common, brew_for_role: "osx-host" }
+    - roles/osx-host
+    - { role: roles/common, brew_for_role: "dev-host" }
+    - roles/dev-host
