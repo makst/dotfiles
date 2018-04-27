@@ -37,4 +37,5 @@ recipes_for_roles:
       - spotify
       - brave
       - skype
+      - evernote
     cask_uninstalled_apps: []
