@@ -33,7 +33,7 @@ Tags:
 * `git` [[tasks](roles/dev-host/tasks/git_setup.yml)] - symlink git dotfiles, setup [git hooks](roles/dev-host/templates/dotfiles_git_hooks) for dotfiles repo
 * `gpg` [[tasks](roles/dev-host/tasks/gpg_import.yml)] - import gpg key
 * `iterm2` [[tasks](roles/dev-host/tasks/iterm2_setup.yml)] - setup [iterm2](https://iterm2.com/) to use custom folder for preferences
-* `nvm` [[tasks](roles/dev-host/tasks/nvm_setup.yml)] - download and install [nvm](https://github.com/creationix/nvm)
+* `node` [[tasks](roles/dev-host/tasks/node_setup.yml)] - download and install [nvm](https://github.com/creationix/nvm), node, npm packages
 * `pass` [[tasks](roles/dev-host/tasks/password_manager_setup.yml)] - setup [password manager](https://www.passwordstore.org/)
 * `ssh-ident` [[tasks](roles/dev-host/tasks/ssh_ident_setup.yml)] - download and install [ssh-ident](https://github.com/ccontavalli/ssh-ident)
 * `ssh` [[tasks](roles/dev-host/tasks/ssh_setup.yml)] - create ssh keys based on specified `ssh_keys` variable data

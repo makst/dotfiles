@@ -4,7 +4,7 @@
   register: nvm_check
   ignore_errors: True
   tags:
-    - nvm
+    - node
 
 - name: Download nvm installer
   get_url:
@@ -13,13 +13,13 @@
     mode: 0755
   when: nvm_check is failed
   tags:
-    - nvm
+    - node
 
 - name: Execute nvm installer
   shell: /tmp/nvm-installer.sh
   when: nvm_check is failed
   tags:
-    - nvm
+    - node
 
 - name: Install node
   shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }}'
@@ -30,4 +30,15 @@
     - v8
     - v9
   tags:
-    - nvm
+    - node
+
+- name: Install global npm packages
+  npm:
+    name: '{{ item }}'
+    global: yes
+  with_items:
+    - typescript
+    - tslint
+    - typescript-formatter
+  tags:
+    - node
