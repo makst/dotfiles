@@ -26,6 +26,7 @@ recipes_for_roles:
       - font-source-code-pro
       - visual-studio-code
       - gpg-suite
+      - tunnelblick
     cask_uninstalled_apps: []
   osx-host:
     tap: []
