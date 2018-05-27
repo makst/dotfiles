@@ -18,6 +18,7 @@ recipes_for_roles:
       - openssl
       - tmux
       - pass
+      - packer
     uninstalled_packages: []
     cask_installed_apps:
       - docker
@@ -27,6 +28,7 @@ recipes_for_roles:
       - visual-studio-code
       - gpg-suite
       - tunnelblick
+      - virtualbox
     cask_uninstalled_apps: []
   osx-host:
     tap: []
