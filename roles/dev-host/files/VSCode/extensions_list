@@ -12,3 +12,5 @@ stevencl.addDocComments
 vscodevim.vim
 yzhang.markdown-all-in-one
 haaaad.ansible
+eg2.tslint
+eg2.vscode-npm-script
