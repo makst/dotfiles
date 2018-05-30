@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export PATH=~/bin:$PATH
+export PATH=~/bin:~/Library/Python/2.7/bin:$PATH
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
