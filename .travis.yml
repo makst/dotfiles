@@ -5,7 +5,7 @@ language: objective-c
 osx_image: xcode9.3
 
 before_install:
-  - brew update && brew upgrade brew-cask && brew cleanup && brew cask cleanup
+  - brew update
 
 install:
   # Install pip.
