@@ -4,7 +4,7 @@ recipes_for_roles:
   dev-host:
     tap:
       # for 'font-source-code-pro' cask
-      - caskroom/fonts
+      - homebrew/cask-fonts
     untap: []
     installed_packages:
       - git
@@ -29,7 +29,8 @@ recipes_for_roles:
       - gpg-suite
       - tunnelblick
       - virtualbox
-    cask_uninstalled_apps: []
+    cask_uninstalled_apps:
+      - brave
   osx-host:
     tap: []
     untap: []
@@ -38,7 +39,7 @@ recipes_for_roles:
     uninstalled_packages: []
     cask_installed_apps:
       - spotify
-      - brave
       - skype
       - evernote
+      - google-chrome
     cask_uninstalled_apps: []
