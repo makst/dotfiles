@@ -6,5 +6,6 @@
 - import_tasks: iterm2_setup.yml
 - import_tasks: vscode_setup.yml
 - import_tasks: git_setup.yml
+- import_tasks: pip_install.yml
 - import_tasks: zsh_setup.yml
 - import_tasks: node_setup.yml

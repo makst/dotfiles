@@ -32,6 +32,7 @@ Tags:
 * `brew` [[tasks](roles/common/tasks/brew_setup.yml)] - setup [brew](https://brew.sh/) taps, packages, cask apps
 * `git` [[tasks](roles/dev-host/tasks/git_setup.yml)] - symlink git dotfiles, setup [git hooks](roles/dev-host/templates/dotfiles_git_hooks) for dotfiles repo
 * `gpg` [[tasks](roles/dev-host/tasks/gpg_import.yml)] - import gpg key
+* `pip` [[tasks](roles/dev-host/tasks/pip_install.yml)] - install pip packages
 * `iterm2` [[tasks](roles/dev-host/tasks/iterm2_setup.yml)] - setup [iterm2](https://iterm2.com/) to use custom folder for preferences
 * `node` [[tasks](roles/dev-host/tasks/node_setup.yml)] - download and install [nvm](https://github.com/creationix/nvm), node, npm packages
 * `pass` [[tasks](roles/dev-host/tasks/password_manager_setup.yml)] - setup [password manager](https://www.passwordstore.org/)
