@@ -3,46 +3,51 @@
     // ------------- Editor
     // Insert snippets when their prefix matches. Works best when 'quickSuggestions' aren't enabled.
     "editor.tabCompletion": true,
-
     // Render vertical rulers after a certain number of monospace characters. Use multiple values for multiple rulers. No rulers are drawn if array is empty
-    "editor.rulers": [100],
-
+    "editor.rulers": [
+        100
+    ],
+    // Configure editor settings to be overridden for [terraform] language.
+    "editor.formatOnSave": false,
     // ------------- Files
     // When enabled, will trim trailing whitespace when saving a file.
     "files.trimTrailingWhitespace": true,
-
-     // When enabled, insert a final new line at the end of the file when saving it.
+    // When enabled, insert a final new line at the end of the file when saving it.
     "files.insertFinalNewline": true,
-
     // ------------- Window
-    "window.zoomLevel": 1,
-
+    "window.zoomLevel": -1,
     // ------------- Workbench
     "workbench.iconTheme": "file-icons",
-
     // -------------------------
     // -------------- Extensions
     // -------------------------
     // ------------- GitLens
     "gitlens.gitExplorer.files.layout": "tree",
     "gitlens.blame.line.enabled": false,
-
     // ------------- Vim
     "vim.disableAnnoyingNeovimMessage": true,
     // What key should <leader> map to in remappings?
     "vim.leader": ",",
     "vim.surround": true,
-      // Override VSCode's copy command with our own copy command, which works better with VSCodeVim. Turn this off if copying is not working.
+    // Override VSCode's copy command with our own copy command, which works better with VSCodeVim. Turn this off if copying is not working.
     "vim.overrideCopy": false,
     "vim.insertModeKeyBindings": [
         {
-            "before": ["j","j"],
-            "after": ["<Esc>"]
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<Esc>"
+            ]
         }
     ],
     "vim.otherModesKeyBindingsNonRecursive": [
         {
-            "before": ["leader", "w"],
+            "before": [
+                "leader",
+                "w"
+            ],
             "after": [],
             "commands": [
                 {
@@ -50,8 +55,38 @@
                     "args": []
                 }
             ]
+        },
+        {
+            "before": [
+                "leader",
+                "."
+            ],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.navigateForward",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": [
+                "leader",
+                "m"
+            ],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.navigateBack",
+                    "args": []
+                }
+            ]
         }
     ],
+    // Prettier
+    // Use 'prettier-eslint' instead of 'prettier'. Other settings will only be fallbacks in case they could not be inferred from eslint rules.
+    "prettier.eslintIntegration": false,
+    //
     "extensions.ignoreRecommendations": false,
     "gitlens.advanced.messages": {
         "suppressCommitHasNoPreviousCommitWarning": false,
@@ -65,10 +100,13 @@
         "suppressUpdateNotice": false,
         "suppressWelcomeNotice": true
     },
-    "workbench.panel.location": "bottom",
     "explorer.confirmDelete": false,
     "gitlens.currentLine.enabled": false,
     "gitlens.hovers.currentLine.enabled": false,
     "gitlens.keymap": "chorded",
-    "workbench.colorTheme": "Quiet Light",
+    "gitlens.historyExplorer.enabled": true,
+    "explorer.confirmDragAndDrop": false,
+
+    // Move Typescript extension
+    "movets.skipWarning": true,
 }
