@@ -15,7 +15,7 @@
     // When enabled, insert a final new line at the end of the file when saving it.
     "files.insertFinalNewline": true,
     // ------------- Window
-    "window.zoomLevel": -1,
+    "window.zoomLevel": 0,
     // ------------- Workbench
     "workbench.iconTheme": "file-icons",
     // -------------------------
@@ -24,7 +24,12 @@
     // ------------- GitLens
     "gitlens.gitExplorer.files.layout": "tree",
     "gitlens.blame.line.enabled": false,
+
+
+
     // ------------- Vim
+     // Enable the EasyMotion plugin for Vim.
+    "vim.easymotion": true,
     "vim.disableAnnoyingNeovimMessage": true,
     // What key should <leader> map to in remappings?
     "vim.leader": ",",
@@ -44,10 +49,7 @@
     ],
     "vim.otherModesKeyBindingsNonRecursive": [
         {
-            "before": [
-                "leader",
-                "w"
-            ],
+            "before": ["leader", "w"],
             "after": [],
             "commands": [
                 {
@@ -57,10 +59,7 @@
             ]
         },
         {
-            "before": [
-                "leader",
-                "."
-            ],
+            "before": ["leader","."],
             "after": [],
             "commands": [
                 {
@@ -70,10 +69,7 @@
             ]
         },
         {
-            "before": [
-                "leader",
-                "m"
-            ],
+            "before": ["leader","m"],
             "after": [],
             "commands": [
                 {
@@ -81,8 +77,88 @@
                     "args": []
                 }
             ]
+        },
+        // debugging
+        {
+            "before": ["leader","d"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.debug.start",
+                    "args": [],
+                    "when": "!inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","l"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.debug.stepOver",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","c"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.debug.continue",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","i"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.debug.stepInto",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","o"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.debug.stepOut",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","b"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.debug.action.toggleBreakpoint",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
+        },
+        {
+            "before": ["leader","h"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.debug.action.showDebugHover",
+                    "args": [],
+                    "when": "inDebugMode"
+                }
+            ]
         }
     ],
+
+
     // Prettier
     // Use 'prettier-eslint' instead of 'prettier'. Other settings will only be fallbacks in case they could not be inferred from eslint rules.
     "prettier.eslintIntegration": false,
