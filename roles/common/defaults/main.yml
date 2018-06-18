@@ -42,4 +42,5 @@ recipes_for_roles:
       - skype
       - evernote
       - google-chrome
+      - google-drive-file-stream
     cask_uninstalled_apps: []
