@@ -25,7 +25,10 @@
     "gitlens.gitExplorer.files.layout": "tree",
     "gitlens.blame.line.enabled": false,
 
-
+    // ------------ TSLint
+    // The path to the rules configuration file
+    "tslint.configFile": "tslint.json",
+    // -------------------
 
     // ------------- Vim
      // Enable the EasyMotion plugin for Vim.
