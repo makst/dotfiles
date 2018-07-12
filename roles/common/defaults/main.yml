@@ -20,6 +20,7 @@ recipes_for_roles:
       - pass
       - packer
       - redis
+      - httpie
     uninstalled_packages: []
     cask_installed_apps:
       - docker
