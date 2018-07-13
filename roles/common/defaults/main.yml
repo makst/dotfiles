@@ -5,6 +5,7 @@ recipes_for_roles:
     tap:
       # for 'font-source-code-pro' cask
       - homebrew/cask-fonts
+      - homebrew/cask-versions
     untap: []
     installed_packages:
       - git
@@ -45,4 +46,6 @@ recipes_for_roles:
       - evernote
       #- google-chrome
       - google-drive-file-stream
+      - firefox-developer-edition
+      - multifirefox
     cask_uninstalled_apps: []
