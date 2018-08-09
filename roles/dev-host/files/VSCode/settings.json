@@ -50,7 +50,7 @@
             ]
         }
     ],
-    "vim.otherModesKeyBindingsNonRecursive": [
+    "vim.normalModeKeyBindingsNonRecursive": [
         {
             "before": ["leader", "w"],
             "after": [],
@@ -78,6 +78,35 @@
                 {
                     "command": "workbench.action.navigateBack",
                     "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader","t"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.terminal.toggleTerminal",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader","f", "r"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.action.referenceSearch.trigger",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["<leader>", "o"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.quickOpen"
                 }
             ]
         },
@@ -188,4 +217,6 @@
 
     // Move Typescript extension
     "movets.skipWarning": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "workbench.colorTheme": "Solarized Light",
 }
