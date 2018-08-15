@@ -20,6 +20,8 @@ recipes_for_roles:
       - tmux
       - pass
       - packer
+      - redis
+      - httpie
     uninstalled_packages: []
     cask_installed_apps:
       - docker
@@ -43,7 +45,8 @@ recipes_for_roles:
       - spotify
       - skype
       - evernote
-      - google-chrome
+      #- google-chrome
       - google-drive-file-stream
       - firefox-developer-edition
+      - multifirefox
     cask_uninstalled_apps: []

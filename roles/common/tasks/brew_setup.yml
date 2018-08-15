@@ -34,6 +34,7 @@
 - name: '[{{ brew_for_role }}] =>  Install brew cask apps'
   homebrew_cask:
     name: '{{ item }}'
+    accept_external_apps: True
     state: present
     install_options: 'appdir={{ homebrew_cask_appdir }}'
   with_items: '{{ recipes_for_roles[brew_for_role].cask_installed_apps }}'
