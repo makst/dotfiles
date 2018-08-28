@@ -11,6 +11,8 @@
 	# Switch to new branch and set it to track the upstream branch
 	get = "!f() { git checkout --track origin/\"$1\"; }; f"
 
+	aliases = config --get-regexp alias
+
 [color]
 	# Use colors in Git commands that are capable of colored output when
 	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
