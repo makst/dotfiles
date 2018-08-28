@@ -5,6 +5,12 @@
 [alias]
 	lca = log --pretty=format:'[%h] %cd - Committer: %cn (%ce), Author: %an (%ae)'
 
+	# Switch to a branch, creating it if necessary
+	go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+
+	# Switch to new branch and set it to track the upstream branch
+	get = "!f() { git checkout --track origin/\"$1\"; }; f"
+
 [color]
 	# Use colors in Git commands that are capable of colored output when
 	# outputting to the terminal. (This is the default setting in Git ≥ 1.8.4.)
@@ -24,9 +30,9 @@
 	whitespace = red reverse
 
 [color "status"]
-	added = yellow
-	changed = green
-	untracked = cyan
+	added = green
+	changed = red
+	untracked = white
 
 [diff]
 	# Detect copies as well as renames
