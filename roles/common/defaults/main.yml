@@ -22,6 +22,9 @@ recipes_for_roles:
       - packer
       - redis
       - httpie
+      # interactive HTTPS proxy
+      # mitmproxy certificates - https://docs.mitmproxy.org/stable/concepts-certificates/
+      - mitmproxy
     uninstalled_packages: []
     cask_installed_apps:
       - docker
