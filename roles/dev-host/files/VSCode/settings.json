@@ -33,6 +33,7 @@
     // ------------- Vim
      // Enable the EasyMotion plugin for Vim.
     "vim.easymotion": true,
+    "vim.useSystemClipboard": true,
     "vim.disableAnnoyingNeovimMessage": true,
     // What key should <leader> map to in remappings?
     "vim.leader": ",",
@@ -156,17 +157,6 @@
             ]
         },
         {
-            "before": ["leader","o"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.debug.stepOut",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        },
-        {
             "before": ["leader","b"],
             "after": [],
             "commands": [
@@ -212,11 +202,15 @@
     "gitlens.currentLine.enabled": false,
     "gitlens.hovers.currentLine.enabled": false,
     "gitlens.keymap": "chorded",
-    "gitlens.historyExplorer.enabled": true,
     "explorer.confirmDragAndDrop": false,
 
     // Move Typescript extension
     "movets.skipWarning": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "workbench.colorTheme": "Solarized Light",
+    "search.location": "panel",
+    "breadcrumbs.enabled": true,
+    "gitlens.views.repositories.files.layout": "tree",
+    "gitlens.views.fileHistory.enabled": true,
+    "gitlens.views.lineHistory.enabled": true,
 }
