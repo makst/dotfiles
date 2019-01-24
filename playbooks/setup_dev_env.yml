@@ -7,3 +7,12 @@
     - roles/osx-host
     - { role: roles/common, brew_for_role: "dev-host" }
     - roles/dev-host
+    - role: Comcast.sdkman
+      sdkman_update: true
+      sdkman_install_packages:
+        - { candidate: java, version: '8.0.201-zulu' }
+        - { candidate: gradle, version: '4.9' }
+        - { candidate: groovy, version: '2.4.12' }
+      tags:
+        - sdkman
+
