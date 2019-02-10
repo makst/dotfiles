@@ -14,6 +14,7 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 3. Copy GPG key to location, specified in `gpg_key_file` variable.
 4. Run
     ```
+    $ ansible-galaxy install -r requirements.yml
     $ ansible-playbook -i hosts playbooks/setup_dev_env.yml
     ```
     and provide ansible with the variables it asks for (ssh password, pass utility git origin).
@@ -30,6 +31,7 @@ $ ansible-playbook -i hosts playbooks/setup_dev_env.yml -t <tags>
 
 Tags:
 * `brew` [[tasks](roles/common/tasks/brew_setup.yml)] - setup [brew](https://brew.sh/) taps, packages, cask apps
+* `sdkman` [[tasks](playbooks/setup_dev_env.yml)] - [SDKMAN!](https://sdkman.io/) is a tool for managing JDK environments and tools: java, scala, maven, etc.
 * `git` [[tasks](roles/dev-host/tasks/git_setup.yml)] - symlink git dotfiles, setup [git hooks](roles/dev-host/templates/dotfiles_git_hooks) for dotfiles repo
 * `gpg` [[tasks](roles/dev-host/tasks/gpg_import.yml)] - import gpg key
 * `pip` [[tasks](roles/dev-host/tasks/pip_install.yml)] - install pip packages

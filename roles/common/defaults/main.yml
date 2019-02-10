@@ -35,8 +35,8 @@ recipes_for_roles:
       - gpg-suite
       - tunnelblick
       - virtualbox
-    cask_uninstalled_apps:
-      - brave
+      - cyberduck
+    cask_uninstalled_apps: []
   osx-host:
     tap:
       - homebrew/cask-versions
