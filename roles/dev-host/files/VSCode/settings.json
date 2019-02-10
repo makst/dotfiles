@@ -208,9 +208,8 @@
     "movets.skipWarning": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "workbench.colorTheme": "Solarized Light",
-    "search.location": "panel",
-    "breadcrumbs.enabled": true,
     "gitlens.views.repositories.files.layout": "tree",
     "gitlens.views.fileHistory.enabled": true,
     "gitlens.views.lineHistory.enabled": true,
+    "editor.snippetSuggestions": "top",
 }
