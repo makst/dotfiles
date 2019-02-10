@@ -22,13 +22,11 @@
     - node
 
 - name: Install node
-  shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }}'
+  shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }} && nvm alias default {{ item }}'
   args:
     executable: /bin/zsh
   with_items:
-    - v6
-    - v8
-    - v9
+    - stable
   tags:
     - node
 
@@ -40,5 +38,6 @@
     - typescript
     - tslint
     - typescript-formatter
+    - firebase-tools
   tags:
     - node
