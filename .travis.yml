@@ -16,6 +16,8 @@ install:
   # Install Ansible.
   - sudo pip install ansible
 
+after_install:
+  - ansible-galaxy install -r requirements.yml
 
 script:
   # Skip:
