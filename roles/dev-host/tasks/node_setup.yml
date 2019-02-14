@@ -27,6 +27,7 @@
     executable: /bin/zsh
   with_items:
     - stable
+    - 10.15.0
   tags:
     - node
 
