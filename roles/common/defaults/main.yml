@@ -8,6 +8,7 @@ recipes_for_roles:
       - homebrew/cask-versions
     untap: []
     installed_packages:
+      - colordiff
       - git
       - diff-so-fancy
       # https://beyondgrep.com/why-ack/
