@@ -15,7 +15,7 @@
     // When enabled, insert a final new line at the end of the file when saving it.
     "files.insertFinalNewline": true,
     // ------------- Window
-    "window.zoomLevel": 2,
+    "window.zoomLevel": 0,
     // ------------- Workbench
     "workbench.iconTheme": "file-icons",
     // -------------------------
@@ -214,4 +214,7 @@
     "editor.snippetSuggestions": "top",
     "terminal.integrated.rendererType": "dom",
     "editor.tabSize": 2,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
 }

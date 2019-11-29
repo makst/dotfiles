@@ -1,5 +1,4 @@
 EditorConfig.EditorConfig
-PeterJausovec.vscode-docker
 dbaeumer.vscode-eslint
 eamodio.gitlens
 file-icons.file-icons
@@ -30,3 +29,4 @@ SirTori.indenticator
 josa.markdown-table-formatter
 mechatroner.rainbow-csv
 ms-vsliveshare.vsliveshare
+ms-azuretools.vscode-docker
