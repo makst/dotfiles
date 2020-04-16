@@ -17,7 +17,7 @@
         - { candidate: groovy, version: '2.4.12' }
       sdkman_defaults:
         gradle: 3.5.1
-        java: 11.0.0-open
+        java: 11.0.2-open
       tags:
         - sdkman
 
