@@ -28,6 +28,8 @@
   with_items:
     - stable
     - 10.15.0
+    - 12.16.1
+    - 13.10.1
   tags:
     - node
 

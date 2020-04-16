@@ -2,3 +2,4 @@
 # do not include extra vars, as this might contain secret information
 roles/*/vars/main.yml
 roles/dev-host/files/zsh/.offline
+*.DS_Store
