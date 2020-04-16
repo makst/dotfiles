@@ -14,7 +14,7 @@ install:
   - sudo easy_install pip
 
   # upgrade pip
-  - pip install --upgrade pip
+  - sudo pip install --upgrade pip
 
   # Install Ansible.
   - sudo pip install ansible
