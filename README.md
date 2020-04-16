@@ -9,7 +9,7 @@ Setup
 **Warning:**
 Make sure you fork this repo and adjust it to your own preferences before even starting the setup.
 
-1. Install brew, git, ansible.
+1. Install brew, git, pip, ansible.
 2. Clone this repo.
 3. Copy GPG key to location, specified in `gpg_key_file` variable.
 4. Run
