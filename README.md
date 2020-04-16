@@ -56,8 +56,3 @@ Thanks to
 Inspired by lots of repositories and articles, but most importantly:
 * https://github.com/mathiasbynens/dotfiles - awesome collection of settings.
 * https://github.com/geerlingguy/mac-dev-playbook and https://blog.vandenbrand.org/2016/01/04/how-to-automate-your-mac-os-x-setup-with-ansible/ - a lot of valuable info on how to start with ansible dotfiles.
-
-TODO
----
-- tmux setup
-- change setup to a single `sh` file, which should guide the user during the first installation
