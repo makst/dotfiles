@@ -35,7 +35,6 @@ recipes_for_roles:
       - font-source-code-pro
       - visual-studio-code
       - gpg-suite
-      - tunnelblick
       - virtualbox
       - cyberduck
     cask_uninstalled_apps: []
