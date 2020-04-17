@@ -25,7 +25,8 @@ recipes_for_roles:
       # interactive HTTPS proxy
       # mitmproxy certificates - https://docs.mitmproxy.org/stable/concepts-certificates/
       - mitmproxy
-    uninstalled_packages:
+      - yarn
+    uninstalled_packages: []
     cask_installed_apps:
       - vagrant
       - docker

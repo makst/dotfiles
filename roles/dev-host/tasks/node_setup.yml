@@ -6,30 +6,21 @@
   tags:
     - node
 
-- name: Download nvm installer
-  get_url:
-    url: https://raw.githubusercontent.com/creationix/nvm/v0.31.1/install.sh
-    dest: '/tmp/nvm-installer.sh'
-    mode: 0755
-  when: nvm_check is failed
-  tags:
-    - node
-
-- name: Execute nvm installer
-  shell: /tmp/nvm-installer.sh
-  when: nvm_check is failed
+- name: Install nvm
+  shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | zsh
+  args:
+    creates: "{{ home_dir }}/.nvm/nvm.sh"
   tags:
     - node
 
 - name: Install node
-  shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }} && nvm alias default {{ item }}'
+  shell: 'source {{ home_dir }}/.zshrc && nvm install {{ item }}'
   args:
     executable: /bin/zsh
   with_items:
+    - 12.16.2
     - stable
-    - 10.15.0
-    - 12.16.1
-    - 13.10.1
   tags:
     - node
 

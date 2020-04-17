@@ -25,5 +25,4 @@ script:
   # Skip:
   # * pass, ssh, gpg - requires input from the user
   # * ssh-ident - depends on ssh
-  # * node - there is a small issue because of sourcing zshrc after nvm setup, so "node" has to be run twice
-  - "ansible-playbook -i hosts playbooks/setup_dev_env.yml --skip-tags=pass,ssh,ssh-ident,gpg,node"
+  - "ansible-playbook -i hosts playbooks/setup_dev_env.yml --skip-tags=pass,ssh,ssh-ident,gpg"
