@@ -26,6 +26,7 @@ recipes_for_roles:
       # mitmproxy certificates - https://docs.mitmproxy.org/stable/concepts-certificates/
       - mitmproxy
       - yarn
+      - golang
     uninstalled_packages: []
     cask_installed_apps:
       - vagrant
