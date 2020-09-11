@@ -5,3 +5,9 @@ export PATH="/usr/local/sbin:$PATH"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+
+# https://medium.com/@jimkang/install-go-on-mac-with-homebrew-5fa421fc55f5
+mkdir -p $HOME/go/{bin,src,pkg}
+export GOPATH=$HOME/go
+export GOROOT="$(brew --prefix golang)/libexec"
+export PATH="$PATH:${GOPATH}/bin:${GOROOT}/bin"
