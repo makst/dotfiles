@@ -202,11 +202,13 @@
     // Move Typescript extension
     "movets.skipWarning": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
-    "workbench.colorTheme": "Solarized Light",
     "gitlens.views.repositories.files.layout": "tree",
     "gitlens.views.fileHistory.enabled": true,
     "gitlens.views.lineHistory.enabled": true,
     "editor.snippetSuggestions": "top",
     "terminal.integrated.rendererType": "dom",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "tslint.enable": false,
+    "tslint.exclude": "",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
