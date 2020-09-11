@@ -4,7 +4,6 @@ eamodio.gitlens
 file-icons.file-icons
 formulahendry.code-runner
 humao.rest-client
-mauve.terraform
 mohsen1.prettify-json
 sandy081.todotasks
 stevencl.addDocComments
@@ -34,3 +33,6 @@ ms-vscode-remote.remote-ssh
 ms-vscode-remote.remote-ssh-edit
 ms-vscode.cpptools
 yzane.markdown-pdf
+golang.go
+hashicorp.terraform
+redhat.vscode-yaml
