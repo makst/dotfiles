@@ -56,4 +56,5 @@ recipes_for_roles:
       - google-drive-file-stream
       - firefox-developer-edition
       - multifirefox
+      - signal
     cask_uninstalled_apps: []
