@@ -2,7 +2,7 @@
 {
     // ------------- Editor
     // Insert snippets when their prefix matches. Works best when 'quickSuggestions' aren't enabled.
-    "editor.tabCompletion": true,
+    "editor.tabCompletion": "on",
     // Render vertical rulers after a certain number of monospace characters. Use multiple values for multiple rulers. No rulers are drawn if array is empty
     "editor.rulers": [
         100
@@ -14,8 +14,6 @@
     "files.trimTrailingWhitespace": true,
     // When enabled, insert a final new line at the end of the file when saving it.
     "files.insertFinalNewline": true,
-    // ------------- Window
-    "window.zoomLevel": 2,
     // ------------- Workbench
     "workbench.iconTheme": "file-icons",
     // -------------------------
@@ -188,10 +186,6 @@
         "suppressGitVersionWarning": false,
         "suppressLineUncommittedWarning": false,
         "suppressNoRepositoryWarning": false,
-        "suppressResultsExplorerNotice": true,
-        "suppressShowKeyBindingsNotice": true,
-        "suppressUpdateNotice": false,
-        "suppressWelcomeNotice": true
     },
     "explorer.confirmDelete": false,
     "gitlens.currentLine.enabled": false,
@@ -203,8 +197,6 @@
     "movets.skipWarning": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "gitlens.views.repositories.files.layout": "tree",
-    "gitlens.views.fileHistory.enabled": true,
-    "gitlens.views.lineHistory.enabled": true,
     "editor.snippetSuggestions": "top",
     "terminal.integrated.rendererType": "dom",
     "editor.tabSize": 2,
