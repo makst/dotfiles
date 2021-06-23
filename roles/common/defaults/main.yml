@@ -9,6 +9,7 @@ recipes_for_roles:
       - aws/tap
     untap: []
     installed_packages:
+      - svn
       - colordiff
       - git
       - diff-so-fancy
