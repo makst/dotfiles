@@ -56,9 +56,8 @@ recipes_for_roles:
       - spotify
       - skype
       - evernote
-      #- google-chrome
-      - google-drive-file-stream
       - firefox-developer-edition
-      - multifirefox
       - signal
+      - qownnotes
+      - nextcloud
     cask_uninstalled_apps: []
