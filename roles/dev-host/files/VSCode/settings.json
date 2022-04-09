@@ -202,6 +202,5 @@
     "editor.tabSize": 2,
     "tslint.enable": false,
     "tslint.exclude": "",
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "window.zoomLevel": -1
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
 }
