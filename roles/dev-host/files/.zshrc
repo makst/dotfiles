@@ -7,6 +7,7 @@ for file in "$real_script_dir"/zsh/.{zshdefault,exports,aliases,kubectl_aliases,
 done;
 
 export NVM_DIR="$HOME/.nvm"
+export ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 

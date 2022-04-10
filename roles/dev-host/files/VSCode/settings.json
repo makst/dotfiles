@@ -31,11 +31,13 @@
     // ------------- Vim
      // Enable the EasyMotion plugin for Vim.
     "vim.easymotion": true,
+    "vim.hlsearch": true,
     "vim.useSystemClipboard": true,
-    "vim.disableAnnoyingNeovimMessage": true,
+    "vim.startInInsertMode": false,
     // What key should <leader> map to in remappings?
     "vim.leader": ",",
     "vim.surround": true,
+    "vim.camelCaseMotion.enable": true,
     // Override VSCode's copy command with our own copy command, which works better with VSCodeVim. Turn this off if copying is not working.
     "vim.overrideCopy": false,
     "vim.insertModeKeyBindings": [
@@ -51,7 +53,25 @@
     ],
     "vim.normalModeKeyBindingsNonRecursive": [
         {
-            "before": ["leader", "w"],
+            "before" : ["<leader>","a"],
+            "commands" : [
+                "workbench.view.explorer"
+            ]
+        },
+        {
+            "before":["<C-n>"],
+            "commands": [
+                ":nohl",
+            ]
+        },
+        {
+            "before": ["<leader>", "c"],
+            "commands": [
+                "workbench.action.showCommands",
+            ]
+        },
+        {
+            "before": ["leader", "s"],
             "after": [],
             "commands": [
                 {
@@ -59,6 +79,17 @@
                     "args": []
                 }
             ]
+        },
+        {
+            "before": ["leader", "s", "s"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.files.saveAll",
+                    "args": []
+                }
+            ]
+
         },
         {
             "before": ["leader","."],
@@ -91,6 +122,16 @@
             ]
         },
         {
+            "before": ["leader","e", "r"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.action.rename",
+                    "args": []
+                }
+            ]
+        },
+        {
             "before": ["leader","f", "r"],
             "after": [],
             "commands": [
@@ -109,76 +150,9 @@
                 }
             ]
         },
-        // debugging
-        {
-            "before": ["leader","d"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.debug.start",
-                    "args": [],
-                    "when": "!inDebugMode"
-                }
-            ]
-        },
-        {
-            "before": ["leader","l"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.debug.stepOver",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        },
-        {
-            "before": ["leader","c"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.debug.continue",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        },
-        {
-            "before": ["leader","i"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "workbench.action.debug.stepInto",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        },
-        {
-            "before": ["leader","b"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "editor.debug.action.toggleBreakpoint",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        },
-        {
-            "before": ["leader","h"],
-            "after": [],
-            "commands": [
-                {
-                    "command": "editor.debug.action.showDebugHover",
-                    "args": [],
-                    "when": "inDebugMode"
-                }
-            ]
-        }
     ],
     //
-    "extensions.ignoreRecommendations": false,
+    "extensions.ignoreRecommendations": true,
     "gitlens.advanced.messages": {
         "suppressCommitHasNoPreviousCommitWarning": false,
         "suppressCommitNotFoundWarning": false,
@@ -202,5 +176,10 @@
     "editor.tabSize": 2,
     "tslint.enable": false,
     "tslint.exclude": "",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "git.path": "/usr/local/bin/git",
+    "window.zoomLevel": 2,
+    "vim.commandLineModeKeyBindingsNonRecursive": [
+
+    ]
 }
