@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+
+function install_brew() {
+  echo "=> Installing brew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+}
+
+function install_brew_must_have_formulas() {
+  echo "=> Installing must-have brew formulas"
+  brew install git wget python
+}
+
+function install_nvm() {
+  echo "=> Installing nvm"
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+}
+
+# https://github.com/ccontavalli/ssh-ident
+function install_ssh_ident() {
+  mkdir -p ~/bin
+  wget -O ~/bin/ssh-ident goo.gl/MoJuKB
+  chmod 0755 ~/bin/ssh-ident
+
+  ln -Fs  ~/bin/ssh-ident ~/bin/ssh
+  ln -Fs  ~/bin/ssh-ident ~/bin/scp
+  ln -Fs  ~/bin/ssh-ident ~/bin/sftp
+}
+
+function install_from_scratch() {
+  install_brew
+  install_brew_must_have_formulas
+  install_nvm
+  install_ssh_ident
+}

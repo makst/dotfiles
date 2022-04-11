@@ -4,7 +4,7 @@ About
 ---
 `dotfiles` on [ansible](https://www.ansible.com/) fully automate configuration of Mac OS X development machine, inlcuding setting up non-dev apps and settings (check [osx-host](roles/osx-host) role).
 
-Setup
+Install from scratch
 ---
 **Warning:**
 Make sure you fork this repo and adjust it to your own preferences before even starting the setup.
@@ -14,6 +14,7 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 3. From inside this repo, run
    ```
    $ ln -s $(pwd)/.zshrc $HOME/.zshrc
+   $ install_from_scratch
    ```
 4. Copy GPG key to location, specified in `gpg_key_file` variable.
 5. Run
