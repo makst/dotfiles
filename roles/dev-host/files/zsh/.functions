@@ -1,8 +1,0 @@
-#!/usr/bin/env zsh
-script_dir="$(dirname "$0")"
-
-# Load all available functions
-for file in "$script_dir"/functions/.{iterm,nvm,sdkman}; do
-  # source `file` if it's a `readable file`
-  [ -r "$file" ] && [ -f "$file" ] && source "$file";
-done;

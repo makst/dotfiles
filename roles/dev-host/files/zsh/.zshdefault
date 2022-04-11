@@ -3,8 +3,8 @@
 export ZSH_DISABLE_COMPFIX=true
 export ZSH="$HOME/.oh-my-zsh"
 export CLICOLOR=1
-ZSH_THEME="refined"
-ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
+export ZSH_THEME="refined"
+export ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
 source /usr/local/share/antigen/antigen.zsh
 
@@ -12,6 +12,7 @@ source /usr/local/share/antigen/antigen.zsh
 antigen use oh-my-zsh
 # Bundles from the default repo (robbyrussell's oh-my-zsh).
 antigen bundle git
+antigen bundle z
 
 # Syntax highlighting bundle.
 antigen bundle zsh-users/zsh-syntax-highlighting
