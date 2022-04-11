@@ -7,7 +7,7 @@ function install_brew() {
 
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
-  brew install git wget python antigen
+  brew install git wget python zsh-vi-mode
 }
 
 function install_nvm() {
