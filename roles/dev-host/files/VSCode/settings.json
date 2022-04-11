@@ -53,6 +53,14 @@
     ],
     "vim.normalModeKeyBindingsNonRecursive": [
         {
+            "before": ["J"],
+            "commands": ["editor.action.moveLinesDownAction"]
+        },
+        {
+            "before": ["K"],
+            "commands": ["editor.action.moveLinesUpAction"]
+        },
+        {
             "before" : ["<leader>","a"],
             "commands" : [
                 "workbench.view.explorer"
@@ -61,13 +69,13 @@
         {
             "before":["<C-n>"],
             "commands": [
-                ":nohl",
+                ":nohl"
             ]
         },
         {
             "before": ["<leader>", "c"],
             "commands": [
-                "workbench.action.showCommands",
+                "workbench.action.showCommands"
             ]
         },
         {
@@ -149,7 +157,7 @@
                     "command": "workbench.action.quickOpen"
                 }
             ]
-        },
+        }
     ],
     //
     "extensions.ignoreRecommendations": true,
@@ -178,8 +186,11 @@
     "tslint.exclude": "",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "git.path": "/usr/local/bin/git",
-    "window.zoomLevel": 2,
     "vim.commandLineModeKeyBindingsNonRecursive": [
 
-    ]
+    ],
+    "files.associations": {
+        "*.gotmpl": "goyaml"
+    },
+    "gitlens.codeLens.recentChange.enabled": false
 }
