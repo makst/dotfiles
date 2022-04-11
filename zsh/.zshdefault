@@ -4,20 +4,17 @@ export ZSH_DISABLE_COMPFIX=true
 export ZSH="$HOME/.oh-my-zsh"
 export CLICOLOR=1
 ZSH_THEME="refined"
-ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
-source /usr/local/opt/zsh-vi-mode/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
+export KEYTIMEOUT=20
+bindkey -M viins 'kj' vi-cmd-mode
 
-# source all other plugins after zsh-vi-mode
-function zvm_after_init() {
-  # git
-  source $ZSH/plugins/git/git.plugin.zsh
-
-  # z
-  source $ZSH/plugins/z/z.plugin.zsh
-
-  # zsh-syntax-highlighting
-  source $ZSH/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
-}
+plugins=(
+  git
+  z
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+  vi-mode
+  zsh-vimode-visual
+)
 
 source $ZSH/oh-my-zsh.sh

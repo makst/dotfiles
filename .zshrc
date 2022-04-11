@@ -5,3 +5,6 @@ for file in "$real_script_dir"/zsh/.{zshdefault,exports,aliases,kubectl_aliases,
   # source `file` if it's a `readable file`
   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
+
+echo "Installing/updating zsh plugins"
+install_and_update_zsh_plugins
