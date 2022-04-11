@@ -1,6 +1,6 @@
 *.retry
 # do not include extra vars, as this might contain secret information
 roles/*/vars/main.yml
-roles/dev-host/files/zsh/.private
-roles/dev-host/files/zsh/.zshdefault.zwc
+zsh/.private
+zsh/.zshdefault.zwc
 *.DS_Store

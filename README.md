@@ -11,16 +11,20 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 
 1. Install brew, git, pip, ansible.
 2. Clone this repo.
-3. Copy GPG key to location, specified in `gpg_key_file` variable.
-4. Run
+3. From inside this repo, run
+   ```
+   $ ln -s $(pwd)/.zshrc $HOME/.zshrc
+   ```
+4. Copy GPG key to location, specified in `gpg_key_file` variable.
+5. Run
     ```
     $ ansible-galaxy install -r requirements.yml
     $ ansible-playbook -i hosts playbooks/setup_dev_env.yml
     ```
     and provide ansible with the variables it asks for (ssh password, pass utility git origin).
 
-5. Add newly generated ssh keys to github/etc.
-6. Save passphrase[s] of newly generated ssh keys to your password manager (`pass`, in case of this repo).
+6. Add newly generated ssh keys to github/etc.
+7. Save passphrase[s] of newly generated ssh keys to your password manager (`pass`, in case of this repo).
 
 Usage
 ---
