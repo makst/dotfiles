@@ -6,6 +6,11 @@ export CLICOLOR=1
 ZSH_THEME="refined"
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
+# Fixes
+# zsh-autosuggestions: highlighting style not working in tmux
+# https://github.com/zsh-users/zsh-autosuggestions/issues/229#issuecomment-300675586
+export TERM=xterm-256color
+
 # https://github.com/jeffreytse/zsh-vi-mode/issues/15
 function zvm_fix_partial_history_search() {
   zvm_bindkey viins '^[[A' history-beginning-search-backward
