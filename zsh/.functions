@@ -33,17 +33,14 @@ function install_ssh_ident() {
 function install_and_update_zsh_plugins() {
   current_dir=$(pwd)
 
-  [[ ! -d "$ZSH/custom/plugins/vi-mode" ]] && git clone https://github.com/nyquase/vi-mode $ZSH/custom/plugins/vi-mode
-  cd $ZSH/custom/plugins/vi-mode && git pull -q
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+  cd $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && git pull -q
 
-  [[ ! -d "$ZSH/custom/plugins/zsh-vimode-visual" ]] && git clone https://github.com/b4b4r07/zsh-vimode-visual $ZSH/custom/plugins/zsh-vimode-visual
-  cd $ZSH/custom/plugins/zsh-vimode-visual && git pull -q
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+  cd $ZSH_CUSTOM/plugins/zsh-autosuggestions && git pull -q
 
-  [[ ! -d "$ZSH/custom/plugins/zsh-syntax-highlighting" ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH/custom/plugins/zsh-syntax-highlighting
-  cd $ZSH/custom/plugins/zsh-syntax-highlighting && git pull -q
-
-  [[ ! -d "$ZSH/custom/plugins/zsh-autosuggestions" ]] && git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH/custom/plugins/zsh-autosuggestions
-  cd $ZSH/custom/plugins/zsh-autosuggestions && git pull -q
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
+  cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
 
   cd $current_dir
 }

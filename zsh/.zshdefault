@@ -4,17 +4,29 @@ export ZSH_DISABLE_COMPFIX=true
 export ZSH="$HOME/.oh-my-zsh"
 export CLICOLOR=1
 ZSH_THEME="refined"
+ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
-export KEYTIMEOUT=20
-bindkey -M viins 'kj' vi-cmd-mode
+# https://github.com/jeffreytse/zsh-vi-mode/issues/15
+function zvm_fix_partial_history_search() {
+  zvm_bindkey viins '^[[A' history-beginning-search-backward
+  zvm_bindkey viins '^[[B' history-beginning-search-forward
+
+  zvm_bindkey vicmd '^[[A' history-beginning-search-backward
+  zvm_bindkey vicmd '^k' history-beginning-search-backward
+  zvm_bindkey vicmd '^[[B' history-beginning-search-forward
+  zvm_bindkey vicmd '^j' history-beginning-search-forward
+}
+
+function zvm_before_init() {
+  zvm_fix_partial_history_search
+}
 
 plugins=(
   git
   z
   zsh-syntax-highlighting
   zsh-autosuggestions
-  vi-mode
-  zsh-vimode-visual
+  zsh-vi-mode
 )
 
 source $ZSH/oh-my-zsh.sh
