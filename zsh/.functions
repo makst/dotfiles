@@ -1,5 +1,23 @@
 #!/usr/bin/env zsh
 
+function install_and_update_zsh_plugins() {
+  current_dir=$(pwd)
+
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+  cd $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && git pull -q
+
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
+  cd $ZSH_CUSTOM/plugins/zsh-autosuggestions && git pull -q
+
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
+  cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
+
+  cd $current_dir
+}
+
+# -----------------------------
+# INSTALL FROM SCRATCH
+# -----------------------------
 function install_brew() {
   echo "=> Installing brew"
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -28,21 +46,6 @@ function install_ssh_ident() {
   ln -Fs  ~/bin/ssh-ident ~/bin/ssh
   ln -Fs  ~/bin/ssh-ident ~/bin/scp
   ln -Fs  ~/bin/ssh-ident ~/bin/sftp
-}
-
-function install_and_update_zsh_plugins() {
-  current_dir=$(pwd)
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-  cd $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && git pull -q
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-  cd $ZSH_CUSTOM/plugins/zsh-autosuggestions && git pull -q
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
-  cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
-
-  cd $current_dir
 }
 
 function install_from_scratch() {
