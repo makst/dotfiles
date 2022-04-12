@@ -61,9 +61,45 @@
             "commands": ["editor.action.moveLinesUpAction"]
         },
         {
-            "before" : ["<leader>","a"],
+            "before" : ["<leader>", "v", "e"],
             "commands" : [
                 "workbench.view.explorer"
+            ]
+        },
+        {
+            "before" : ["<leader>", "f", "a"],
+            "commands" : [
+                "eslint.applyAllFixes"
+            ]
+        },
+        {
+            "before" : ["<leader>", "e", "s"],
+            "commands" : [
+                "search.action.focusQueryEditorWidget"
+            ]
+        },
+        {
+            "before" : ["<leader>", "g", "s"],
+            "commands" : [
+                "multiCommand.vim-global-search"
+            ]
+        },
+        {
+            "before" : ["<leader>", "g", "r"],
+            "commands" : [
+                "multiCommand.vim-global-replace"
+            ]
+        },
+        {
+            "before" : ["<leader>", "f", "s"],
+            "commands" : [
+                "multiCommand.vim-focus-search"
+            ]
+        },
+        {
+            "before" : ["<leader>", "r", "o"],
+            "commands" : [
+                "editor.action.replaceOne"
             ]
         },
         {
@@ -100,7 +136,7 @@
 
         },
         {
-            "before": ["leader","."],
+            "before": ["leader", "."],
             "after": [],
             "commands": [
                 {
@@ -110,7 +146,7 @@
             ]
         },
         {
-            "before": ["leader","m"],
+            "before": ["leader", "m"],
             "after": [],
             "commands": [
                 {
@@ -120,7 +156,7 @@
             ]
         },
         {
-            "before": ["leader","t"],
+            "before": ["leader", "t"],
             "after": [],
             "commands": [
                 {
@@ -130,7 +166,7 @@
             ]
         },
         {
-            "before": ["leader","e", "r"],
+            "before": ["leader", "e", "r"],
             "after": [],
             "commands": [
                 {
@@ -140,7 +176,7 @@
             ]
         },
         {
-            "before": ["leader","f", "r"],
+            "before": ["leader", "f", "r"],
             "after": [],
             "commands": [
                 {
@@ -167,7 +203,7 @@
         "suppressFileNotUnderSourceControlWarning": false,
         "suppressGitVersionWarning": false,
         "suppressLineUncommittedWarning": false,
-        "suppressNoRepositoryWarning": false,
+        "suppressNoRepositoryWarning": false
     },
     "explorer.confirmDelete": false,
     "gitlens.currentLine.enabled": false,
@@ -175,22 +211,48 @@
     "gitlens.keymap": "chorded",
     "explorer.confirmDragAndDrop": false,
 
-    // Move Typescript extension
     "movets.skipWarning": true,
     "typescript.updateImportsOnFileMove.enabled": "always",
     "gitlens.views.repositories.files.layout": "tree",
     "editor.snippetSuggestions": "top",
-    "terminal.integrated.rendererType": "dom",
     "editor.tabSize": 2,
-    "tslint.enable": false,
-    "tslint.exclude": "",
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "git.path": "/usr/local/bin/git",
     "vim.commandLineModeKeyBindingsNonRecursive": [
-
     ],
     "files.associations": {
         "*.gotmpl": "goyaml"
     },
-    "gitlens.codeLens.recentChange.enabled": false
+    "gitlens.codeLens.recentChange.enabled": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": ["typescript"],
+    "multiCommand.commands": [
+        {
+            "command": "multiCommand.vim-global-search",
+            "sequence": [
+                "workbench.view.search",
+                "search.action.focusQueryEditorWidget",
+                "editor.action.clipboardPasteAction",
+                "search.action.focusSearchList"
+            ]
+        },
+        {
+            "command": "multiCommand.vim-global-replace",
+            "sequence": [
+                "workbench.action.replaceInFiles",
+                "search.action.focusQueryEditorWidget",
+                "editor.action.clipboardPasteAction"
+            ]
+        },
+        {
+            "command": "multiCommand.vim-focus-search",
+            "sequence": [
+                "workbench.view.search",
+                "search.action.focusQueryEditorWidget",
+                "search.action.focusSearchList"
+            ]
+        }
+    ]
 }
