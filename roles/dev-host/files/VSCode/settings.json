@@ -206,7 +206,6 @@
         "suppressNoRepositoryWarning": false
     },
     "explorer.confirmDelete": false,
-    "gitlens.currentLine.enabled": false,
     "gitlens.hovers.currentLine.enabled": false,
     "gitlens.keymap": "chorded",
     "explorer.confirmDragAndDrop": false,
@@ -254,5 +253,9 @@
                 "search.action.focusSearchList"
             ]
         }
-    ]
+    ],
+    "window.zoomLevel": 1,
+    "gitlens.currentLine.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "redhat.telemetry.enabled": false
 }
