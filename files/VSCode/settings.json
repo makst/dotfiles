@@ -1,0 +1,264 @@
+// Place your settings in this file to overwrite the default settings
+{
+    // ------------- Editor
+    // Insert snippets when their prefix matches. Works best when 'quickSuggestions' aren't enabled.
+    "editor.tabCompletion": "on",
+    // Render vertical rulers after a certain number of monospace characters. Use multiple values for multiple rulers. No rulers are drawn if array is empty
+    "editor.rulers": [
+        100
+    ],
+    // Configure editor settings to be overridden for [terraform] language.
+    "editor.formatOnSave": false,
+    // ------------- Files
+    // When enabled, will trim trailing whitespace when saving a file.
+    "files.trimTrailingWhitespace": true,
+    // When enabled, insert a final new line at the end of the file when saving it.
+    "files.insertFinalNewline": true,
+    // ------------- Workbench
+    "workbench.iconTheme": "file-icons",
+    // -------------------------
+    // -------------- Extensions
+    // -------------------------
+    // ------------- GitLens
+    "gitlens.gitExplorer.files.layout": "tree",
+    "gitlens.blame.line.enabled": false,
+
+    // ------------ TSLint
+    // The path to the rules configuration file
+    "tslint.configFile": "tslint.json",
+    // -------------------
+
+    // ------------- Vim
+     // Enable the EasyMotion plugin for Vim.
+    "vim.easymotion": true,
+    "vim.hlsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.startInInsertMode": false,
+    // What key should <leader> map to in remappings?
+    "vim.leader": ",",
+    "vim.surround": true,
+    "vim.camelCaseMotion.enable": true,
+    // Override VSCode's copy command with our own copy command, which works better with VSCodeVim. Turn this off if copying is not working.
+    "vim.overrideCopy": false,
+    "vim.insertModeKeyBindings": [
+        {
+            "before": [
+                "j",
+                "j"
+            ],
+            "after": [
+                "<Esc>"
+            ]
+        }
+    ],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["J"],
+            "commands": ["editor.action.moveLinesDownAction"]
+        },
+        {
+            "before": ["K"],
+            "commands": ["editor.action.moveLinesUpAction"]
+        },
+        {
+            "before" : ["<leader>", "v", "e"],
+            "commands" : [
+                "workbench.view.explorer"
+            ]
+        },
+        {
+            "before" : ["<leader>", "f", "a"],
+            "commands" : [
+                "eslint.applyAllFixes"
+            ]
+        },
+        {
+            "before" : ["<leader>", "e", "s"],
+            "commands" : [
+                "search.action.focusQueryEditorWidget"
+            ]
+        },
+        {
+            "before" : ["<leader>", "g", "s"],
+            "commands" : [
+                "multiCommand.vim-global-search"
+            ]
+        },
+        {
+            "before" : ["<leader>", "g", "r"],
+            "commands" : [
+                "multiCommand.vim-global-replace"
+            ]
+        },
+        {
+            "before" : ["<leader>", "f", "s"],
+            "commands" : [
+                "multiCommand.vim-focus-search"
+            ]
+        },
+        {
+            "before" : ["<leader>", "r", "o"],
+            "commands" : [
+                "editor.action.replaceOne"
+            ]
+        },
+        {
+            "before":["<C-n>"],
+            "commands": [
+                ":nohl"
+            ]
+        },
+        // horizontal split: type ":sp"
+        // vertical split: type ":vsp"
+        {
+            "before": ["<leader>", "c"],
+            "commands": [
+                "workbench.action.showCommands"
+            ]
+        },
+        {
+            "before": ["leader", "s"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.files.save",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "s", "s"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.files.saveAll",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "."],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.navigateForward",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "m"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.navigateBack",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "t"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.terminal.toggleTerminal",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "e", "r"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.action.rename",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["leader", "f", "r"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "editor.action.referenceSearch.trigger",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["<leader>", "o"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "workbench.action.quickOpen"
+                }
+            ]
+        }
+    ],
+    //
+    "extensions.ignoreRecommendations": true,
+    "gitlens.advanced.messages": {
+        "suppressCommitHasNoPreviousCommitWarning": false,
+        "suppressCommitNotFoundWarning": false,
+        "suppressFileNotUnderSourceControlWarning": false,
+        "suppressGitVersionWarning": false,
+        "suppressLineUncommittedWarning": false,
+        "suppressNoRepositoryWarning": false
+    },
+    "explorer.confirmDelete": false,
+    "gitlens.hovers.currentLine.enabled": false,
+    "gitlens.keymap": "chorded",
+    "explorer.confirmDragAndDrop": false,
+
+    "movets.skipWarning": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "gitlens.views.repositories.files.layout": "tree",
+    "editor.snippetSuggestions": "top",
+    "editor.tabSize": 2,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "git.path": "/usr/local/bin/git",
+    "files.associations": {
+        "*.gotmpl": "goyaml"
+    },
+    "gitlens.codeLens.recentChange.enabled": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "eslint.validate": ["typescript"],
+    "multiCommand.commands": [
+        {
+            "command": "multiCommand.vim-global-search",
+            "sequence": [
+                "workbench.view.search",
+                "search.action.focusQueryEditorWidget",
+                "editor.action.clipboardPasteAction",
+                "search.action.focusSearchList"
+            ]
+        },
+        {
+            "command": "multiCommand.vim-global-replace",
+            "sequence": [
+                "workbench.action.replaceInFiles",
+                "search.action.focusQueryEditorWidget",
+                "editor.action.clipboardPasteAction"
+            ]
+        },
+        {
+            "command": "multiCommand.vim-focus-search",
+            "sequence": [
+                "workbench.view.search",
+                "search.action.focusQueryEditorWidget",
+                "search.action.focusSearchList"
+            ]
+        }
+    ],
+    "gitlens.currentLine.enabled": false,
+    "gitlens.codeLens.enabled": false,
+    "redhat.telemetry.enabled": false,
+    "workbench.colorTheme": "Monokai Dimmed",
+    "npm.keybindingsChangedWarningShown": true,
+    "diffEditor.maxComputationTime": 0,
+    "vim.commandLineModeKeyBindings": [],
+    "window.zoomLevel": 1
+}
