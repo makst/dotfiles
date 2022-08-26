@@ -260,5 +260,5 @@
     "npm.keybindingsChangedWarningShown": true,
     "diffEditor.maxComputationTime": 0,
     "vim.commandLineModeKeyBindings": [],
-    "window.zoomLevel": 1,
+    "window.zoomLevel": 1
 }
