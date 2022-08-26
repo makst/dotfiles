@@ -26,7 +26,7 @@ function install_brew() {
 
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
-  brew install git wget python zsh
+  brew install git wget python zsh diff-so-fancy
   brew install --cask iterm2
 }
 
@@ -46,6 +46,10 @@ function sync_iterm_profile() {
 
   # Tell iTerm2 to use the custom preferences in the directory
   defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
+}
+
+function setup_git() {
+  ln -s -f "$real_script_dir/files/.gitconfig" "$HOME/.gitconfig"
 }
 
 function setup_vs_code() {
@@ -76,5 +80,6 @@ function install_from_scratch() {
   install_oh_my_zsh
   install_nvm
   install_ssh_ident
+  setup_git
   sync_iterm_profile
 }
