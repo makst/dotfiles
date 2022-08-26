@@ -1,6 +1,0 @@
----
-- name: "Import GPG key if not yet imported"
-  # list secret key || batch import it to avoid prompting for passphrase
-  shell: gpg -K '{{ gpg_key_id }}' >/dev/null 2>&1 || gpg --batch --import '{{ gpg_key_file }}'
-  tags:
-    - gpg

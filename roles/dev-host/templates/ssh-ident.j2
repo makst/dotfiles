@@ -1,6 +1,0 @@
-MATCH_ARGV = [
-    {% for item in ssh_keys %}
-        (r"{{ item.argv_match }}", "{{ item.identity }}"),
-    {% endfor %}
-]
-
