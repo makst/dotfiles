@@ -49,7 +49,7 @@ function sync_iterm_profile() {
 }
 
 function setup_git() {
-  ln -s -f "$real_script_dir/files/.gitconfig" "$HOME/.gitconfig"
+  ln -s -f "$real_script_dir/files/git/.gitconfig" "$HOME/.gitconfig"
 }
 
 function setup_vs_code() {
