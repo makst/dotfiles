@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+real_script_dir="$(dirname "$(stat -f '%Y' ~/.zshrc)")"
 
 function install_and_update_zsh_plugins() {
   current_dir=$(pwd)
@@ -37,6 +38,15 @@ function install_oh_my_zsh() {
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 }
 
+# http://stratus3d.com/blog/2015/02/28/sync-iterm2-profile-with-dotfiles-repository/
+function sync_iterm_profile() {
+  # Specify the preferences directory
+  defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$real_script_dir/files/iterm2"
+
+  # Tell iTerm2 to use the custom preferences in the directory
+  defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
+}
+
 # https://github.com/ccontavalli/ssh-ident
 function install_ssh_ident() {
   mkdir -p ~/bin
@@ -54,4 +64,5 @@ function install_from_scratch() {
   install_oh_my_zsh
   install_nvm
   install_ssh_ident
+  sync_iterm_profile
 }

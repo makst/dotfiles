@@ -108,6 +108,8 @@
                 ":nohl"
             ]
         },
+        // horizontal split: type ":sp"
+        // vertical split: type ":vsp"
         {
             "before": ["<leader>", "c"],
             "commands": [
@@ -133,7 +135,6 @@
                     "args": []
                 }
             ]
-
         },
         {
             "before": ["leader", "."],
@@ -217,8 +218,6 @@
     "editor.tabSize": 2,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "git.path": "/usr/local/bin/git",
-    "vim.commandLineModeKeyBindingsNonRecursive": [
-    ],
     "files.associations": {
         "*.gotmpl": "goyaml"
     },
@@ -254,8 +253,12 @@
             ]
         }
     ],
-    "window.zoomLevel": 1,
     "gitlens.currentLine.enabled": false,
     "gitlens.codeLens.enabled": false,
-    "redhat.telemetry.enabled": false
+    "redhat.telemetry.enabled": false,
+    "workbench.colorTheme": "Monokai Dimmed",
+    "npm.keybindingsChangedWarningShown": true,
+    "diffEditor.maxComputationTime": 0,
+    "vim.commandLineModeKeyBindings": [],
+    "window.zoomLevel": 1,
 }
