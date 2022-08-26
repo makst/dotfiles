@@ -48,6 +48,15 @@ function sync_iterm_profile() {
   defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
 }
 
+function setup_vs_code() {
+  cp -f "$real_script_dir/files/git/hooks/post-merge" "$real_script_dir/.git/hooks/post-merge"
+  cp -f "$real_script_dir/files/git/hooks/pre-commit" "$real_script_dir/.git/hooks/pre-commit"
+
+  ln -s -f "$real_script_dir/files/VSCode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
+  ln -s -f "$real_script_dir/files/VSCode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+  ln -s -f "$real_script_dir/files/VSCode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+}
+
 # https://github.com/ccontavalli/ssh-ident
 function install_ssh_ident() {
   mkdir -p ~/bin
