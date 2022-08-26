@@ -27,6 +27,7 @@ function install_brew() {
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
   brew install git wget python zsh
+  brew install --cask iterm2
 }
 
 function install_nvm() {
