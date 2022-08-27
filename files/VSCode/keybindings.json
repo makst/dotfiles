@@ -11,22 +11,22 @@
     "when": "editorTextFocus && vim.active && !inDebugRepl"
   },
   {
-    "key": "ctrl+h",
+    "key": "ctrl+a h",
     "command": "workbench.action.navigateLeft",
     "when":"editorFocus"
   },
   {
-      "key": "ctrl+l",
+      "key": "ctrl+a l",
       "command": "workbench.action.navigateRight",
       "when":"editorFocus"
   },
   {
-      "key": "ctrl+k",
+      "key": "ctrl+a k",
       "command": "workbench.action.navigateUp",
       "when":"editorFocus"
   },
   {
-      "key": "ctrl+j",
+      "key": "ctrl+a j",
       "command": "workbench.action.navigateDown",
       "when":"editorFocus"
   },
