@@ -266,5 +266,7 @@
     "workbench.colorTheme": "Monokai Dimmed",
     "npm.keybindingsChangedWarningShown": true,
     "diffEditor.maxComputationTime": 0,
-    "vim.commandLineModeKeyBindings": []
+    "vim.commandLineModeKeyBindings": [],
+    // https://medium.com/@bramblexu/enable-tmux-copy-paste-in-vs-code-terminal-for-mac-408a5cf94cd9
+    "terminal.integrated.macOptionClickForcesSelection": true,
 }

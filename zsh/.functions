@@ -21,7 +21,8 @@ function install_and_update_zsh_plugins() {
 # -----------------------------
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
-  brew install git wget python zsh diff-so-fancy
+  # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
+  brew install git wget python zsh diff-so-fancy reattach-to-user-namespace
   brew install --cask iterm2
   brew install --cask visual-studio-code
 }
