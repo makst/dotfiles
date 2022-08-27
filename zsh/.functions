@@ -26,6 +26,19 @@ function install_brew_must_have_formulas() {
   brew install --cask visual-studio-code
 }
 
+function remap_keys() {
+  # https://apple.stackexchange.com/a/283253
+  # Caps Lock -> Right Ctrl
+  hidutil property --set '{"UserKeyMapping":
+      [{"HIDKeyboardModifierMappingSrc":0x700000039,
+        "HIDKeyboardModifierMappingDst":0x7000000e4}]
+  }'
+}
+
+function setup_tmux() {
+  ln -s -f "$real_script_dir/files/.tmux.conf" "$HOME/.tmux.conf"
+}
+
 function install_nvm() {
   echo "=> Installing nvm"
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
@@ -67,10 +80,12 @@ function install_ssh_ident() {
 }
 
 function zsh_install_from_scratch() {
+  remap_keys
   install_brew_must_have_formulas
   install_nvm
   install_ssh_ident
   setup_git
   sync_iterm_profile
   setup_vs_code
+  setup_tmux
 }
