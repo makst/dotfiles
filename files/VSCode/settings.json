@@ -196,6 +196,13 @@
             ]
         }
     ],
+    "vim.visualModeKeyBindingsNonRecursive": [
+        // https://vi.stackexchange.com/a/37967
+        {
+            "before":["p"],
+            "after":["p","g","v","y"]
+        }
+    ],
     //
     "extensions.ignoreRecommendations": true,
     "gitlens.advanced.messages": {
@@ -259,6 +266,5 @@
     "workbench.colorTheme": "Monokai Dimmed",
     "npm.keybindingsChangedWarningShown": true,
     "diffEditor.maxComputationTime": 0,
-    "vim.commandLineModeKeyBindings": [],
-    "window.zoomLevel": 1
+    "vim.commandLineModeKeyBindings": []
 }
