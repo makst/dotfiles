@@ -1,5 +1,8 @@
 #!/bin/bash
 
+ln -s $(pwd) $HOME/dotfiles
+ln -s $(pwd)/.zshrc $HOME/.zshrc
+
 echo "=> Installing brew"
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
