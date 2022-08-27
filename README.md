@@ -1,6 +1,6 @@
 About
 ---
-Dev machine setup.
+MacOS development setup.
 
 Install from scratch
 ---
@@ -12,6 +12,8 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 3. From inside this repo, run
    ```
    $ ./bash/prepare-zsh-install.sh
+   $ ln -s $(pwd) $HOME/dotfiles
+   $ ln -s $(pwd)/.zshrc $HOME/.zshrc
    $ exec zsh
    $ zsh_install_from_scratch
    ```
