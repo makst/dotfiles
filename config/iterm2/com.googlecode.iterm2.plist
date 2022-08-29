@@ -3470,7 +3470,7 @@
 		</dict>
 	</dict>
 	<key>PrefsCustomFolder</key>
-	<string>/Users/makst/repos/github/dotfiles/roles/dev-host/files/iterm2</string>
+	<string>/Users/makst/repos/github/dotfiles/config/iterm2</string>
 	<key>Print In Black And White</key>
 	<true/>
 	<key>PromptOnQuit</key>

@@ -37,7 +37,7 @@ function remap_keys() {
 }
 
 function setup_tmux() {
-  ln -s -f "$real_script_dir/files/.tmux.conf" "$HOME/.tmux.conf"
+  ln -s -f "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
 }
 
 function install_nvm() {
@@ -48,25 +48,25 @@ function install_nvm() {
 # http://stratus3d.com/blog/2015/02/28/sync-iterm2-profile-with-dotfiles-repository/
 function sync_iterm_profile() {
   # Specify the preferences directory
-  defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$real_script_dir/files/iterm2"
+  defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$real_script_dir/config/iterm2"
 
   # Tell iTerm2 to use the custom preferences in the directory
   defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
 }
 
 function setup_git() {
-  ln -s -f "$real_script_dir/files/git/.gitconfig" "$HOME/.gitconfig"
+  ln -s -f "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
 }
 
 function setup_vs_code() {
-  cp -f "$real_script_dir/files/git/hooks/post-merge" "$real_script_dir/.git/hooks/post-merge"
+  cp -f "$real_script_dir/config/git/hooks/post-merge" "$real_script_dir/.git/hooks/post-merge"
   chmod +x "$real_script_dir/.git/hooks/post-merge"
-  cp -f "$real_script_dir/files/git/hooks/pre-commit" "$real_script_dir/.git/hooks/pre-commit"
+  cp -f "$real_script_dir/config/git/hooks/pre-commit" "$real_script_dir/.git/hooks/pre-commit"
   chmod +x "$real_script_dir/.git/hooks/pre-commit"
 
-  ln -s -f "$real_script_dir/files/VSCode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
-  ln -s -f "$real_script_dir/files/VSCode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
-  ln -s -f "$real_script_dir/files/VSCode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+  ln -s -f "$real_script_dir/config/VSCode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
+  ln -s -f "$real_script_dir/config/VSCode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
+  ln -s -f "$real_script_dir/config/VSCode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
 }
 
 # https://github.com/ccontavalli/ssh-ident

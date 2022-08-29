@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-CODE_EXTENSIONS_NOT_IN_DOTFILES=$(comm -13 <(cat $HOME/dotfiles/files/VSCode/extensions_list | sort ) <(code --list-extensions | sort))
+CODE_EXTENSIONS_NOT_IN_DOTFILES=$(comm -13 <(cat $HOME/dotfiles/config/VSCode/extensions_list | sort ) <(code --list-extensions | sort))
 if [ ! -z "$CODE_EXTENSIONS_NOT_IN_DOTFILES" ]; then
     echo '######## Untracked VSCode extensions (remove them or add to "VSCode/extensions_list") #########'
     echo "$CODE_EXTENSIONS_NOT_IN_DOTFILES" | xargs -n1 echo " => "
