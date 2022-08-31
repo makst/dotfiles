@@ -22,7 +22,7 @@ function install_and_update_zsh_plugins() {
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
-  brew install git wget python zsh diff-so-fancy reattach-to-user-namespace
+  brew install git wget python zsh diff-so-fancy reattach-to-user-namespace neovim
   brew install --cask iterm2
   brew install --cask visual-studio-code
 }
@@ -38,6 +38,11 @@ function remap_keys() {
 
 function setup_tmux() {
   ln -s -f "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
+}
+
+function setup_nvim() {
+  ln -Fs "$real_script_dir/config/nvim" "$HOME/.config/nvim"
+  ln -Fs $(which nvim) /usr/local/bin/vim
 }
 
 function install_nvm() {
@@ -89,4 +94,5 @@ function zsh_install_from_scratch() {
   sync_iterm_profile
   setup_vs_code
   setup_tmux
+  setup_nvim
 }
