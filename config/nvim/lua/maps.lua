@@ -1,4 +1,7 @@
+vim.g.mapleader = ','
 local keymap = vim.keymap
+
+keymap.set('i', 'jj', '<Esc>')
 
 -- Do not yank with x
 keymap.set('n', 'x', '"_x')
@@ -6,6 +9,10 @@ keymap.set('n', 'x', '"_x')
 -- Increment/decrement
 keymap.set('n', '+', '<C-a>')
 keymap.set('n', '-', '<C-x>')
+
+-- Quit/Save file
+keymap.set('n', 'q', ':q!<Return>')
+keymap.set('n', '<leader>w', ':w!<Return>')
 
 -- Tabs 
 keymap.set('n', 'te', ':tabedit<Return>')
