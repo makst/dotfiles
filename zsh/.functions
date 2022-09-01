@@ -23,6 +23,8 @@ function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
   brew install git wget python zsh diff-so-fancy reattach-to-user-namespace neovim
+
+  brew install --cask alacritty
   brew install --cask iterm2
   brew install --cask visual-studio-code
 }
@@ -38,6 +40,10 @@ function remap_keys() {
 
 function setup_tmux() {
   ln -s -f "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
+}
+
+function setup_alacritty() {
+  ln -Fs "$real_script_dir/config/alacritty" "$HOME/.config/alacritty"
 }
 
 function setup_nvim() {
@@ -95,4 +101,5 @@ function zsh_install_from_scratch() {
   setup_vs_code
   setup_tmux
   setup_nvim
+  setup_alacritty
 }
