@@ -18,6 +18,7 @@ keymap.set('n', '<leader>w', ':w!<Return>')
 keymap.set('n', 'bn', ':bn<Return>')
 keymap.set('n', 'bp', ':bp<Return>')
 keymap.set('n', 'bb', ':b#<Return>')
+keymap.set('n', 'bd', ':bd<Return>')
 keymap.set('n', 'bls', ':ls<Return>')
 -- https://stackoverflow.com/a/42071865
 -- %bd = delete all buffers, e# = open the last buffer for editing, bd# to delete the [No Name] buffer that gets created.
