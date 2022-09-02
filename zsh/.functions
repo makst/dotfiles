@@ -16,9 +16,11 @@ function install_and_update_zsh_plugins() {
   cd $current_dir
 }
 
-# -----------------------------
-# INSTALL FROM SCRATCH
-# -----------------------------
+function install_nvim_packer() {
+   git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+     ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+}
+
 function install_brew_must_have_formulas() {
   echo "=> Installing must-have brew formulas"
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
@@ -102,4 +104,5 @@ function zsh_install_from_scratch() {
   setup_tmux
   setup_nvim
   setup_alacritty
+  install_nvim_packer
 }
