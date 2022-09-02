@@ -14,11 +14,15 @@ keymap.set('n', '-', '<C-x>')
 keymap.set('n', 'q', ':q!<Return>')
 keymap.set('n', '<leader>w', ':w!<Return>')
 
--- Tabs 
-keymap.set('n', 'te', ':tabedit<Return>')
-keymap.set('n', 'tn', ':tabn<Return>')
-keymap.set('n', 'tp', ':tabp<Return>')
-keymap.set('n', 'tx', ':tabclose<Return>')
+-- Buffers
+keymap.set('n', 'bn', ':bn<Return>')
+keymap.set('n', 'bp', ':bp<Return>')
+keymap.set('n', 'bb', ':b#<Return>')
+keymap.set('n', 'bls', ':ls<Return>')
+-- https://stackoverflow.com/a/42071865
+-- %bd = delete all buffers, e# = open the last buffer for editing, bd# to delete the [No Name] buffer that gets created.
+-- The pipe in between does one command after another.
+keymap.set('n', 'bdr', ':%bd|e#|bd#<Return>')
 
 -- Split window
 keymap.set('n', 'ss', ':split<Return><C-w>w')
