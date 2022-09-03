@@ -29,11 +29,30 @@ function install_and_update_zsh_plugins() {
   cd $current_dir
 }
 
-function install_brew_must_have_formulas() {
+function brew_setup() {
   echo "=> Installing must-have brew formulas"
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
-  brew install git wget python zsh diff-so-fancy reattach-to-user-namespace neovim
-  brew install --cask alacritty iterm2 visual-studio-code
+  brew install \
+    git \
+    wget \
+    python \
+    zsh \
+    diff-so-fancy \
+    reattach-to-user-namespace \
+    neovim \
+    lua-language-server
+
+  brew install --cask \
+    alacritty \
+    iterm2 \
+    visual-studio-code
+}
+
+function npm_setup() {
+  npm install -g \
+    typescript-language-server \
+    typescript
+
 }
 
 function remap_keys() {
@@ -56,8 +75,10 @@ function setup_alacritty() {
 }
 
 function setup_nvim() {
-  ln -Fs "$real_script_dir/config/nvim" "$HOME/.config/nvim"
-  ln -Fs $(which nvim) /usr/local/bin/vim
+  if [[ ! -L "$HOME/.config/nvim" ]]; then
+    ln -Fs "$real_script_dir/config/nvim" "$HOME/.config/nvim"
+    ln -Fs $(which nvim) /usr/local/bin/vim
+  fi
 
   # install nvim packer (lua package manager)
   [[ ! -d ~/.local/share/nvim/site/pack/packer ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
@@ -103,7 +124,8 @@ function install_ssh_ident() {
 }
 
 function setup_dotfiles() {
-  install_brew_must_have_formulas
+  brew_setup
+  npm_setup
   install_nvm
   install_ssh_ident
   setup_git

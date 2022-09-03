@@ -9,5 +9,6 @@ vim.cmd [[packadd packer.nvim]]
 packer.startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'navarasu/onedark.nvim'
+  use 'neovim/nvim-lspconfig' -- LSP
 end)
 
