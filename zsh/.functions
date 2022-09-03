@@ -1,6 +1,11 @@
 #!/usr/bin/env zsh
 real_script_dir="$(dirname "$(stat -f '%Y' ~/.zshrc)")"
 
+timezsh() {
+  shell=${1-$SHELL}
+  for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
+}
+
 function install_and_update_zsh_plugins() {
   current_dir=$(pwd)
 
@@ -12,6 +17,9 @@ function install_and_update_zsh_plugins() {
 
   [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
   cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
+
+  [[ ! -d $ZSH_CUSTOM/plugins/zsh-nvm ]] && git clone https://github.com/lukechilds/zsh-nvm $ZSH_CUSTOM/plugins/zsh-nvm
+  cd $ZSH_CUSTOM/plugins/zsh-nvm && git pull -q
 
   cd $current_dir
 }

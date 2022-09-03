@@ -6,6 +6,10 @@ export CLICOLOR=1
 ZSH_THEME="refined"
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
+# https://blog.mattclemente.com/2020/06/26/oh-my-zsh-slow-to-load/
+export NVM_LAZY_LOAD=true
+export NVM_COMPLETION=true
+
 # Fixes
 # zsh-autosuggestions: highlighting style not working in tmux
 # https://github.com/zsh-users/zsh-autosuggestions/issues/229#issuecomment-300675586
@@ -27,6 +31,7 @@ function zvm_before_init() {
 }
 
 plugins=(
+  zsh-nvm
   git
   z
   zsh-syntax-highlighting
