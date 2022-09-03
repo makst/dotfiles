@@ -17,9 +17,9 @@ Make sure you fork this repo and adjust it to your own preferences before even s
    ```
    $ .prepare-zsh-install.sh
    $ exec zsh
-   $ zsh_install_from_scratch
+   $ setup_dotfiles # idempotent, can be executed after every `git pull`
    ```
 
 Working with the full installation
 ---
-When everything is set up, discover [functions](./zsh/.functions) that you can run/rerun/modify to improve your dev environment.
+Discover [functions](./zsh/.functions) that you can run/rerun/modify to set up your dev environment.
