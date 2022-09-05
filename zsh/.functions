@@ -46,6 +46,10 @@ function brew_setup() {
     alacritty \
     iterm2 \
     visual-studio-code
+
+  # nerd fonts
+  brew tap homebrew/cask-fonts
+  brew install --cask font-hack-nerd-font
 }
 
 function npm_setup() {
