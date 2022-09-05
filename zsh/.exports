@@ -1,5 +1,8 @@
 #!/usr/bin/env zsh
 
+export PATH="$HOME/bin:$PATH"
+export PATH="/usr/local/sbin:$PATH"
+
 # Add pyenv executable to PATH and
 # enable shims by adding the following
 # to ~/.profile and ~/.zprofile:
@@ -10,3 +13,7 @@ eval "$(pyenv init --path)"
 # Load pyenv into the shell by adding
 # the following to ~/.zshrc:
 eval "$(pyenv init -)"
+pyenv global 3.9.6
+
+# remove duplicate in PATH
+typeset -U PATH
