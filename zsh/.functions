@@ -55,10 +55,10 @@ function brew_setup() {
   brew tap homebrew/cask-fonts
   brew install --cask font-hack-nerd-font
 
-  # fzf
-  brew install fzf
-  # To install useful key bindings and fuzzy completion:
-  $(brew --prefix)/opt/fzf/install
+  if [[ ! -f ~/.fzf.zsh ]]; then
+    # fzf
+    brew install fzf
+  fi
 }
 
 function fzf_setup() {

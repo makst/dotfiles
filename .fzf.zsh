@@ -1,16 +1,6 @@
-# Setup fzf - https://github.com/junegunn/fzf
-# ---------
-if [[ ! "$PATH" == */usr/local/opt/fzf/bin* ]]; then
-  PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
-fi
-
-# Auto-completion
-# ---------------
-[[ $- == *i* ]] && source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
-
-# Key bindings
-# ------------
-source "/usr/local/opt/fzf/shell/key-bindings.zsh"
+# fzf oh-my-zsh plugin tries to find [junegunn's fzf](https://github.com/junegunn/fzf) based on where
+# it's been installed, and enables its fuzzy auto-completion and key bindings.
+# hence, only `brew install fzf`, do not manually source auto-completion and key bindings
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
 # disable sort when completing `git checkout`

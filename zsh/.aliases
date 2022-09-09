@@ -2,3 +2,5 @@
 
 alias sn="spotify next"
 alias sp="spotify prev"
+
+alias h=" history | fzf --tac"

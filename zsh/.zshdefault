@@ -36,6 +36,7 @@ plugins=(
   z
   zsh-syntax-highlighting
   zsh-vi-mode
+  fzf
   fzf-tab
   zsh-autosuggestions
 )
