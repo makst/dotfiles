@@ -1,6 +1,7 @@
 # fzf oh-my-zsh plugin tries to find [junegunn's fzf](https://github.com/junegunn/fzf) based on where
 # it's been installed, and enables its fuzzy auto-completion and key bindings.
 # hence, only `brew install fzf`, do not manually source auto-completion and key bindings
+source ~/.oh-my-zsh/plugins/fzf/fzf.plugin.zsh
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
 # disable sort when completing `git checkout`
