@@ -26,6 +26,9 @@ function install_and_update_zsh_plugins() {
   [[ ! -d $ZSH_CUSTOM/plugins/zsh-nvm ]] && git clone https://github.com/lukechilds/zsh-nvm $ZSH_CUSTOM/plugins/zsh-nvm
   cd $ZSH_CUSTOM/plugins/zsh-nvm && git pull -q
 
+  [[ ! -d $ZSH_CUSTOM/plugins/fzf-tab ]] && git clone https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab
+  cd $ZSH_CUSTOM/plugins/fzf-tab && git pull -q
+
   cd $current_dir
 }
 
@@ -37,6 +40,7 @@ function brew_setup() {
     wget \
     python \
     zsh \
+    exa \
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \
@@ -50,13 +54,21 @@ function brew_setup() {
   # nerd fonts
   brew tap homebrew/cask-fonts
   brew install --cask font-hack-nerd-font
+
+  # fzf
+  brew install fzf
+  # To install useful key bindings and fuzzy completion:
+  $(brew --prefix)/opt/fzf/install
+}
+
+function fzf_setup() {
+  ln -Fs "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
 }
 
 function npm_setup() {
   npm install -g \
     typescript-language-server \
     typescript
-
 }
 
 function remap_keys() {
@@ -129,6 +141,7 @@ function install_ssh_ident() {
 
 function setup_dotfiles() {
   brew_setup
+  fzf_setup
   npm_setup
   install_nvm
   install_ssh_ident
