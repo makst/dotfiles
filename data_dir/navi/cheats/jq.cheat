@@ -4,7 +4,8 @@
 jq 'select(objects)|=[.]'
 
 # Array: flatten array objects
-jq 'map([paths(scalars) as $path | {"key": $path | join("."), "value": getpath($path)}] | from_entries)'
+; https://stackoverflow.com/a/37555908
+jq 'map([paths(type != "object" and type != "array") as $path | {"key": $path | join("."), "value": getpath($path)}] | from_entries)'
 
 # Array: filter by key
 <get_data> | jq 'map(select(.<key> == <value>))'
@@ -13,4 +14,5 @@ jq 'map([paths(scalars) as $path | {"key": $path | join("."), "value": getpath($
 <get_data> | jq --arg keys "$(echo <array_keys>)" '.[] | to_entries | map(select(.key == ($keys | split(" ")[]))) | from_entries'
 
 $ key: <get_data> | jq '.[0] | to_entries[] | .key'
+$ value: <get_data> | jq 'map([paths(type != "object" and type != "array") as $path | {"key": $path | join("."), "value": getpath($path)}]) | .[] | map(select(.key==<key>)) | .[] | .value'
 $ array_keys: <get_data> | jq '.[0] | to_entries[] | .key' --- --multi --expand
