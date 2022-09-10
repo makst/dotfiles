@@ -41,6 +41,8 @@ function brew_setup() {
     python \
     zsh \
     exa \
+    navi \
+    yank \
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \
@@ -63,6 +65,10 @@ function brew_setup() {
 
 function fzf_setup() {
   ln -Fs "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
+}
+
+function navi_data_dir_setup() {
+  ln -Fs "$real_script_dir/data_dir/navi/cheats" "$HOME/Library/Application Support/navi/cheats/makst_cheats"
 }
 
 function npm_setup() {
@@ -142,6 +148,7 @@ function install_ssh_ident() {
 function setup_dotfiles() {
   brew_setup
   fzf_setup
+  navi_data_dir_setup
   npm_setup
   install_nvm
   install_ssh_ident
