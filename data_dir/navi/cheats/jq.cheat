@@ -1,11 +1,16 @@
 % jq, custom
 
-# Object: select keys
-<get_data> | jq --arg keys "$(echo <object_keys>)" '. | to_entries | map(select(.key == ($keys | split(" ")[]))) | from_entries'
+# Object: turn into array if not yet an array
+jq 'select(objects)|=[.]'
+
+# Array: flatten array objects
+jq 'map([paths(scalars) as $path | {"key": $path | join("."), "value": getpath($path)}] | from_entries)'
+
+# Array: filter by key
+<get_data> | jq 'map(select(.<key> == <value>))'
 
 # Array: select keys
-<get_data> | jq --arg keys "$(echo <array_keys>)" '.<array_access_key>[] | to_entries | map(select(.key == ($keys | split(" ")[]))) | from_entries'
+<get_data> | jq --arg keys "$(echo <array_keys>)" '.[] | to_entries | map(select(.key == ($keys | split(" ")[]))) | from_entries'
 
-$ array_access_key: <get_data> | jq '. | to_entries | .[]' | jq -r '.key' --- --delimiter '\s\s+'
-$ array_keys: <get_data> | jq '.<array_access_key>[0] | to_entries | .[]' | jq -r '.key' --- --multi --expand
-$ object_keys: <get_data> | jq '. | to_entries | .[]' | jq -r '.key' --- --multi --expand
+$ key: <get_data> | jq '.[0] | to_entries[] | .key'
+$ array_keys: <get_data> | jq '.[0] | to_entries[] | .key' --- --multi --expand
