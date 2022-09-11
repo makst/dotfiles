@@ -42,6 +42,7 @@ function brew_setup() {
     zsh \
     navi \
     yank \
+    broot \
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \
