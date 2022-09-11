@@ -1,6 +1,7 @@
 - [About](#about)
 - [Install from scratch](#install-from-scratch)
 - [Working with the full installation](#working-with-the-full-installation)
+- [TODO](#todo)
 
 About
 ---
@@ -23,3 +24,8 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 Working with the full installation
 ---
 Discover [functions](./zsh/.functions) that you can run/rerun/modify to set up your dev environment.
+
+
+TODO
+---
+Split config into modules with `install.sh` and `configure.sh`
