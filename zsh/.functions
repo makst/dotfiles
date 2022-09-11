@@ -43,7 +43,6 @@ function brew_setup() {
     navi \
     yank \
     ripgrep \
-    broot \
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \

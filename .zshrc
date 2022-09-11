@@ -8,5 +8,3 @@ for file in "$real_script_dir"/zsh/.{zshdefault,exports,aliases,kubectl_aliases,
 done;
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-source /Users/maksymtkachenko/.config/broot/launcher/bash/br
