@@ -47,6 +47,8 @@ function brew_setup() {
     neovim \
     lua-language-server
 
+  brew install jesseduffield/lazygit/lazygit
+
   brew install --cask \
     alacritty \
     iterm2 \

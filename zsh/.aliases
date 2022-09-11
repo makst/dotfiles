@@ -5,3 +5,5 @@ alias sp="spotify prev"
 
 # https://apple.stackexchange.com/a/110541
 alias copy_last_cmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
+
+alias lg='lazygit'
