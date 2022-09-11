@@ -6,7 +6,7 @@ source ~/.oh-my-zsh/plugins/fzf/fzf.plugin.zsh
 ### fzf configuration
 bindkey "ç" fzf-cd-widget
 
-# inspired by: https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
+# https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
 export FZF_DEFAULT_OPTS="
 --multi
 --preview-window=:hidden
@@ -20,6 +20,16 @@ export FZF_DEFAULT_OPTS="
 --bind 'ctrl-alt-n:preview-half-page-down'
 --bind 'ctrl-alt-p:preview-half-page-up'
 "
+
+# find-in-file - usage: fif <SEARCH_TERM>
+fif() {
+  if [ ! "$#" -gt 0 ]; then
+    echo "Need a string to search for!";
+    return 1;
+  fi
+
+  rg --files-with-matches --no-messages "$1" | fzf $FZF_PREVIEW_WINDOW --multi --expand --preview "rg --ignore-case --pretty --context 10 '$1' {}"
+}
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
 # disable sort when completing `git checkout`
