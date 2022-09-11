@@ -40,7 +40,6 @@ function brew_setup() {
     wget \
     python \
     zsh \
-    exa \
     navi \
     yank \
     diff-so-fancy \
@@ -56,14 +55,19 @@ function brew_setup() {
   # nerd fonts
   brew tap homebrew/cask-fonts
   brew install --cask font-hack-nerd-font
+}
 
+function fzf_setup() {
   if [[ ! -f ~/.fzf.zsh ]]; then
     # fzf
     brew install fzf
   fi
-}
 
-function fzf_setup() {
+  # exa - improved file/directory listing
+  # bat - a cat clone with syntax highlighting and Git integration
+  # lesspipe - display more with less
+  brew install exa bat lesspipe
+
   ln -Fs "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
 }
 
