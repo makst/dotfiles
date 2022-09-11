@@ -28,7 +28,7 @@ fif() {
     return 1;
   fi
 
-  rg --files-with-matches --no-messages "$1" | fzf $FZF_PREVIEW_WINDOW --multi --expand --preview "rg --ignore-case --pretty --context 10 '$1' {}"
+  rg --files-with-matches --no-messages "$1" | fzf $FZF_PREVIEW_WINDOW --multi --preview "rg --ignore-case --pretty --context 10 '$1' {}"
 }
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
