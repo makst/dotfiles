@@ -46,7 +46,8 @@ function brew_setup() {
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \
-    lua-language-server
+    lua-language-server \
+    tree-sitter
 
   brew install jesseduffield/lazygit/lazygit
 
