@@ -9,6 +9,8 @@ vim.cmd [[packadd packer.nvim]]
 packer.startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'chriskempson/base16-vim'
+  use 'nvim-lua/plenary.nvim' -- Common utilities
+
   -- use 'navarasu/onedark.nvim'
   use 'onsails/lspkind-nvim' -- vscode-like pictograms
   use 'hrsh7th/cmp-buffer' -- nvim-cmp source for buffer words
@@ -22,4 +24,6 @@ packer.startup(function(use)
   }
   use 'windwp/nvim-autopairs'
   use 'windwp/nvim-ts-autotag'
+  use 'nvim-telescope/telescope.nvim'
+  use 'nvim-telescope/telescope-file-browser.nvim'
 end)

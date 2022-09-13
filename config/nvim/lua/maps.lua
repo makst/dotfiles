@@ -11,15 +11,15 @@ keymap.set('n', '<leader>q', ':q!<Return>')
 keymap.set('n', '<leader>w', ':w!<Return>')
 
 -- Buffers
-keymap.set('n', 'bn', ':bn<Return>')
-keymap.set('n', 'bp', ':bp<Return>')
-keymap.set('n', 'bb', ':b#<Return>')
-keymap.set('n', 'bd', ':bd<Return>')
-keymap.set('n', 'bls', ':ls<Return>')
+keymap.set('n', '<leader>bn', ':bn<Return>')
+keymap.set('n', '<leader>bp', ':bp<Return>')
+keymap.set('n', '<leader>bb', ':b#<Return>')
+keymap.set('n', '<leader>bd', ':bd<Return>')
+keymap.set('n', '<leader>bls', ':ls<Return>')
 -- https://stackoverflow.com/a/42071865
 -- %bd = delete all buffers, e# = open the last buffer for editing, bd# to delete the [No Name] buffer that gets created.
 -- The pipe in between does one command after another.
-keymap.set('n', 'bdr', ':%bd|e#|bd#<Return>')
+keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>')
 
 -- Split window
 keymap.set('n', 'ss', ':split<Return><C-w>w')
