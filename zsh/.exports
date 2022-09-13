@@ -6,7 +6,7 @@ lesspipe.sh | source /dev/stdin
 export LESS=' -R '
 
 export PATH="$HOME/bin:$PATH"
-export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/sbin:$HOME/.local/bin:$PATH"
 
 # Add pyenv executable to PATH and
 # enable shims by adding the following

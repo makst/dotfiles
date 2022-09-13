@@ -6,6 +6,13 @@ timezsh() {
   for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
 }
 
+# change alacritty theme
+# generated theme in ~/.vimrc_background doesn't really work as the theme names do not match :(
+# this func let's you choose a theme for both alacritty and vim so you can sync them manually
+function change_theme() {
+  alacritty-colorscheme -V apply $(find ~/.config/alacritty/colors/* -type f -exec basename {} \; | fzf)
+  echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/site/pack/packer/start/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/after/plugin/base16-vim.lua
+}
 
 # -------------------------
 # INSTALL / SETUP FUNCTIONS
@@ -101,7 +108,12 @@ function setup_tmux() {
 function setup_alacritty() {
   if [[ ! -L "$HOME/.config/alacritty" ]]; then
     ln -Fs "$real_script_dir/config/alacritty" "$HOME/.config/alacritty"
+    pip install --user alacritty-colorscheme
   fi
+
+  DEST="$HOME/.eendroroy-colorschemes"
+  [[ ! -d $DEST ]] && git clone https://github.com/eendroroy/alacritty-theme $DEST &&  ln -s "$DEST/themes" "$HOME/.config/alacritty/colors"
+  cd $DEST && git pull -q
 }
 
 function setup_nvim() {

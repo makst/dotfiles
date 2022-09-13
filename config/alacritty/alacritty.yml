@@ -1,6 +1,3 @@
-import:
-  - ~/.config/alacritty/one-dark.yml
-
 window:
   startup_mode: Maximized
 
@@ -22,3 +19,58 @@ font:
     style: Bold Italic
 
   size: 15
+
+# one_dark.yaml
+# * change background to '0x303030' to match vim's one_dark theme background color
+colors:
+  # COLORSCHEME: one_dark.yaml
+  # Default colors
+  primary:
+    # hard contrast: background = '0x1d2021'
+    background: '0x303030'
+    foreground: '0xabb2bf'
+
+  # Normal colors
+  normal:
+  # Bright colors
+    black: '0x1e2127'
+    red: '0xe06c75'
+    green: '0x98c379'
+    yellow: '0xd19a66'
+    blue: '0x61afef'
+    magenta: '0xc678dd'
+    cyan: '0x56b6c2'
+    white: '0xabb2bf'
+
+  # Bright colors
+  bright:
+    black: '0x5c6370'
+    red: '0xe06c75'
+    green: '0x98c379'
+    yellow: '0xd19a66'
+    blue: '0x61afef'
+    magenta: '0xc678dd'
+    cyan: '0x56b6c2'
+    white: '0xffffff'
+  cursor:
+    text: '0xff271d'
+    cursor: '0xfbfcfc'
+  # Normal colors
+  search:
+    matches:
+      foreground: '0xb2b2b2'
+      background: '0xb26818'
+    focused_match:
+      foreground: CellBackground
+      background: CellForeground
+
+  dim:
+    black: '0x232323'
+    red: '0x74423f'
+    green: '0x5e6547'
+    yellow: '0x8b7653'
+    blue: '0x556b79'
+    magenta: '0x6e4962'
+    cyan: '0x5c8482'
+    white: '0x828282'
+  indexed_colors: []
