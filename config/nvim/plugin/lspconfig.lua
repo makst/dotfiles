@@ -1,6 +1,9 @@
 local status, nvim_lsp = pcall(require, "lspconfig")
 if (not status) then return end
 
+-- turn off inline buffer error messages
+vim.diagnostic.config({virtual_text = false})
+
 local protocol = require('vim.lsp.protocol')
 
 -- Use an on_attach function to only map the following keys
