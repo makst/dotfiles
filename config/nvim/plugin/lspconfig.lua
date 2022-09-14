@@ -4,11 +4,8 @@ if (not status) then return end
 -- turn off inline buffer error messages
 vim.diagnostic.config({ virtual_text = false })
 
-local protocol = require('vim.lsp.protocol')
-
 -- Set up completion using nvim_cmp with LSP source
 local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
-capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
@@ -35,11 +32,6 @@ nvim_lsp.tsserver.setup {
   on_attach = on_attach,
   cmd = { "typescript-language-server", "--stdio" },
   capabilities = capabilities,
-  settings = {
-    completions = {
-      completeFunctionCalls = true
-    }
-  }
 }
 
 nvim_lsp.sumneko_lua.setup {
@@ -47,9 +39,6 @@ nvim_lsp.sumneko_lua.setup {
   capabilities = capabilities,
   settings = {
     Lua = {
-      completion = {
-        callSnippet = 'Replace',
-      },
       diagnostics = {
         -- Get the language server to recognize the `vim` global
         globals = { 'vim' },

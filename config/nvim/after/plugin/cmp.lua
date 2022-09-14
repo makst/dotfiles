@@ -19,6 +19,9 @@ cmp.setup({
       luasnip.lsp_expand(args.body)
     end,
   },
+  experimental = {
+    ghost_text = true
+  },
   window = {
     completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered()
@@ -64,9 +67,19 @@ cmp.setup({
   }),
   sources = {
     { name = 'nvim_lsp' },
+    { name = 'nvim_lsp_signature_help' },
     { name = 'luasnip' },
   },
   formatting = {
-    format = lspkind.cmp_format({ with_text = false, maxwidth = 50 })
-  }
+    format = lspkind.cmp_format({
+      mode = "symbol_text",
+      menu = ({
+        buffer = "[Buffer]",
+        nvim_lsp = "[LSP]",
+        luasnip = "[LuaSnip]",
+        nvim_lua = "[Lua]",
+        latex_symbols = "[Latex]",
+      })
+    }),
+  },
 })
