@@ -4,7 +4,7 @@ if (not status) then return end
 local lspkind = require 'lspkind'
 local luasnip = require 'luasnip'
 
-vim.opt.completeopt = "menuone,noselect"
+vim.opt.completeopt = "menu,menuone,noselect"
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -20,6 +20,7 @@ cmp.setup({
     end,
   },
   window = {
+    completion = cmp.config.window.bordered(),
     documentation = cmp.config.window.bordered()
   },
   mapping = cmp.mapping.preset.insert({
@@ -28,11 +29,13 @@ cmp.setup({
     ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
 
     -- scroll text in the documentation window
-    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-h>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-l>'] = cmp.mapping.scroll_docs(4),
 
     -- cancel completion
     ['<C-e>'] = cmp.mapping.abort(),
+
+    ['<C-Space>'] = cmp.mapping.complete(),
 
     -- confirm selection
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
@@ -60,9 +63,8 @@ cmp.setup({
     end, { "i", "s" }),
   }),
   sources = {
-    { name = 'luasnip' },
     { name = 'nvim_lsp' },
-    { name = 'buffer' },
+    { name = 'luasnip' },
   },
   formatting = {
     format = lspkind.cmp_format({ with_text = false, maxwidth = 50 })
