@@ -29,4 +29,5 @@ packer.startup(function(use)
   use 'windwp/nvim-ts-autotag'
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-telescope/telescope-file-browser.nvim'
+  use 'kyazdani42/nvim-web-devicons' -- File icons
 end)
