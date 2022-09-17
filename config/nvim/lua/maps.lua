@@ -22,15 +22,15 @@ keymap.set('n', '<leader>bls', ':ls<Return>')
 keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>')
 
 -- Split window
-keymap.set('n', 'ss', ':split<Return><C-w>w')
-keymap.set('n', 'sv', ':vsplit<Return><C-w>w')
+keymap.set('n', '<leader>ss', ':split<Return><C-w>w')
+keymap.set('n', '<leader>sv', ':vsplit<Return><C-w>w')
 
 -- Move window
 keymap.set('n', '<Space>', '<C-w>w')
-keymap.set('', 'sh', '<C-w>h')
-keymap.set('', 'sk', '<C-w>k')
-keymap.set('', 'sj', '<C-w>j')
-keymap.set('', 'sl', '<C-w>l')
+keymap.set('', '<leader>sh', '<C-w>h')
+keymap.set('', '<leader>sk', '<C-w>k')
+keymap.set('', '<leader>sj', '<C-w>j')
+keymap.set('', '<leader>sl', '<C-w>l')
 
 -- Resize window
 keymap.set('n', '<left>', '<C-w><')
