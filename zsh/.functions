@@ -89,7 +89,8 @@ function navi_data_dir_setup() {
 function npm_setup() {
   npm install -g \
     typescript-language-server \
-    typescript
+    typescript \
+    vscode-langservers-extracted
 }
 
 function remap_keys() {
