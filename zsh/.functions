@@ -44,6 +44,7 @@ function brew_setup() {
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
   brew install \
     cmake \
+    fd \
     git \
     wget \
     python \
