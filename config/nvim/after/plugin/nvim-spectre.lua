@@ -13,7 +13,10 @@ vim.keymap.set('n', '<leader>sw',
       select_word = true
     })
   end)
+-- search a word under cursor in the current file
 vim.keymap.set('n', '<leader>sp',
-  function ()
+  function()
+    vim.cmd('normal viwy')
     spectre.open_file_search()
+    vim.cmd('normal p')
   end)
