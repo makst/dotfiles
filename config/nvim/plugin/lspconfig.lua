@@ -11,7 +11,7 @@ local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protoco
 -- after the language server attaches to the current buffer
 local on_attach = function(client, bufnr)
   local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', 'gc', vim.lsp.buf.code_action, bufopts)
   -- formatting
   if client.server_capabilities.documentFormattingProvider then
     vim.api.nvim_create_autocmd("BufWritePre", {
