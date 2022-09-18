@@ -42,4 +42,7 @@ packer.startup(function(use)
   use 'ggandor/lightspeed.nvim'
   use 'lewis6991/gitsigns.nvim'
   use 'dinhhuy258/git.nvim' -- For git blame & browse
+  -- search/replace
+  use 'thinca/vim-qfreplace'
+  use 'windwp/nvim-spectre'
 end)
