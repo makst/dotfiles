@@ -52,4 +52,5 @@ packer.startup(function(use)
   -- search/replace
   use 'thinca/vim-qfreplace'
   use 'windwp/nvim-spectre'
+  use 'lukas-reineke/indent-blankline.nvim'
 end)
