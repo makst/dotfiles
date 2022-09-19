@@ -54,4 +54,5 @@ packer.startup(function(use)
   use 'windwp/nvim-spectre'
   use 'lukas-reineke/indent-blankline.nvim'
   use 'simrat39/symbols-outline.nvim'
+  use 'akinsho/toggleterm.nvim'
 end)

@@ -15,11 +15,3 @@ vim.keymap.set('i', '<C-k>', '<Cmd>Lspsaga signature_help<CR>', opts)
 vim.keymap.set('n', 'gp', '<Cmd>Lspsaga peek_definition<CR>', opts)
 vim.keymap.set('n', 'gr', '<Cmd>Lspsaga rename<CR>', opts)
 vim.keymap.set('n', 'gc', '<Cmd>Lspsaga code_action<CR>', opts)
-
-
--- Float terminal
--- open lazygit in lspsaga float terminal
-vim.keymap.set("n", "<leader>t", "<cmd>Lspsaga open_floaterm<CR>", { silent = true })
-vim.keymap.set("n", "<leader>lg", "<cmd>Lspsaga open_floaterm lazygit<CR>", { silent = true })
--- close floaterm
-vim.keymap.set("t", "<leader>q", [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]], { silent = true })
