@@ -53,4 +53,5 @@ packer.startup(function(use)
   use 'thinca/vim-qfreplace'
   use 'windwp/nvim-spectre'
   use 'lukas-reineke/indent-blankline.nvim'
+  use 'simrat39/symbols-outline.nvim'
 end)
