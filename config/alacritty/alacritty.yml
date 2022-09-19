@@ -1,5 +1,8 @@
 window:
   startup_mode: Maximized
+  padding:
+    x: 10
+
 
 font:
   normal:
