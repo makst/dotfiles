@@ -14,8 +14,7 @@ vim.keymap.set('n', 'gd', '<Cmd>Lspsaga lsp_finder<CR>', opts)
 vim.keymap.set('i', '<C-k>', '<Cmd>Lspsaga signature_help<CR>', opts)
 vim.keymap.set('n', 'gp', '<Cmd>Lspsaga peek_definition<CR>', opts)
 vim.keymap.set('n', 'gr', '<Cmd>Lspsaga rename<CR>', opts)
--- uncomment when it starts working again; use lspconfig's default binding for now
--- vim.keymap.set('n', 'gc', '<Cmd>Lspsaga code_action<CR>', opts)
+vim.keymap.set('n', 'gc', '<Cmd>Lspsaga code_action<CR>', opts)
 
 
 -- Float terminal
