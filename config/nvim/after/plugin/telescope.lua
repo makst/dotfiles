@@ -28,6 +28,13 @@ vim.keymap.set('n', ';f', function()
   })
 end)
 
+vim.keymap.set('n', ';a', function()
+  builtin.find_files({
+    no_ignore = true,
+    hidden = true
+  })
+end)
+
 vim.keymap.set('n', ';g', function()
   builtin.git_files()
 end)
