@@ -1,7 +1,7 @@
 local status, telescope = pcall(require, "telescope")
 if (not status) then return end
 local actions = require('telescope.actions')
-local builtin = require("telescope.builtin")
+local builtin = require('telescope.builtin')
 
 local function telescope_buffer_dir()
   return vim.fn.expand('%:p:h')
@@ -10,9 +10,12 @@ end
 telescope.setup {
   defaults = {
     layout_strategy = "vertical",
+    cache_picker = {
+      num_pickers = 100
+    },
     mappings = {
       n = {
-        ["q"] = actions.close
+        ['q'] = actions.close,
       },
     },
   },
@@ -33,6 +36,10 @@ vim.keymap.set('n', ';a', function()
     no_ignore = true,
     hidden = true
   })
+end)
+
+vim.keymap.set('n', ';p', function()
+  builtin.pickers()
 end)
 
 vim.keymap.set('n', ';g', function()
