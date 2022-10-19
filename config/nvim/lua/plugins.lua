@@ -55,4 +55,5 @@ packer.startup(function(use)
   use 'lukas-reineke/indent-blankline.nvim'
   use 'simrat39/symbols-outline.nvim'
   use 'akinsho/toggleterm.nvim'
+  use 'ThePrimeagen/harpoon'
 end)
