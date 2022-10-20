@@ -44,9 +44,11 @@ packer.startup(function(use)
     },
     tag = 'nightly' -- optional, updated every week. (see issue #1193)
   }
-
+  use {
+    'phaazon/hop.nvim',
+    branch = 'v2',
+  }
   use 'tpope/vim-repeat'
-  use 'ggandor/lightspeed.nvim'
   use 'lewis6991/gitsigns.nvim'
   use 'dinhhuy258/git.nvim' -- For git blame & browse
   -- search/replace
