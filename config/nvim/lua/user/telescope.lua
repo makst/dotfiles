@@ -13,16 +13,22 @@ telescope.setup {
     cache_picker = {
       num_pickers = 100
     },
+    path_display = { "smart" },
     mappings = {
       n = {
         ['q'] = actions.close,
       },
     },
   },
-  extensions = {},
+  extensions = {
+    ['ui-select'] = {
+      require('telescope.themes').get_dropdown {}
+    }
+  },
 }
 
 telescope.load_extension("fzf")
+telescope.load_extension("ui-select")
 
 vim.keymap.set('n', ';f', function()
   builtin.find_files({

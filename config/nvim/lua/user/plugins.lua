@@ -58,4 +58,9 @@ packer.startup(function(use)
   use 'simrat39/symbols-outline.nvim'
   use 'akinsho/toggleterm.nvim'
   use 'ThePrimeagen/harpoon'
+  use {
+    "folke/trouble.nvim",
+    requires = "kyazdani42/nvim-web-devicons"
+  }
+  use 'nvim-telescope/telescope-ui-select.nvim'
 end)
