@@ -63,4 +63,5 @@ packer.startup(function(use)
     requires = "kyazdani42/nvim-web-devicons"
   }
   use 'nvim-telescope/telescope-ui-select.nvim'
+  use 'terrortylor/nvim-comment'
 end)
