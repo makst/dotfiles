@@ -37,3 +37,7 @@ keymap.set('n', '<left>', '<C-w><')
 keymap.set('n', '<right>', '<C-w>>')
 keymap.set('n', '<up>', '<C-w>+')
 keymap.set('n', '<down>', '<C-w>-')
+
+keymap.set('n', '<C-r>', '<cmd>lua reload_nvim_conf()<cr>',
+  { silent = true, noremap = true }
+)

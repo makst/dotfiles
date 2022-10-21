@@ -5,4 +5,4 @@ hop.setup {}
 
 vim.keymap.set('', 'm', function()
   hop.hint_words()
-end, {remap=true})
+end, { remap = true })

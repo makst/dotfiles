@@ -1,5 +1,5 @@
-require('base')
-require('keymaps')
+require('user.base')
+require('user.keymaps')
 require('user.plugins')
 require('user.autopairs')
 require('user.base16-vim')
