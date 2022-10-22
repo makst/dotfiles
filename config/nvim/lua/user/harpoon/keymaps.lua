@@ -1,13 +1,6 @@
-local status_ok, telescope = pcall(require, "telescope")
-if not status_ok then
-  return
-end
-
-local h_status_ok, harpoon = pcall(require, "harpoon")
-if not h_status_ok then
-  return
-end
-telescope.load_extension "harpoon"
+---@diagnostic disable-next-line: unused-local
+local status_ok, harpoon = pcall(require, "harpoon")
+if (not status_ok) then return end
 
 local harpoon_ui = require("harpoon.ui");
 local harpoon_mark = require("harpoon.mark");
@@ -16,8 +9,12 @@ vim.keymap.set('n', ';m', function()
   harpoon_ui.toggle_quick_menu()
 end)
 
-vim.keymap.set('n', ';n', function()
+vim.keymap.set('n', ';j', function()
   harpoon_ui.nav_next()
+end)
+
+vim.keymap.set('n', ';k', function()
+  harpoon_ui.nav_prev()
 end)
 
 vim.keymap.set('n', '<leader>m', function()
