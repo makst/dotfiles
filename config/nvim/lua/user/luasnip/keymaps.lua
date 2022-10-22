@@ -1,5 +1,6 @@
-require("luasnip.loaders.from_vscode").lazy_load()
-require'luasnip'.filetype_extend("typescript", {"javascript"})
+---@diagnostic disable-next-line: unused-local
+local status, _luasnip = pcall(require, 'luasnip')
+if (not status) then return end
 
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
