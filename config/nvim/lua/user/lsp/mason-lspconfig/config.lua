@@ -5,5 +5,5 @@ if not status_ok then return end
 local mason_lspconfig = require("mason-lspconfig")
 
 mason_lspconfig.setup({
-  ensure_installed = { "sumneko_lua", "tsserver", "eslint", "yamlls" }
+  ensure_installed = { "sumneko_lua", "tsserver", "eslint", "yamlls", "gopls" }
 })
