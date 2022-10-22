@@ -1,3 +1,4 @@
+require('user.lsp.cmp')
 require('user.lsp.lspconfig')
 require('user.lsp.lspkind')
 require('user.lsp.lspsaga')
