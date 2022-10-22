@@ -20,7 +20,7 @@ packer.startup(function(use)
   use 'hrsh7th/cmp-nvim-lsp-signature-help'
   use 'saadparwaiz1/cmp_luasnip'
 
-  -- LSP 
+  -- LSP
   use {
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
@@ -70,4 +70,5 @@ packer.startup(function(use)
   }
   use 'nvim-telescope/telescope-ui-select.nvim'
   use 'terrortylor/nvim-comment'
+  use 'towolf/vim-helm'
 end)
