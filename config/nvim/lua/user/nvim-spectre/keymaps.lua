@@ -1,8 +1,6 @@
 local status, spectre = pcall(require, "spectre")
 if (not status) then return end
 
-spectre.setup {}
-
 vim.keymap.set('n', '<leader>S',
   function()
     spectre.open()
