@@ -56,7 +56,6 @@ function brew_setup() {
     diff-so-fancy \
     reattach-to-user-namespace \
     neovim \
-    lua-language-server \
     tree-sitter
 
   brew install jesseduffield/lazygit/lazygit
@@ -91,9 +90,7 @@ function navi_data_dir_setup() {
 
 function npm_setup() {
   npm install -g \
-    typescript-language-server \
-    typescript \
-    vscode-langservers-extracted
+    typescript 
 }
 
 function remap_keys() {

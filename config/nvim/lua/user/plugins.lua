@@ -19,7 +19,13 @@ packer.startup(function(use)
   use 'hrsh7th/nvim-cmp' -- Completion
   use 'hrsh7th/cmp-nvim-lsp-signature-help'
   use 'saadparwaiz1/cmp_luasnip'
-  use 'neovim/nvim-lspconfig' -- LSP
+
+  -- LSP 
+  use {
+    "williamboman/mason.nvim",
+    "williamboman/mason-lspconfig.nvim",
+    "neovim/nvim-lspconfig",
+  }
   use 'L3MON4D3/LuaSnip'
   use "rafamadriz/friendly-snippets"
   use {
