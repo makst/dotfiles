@@ -57,9 +57,12 @@ packer.startup(function(use)
   use 'tpope/vim-repeat'
   use 'lewis6991/gitsigns.nvim'
   use 'dinhhuy258/git.nvim' -- For git blame & browse
+
   -- search/replace
   use 'thinca/vim-qfreplace'
   use 'windwp/nvim-spectre'
+  use 'wincent/ferret'
+  --
   use 'lukas-reineke/indent-blankline.nvim'
   use 'simrat39/symbols-outline.nvim'
   use 'akinsho/toggleterm.nvim'
