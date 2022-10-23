@@ -47,11 +47,13 @@ vim.api.nvim_create_autocmd("InsertLeave", {
 vim.opt.formatoptions:append { 'r' }
 
 
+vim.cmd [[ set grepprg=rg\ --vimgrep ]]
+------------
 -- Functions
-
+------------
 -- https://www.reddit.com/r/neovim/comments/puuskh/comment/huozjda/?utm_source=reddit&utm_medium=web2x&context=3
 function _G.reload_nvim_conf()
-  for name,_ in pairs(package.loaded) do
+  for name, _ in pairs(package.loaded) do
     if name:match('^user') then
       package.loaded[name] = nil
     end
