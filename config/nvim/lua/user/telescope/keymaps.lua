@@ -2,6 +2,21 @@
 local status, telescope = pcall(require, "telescope")
 if (not status) then return end
 local builtin = require('telescope.builtin')
+local actions = require('telescope.actions')
+
+local M = {}
+
+M.get_mappings = function()
+  return {
+    i = {
+      ['<C-s>'] = actions.send_selected_to_qflist + actions.open_qflist
+    },
+    n = {
+      ['q'] = actions.close,
+      ['<C-s>'] = actions.send_selected_to_qflist + actions.open_qflist
+    },
+  }
+end
 
 vim.keymap.set('n', ';f', function()
   builtin.find_files({
@@ -60,3 +75,5 @@ end)
 vim.keymap.set('n', ';q', function()
   builtin.quickfix()
 end)
+
+return M;

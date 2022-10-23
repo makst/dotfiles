@@ -1,6 +1,6 @@
 local status, telescope = pcall(require, "telescope")
 if (not status) then return end
-local actions = require('telescope.actions')
+local telescope_keymaps = require("user.telescope.keymaps")
 
 telescope.setup {
   defaults = {
@@ -9,11 +9,7 @@ telescope.setup {
       num_pickers = 100
     },
     path_display = { "smart" },
-    mappings = {
-      n = {
-        ['q'] = actions.close,
-      },
-    },
+    mappings = telescope_keymaps.get_mappings()
   },
   extensions = {
     ['ui-select'] = {
@@ -24,4 +20,3 @@ telescope.setup {
 
 telescope.load_extension("fzf")
 telescope.load_extension("ui-select")
-
