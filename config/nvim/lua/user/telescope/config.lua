@@ -3,6 +3,20 @@ if (not status) then return end
 local telescope_keymaps = require("user.telescope.keymaps")
 
 telescope.setup {
+  pickers = {
+    live_grep = {
+      ---@diagnostic disable-next-line: unused-local
+      additional_args = function(opts)
+        return { "--hidden" }
+      end
+    },
+    grep_string = {
+      ---@diagnostic disable-next-line: unused-local
+      additional_args = function(opts)
+        return { "--hidden" }
+      end
+    },
+  },
   defaults = {
     layout_strategy = "vertical",
     cache_picker = {
