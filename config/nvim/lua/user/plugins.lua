@@ -60,7 +60,6 @@ packer.startup(function(use)
 
   -- search/replace
   use 'thinca/vim-qfreplace'
-  use 'windwp/nvim-spectre'
   use 'wincent/ferret'
   --
   use 'lukas-reineke/indent-blankline.nvim'
