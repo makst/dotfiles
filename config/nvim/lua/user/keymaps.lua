@@ -24,6 +24,11 @@ keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>')
 -- Split window
 keymap.set('n', '<leader>ss', ':split<Return><C-w>w')
 keymap.set('n', '<leader>sv', ':vsplit<Return><C-w>w')
+-- CTRL-W + | Set current window width to N (default: widest possible)
+-- CTRL-W + _ Set current window height to N (default: highest possible)
+-- CTRL-W + = Make all windows (almost) equally high and wide
+keymap.set('n', '<leader>zi', '<C-w>_|<C-w>|') -- zoom in
+keymap.set('n', '<leader>zo', '<C-w>=') -- zoom out
 
 -- Move window
 keymap.set('n', '<Space>', '<C-w>w')
