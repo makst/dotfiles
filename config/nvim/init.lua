@@ -1,3 +1,5 @@
+-- To use impatient, you need only to include it near the top of your init.lua
+require('user.impatient')
 require('user.base')
 require('user.keymaps')
 require('user.plugins')

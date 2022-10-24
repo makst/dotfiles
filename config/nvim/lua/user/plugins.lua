@@ -76,4 +76,7 @@ packer.startup(function(use)
   use 'nvim-telescope/telescope-ui-select.nvim'
   use 'terrortylor/nvim-comment'
   use 'towolf/vim-helm'
+
+  -- speed up
+  use 'lewis6991/impatient.nvim'
 end)
