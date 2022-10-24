@@ -20,6 +20,9 @@ packer.startup(function(use)
   use 'hrsh7th/cmp-nvim-lsp-signature-help'
   use 'saadparwaiz1/cmp_luasnip'
 
+  -- status line
+  use 'feline-nvim/feline.nvim'
+
   -- LSP
   use {
     "williamboman/mason.nvim",
