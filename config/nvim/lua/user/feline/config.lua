@@ -84,10 +84,15 @@ local c = {
       bg = "darkblue",
     },
     left_sep = "block",
-    right_sep = "right_filled",
+    right_sep = "block",
   },
   separator = {
     provider = "",
+    hl = {
+      bg = "darkblue",
+    },
+    left_sep = "block",
+    right_sep = "block",
   },
   fileinfo = {
     provider = {
@@ -97,10 +102,11 @@ local c = {
       },
     },
     hl = {
+      bg = "darkblue",
       style = "bold",
     },
-    left_sep = " ",
-    right_sep = " ",
+    left_sep = "block",
+    right_sep = "block",
   },
   diagnostic_errors = {
     provider = "diagnostic_errors",
@@ -130,7 +136,7 @@ local c = {
       bg = "darkblue",
       style = "bold",
     },
-    left_sep = "left_filled",
+    left_sep = "block",
     right_sep = "block",
   },
   file_type = {
@@ -203,6 +209,7 @@ local middle = {
   c.diagnostic_warnings,
   c.diagnostic_info,
   c.diagnostic_hints,
+  c.separator,
 }
 
 local right = {
@@ -211,7 +218,6 @@ local right = {
   c.file_encoding,
   c.position,
   c.line_percentage,
-  c.scroll_bar,
 }
 
 local components = {
