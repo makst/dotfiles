@@ -37,6 +37,10 @@ vim.opt.wildoptions = 'pum'
 vim.opt.pumblend = 5
 vim.opt.background = 'dark'
 
+-- display hidden characters
+-- turn it on with ':set list', turn it off with ':set nolist'
+vim.opt.listchars = { space = '·', eol = '$', tab = '>-', extends = '>', precedes = '<' }
+
 -- Turn off paste mode when leaving insert
 vim.api.nvim_create_autocmd("InsertLeave", {
   pattern = '*',
