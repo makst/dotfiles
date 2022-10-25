@@ -22,7 +22,6 @@ telescope.setup {
     cache_picker = {
       num_pickers = 100
     },
-    path_display = { "smart" },
     mappings = telescope_keymaps.get_mappings()
   },
   extensions = {

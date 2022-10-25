@@ -48,6 +48,10 @@ vim.keymap.set('n', ';d', function()
   builtin.lsp_document_symbols()
 end)
 
+vim.keymap.set('n', ';w', function()
+  builtin.lsp_dynamic_workspace_symbols()
+end)
+
 vim.keymap.set('n', ';c', function()
   builtin.resume()
 end)
