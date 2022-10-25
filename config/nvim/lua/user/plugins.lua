@@ -37,6 +37,7 @@ packer.startup(function(use)
   }
   use 'windwp/nvim-autopairs'
   use 'windwp/nvim-ts-autotag'
+  use 'hashivim/vim-terraform'
 
   use {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
