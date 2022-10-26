@@ -1,9 +1,6 @@
 local keymaps_module = require('user.lsp.lspconfig.keymaps')
 local M = {}
 
--- turn off inline buffer error messages
-vim.diagnostic.config({ virtual_text = false })
-
 -- Set up completion using nvim_cmp with LSP source
 M.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 

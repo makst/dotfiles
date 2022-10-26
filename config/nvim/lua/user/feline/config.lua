@@ -112,18 +112,21 @@ local c = {
     provider = "diagnostic_errors",
     hl = {
       fg = "red",
+      bg = "darkblue",
     },
   },
   diagnostic_warnings = {
     provider = "diagnostic_warnings",
     hl = {
       fg = "yellow",
+      bg = "darkblue",
     },
   },
   diagnostic_hints = {
     provider = "diagnostic_hints",
     hl = {
       fg = "aqua",
+      bg = "darkblue",
     },
   },
   diagnostic_info = {
