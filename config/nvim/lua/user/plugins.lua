@@ -1,6 +1,6 @@
-local status, packer = pcall(require, "packer")
+local status, packer = pcall(require, 'packer')
 if (not status) then
-  print("Packer is not installed")
+  print('Packer is not installed')
   return
 end
 
@@ -25,12 +25,12 @@ packer.startup(function(use)
 
   -- LSP
   use {
-    "williamboman/mason.nvim",
-    "williamboman/mason-lspconfig.nvim",
-    "neovim/nvim-lspconfig",
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+    'neovim/nvim-lspconfig',
   }
   use 'L3MON4D3/LuaSnip'
-  use "rafamadriz/friendly-snippets"
+  use 'rafamadriz/friendly-snippets'
   use {
     'nvim-treesitter/nvim-treesitter',
     run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
@@ -71,8 +71,8 @@ packer.startup(function(use)
   use 'akinsho/toggleterm.nvim'
   use 'ThePrimeagen/harpoon'
   use {
-    "folke/trouble.nvim",
-    requires = "kyazdani42/nvim-web-devicons"
+    'folke/trouble.nvim',
+    requires = 'kyazdani42/nvim-web-devicons'
   }
   use 'nvim-telescope/telescope-ui-select.nvim'
   use 'terrortylor/nvim-comment'
@@ -80,4 +80,8 @@ packer.startup(function(use)
 
   -- speed up
   use 'lewis6991/impatient.nvim'
+
+  -- dap
+  use { 'rcarriga/nvim-dap-ui', requires = { 'mfussenegger/nvim-dap' } }
+  use { 'theHamsta/nvim-dap-virtual-text', requires = { 'mfussenegger/nvim-dap' } }
 end)
