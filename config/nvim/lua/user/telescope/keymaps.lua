@@ -33,7 +33,7 @@ vim.keymap.set('n', ';a', function()
 end)
 
 vim.keymap.set('n', ';p', function()
-  builtin.pickers()
+  require('telescope').extensions.project.project {}
 end)
 
 vim.keymap.set('n', ';g', function()

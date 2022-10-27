@@ -84,4 +84,7 @@ packer.startup(function(use)
   -- dap
   use { 'rcarriga/nvim-dap-ui', requires = { 'mfussenegger/nvim-dap' } }
   use { 'theHamsta/nvim-dap-virtual-text', requires = { 'mfussenegger/nvim-dap' } }
+
+  -- project management
+  use 'nvim-telescope/telescope-project.nvim'
 end)
