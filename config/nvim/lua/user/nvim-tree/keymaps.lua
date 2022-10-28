@@ -1,5 +1,5 @@
 ---@diagnostic disable-next-line: unused-local
-local status, nvim_tree = pcall(require, "nvim-tree")
+local status, nvim_tree = pcall(require, 'nvim-tree')
 if (not status) then return end
 
 local opts = { noremap = true, silent = true }

@@ -1,4 +1,4 @@
-local status, nvim_lsp = pcall(require, "lspconfig")
+local status, nvim_lsp = pcall(require, 'lspconfig')
 if (not status) then return end
 local base = require('user.lsp.lspconfig.base')
 
@@ -14,7 +14,7 @@ nvim_lsp.sumneko_lua.setup {
 
       workspace = {
         -- Make the server aware of Neovim runtime files
-        library = vim.api.nvim_get_runtime_file("", true),
+        library = vim.api.nvim_get_runtime_file('', true),
         checkThirdParty = false
       },
     },

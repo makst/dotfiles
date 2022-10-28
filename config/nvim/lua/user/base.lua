@@ -44,9 +44,9 @@ vim.opt.background = 'dark'
 vim.opt.listchars = { space = '·', eol = '$', tab = '>-', extends = '>', precedes = '<' }
 
 -- Turn off paste mode when leaving insert
-vim.api.nvim_create_autocmd("InsertLeave", {
+vim.api.nvim_create_autocmd('InsertLeave', {
   pattern = '*',
-  command = "set nopaste"
+  command = 'set nopaste'
 })
 
 -- Add asterisks in block comments
@@ -66,5 +66,5 @@ function _G.reload_nvim_conf()
   end
 
   dofile(vim.env.MYVIMRC)
-  vim.notify("Nvim configuration reloaded!", vim.log.levels.INFO)
+  vim.notify('Nvim configuration reloaded!', vim.log.levels.INFO)
 end

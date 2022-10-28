@@ -1,1 +1,1 @@
-require("user.debug.dap.config")
+require('user.debug.dap.config')

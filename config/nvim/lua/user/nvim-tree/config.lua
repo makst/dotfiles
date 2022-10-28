@@ -1,4 +1,4 @@
-local status, nvim_tree = pcall(require, "nvim-tree")
+local status, nvim_tree = pcall(require, 'nvim-tree')
 if (not status) then return end
 
 nvim_tree.setup {
@@ -10,7 +10,7 @@ nvim_tree.setup {
     adaptive_size = true,
     mappings = {
       list = {
-        { key = "l", action = "edit" }
+        { key = 'l', action = 'edit' }
       }
     }
   }

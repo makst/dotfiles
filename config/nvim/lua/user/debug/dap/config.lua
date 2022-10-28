@@ -1,7 +1,7 @@
-local status_dap, _ = pcall(require, "dap")
+local status_dap, _ = pcall(require, 'dap')
 if not status_dap then return end
 
-local icons_module = require("user.debug.dap.icons")
+local icons_module = require('user.debug.dap.icons')
 
 vim.highlight.create('DapBreakpoint', { ctermbg = 0, guifg = '#993939', guibg = '#31353f' }, false)
 vim.highlight.create('DapLogPoint', { ctermbg = 0, guifg = '#61afef', guibg = '#31353f' }, false)

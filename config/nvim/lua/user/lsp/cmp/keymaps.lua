@@ -4,7 +4,7 @@ local M = {}
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
 M.get_keymaps = function(cmp)
@@ -26,7 +26,7 @@ M.get_keymaps = function(cmp)
     -- confirm selection
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
 
-    ["<Tab>"] = cmp.mapping(function(fallback)
+    ['<Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_next_item()
       elseif luasnip.expand_or_jumpable() then
@@ -36,9 +36,9 @@ M.get_keymaps = function(cmp)
       else
         fallback()
       end
-    end, { "i", "s" }),
+    end, { 'i', 's' }),
 
-    ["<S-Tab>"] = cmp.mapping(function(fallback)
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item()
       elseif luasnip.jumpable(-1) then
@@ -46,7 +46,7 @@ M.get_keymaps = function(cmp)
       else
         fallback()
       end
-    end, { "i", "s" }),
+    end, { 'i', 's' }),
   }
 end
 

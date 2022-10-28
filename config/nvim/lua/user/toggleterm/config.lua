@@ -1,5 +1,5 @@
 ---@diagnostic disable: lowercase-global
-local status, toggleterm = pcall(require, "toggleterm")
+local status, toggleterm = pcall(require, 'toggleterm')
 if (not status) then return end
 
 toggleterm.setup {}
@@ -14,12 +14,12 @@ function _lazygit_toggle()
   local cwd = vim.fn.getcwd()
   if (lg_terminal_map[cwd] == nil) then
     lg_terminal_map[cwd] = Terminal:new({
-      cmd = "lazygit",
+      cmd = 'lazygit',
       autochdir = true,
       hidden = true,
-      direction = "float",
+      direction = 'float',
       float_opts = {
-        border = "double",
+        border = 'double',
       },
     })
   end
@@ -32,9 +32,9 @@ function _testterm_toggle()
   if (test_terminal_map[cwd] == nil) then
     test_terminal_map[cwd] = Terminal:new({
       hidden = true,
-      direction = "float",
+      direction = 'float',
       float_opts = {
-        border = "double",
+        border = 'double',
       },
     })
   end
@@ -47,9 +47,9 @@ function _miscterm_toggle()
   if (misc_terminal_map[cwd] == nil) then
     misc_terminal_map[cwd] = Terminal:new({
       hidden = true,
-      direction = "float",
+      direction = 'float',
       float_opts = {
-        border = "double",
+        border = 'double',
       },
     })
   end

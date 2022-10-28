@@ -4,10 +4,10 @@ local M = {}
 -- use this to beautify the plain E W signs to more fun ones
 -- !important nerdfonts needs to be setup for this to work in your terminal
 M.icons = {
-  Error = " ",
-  Warn = " ",
-  Hint = " ",
-  Info = " "
+  Error = ' ',
+  Warn = ' ',
+  Hint = ' ',
+  Info = ' '
 }
 
 return M

@@ -1,4 +1,4 @@
-local status_dap, dap = pcall(require, "dap")
+local status_dap, dap = pcall(require, 'dap')
 if not status_dap then return end
 
 dap.adapters.node2 = {

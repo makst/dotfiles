@@ -6,4 +6,4 @@ local luasnip_loaders = require('luasnip.loaders.from_vscode');
 luasnip_loaders.lazy_load()
 
 local luasnip = require('luasnip');
-luasnip.filetype_extend("typescript", {"javascript"})
+luasnip.filetype_extend('typescript', { 'javascript' })

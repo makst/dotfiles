@@ -1,1 +1,1 @@
-require("user.impatient.config")
+require('user.impatient.config')
