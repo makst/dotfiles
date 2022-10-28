@@ -87,4 +87,6 @@ packer.startup(function(use)
 
   -- project management
   use 'nvim-telescope/telescope-project.nvim'
+
+  use 'tpope/vim-surround'
 end)
