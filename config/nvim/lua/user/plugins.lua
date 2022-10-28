@@ -89,4 +89,5 @@ packer.startup(function(use)
   use 'nvim-telescope/telescope-project.nvim'
 
   use 'tpope/vim-surround'
+  use 'tpope/vim-abolish'
 end)
