@@ -5,3 +5,4 @@ zsh/.private
 zsh/.zshdefault.zwc
 *.DS_Store
 config/alacritty/colors
+config/nvim/lua/user/hidden/*
