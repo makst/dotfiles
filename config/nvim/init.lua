@@ -2,6 +2,7 @@
 require('user.impatient')
 require('user.base')
 require('user.keymaps')
+require('user.ferret')
 require('user.hidden')
 require('user.plugins')
 require('user.autopairs')
