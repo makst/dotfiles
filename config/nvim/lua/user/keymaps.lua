@@ -46,7 +46,7 @@ keymap.set('n', '<down>', '<C-w>-')
 -- clear search highlights
 keymap.set('n', '<C-l>', '<cmd>:noh<cr>')
 
-keymap.set('n', '<C-r>', '<cmd>lua reload_nvim_conf()<cr>')
+keymap.set('n', '<leader>re', '<cmd>lua reload_nvim_conf()<cr>')
 
 -- diff 2 buffers in a split: on
 keymap.set('n', '<leader>dt', '<cmd>:windo diffthis<cr>')
