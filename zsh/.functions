@@ -15,6 +15,30 @@ function change_theme() {
 }
 
 # -------------------------
+# CHEATSHEETS 
+# -------------------------
+
+# Takes ~15-20 min to sync the full catalog
+function sync_cheatsh() {
+  mkdir -p ~/cheatsheets/cheatsh/
+  
+  # get a list with all cheatsheets
+  curl -s cheat.sh/:list --output ~/cheatsheets/cheatsh/list
+
+  while IFS= read -r line; do
+    chsh_req=$line
+    file_name=$(echo "$line" | sed -E 's/[^[:alnum:][:space:]]/_/g')
+    curl -s cheat.sh/$chsh_req --output ~/cheatsheets/cheatsh/$file_name
+  done < ~/cheatsheets/cheatsh/list
+
+  echo "Done syncing cheat.sh"
+}
+
+function sync_cheatsheets() {
+  sync_cheatsh
+}
+
+# -------------------------
 # INSTALL / SETUP FUNCTIONS
 # -------------------------
 
