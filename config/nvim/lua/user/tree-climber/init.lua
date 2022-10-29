@@ -1,1 +1,1 @@
-require('user.tree-climber.config')
+require('user.tree-climber.keymaps')
