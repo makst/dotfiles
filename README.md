@@ -1,7 +1,6 @@
 - [About](#about)
 - [Install from scratch](#install-from-scratch)
 - [Working with the full installation](#working-with-the-full-installation)
-- [TODO](#todo)
 
 About
 ---
