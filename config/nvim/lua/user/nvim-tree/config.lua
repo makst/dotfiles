@@ -8,6 +8,7 @@ nvim_tree.setup {
   },
   view = {
     adaptive_size = true,
+    side = "right",
     mappings = {
       list = {
         { key = 'l', action = 'edit' }
