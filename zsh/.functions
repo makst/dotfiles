@@ -68,6 +68,14 @@ function install_and_update_zsh_plugins() {
   cd $current_dir
 }
 
+function rust_setup() {
+  # rustup
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+  # bob - nvim package manager
+  cargo install --git https://github.com/MordechaiHadad/bob.git 
+}
+
 function brew_setup() {
   echo "=> Installing must-have brew formulas"
   # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
@@ -198,6 +206,7 @@ function install_ssh_ident() {
 
 function setup_dotfiles() {
   brew_setup
+  rust_setup
   fzf_setup
   navi_data_dir_setup
   npm_setup
