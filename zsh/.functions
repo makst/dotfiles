@@ -84,10 +84,9 @@ function brew_setup() {
     ripgrep \
     diff-so-fancy \
     reattach-to-user-namespace \
-    neovim \
-    tree-sitter
     tree-sitter \
-    podman 
+    podman \ 
+    docker-compose
 
   brew install jesseduffield/lazygit/lazygit
 
