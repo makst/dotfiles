@@ -34,8 +34,13 @@ function sync_cheatsh() {
   echo "Done syncing cheat.sh"
 }
 
+function sync_learnx_in_y_minutes() {
+  mkdir -p ~/cheatsheets/learnxinyminutes/
+}
+
 function sync_cheatsheets() {
   sync_cheatsh
+  sync_learnx_in_y_minutes
 }
 
 # -------------------------
