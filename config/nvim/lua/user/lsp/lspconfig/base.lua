@@ -2,7 +2,7 @@ local keymaps_module = require('user.lsp.lspconfig.keymaps')
 local M = {}
 
 -- Set up completion using nvim_cmp with LSP source
-M.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+M.capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 -- Use an on_attach function to only map the following keys
 -- after the language server attaches to the current buffer
