@@ -106,6 +106,9 @@ function brew_setup() {
   # nerd fonts
   brew tap homebrew/cask-fonts
   brew install --cask font-hack-nerd-font
+
+  # command line tool for processing HTML
+  brew install https://raw.githubusercontent.com/EricChiang/pup/master/pup.rb
 }
 
 function fzf_setup() {
