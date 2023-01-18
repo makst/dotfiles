@@ -81,6 +81,8 @@ function brew_setup() {
     reattach-to-user-namespace \
     neovim \
     tree-sitter
+    tree-sitter \
+    podman 
 
   brew install jesseduffield/lazygit/lazygit
 

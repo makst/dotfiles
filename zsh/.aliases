@@ -7,3 +7,5 @@ alias sp="spotify prev"
 alias copy_last_cmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 
 alias lg='lazygit'
+
+alias docker="podman"
