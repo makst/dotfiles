@@ -111,6 +111,19 @@ function brew_setup() {
   brew install https://raw.githubusercontent.com/EricChiang/pup/master/pup.rb
 }
 
+function setup_window_management() {
+  # for yabai and skhd
+  brew tap koekeishiya/formulae
+  brew install yabai skhd
+
+  # start services
+  brew services start yabai
+  brew services start skhd 
+
+  ln -Fs "$real_script_dir/config/.yabairc" "$HOME/.yabairc"
+  ln -Fs "$real_script_dir/config/.skhdrc" "$HOME/.skhdrc"
+}
+
 function fzf_setup() {
   if [[ ! -f ~/.fzf.zsh ]]; then
     # fzf
