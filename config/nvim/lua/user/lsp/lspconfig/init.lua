@@ -1,6 +1,6 @@
 require('user.lsp.lspconfig.config')
 require('user.lsp.lspconfig.tsserver')
 require('user.lsp.lspconfig.eslint')
-require('user.lsp.lspconfig.sumneko_lua')
+require('user.lsp.lspconfig.lua_ls')
 require('user.lsp.lspconfig.yamlls')
 require('user.lsp.lspconfig.gopls')
