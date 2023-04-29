@@ -49,13 +49,13 @@
 	log = true
 [core]
 	pager = diff-so-fancy | less --tabs=4 -RFX
-	editor = code --wait
+	editor = vim
 
 [diff]
     tool = default-difftool
 
 [difftool "default-difftool"]
-    cmd = code --wait --diff $LOCAL $REMOTE
+    cmd = vimdiff
 
 [color "diff-highlight"]
 	oldNormal = red bold
