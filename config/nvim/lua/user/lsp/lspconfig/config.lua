@@ -16,6 +16,12 @@ vim.diagnostic.config({
   },
 })
 
+-- disables diagnostics for buffers with filetype helm
+vim.cmd([[
+  autocmd FileType helm lua vim.diagnostic.disable(vim.fn.bufnr())
+]])
+
+
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
   border = 'rounded',
 })
