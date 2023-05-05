@@ -11,7 +11,7 @@ timezsh() {
 # this func let's you choose a theme for both alacritty and vim so you can sync them manually
 function change_theme() {
   alacritty-colorscheme -V apply $(find ~/.config/alacritty/colors/* -type f -exec basename {} \; | fzf)
-  echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/site/pack/packer/start/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/after/plugin/base16-vim.lua
+  echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/site/pack/packer/start/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/lua/user/base16-vim.lua
 }
 
 # -------------------------
