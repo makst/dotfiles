@@ -91,4 +91,14 @@ packer.startup(function(use)
 
   use 'tpope/vim-surround'
   use 'tpope/vim-abolish'
+
+  -- chatgpt
+  use({
+    'jackMort/ChatGPT.nvim',
+    requires = {
+      'MunifTanjim/nui.nvim',
+      'nvim-lua/plenary.nvim',
+      'nvim-telescope/telescope.nvim'
+    }
+  })
 end)
