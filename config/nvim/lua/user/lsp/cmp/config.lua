@@ -3,7 +3,7 @@ local status, cmp = pcall(require, 'cmp')
 if (not status) then return end
 local lspkind = require 'lspkind'
 local luasnip = require 'luasnip'
-local keymaps_module = require('user.lsp.cmp.keymaps')
+local keymaps_module = require 'user.lsp.cmp.keymaps'
 
 vim.opt.completeopt = 'menu,menuone,noselect'
 local keymaps = keymaps_module.get_keymaps(cmp)
