@@ -5,7 +5,7 @@ M.edit_with_instructions = {
   toggle_diff = "<C-d>",
   toggle_settings = "<C-o>",
   cycle_windows = "<Tab>",
-  use_output_as_input = "<C-i>"
+  use_output_as_input = "<C-k>"
 }
 
 M.chat = {
@@ -21,5 +21,10 @@ M.chat = {
   rename_session = "r",
   delete_session = "d"
 }
+
+local opts = { noremap = true, silent = true }
+vim.api.nvim_set_keymap('n', '<leader>g', ':lua require("chatgpt").openChat()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>ga', ':lua require("chatgpt").selectAwesomePrompt()<CR>', opts)
+vim.api.nvim_set_keymap('n', '<leader>gei', ':lua require("chatgpt").edit_with_instructions()<CR>', opts)
 
 return M;
