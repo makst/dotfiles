@@ -1,7 +1,7 @@
 local M = {}
 
 M.edit_with_instructions = {
-  accept = "<C-y>",
+  accept = "<C-s>",
   toggle_diff = "<C-d>",
   toggle_settings = "<C-o>",
   cycle_windows = "<Tab>",
