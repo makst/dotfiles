@@ -34,10 +34,10 @@ if [ ! -d "$HOME/.oh-my-zsh" ]; then
   KEEP_ZSHRC=yes RUNZSH=no CHSH=no /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 
-echo "=> Setting zsh as the default terminal"
+echo "=> Setting Homebrew's zsh as the login shell"
 ZSH_BIN="$(brew --prefix)/bin/zsh"
 # chsh only accepts shells that are listed in /etc/shells.
 grep -qxF "$ZSH_BIN" /etc/shells || echo "$ZSH_BIN" | sudo tee -a /etc/shells > /dev/null
 [ "$SHELL" = "$ZSH_BIN" ] || chsh -s "$ZSH_BIN"
 
-echo "=> Done. Now run: exec zsh && zsh_install_from_scratch"
+echo "=> Done. Now run: exec zsh && setup_dotfiles"

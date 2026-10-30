@@ -22,7 +22,7 @@ Make sure you fork this repo and adjust it to your own preferences before even s
 
    `prepare-zsh-install.sh` links the dotfiles into `$HOME`, installs Homebrew (native `/opt/homebrew` on Apple
    silicon), zsh and Oh My Zsh, and makes Homebrew's zsh your login shell. `setup_dotfiles` then installs the
-   packages from the [Brewfile](./Brewfile) (including nvim), the zsh plugins, node, ssh-ident, links the git, tmux, nvim and Ghostty config and remaps Caps Lock to Ctrl at every login.
+   packages from the [Brewfile](./Brewfile) (including nvim, starship and fnm), the zsh and tmux plugins, node (fnm), ssh-ident, links the git, tmux, nvim and Ghostty config and remaps Caps Lock to Ctrl at every login. `change_theme` switches the base16 colour scheme of nvim and Ghostty together.
 
    yabai and skhd are installed by the Brewfile, but `setup_window_management` is not part of `setup_dotfiles`:
    run it yourself after reading the SIP notes in that function.

@@ -19,19 +19,11 @@ export PATH="$HOME/.local/bin:$PATH"
 # directory with .nvmrc / .node-version switches to that version
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"
 
-# Add pyenv executable to PATH and
-# enable shims by adding the following
-# to ~/.profile and ~/.zprofile:
+# pyenv: the global python is `pyenv global <version>` (stored in ~/.pyenv/version), else the system one
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv > /dev/null; then
-  eval "$(pyenv init --path)"
-
-  # Load pyenv into the shell by adding
-  # the following to ~/.zshrc:
-  eval "$(pyenv init -)"
-  # skip until `pyenv install 3.9.6` has been run, instead of erroring in every shell
-  pyenv versions --bare | grep -qx 3.9.6 && pyenv global 3.9.6
+  eval "$(pyenv init - zsh)"
 fi
 
 # remove duplicate in PATH
