@@ -57,6 +57,7 @@ Switching sessions and windows
 | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
 | `C-a l` | back to the last window |
+| `cmd+r` / `cmd+shift+r` | rename the window / session |
 
 More in [tmux](docs/tmux.md#keys).
 

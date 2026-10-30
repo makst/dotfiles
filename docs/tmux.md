@@ -33,6 +33,7 @@ The prefix is `C-a` (with Caps Lock as Ctrl, that's a left-hand roll). Press it 
 | `C-a f` | `cmd+k` | session picker |
 | `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
+| `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
 | `C-a H/J/K/L` | | resize pane (repeatable) |
 | `C-a d` | | detach |
 | `C-a r` | | reload the config |

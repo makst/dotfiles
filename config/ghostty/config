@@ -63,6 +63,9 @@ keybind = super+shift+enter=text:\x01z
 keybind = super+k=text:\x01f
 keybind = super+j=text:\x01w
 keybind = super+f=text:\x01/
+# rename the window / session (tmux defaults prefix , and prefix $)
+keybind = super+r=text:\x01,
+keybind = super+shift+r=text:\x01$
 keybind = super+digit_1=text:\x011
 keybind = super+1=text:\x011
 keybind = super+digit_2=text:\x012

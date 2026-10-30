@@ -35,6 +35,7 @@ they behave like native shortcuts but act on tmux:
 | `cmd+k` | `C-a f` | session picker |
 | `cmd+j` | `C-a w` | tree of all sessions and windows |
 | `cmd+f` | `C-a /` | search the scrollback |
+| `cmd+r` / `cmd+shift+r` | `C-a ,` / `C-a $` | rename the window / session |
 
 In a plain window these shortcuts type the escape sequence into the shell instead, so close plain windows
 with `cmd+shift+w`. To add a shortcut: bind the action in `tmux.conf`, then have Ghostty send `\x01` (C-a)
