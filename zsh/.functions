@@ -6,11 +6,9 @@ timezsh() {
   for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
 }
 
-# change alacritty theme
-# generated theme in ~/.vimrc_background doesn't really work as the theme names do not match :(
-# this func let's you choose a theme for both alacritty and vim so you can sync them manually
+# change the nvim colorscheme (base16)
+# the terminal theme is set in config/ghostty/config (see `ghostty +list-themes`)
 function change_theme() {
-  alacritty-colorscheme -V apply $(find ~/.config/alacritty/colors/* -type f -exec basename {} \; | fzf)
   echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/site/pack/packer/start/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/lua/user/base16-vim.lua
 }
 
@@ -73,76 +71,45 @@ function rust_setup() {
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
   # bob - nvim package manager
-  cargo install --git https://github.com/MordechaiHadad/bob.git 
+  [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+  cargo install --git https://github.com/MordechaiHadad/bob.git
+  # bob puts the active nvim into ~/.local/share/bob/nvim-bin (on PATH, see zsh/.exports)
+  bob use stable
 }
 
 function brew_setup() {
-  echo "=> Installing must-have brew formulas"
-  # reattach-to-user-namespace - [access macOS clipboard from within tmux sessions](https://github.com/gpakosz/.tmux#accessing-the-macos-clipboard-from-within-tmux-sessions-tmux--26)
-  brew install \
-    gnu-sed \
-    cmake \
-    fd \
-    git \
-    wget \
-    python \
-    zsh \
-    navi \
-    yank \
-    ripgrep \
-    diff-so-fancy \
-    reattach-to-user-namespace \
-    tree-sitter \
-    podman \ 
-    docker-compose
-
-  brew install jesseduffield/lazygit/lazygit
-
-  brew install --cask \
-    alacritty \
-    iterm2 \
-    visual-studio-code
-
-  # nerd fonts
-  brew tap homebrew/cask-fonts
-  brew install --cask font-hack-nerd-font
-
-  # command line tool for processing HTML
-  brew install https://raw.githubusercontent.com/EricChiang/pup/master/pup.rb
+  echo "=> Installing brew packages from the Brewfile"
+  # see the Brewfile for what is installed and why
+  brew bundle --file="$real_script_dir/Brewfile"
 }
 
 function setup_window_management() {
-  # for yabai and skhd
-  brew tap koekeishiya/formulae
-  brew install yabai skhd
+  # yabai and skhd are installed by the Brewfile.
+  # yabai's scripting addition (`yabai --load-sa` in .yabairc) needs SIP partially disabled and,
+  # on Apple silicon, the arm64e boot-arg: https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection
 
   # start services
   brew services start yabai
   brew services start skhd 
 
-  ln -Fs "$real_script_dir/config/.yabairc" "$HOME/.yabairc"
-  ln -Fs "$real_script_dir/config/.skhdrc" "$HOME/.skhdrc"
+  ln -sfn "$real_script_dir/config/.yabairc" "$HOME/.yabairc"
+  ln -sfn "$real_script_dir/config/.skhdrc" "$HOME/.skhdrc"
 }
 
 function fzf_setup() {
-  if [[ ! -f ~/.fzf.zsh ]]; then
-    # fzf
-    brew install fzf
-  fi
-
-  # exa - improved file/directory listing
-  # bat - a cat clone with syntax highlighting and Git integration
-  # lesspipe - display more with less
-  brew install exa bat lesspipe
-
-  ln -Fs "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
+  # fzf, eza (improved file/directory listing), bat (cat with syntax highlighting) and
+  # lesspipe (display more with less) come from the Brewfile
+  ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
 }
 
 function navi_data_dir_setup() {
-  ln -Fs "$real_script_dir/data_dir/navi/cheats" "$HOME/Library/Application Support/navi/cheats/makst_cheats"
+  mkdir -p "$HOME/Library/Application Support/navi/cheats"
+  ln -sfn "$real_script_dir/data_dir/navi/cheats" "$HOME/Library/Application Support/navi/cheats/makst_cheats"
 }
 
 function npm_setup() {
+  # node comes from nvm (zsh-nvm plugin)
+  nvm install --lts
   npm install -g \
     typescript 
 }
@@ -150,89 +117,85 @@ function npm_setup() {
 function remap_keys() {
   # https://apple.stackexchange.com/a/283253
   # Caps Lock -> Right Ctrl
-  hidutil property --set '{"UserKeyMapping":
-      [{"HIDKeyboardModifierMappingSrc":0x700000039,
-        "HIDKeyboardModifierMappingDst":0x7000000e4}]
-  }'
+  local mapping='{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000e4}]}'
+  hidutil property --set "$mapping"
+
+  # hidutil mappings are lost on reboot, so re-apply it at every login
+  local label="com.makst.capslock-to-ctrl"
+  local plist="$HOME/Library/LaunchAgents/$label.plist"
+  mkdir -p "$HOME/Library/LaunchAgents"
+  cat > "$plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$label</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/hidutil</string>
+    <string>property</string>
+    <string>--set</string>
+    <string>$mapping</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+PLIST
+  launchctl bootout "gui/$(id -u)/$label" 2> /dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$plist"
 }
 
 function setup_tmux() {
-  ln -Fs "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
+  ln -sfn "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
 }
 
-function setup_alacritty() {
-  if [[ ! -L "$HOME/.config/alacritty" ]]; then
-    ln -Fs "$real_script_dir/config/alacritty" "$HOME/.config/alacritty"
-    pip install --user alacritty-colorscheme
-  fi
-
-  DEST="$HOME/.eendroroy-colorschemes"
-  [[ ! -d $DEST ]] && git clone https://github.com/eendroroy/alacritty-theme $DEST &&  ln -s "$DEST/themes" "$HOME/.config/alacritty/colors"
-  cd $DEST && git pull -q
+function setup_ghostty() {
+  mkdir -p "$HOME/.config/ghostty"
+  ln -sfn "$real_script_dir/config/ghostty/config" "$HOME/.config/ghostty/config"
 }
 
 function setup_nvim() {
-  if [[ ! -L "$HOME/.config/nvim" ]]; then
-    ln -Fs "$real_script_dir/config/nvim" "$HOME/.config/nvim"
-    ln -Fs $(which nvim) /usr/local/bin/vim
-  fi
+  ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim"
+  mkdir -p "$HOME/bin"
+  command -v nvim > /dev/null && ln -sfn "$(command -v nvim)" "$HOME/bin/vim"
 
   # install nvim packer (lua package manager)
   [[ ! -d ~/.local/share/nvim/site/pack/packer ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 }
 
-# http://stratus3d.com/blog/2015/02/28/sync-iterm2-profile-with-dotfiles-repository/
-function sync_iterm_profile() {
-  # Specify the preferences directory
-  defaults write com.googlecode.iterm2.plist PrefsCustomFolder -string "$real_script_dir/config/iterm2"
-
-  # Tell iTerm2 to use the custom preferences in the directory
-  defaults write com.googlecode.iterm2.plist LoadPrefsFromCustomFolder -bool true
-}
-
 function setup_git() {
-  ln -Fs "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
-}
-
-function setup_vs_code() {
-  cp -f "$real_script_dir/config/git/hooks/post-merge" "$real_script_dir/.git/hooks/post-merge"
-  chmod +x "$real_script_dir/.git/hooks/post-merge"
-  cp -f "$real_script_dir/config/git/hooks/pre-commit" "$real_script_dir/.git/hooks/pre-commit"
-  chmod +x "$real_script_dir/.git/hooks/pre-commit"
-
-  if [[ ! -L "$HOME/Library/Application Support/Code/User/snippets" ]]; then
-    ln -Fs "$real_script_dir/config/VSCode/snippets" "$HOME/Library/Application Support/Code/User/snippets"
-    ln -Fs "$real_script_dir/config/VSCode/keybindings.json" "$HOME/Library/Application Support/Code/User/keybindings.json"
-    ln -Fs "$real_script_dir/config/VSCode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
-  fi
+  ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
 }
 
 # https://github.com/ccontavalli/ssh-ident
 function install_ssh_ident() {
   if [[ ! -f ~/bin/ssh-ident ]]; then
     mkdir -p ~/bin
-    wget -O ~/bin/ssh-ident goo.gl/MoJuKB
+    curl -fsSL -o ~/bin/ssh-ident https://raw.githubusercontent.com/ccontavalli/ssh-ident/master/ssh-ident
+    # upstream still says `#!/usr/bin/env python`, which macOS no longer provides
+    sed -i '' '1s|.*|#!/usr/bin/env python3|' ~/bin/ssh-ident
     chmod 0755 ~/bin/ssh-ident
-
-    ln -Fs  ~/bin/ssh-ident ~/bin/ssh
-    ln -Fs  ~/bin/ssh-ident ~/bin/scp
-    ln -Fs  ~/bin/ssh-ident ~/bin/sftp
   fi
+
+  ln -sfn ~/bin/ssh-ident ~/bin/ssh
+  ln -sfn ~/bin/ssh-ident ~/bin/scp
+  ln -sfn ~/bin/ssh-ident ~/bin/sftp
 }
 
 function setup_dotfiles() {
   brew_setup
+  install_and_update_zsh_plugins
   rust_setup
   fzf_setup
   navi_data_dir_setup
   npm_setup
-  install_nvm
   install_ssh_ident
   setup_git
-  setup_vs_code
   setup_tmux
   setup_nvim
-  setup_alacritty
-  sync_iterm_profile
+  setup_ghostty
   remap_keys
+  # not run by default, needs SIP changes first: setup_window_management
 }

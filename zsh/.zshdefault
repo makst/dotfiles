@@ -13,7 +13,8 @@ export NVM_COMPLETION=true
 # Fixes
 # zsh-autosuggestions: highlighting style not working in tmux
 # https://github.com/zsh-users/zsh-autosuggestions/issues/229#issuecomment-300675586
-export TERM=xterm-256color
+# Only inside tmux: elsewhere the terminal's own TERM (e.g. xterm-ghostty) must stay.
+[[ -n $TMUX ]] && export TERM=xterm-256color
 
 # https://github.com/jeffreytse/zsh-vi-mode/issues/15
 function zvm_fix_partial_history_search() {

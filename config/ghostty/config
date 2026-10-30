@@ -1,0 +1,9 @@
+# Ghostty config: https://ghostty.org/docs/config
+# Symlinked to ~/.config/ghostty/config by setup_ghostty (zsh/.functions).
+
+# Source Code Pro 18, carried over from the old iTerm profile
+font-family = Source Code Pro
+font-size = 18
+
+# Option acts as Alt, for vim / tmux / zsh-vi-mode bindings
+macos-option-as-alt = true
