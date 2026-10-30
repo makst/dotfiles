@@ -9,3 +9,9 @@ alias copy_last_cmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 alias lg='lazygit'
 
 alias docker="podman"
+
+# eza instead of ls for the long listings: colours (LS_COLORS), git status, icons (Ghostty bundles the Nerd Font symbols)
+alias ll='eza -l --git --group-directories-first --icons=auto'
+alias la='eza -la --git --group-directories-first --icons=auto'
+alias l='la'
+alias lt='eza --tree --level=2 --git-ignore --icons=auto'

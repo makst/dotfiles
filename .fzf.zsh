@@ -1,17 +1,29 @@
-# fzf oh-my-zsh plugin tries to find [junegunn's fzf](https://github.com/junegunn/fzf) based on where
-# it's been installed, and enables its fuzzy auto-completion and key bindings.
-# hence, only `brew install fzf`, do not manually source auto-completion and key bindings
-source ~/.oh-my-zsh/plugins/fzf/fzf.plugin.zsh
+# Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced from zvm_after_init (zsh/.zshdefault).
+
+# fzf's own key bindings and completion: CTRL-T files, CTRL-R history, ALT-C cd, **<TAB>
+source <(fzf --zsh)
 
 ### fzf configuration
+# ALT-C as typed with Option on a Mac keyboard when Option is not Alt
 bindkey "ç" fzf-cd-widget
 
+# list files with fd: fast, respects .gitignore, shows hidden files
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
+
 # https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
+# Colours are the terminal's 16 ANSI ones, so they follow the Ghostty theme.
 export FZF_DEFAULT_OPTS="
 --multi
+--layout=reverse
+--height=60%
+--border=rounded
+--info=inline-right
 --preview-window=:hidden
---color='hl:148,hl+:154,pointer:032,marker:010,bg+:237,gutter:008'
---preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+--color='fg:-1,bg:-1,hl:green,fg+:bright-white,bg+:bright-black,hl+:bright-green'
+--color='info:yellow,prompt:blue,pointer:magenta,marker:green,spinner:cyan,header:cyan,border:bright-black,gutter:-1'
+--preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && eza --tree --level=2 --color=always --icons=always {}) || echo {} 2> /dev/null | head -200'
 --bind '?:toggle-preview'
 --bind 'ctrl-a:select-all'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
@@ -28,7 +40,7 @@ fif() {
     return 1;
   fi
 
-  rg --files-with-matches --no-messages "$1" | fzf $FZF_PREVIEW_WINDOW --multi --preview "rg --ignore-case --pretty --context 10 '$1' {}"
+  rg --files-with-matches --no-messages "$1" | fzf --preview "rg --ignore-case --pretty --context 10 '$1' {}" --preview-window=right:60%
 }
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
@@ -38,7 +50,9 @@ zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
 # set list-colors to enable filename colorizing
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-# preview directory's content with exa when completing cd
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# don't show the plain completion menu, fzf-tab replaces it
+zstyle ':completion:*' menu no
+# preview directory's content with eza when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
