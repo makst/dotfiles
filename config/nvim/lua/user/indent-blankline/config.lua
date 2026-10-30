@@ -1,7 +1,10 @@
-local status, indent_blankline = pcall(require, 'indent_blankline')
+local status, ibl = pcall(require, 'ibl')
 if (not status) then return end
 
-indent_blankline.setup {
-  show_current_context = true,
-  show_current_context_start = true
+-- indent-blankline v3: module `ibl`; the v2 "current context" options became `scope`
+ibl.setup {
+  scope = {
+    enabled = true,
+    show_start = true,
+  },
 }

@@ -1,5 +1,5 @@
 require('user.lsp.lspconfig.config')
-require('user.lsp.lspconfig.tsserver')
+require('user.lsp.lspconfig.ts_ls')
 require('user.lsp.lspconfig.eslint')
 require('user.lsp.lspconfig.lua_ls')
 require('user.lsp.lspconfig.yamlls')
