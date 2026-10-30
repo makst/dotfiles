@@ -3,7 +3,7 @@ require('user.impatient')
 require('user.base')
 require('user.keymaps')
 require('user.ferret')
-require('user.hidden')
+pcall(require, 'user.hidden') -- private (secrets), gitignored: lua/user/hidden/init.lua
 require('user.plugins')
 require('user.autopairs')
 require('user.base16-vim')
