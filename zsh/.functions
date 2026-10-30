@@ -176,6 +176,8 @@ function install_ssh_ident() {
     curl -fsSL -o ~/bin/ssh-ident https://raw.githubusercontent.com/ccontavalli/ssh-ident/master/ssh-ident
     # upstream still says `#!/usr/bin/env python`, which macOS no longer provides
     sed -i '' '1s|.*|#!/usr/bin/env python3|' ~/bin/ssh-ident
+    # python 3.15 rejects the 2 byte ioctl buffer, TIOCGPGRP needs room for a pid_t
+    sed -i '' 's|fcntl.ioctl(fd, termios.TIOCGPGRP, "  ")|fcntl.ioctl(fd, termios.TIOCGPGRP, b"\\0" * 4)|' ~/bin/ssh-ident
     chmod 0755 ~/bin/ssh-ident
   fi
 
