@@ -3,7 +3,8 @@
 export ZSH_DISABLE_COMPFIX=true
 export ZSH="$HOME/.oh-my-zsh"
 export CLICOLOR=1
-ZSH_THEME="refined"
+# no Oh My Zsh theme: the prompt is starship (config/starship.toml), started at the end of this file
+ZSH_THEME=""
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
 # https://blog.mattclemente.com/2020/06/26/oh-my-zsh-slow-to-load/
@@ -42,3 +43,6 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+
+export STARSHIP_CONFIG="$real_script_dir/config/starship.toml"
+command -v starship > /dev/null && eval "$(starship init zsh)"

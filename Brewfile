@@ -10,6 +10,7 @@ brew "python"
 brew "pyenv"                       # zsh/.exports
 brew "zsh"
 brew "zsh-completions"
+brew "starship"                    # prompt, config/starship.toml
 brew "tmux"
 brew "diff-so-fancy"               # git pager (config/git/.gitconfig)
 brew "gnu-sed"

@@ -1,0 +1,91 @@
+# Starship prompt: https://starship.rs/config/
+# Loaded via STARSHIP_CONFIG (zsh/.zshdefault). Colours are ANSI names, so they follow the Ghostty theme.
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# two lines: context on the first, the input on its own line
+format = """
+$directory\
+$git_branch\
+$git_state\
+$git_status\
+$kubernetes\
+$aws\
+$nodejs\
+$python\
+$golang\
+$terraform\
+$cmd_duration\
+$jobs
+$character"""
+
+add_newline = true
+command_timeout = 500
+
+[directory]
+style = "bold blue"
+truncation_length = 4
+truncate_to_repo = true
+read_only = " 󰌾"
+
+[git_branch]
+format = "[$symbol$branch(:$remote_branch)]($style) "
+symbol = " "
+style = "purple"
+
+[git_status]
+format = "([$all_status$ahead_behind]($style) )"
+style = "yellow"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+
+[git_state]
+style = "bold yellow"
+
+[kubernetes]
+disabled = false
+format = "[$symbol$context( \\($namespace\\))]($style) "
+symbol = "󱃾 "
+style = "cyan"
+
+[aws]
+format = "[$symbol($profile)(\\($region\\))]($style) "
+symbol = " "
+style = "yellow"
+
+[nodejs]
+format = "[$symbol($version)]($style) "
+symbol = " "
+style = "green"
+# only in node projects, not for every directory with a .js file
+detect_extensions = []
+
+[python]
+format = "[$symbol$pyenv_prefix($version)(\\($virtualenv\\))]($style) "
+symbol = " "
+style = "yellow"
+
+[golang]
+format = "[$symbol($version)]($style) "
+symbol = " "
+style = "cyan"
+
+[terraform]
+format = "[$symbol$workspace]($style) "
+symbol = "󱁢 "
+style = "purple"
+
+[cmd_duration]
+min_time = 2_000
+format = "[ $duration]($style) "
+style = "bright-black"
+
+[jobs]
+symbol = " "
+style = "bright-black"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
