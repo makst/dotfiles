@@ -19,6 +19,7 @@ brew "gnu-sed"
 brew "cmake"
 brew "fzf"                         # fzf_setup
 brew "eza"                         # replaces the discontinued exa
+brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"
 brew "lesspipe"                    # zsh/.exports
 brew "navi"                        # zsh/.zshdefault widget, data_dir/navi
