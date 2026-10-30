@@ -67,7 +67,7 @@ require('lazy').setup({
   'wincent/ferret',
 
   'lukas-reineke/indent-blankline.nvim',
-  'simrat39/symbols-outline.nvim',
+  'hedyhli/outline.nvim', -- maintained fork: simrat39/symbols-outline.nvim is archived
   'akinsho/toggleterm.nvim',
   'ThePrimeagen/harpoon',
   { 'folke/trouble.nvim', dependencies = { 'kyazdani42/nvim-web-devicons' } },
