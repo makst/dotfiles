@@ -30,5 +30,4 @@ It needs nvim's plugins installed, because the scheme list comes from tinted-vim
 Fonts and icons
 ---
 Text is Source Code Pro. Icons in eza, starship, nvim and the tmux status bar are Nerd Font glyphs, which
-Ghostty draws from its built-in symbol font, so the text font needn't be a patched Nerd Font. Hack Nerd Font
-is installed as well.
+Ghostty draws from its built-in symbol font, so the text font needn't be a patched Nerd Font.

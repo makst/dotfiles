@@ -134,6 +134,21 @@ Aliases and functions worth knowing
 
 `vim` runs nvim everywhere (it's a link in `~/bin`), including as git's editor.
 
+Other command-line tools
+---
+From the Brewfile, worth knowing about:
+
+| Command | Does |
+|---|---|
+| `gh` | GitHub from the terminal: `gh pr create`, `gh pr checks`, `gh run watch`, `gh pr checkout <n>` |
+| `xh` | HTTP requests with httpie's syntax: `xh POST api.example.com name=x`, `xh -d <url>` downloads |
+| `btop` | processes, CPU, memory, disks and network |
+| `yazi` | file manager with previews; `q` quits, `?` lists keys |
+| `tldr <cmd>` | short, practical examples instead of the man page |
+| `dust` | what takes the space in a directory tree |
+| `hyperfine '<cmd>'` | benchmarks a command, compares several |
+| `uv`, `uvx` | python projects and tools, see [above](#language-versions) |
+
 Pager and colours
 ---
 `less` keeps colours and, through lesspipe, shows the contents of archives and other binary formats.

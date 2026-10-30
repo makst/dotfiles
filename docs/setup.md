@@ -31,9 +31,14 @@ Each step is a function you can also run on its own:
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
 | `setup_ghostty` | links the Ghostty config and themes |
 | `remap_keys` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
+| `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 
-Not part of `setup_dotfiles`: `setup_window_management` (yabai and skhd, see
-[window-management](window-management.md)), because yabai needs decisions about SIP first.
+Not part of `setup_dotfiles`:
+
+- `setup_window_management` (yabai and skhd, see [window-management](window-management.md)), because yabai
+  needs decisions about SIP first.
+- `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
+  `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
 
 Symlinks
 ---

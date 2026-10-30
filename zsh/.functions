@@ -148,6 +148,22 @@ function setup_python() {
   uv python install --default
 }
 
+function setup_macos_defaults() {
+  # fast key repeat (the fastest System Settings offers), for held vim motions; applies after logging out and in
+  defaults write -g KeyRepeat -int 2
+  defaults write -g InitialKeyRepeat -int 15
+  # a held key repeats in Ghostty instead of offering accented characters; restart Ghostty
+  defaults write com.mitchellh.ghostty ApplePressAndHoldEnabled -bool false
+}
+
+# Touch ID for sudo, also inside tmux (pam-reattach from the Brewfile). Uses sudo itself, so it isn't part of
+# setup_dotfiles. /etc/pam.d/sudo_local survives macOS updates, unlike /etc/pam.d/sudo.
+function setup_touch_id_sudo() {
+  printf '%s\n' \
+    "auth       optional       $HOMEBREW_PREFIX/lib/pam/pam_reattach.so ignore_ssh" \
+    "auth       sufficient     pam_tid.so" | sudo tee /etc/pam.d/sudo_local > /dev/null
+}
+
 function setup_tmux() {
   mkdir -p "$HOME/.config"
   ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux"
@@ -252,5 +268,6 @@ function setup_dotfiles() {
   setup_nvim
   setup_ghostty
   remap_keys
+  setup_macos_defaults
   # not run by default, needs SIP changes first: setup_window_management
 }
