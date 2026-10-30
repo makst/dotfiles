@@ -18,8 +18,8 @@ require('lazy').setup({
   'nvim-lua/plenary.nvim', -- Common utilities
 
   -- 'navarasu/onedark.nvim',
-  'glepnir/lspsaga.nvim', -- LSP UIs
-  'onsails/lspkind-nvim', -- vscode-like pictograms
+  'nvimdev/lspsaga.nvim', -- LSP UIs
+  'onsails/lspkind.nvim', -- vscode-like pictograms
   'hrsh7th/cmp-buffer', -- nvim-cmp source for buffer words
   'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim's built-in LSP
   'hrsh7th/nvim-cmp', -- Completion
@@ -30,8 +30,8 @@ require('lazy').setup({
   'feline-nvim/feline.nvim',
 
   -- LSP
-  'williamboman/mason.nvim',
-  'williamboman/mason-lspconfig.nvim',
+  'mason-org/mason.nvim',
+  'mason-org/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
 
   'L3MON4D3/LuaSnip',
@@ -51,11 +51,11 @@ require('lazy').setup({
     'nvim-telescope/telescope-fzf-native.nvim',
     build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
   },
-  'kyazdani42/nvim-web-devicons', -- File icons
+  'nvim-tree/nvim-web-devicons', -- File icons
 
   {
-    'kyazdani42/nvim-tree.lua',
-    dependencies = { 'kyazdani42/nvim-web-devicons' }, -- optional, for file icons
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' }, -- optional, for file icons
   },
   'smoka7/hop.nvim', -- maintained fork: phaazon/hop.nvim is gone
   'tpope/vim-repeat',
@@ -70,7 +70,7 @@ require('lazy').setup({
   'hedyhli/outline.nvim', -- maintained fork: simrat39/symbols-outline.nvim is archived
   'akinsho/toggleterm.nvim',
   'ThePrimeagen/harpoon',
-  { 'folke/trouble.nvim', dependencies = { 'kyazdani42/nvim-web-devicons' } },
+  { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
   'nvim-telescope/telescope-ui-select.nvim',
   'terrortylor/nvim-comment',
   'towolf/vim-helm',
