@@ -43,7 +43,8 @@ require('lazy').setup({
   'hashivim/vim-terraform',
 
   {
-    'nvim-telescope/telescope.nvim', branch = '0.1.x',
+    -- 0.2.x: 0.1.x calls nvim-treesitter APIs removed in its rewrite (ft_to_lang) and deprecated vim.lsp APIs
+    'nvim-telescope/telescope.nvim', version = '0.2.*',
     dependencies = { 'nvim-lua/plenary.nvim' },
   },
   {
