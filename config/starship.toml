@@ -86,6 +86,6 @@ symbol = " "
 style = "bright-black"
 
 [character]
-success_symbol = "[❯](bold green)"
+success_symbol = "[❯](white)"
 error_symbol = "[❯](bold red)"
-vimcmd_symbol = "[❮](bold green)"
+vimcmd_symbol = "[❮](white)"
