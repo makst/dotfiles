@@ -27,7 +27,7 @@ require('lazy').setup({
   'saadparwaiz1/cmp_luasnip',
 
   -- status line
-  'feline-nvim/feline.nvim',
+  'nvim-lualine/lualine.nvim',
 
   -- LSP
   'mason-org/mason.nvim',
