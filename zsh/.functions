@@ -67,13 +67,17 @@ function install_and_update_zsh_plugins() {
 }
 
 function rust_setup() {
-  # rustup
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  # rustup. -y: no prompts. --no-modify-path: ~/.cargo/bin is added to PATH by zsh/.exports,
+  # the installer must not edit shell profiles (fails if e.g. ~/.bash_profile is owned by root)
+  if [[ ! -x "$HOME/.cargo/bin/rustup" ]]; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
+  fi
+  export PATH="$HOME/.cargo/bin:$PATH"
+  rustup default stable
 
   # bob - nvim package manager
-  [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
-  cargo install --git https://github.com/MordechaiHadad/bob.git
-  # bob puts the active nvim into ~/.local/share/bob/nvim-bin (on PATH, see zsh/.exports)
+  command -v bob > /dev/null || cargo install --git https://github.com/MordechaiHadad/bob.git
+  # bob puts the active nvim into ~/Library/Application Support/bob/nvim-bin (on PATH, see zsh/.exports)
   bob use stable
 }
 
@@ -160,7 +164,11 @@ function setup_ghostty() {
 function setup_nvim() {
   ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim"
   mkdir -p "$HOME/bin"
-  command -v nvim > /dev/null && ln -sfn "$(command -v nvim)" "$HOME/bin/vim"
+  # a wrapper, not a symlink: bob's nvim is a proxy that picks the binary by the name it is called with.
+  # Also works where aliases don't (git's core.editor = vim).
+  rm -f "$HOME/bin/vim"
+  printf '#!/bin/sh\nexec nvim "$@"\n' > "$HOME/bin/vim"
+  chmod +x "$HOME/bin/vim"
 
   # install nvim packer (lua package manager)
   [[ ! -d ~/.local/share/nvim/site/pack/packer ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
