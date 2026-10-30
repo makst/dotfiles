@@ -63,6 +63,6 @@ Shell integration
 ---
 Ghostty's zsh integration is on (window titles, `sudo` keeps the terminfo), with two adjustments:
 
-- It doesn't change the cursor shape: zsh-vi-mode does that per vi mode.
+- It doesn't change the cursor shape: zsh does that per vi mode.
 - `ssh` to a host without Ghostty's terminfo installs it there or falls back to `xterm-256color`, so remote
   shells don't break. Inside tmux an alias sets `TERM=xterm-256color` for ssh instead (see [tmux](tmux.md)).

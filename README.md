@@ -9,7 +9,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | Install and update | Homebrew (`Brewfile`), `setup_dotfiles` | [setup](docs/setup.md) |
 | Terminal | Ghostty | [ghostty](docs/ghostty.md) |
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
-| Shell | zsh (no framework), zsh-vi-mode, starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
+| Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza, navi | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
 | Version control | git, delta, difftastic, lazygit, gh | [git](docs/git.md) |

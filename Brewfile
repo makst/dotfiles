@@ -10,7 +10,6 @@ brew "uv"                          # python versions, venvs, tools; setup_python
 brew "zsh"
 brew "zsh-completions"
 brew "fzf-tab"                     # zsh plugins, sourced in zsh/.zshdefault
-brew "zsh-vi-mode"
 brew "zsh-autosuggestions"
 brew "zsh-fast-syntax-highlighting"
 brew "atuin"                       # C-r history search, config/atuin

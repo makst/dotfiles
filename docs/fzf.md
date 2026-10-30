@@ -14,7 +14,7 @@ completions, tmux sessions, colour schemes, cheatsheets. A few small tools feed 
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 | [navi](https://github.com/denisidoro/navi) | interactive cheatsheets |
 
-Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after zsh-vi-mode so the key bindings survive.
+Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
 
 Shell keys
 ---

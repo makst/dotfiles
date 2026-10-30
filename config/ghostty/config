@@ -25,10 +25,10 @@ cursor-style-blink = false
 mouse-hide-while-typing = true
 
 # -- input ------------------------------------------------------------------------
-# Option acts as Alt, for vim / tmux / zsh-vi-mode bindings
+# Option acts as Alt, for vim / tmux / zsh bindings
 macos-option-as-alt = true
 
-# shell integration: cursor shape per vi mode is zsh-vi-mode's job, so leave the cursor alone
+# shell integration: zsh sets the cursor shape per vi mode itself (zsh/.zshdefault), so leave the cursor alone
 # ssh-terminfo / ssh-env: remote hosts get Ghostty's terminfo, or fall back to xterm-256color (plain windows;
 # inside tmux TERM is tmux-256color, see the ssh alias in zsh/.aliases)
 shell-integration-features = no-cursor,sudo,title,ssh-terminfo,ssh-env

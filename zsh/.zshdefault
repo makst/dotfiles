@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-# Plain zsh, no framework: options, history and completion, then the plugins (Homebrew formulae, see the
-# Brewfile) in the order they need, then the prompt.
+# Plain zsh, no framework: options, history and completion, vi mode, then the plugins (Homebrew formulae,
+# see the Brewfile) in the order they need, then the prompt.
 
 export CLICOLOR=1
 
@@ -12,7 +12,7 @@ setopt interactive_comments    # `# ...` on the command line is a comment
 setopt long_list_jobs
 
 # -- history ---------------------------------------------------------------------
-# atuin (started in zvm_after_init below) keeps its own searchable copy; this file stays the shell's history
+# atuin (started below) keeps its own searchable copy; this file stays the shell's history
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
@@ -45,38 +45,69 @@ zstyle ':completion:*' cache-path $ZSH_CACHE_DIR/compcache
 setopt complete_in_word always_to_end
 
 # -- plugins ---------------------------------------------------------------------
-ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
-# zsh-vi-mode resets the key bindings when it starts. Starting it while it loads (instead of at the first
-# prompt) means the widgets that bind keys (fzf, navi, atuin) can simply be loaded after it, below.
-ZVM_INIT_MODE=sourcing
-
-# https://github.com/jeffreytse/zsh-vi-mode/issues/15
-function zvm_fix_partial_history_search() {
-  zvm_bindkey viins '^[[A' history-beginning-search-backward
-  zvm_bindkey viins '^[[B' history-beginning-search-forward
-
-  zvm_bindkey vicmd '^[[A' history-beginning-search-backward
-  zvm_bindkey vicmd '^k' history-beginning-search-backward
-  zvm_bindkey vicmd '^[[B' history-beginning-search-forward
-  zvm_bindkey vicmd '^j' history-beginning-search-forward
-}
-
-function zvm_before_init() {
-  zvm_fix_partial_history_search
-}
-
-# order matters: fzf-tab after compinit and before the plugins that wrap widgets, syntax highlighting last
+# fzf-tab replaces the completion menu: it loads after compinit and before the plugins that wrap widgets
 source $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh
-source $HOMEBREW_PREFIX/share/zsh-vi-mode/zsh-vi-mode.plugin.zsh
 
+# -- vi mode ---------------------------------------------------------------------
+# zsh's own vi mode; the lines below add what a vim user expects on top of it
+bindkey -v
+# how long zsh waits for the rest of a key sequence: the second `j` of `jj`, or what follows Esc (0.2 s)
+KEYTIMEOUT=20
+bindkey -M viins jj vi-cmd-mode
+# Backspace and C-w also delete what was there before insert mode started (vi stops at that point)
+bindkey -M viins '^?' backward-delete-char '^H' backward-delete-char '^W' backward-kill-word
+
+# ↑ / ↓ (and C-k / C-j in normal mode): previous / next history entry starting with what's typed
+bindkey -M viins '^[[A' history-beginning-search-backward '^[[B' history-beginning-search-forward
+bindkey -M vicmd '^[[A' history-beginning-search-backward '^[[B' history-beginning-search-forward
+bindkey -M vicmd '^k' history-beginning-search-backward '^j' history-beginning-search-forward
+
+# text objects for quotes and brackets: ci" da( yi] ... (iw, aw and friends are built in)
+autoload -Uz select-bracketed select-quoted
+zle -N select-bracketed
+zle -N select-quoted
+() {
+  local keymap c
+  for keymap in viopp visual; do
+    for c in {a,i}${(s..)^:-'()[]{}<>bB'}; do bindkey -M $keymap $c select-bracketed; done
+    for c in {a,i}${(s..)^:-\'\"\`\|,./:;=+@}; do bindkey -M $keymap $c select-quoted; done
+  done
+}
+
+# surround, as in vim-surround: cs"' changes " to ', ds( deletes the parentheses, ysiw" quotes a word,
+# S" in visual mode quotes the selection
+autoload -Uz surround
+zle -N add-surround surround
+zle -N change-surround surround
+zle -N delete-surround surround
+bindkey -M vicmd cs change-surround ds delete-surround ys add-surround
+bindkey -M visual S add-surround
+
+# vv in normal mode: edit the command line in nvim
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd vv edit-command-line
+
+# cursor: a bar in insert mode, a block in normal mode and while a command runs
+autoload -Uz add-zle-hook-widget
+_vi_cursor() { [[ $KEYMAP == vicmd ]] && print -n '\e[2 q' || print -n '\e[6 q' }
+_vi_cursor_block() { print -n '\e[2 q' }
+add-zle-hook-widget keymap-select _vi_cursor
+add-zle-hook-widget line-init _vi_cursor
+add-zle-hook-widget line-finish _vi_cursor_block
+
+# -- widgets and plugins that wrap them ------------------------------------------
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 cached_eval navi navi widget zsh
 # after fzf, so C-r is atuin's; the up arrow stays the prefix search above, `?` stays a plain character
 cached_eval atuin atuin init zsh --disable-up-arrow --disable-ai
+# fzf also took C-r in normal mode; there it's redo, as in vim (atuin's search is `/`)
+bindkey -M vicmd '^R' redo
 # atuin makes itself the source of the grey suggestions, which starts atuin on every key press; zsh's own
 # history gives the same prefix match from memory
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 
+# these two wrap every widget defined so far; syntax highlighting goes last
 source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $HOMEBREW_PREFIX/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 

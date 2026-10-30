@@ -1,4 +1,4 @@
-# Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced after zsh-vi-mode (zsh/.zshdefault).
+# Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced after `bindkey -v` (zsh/.zshdefault).
 
 # fzf's own key bindings and completion: CTRL-T files, ALT-C cd, **<TAB> (CTRL-R is atuin's, loaded after this)
 cached_eval fzf fzf --zsh

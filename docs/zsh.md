@@ -1,9 +1,9 @@
 zsh
 ===
 
-Homebrew's zsh is the login shell, without a framework: four plugins from Homebrew, vi keys on the command
+Homebrew's zsh is the login shell, without a framework: three plugins from Homebrew, vi keys on the command
 line, a starship prompt, atuin for history and zoxide for jumping between directories. A new shell is
-ready in about 70 ms (220 ms with Oh My Zsh), a third of which is zsh-vi-mode.
+ready in about 45 ms (220 ms with Oh My Zsh and zsh-vi-mode).
 
 How it loads
 ---
@@ -22,13 +22,12 @@ Put new things in the file that matches; put anything secret in `.private`.
 
 Plugins
 ---
-Four Homebrew formulae (so `brew upgrade` updates them), sourced from `$HOMEBREW_PREFIX/share` in an order
+Three Homebrew formulae (so `brew upgrade` updates them), sourced from `$HOMEBREW_PREFIX/share` in an order
 that matters:
 
 | Plugin | Gives you |
 |---|---|
 | fzf-tab | `Tab` completion through fzf, see [fzf](fzf.md#completion-fzf-tab) |
-| zsh-vi-mode | vi modes on the command line |
 | zsh-autosuggestions | grey suggestion from history as you type; `→` or `End` accepts it |
 | fast-syntax-highlighting | commands coloured as you type, red when they don't exist; loads last |
 
@@ -52,9 +51,17 @@ own history instead.
 
 Vi mode
 ---
-The command line starts in insert mode. `jj` switches to normal mode, where the usual vim motions,
-operators and text objects work, `v` selects, and `vv` opens the command line in nvim to edit it there. The
-cursor is a bar in insert mode and a block in normal mode.
+zsh's own vi mode (`bindkey -v`) with a few additions in `zsh/.zshdefault`. The command line starts in insert
+mode. `jj` switches to normal mode, where the usual vim motions and operators work (`dw`, `cb`, `yy`, `p`,
+`u` / `C-r` undo / redo, `.` repeats, `~` / `gu` / `gU` change case), `v` / `V`
+select, and `vv` opens the command line in nvim to edit it there. The cursor is a bar in insert mode and a
+block in normal mode.
+
+- **Text objects**: `iw` / `aw` and, for quotes and brackets, `ci"`, `da(`, `yi]`, `ci{`, … (`b` = `()`,
+  `B` = `{}`).
+- **Surround**, like vim-surround: `cs"'` changes `"…"` to `'…'`, `ds(` removes the parentheses around the
+  cursor, `ysiw"` quotes a word, `S"` quotes the visual selection.
+- `jj` must be typed within 0.2 s (`KEYTIMEOUT`); a single `j` appears once the next key arrives.
 
 | Key | Mode | Action |
 |---|---|---|
@@ -62,9 +69,8 @@ cursor is a bar in insert mode and a block in normal mode.
 | `C-k` / `C-j` | normal | the same, on the home row (outside tmux; inside tmux these keys move between panes) |
 | `C-r` | insert | history search (atuin) |
 
-zsh-vi-mode resets key bindings when it starts, so it's started while it loads (`ZVM_INIT_MODE=sourcing`)
-and fzf's, navi's and atuin's widgets are loaded after it. Add other key bindings after it too, or they'll
-silently disappear.
+`bindkey -v` resets the main keymap, so fzf's, navi's and atuin's widgets are loaded after it. Put new key
+bindings after it too.
 
 History
 ---
