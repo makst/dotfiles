@@ -23,6 +23,7 @@ brew "navi"                        # zsh/.zshdefault widget, data_dir/navi
 brew "yank"
 brew "fd"
 brew "ripgrep"
+brew "neovim"                      # setup_nvim, config/nvim
 brew "tree-sitter"
 brew "tree-sitter-cli"            # compiles the nvim treesitter parsers
 brew "lazygit"                     # `lg` alias

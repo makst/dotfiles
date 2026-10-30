@@ -66,21 +66,6 @@ function install_and_update_zsh_plugins() {
   cd $current_dir
 }
 
-function rust_setup() {
-  # rustup. -y: no prompts. --no-modify-path: ~/.cargo/bin is added to PATH by zsh/.exports,
-  # the installer must not edit shell profiles (fails if e.g. ~/.bash_profile is owned by root)
-  if [[ ! -x "$HOME/.cargo/bin/rustup" ]]; then
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
-  fi
-  export PATH="$HOME/.cargo/bin:$PATH"
-  rustup default stable
-
-  # bob - nvim package manager
-  command -v bob > /dev/null || cargo install --git https://github.com/MordechaiHadad/bob.git
-  # bob puts the active nvim into ~/Library/Application Support/bob/nvim-bin (on PATH, see zsh/.exports)
-  bob use stable
-}
-
 function brew_setup() {
   echo "=> Installing brew packages from the Brewfile"
   # see the Brewfile for what is installed and why
@@ -164,11 +149,8 @@ function setup_ghostty() {
 function setup_nvim() {
   ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim"
   mkdir -p "$HOME/bin"
-  # a wrapper, not a symlink: bob's nvim is a proxy that picks the binary by the name it is called with.
-  # Also works where aliases don't (git's core.editor = vim).
-  rm -f "$HOME/bin/vim"
-  printf '#!/bin/sh\nexec nvim "$@"\n' > "$HOME/bin/vim"
-  chmod +x "$HOME/bin/vim"
+  # `vim` runs nvim, also where aliases don't (git's core.editor = vim)
+  ln -sfn /opt/homebrew/bin/nvim "$HOME/bin/vim"
 
   # plugins: lazy.nvim bootstraps itself on first start; install the versions pinned in
   # config/nvim/lazy-lock.json (needs network, cmake for telescope-fzf-native)
@@ -199,7 +181,6 @@ function install_ssh_ident() {
 function setup_dotfiles() {
   brew_setup
   install_and_update_zsh_plugins
-  rust_setup
   fzf_setup
   navi_data_dir_setup
   npm_setup
