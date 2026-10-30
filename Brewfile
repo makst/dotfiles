@@ -24,6 +24,7 @@ brew "yank"
 brew "fd"
 brew "ripgrep"
 brew "tree-sitter"
+brew "tree-sitter-cli"            # compiles the nvim treesitter parsers
 brew "lazygit"                     # `lg` alias
 brew "podman"                      # `docker` alias
 brew "docker-compose"
