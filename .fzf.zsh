@@ -1,7 +1,7 @@
-# Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced from zvm_after_init (zsh/.zshdefault).
+# Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced after zsh-vi-mode (zsh/.zshdefault).
 
-# fzf's own key bindings and completion: CTRL-T files, CTRL-R history, ALT-C cd, **<TAB>
-source <(fzf --zsh)
+# fzf's own key bindings and completion: CTRL-T files, ALT-C cd, **<TAB> (CTRL-R is atuin's, loaded after this)
+cached_eval fzf fzf --zsh
 
 ### fzf configuration
 # ALT-C as typed with Option on a Mac keyboard when Option is not Alt

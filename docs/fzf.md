@@ -1,7 +1,7 @@
 fzf and friends
 ===
 
-fzf is the fuzzy finder behind most "pick something" moments in the shell: files, history, directories,
+fzf is the fuzzy finder behind most "pick something" moments in the shell: files, directories,
 completions, tmux sessions, colour schemes, cheatsheets. A few small tools feed it or show its previews.
 
 | Tool | Role |
@@ -20,7 +20,7 @@ Shell keys
 ---
 | Key | Action |
 |---|---|
-| `C-r` | search history, put the chosen command on the command line |
+| `C-r` | search history with [atuin](zsh.md#history), put the chosen command on the command line |
 | `C-t` | pick files (several with `Tab`) and insert their paths |
 | `Alt+C` (also `Option+C` → `ç`) | `cd` into a subdirectory |
 | `**<Tab>` | fzf completion after a command, e.g. `vim **<Tab>`, `cd **<Tab>`, `kill **<Tab>` |

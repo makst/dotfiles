@@ -4,7 +4,7 @@ Setup and maintenance
 The setup runs in two stages, because the second needs zsh and Homebrew to exist first.
 
 1. **`prepare-zsh-install.sh`** (bash) links `~/dotfiles` and `~/.zshrc` to this repo, installs Homebrew in
-   `/opt/homebrew`, Homebrew's zsh and Oh My Zsh, and makes Homebrew's zsh your login shell (asks for
+   `/opt/homebrew` and Homebrew's zsh, and makes Homebrew's zsh your login shell (asks for
    your password once, for `/etc/shells` and `chsh`). An existing real `~/.zshrc` is kept as
    `~/.zshrc.backup`.
 2. **`setup_dotfiles`** (a zsh function from `zsh/.functions`) does the rest. Every step is idempotent, so
@@ -20,10 +20,11 @@ Each step is a function you can also run on its own:
 | Function | Does |
 |---|---|
 | `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile) |
-| `install_and_update_zsh_plugins` | clones or updates fzf-tab, zsh-vi-mode, zsh-autosuggestions, zsh-syntax-highlighting into Oh My Zsh |
 | `fzf_setup` | links `~/.fzf.zsh` |
+| `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time |
 | `navi_data_dir_setup` | makes the cheatsheets in `data_dir/navi/cheats` visible to navi |
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
+| `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `install_ssh_ident` | downloads ssh-ident to `~/bin` and puts it in front of `ssh`, `scp`, `sftp` (see [git](git.md)) |
 | `setup_git` | links `~/.gitconfig` |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
@@ -44,6 +45,7 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/dotfiles` | the repo |
 | `~/.zshrc` | `.zshrc` |
 | `~/.fzf.zsh` | `.fzf.zsh` |
+| `~/.atuin/config.toml` | `config/atuin/config.toml` |
 | `~/.gitconfig` | `config/git/.gitconfig` |
 | `~/.config/tmux/` | `config/tmux/` |
 | `~/.config/nvim/` | `config/nvim/` |
@@ -56,7 +58,8 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 `.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.
 
 Data that is *not* in the repo: tmux plugins (`~/.tmux/plugins`), nvim plugins and language servers
-(`~/.local/share/nvim`), Oh My Zsh (`~/.oh-my-zsh`), node versions (fnm), python versions (pyenv).
+(`~/.local/share/nvim`), shell history (`~/.zsh_history`, atuin's `~/.atuin`), cached tool setup
+(`~/.cache/zsh`), node versions (fnm), python versions (uv, `~/.local/share/uv`).
 
 The Brewfile
 ---
@@ -82,11 +85,11 @@ Staying up to date
 git pull && setup_dotfiles
 ```
 
-That installs and upgrades brew packages, updates the zsh plugins, installs newly listed tmux plugins and
+That installs and upgrades brew packages (the zsh plugins are among them), installs newly listed tmux plugins and
 restores nvim plugins to the versions in `lazy-lock.json`. Updating tmux plugins (`C-a U`) and nvim plugins
 are deliberate steps, see [tmux](tmux.md#plugins) and [neovim](neovim.md#plugins).
 
 Other helpers
 ---
-- `timezsh` starts an interactive zsh ten times and prints the timings: check after adding plugins.
+- `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
 - `sync_cheatsh` downloads the whole cheat.sh catalogue to `~/cheatsheets` for offline use (takes 15–20 min).

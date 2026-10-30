@@ -1,0 +1,13 @@
+# atuin: shell history in SQLite, searched with C-r. ~/.atuin/config.toml links here (setup_atuin in zsh/.functions).
+# Every option with its default: https://docs.atuin.sh/configuration/config/
+
+# history stays on this Mac: no sync (`atuin register` / `atuin login` would turn it on), no update checks
+auto_sync = false
+update_check = false
+
+style = "compact"
+inline_height = 25
+# Enter and Tab both put the command on the prompt to edit or run, like fzf's C-r did
+enter_accept = false
+# vi keys inside the search, starting in the mode the shell is in
+keymap_mode = "auto"

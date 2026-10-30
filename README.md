@@ -9,7 +9,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | Install and update | Homebrew (`Brewfile`), `setup_dotfiles` | [setup](docs/setup.md) |
 | Terminal | Ghostty | [ghostty](docs/ghostty.md) |
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
-| Shell | zsh, Oh My Zsh, zsh-vi-mode, starship, zoxide, fnm, pyenv | [zsh](docs/zsh.md) |
+| Shell | zsh (no framework), zsh-vi-mode, starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza, navi | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
 | Version control | git, diff-so-fancy, lazygit, ssh-ident | [git](docs/git.md) |
@@ -24,7 +24,7 @@ one person.
 
 ```sh
 git clone <your fork> ~/repos/dotfiles && cd ~/repos/dotfiles
-./prepare-zsh-install.sh   # Homebrew, zsh, Oh My Zsh, links ~/.zshrc, makes zsh the login shell
+./prepare-zsh-install.sh   # Homebrew, zsh, links ~/.zshrc, makes zsh the login shell
 exec zsh
 setup_dotfiles             # everything else; idempotent, rerun after every `git pull`
 ```
@@ -46,7 +46,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
 | `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
 | `jj` | leave insert mode, in nvim and in zsh | |
-| `C-r` / `C-t` / `C-g` | fzf history / files, navi cheatsheets, in zsh | |
+| `C-r` / `C-t` / `C-g` | atuin history, fzf files, navi cheatsheets, in zsh | |
 
 Switching sessions and windows
 ---
@@ -76,6 +76,7 @@ Brewfile                  every package and app, commented by purpose
 prepare-zsh-install.sh    first-run bootstrap (bash, before zsh exists)
 .zshrc                    sources zsh/*; everything else is linked from config/
 zsh/                      shell config, aliases, functions (setup_dotfiles lives in .functions)
+config/atuin/             shell history search
 .fzf.zsh                  fzf and fzf-tab configuration
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the session picker

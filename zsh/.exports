@@ -1,30 +1,37 @@
 #!/usr/bin/env zsh
 
-# Homebrew (native Apple silicon install): sets PATH, MANPATH, HOMEBREW_PREFIX
-[ -x /opt/homebrew/bin/brew ] && eval "$(/opt/homebrew/bin/brew shellenv)"
+# Homebrew (native Apple silicon install): what `brew shellenv` prints, written out so a shell start doesn't
+# run brew
+if [[ -d /opt/homebrew ]]; then
+  export HOMEBREW_PREFIX=/opt/homebrew HOMEBREW_CELLAR=/opt/homebrew/Cellar HOMEBREW_REPOSITORY=/opt/homebrew
+  path=(/opt/homebrew/bin /opt/homebrew/sbin $path)
+  fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+  export INFOPATH=/opt/homebrew/share/info:${INFOPATH:-}
+fi
 
 # lesspipe: set LESSOPEN
-command -v lesspipe.sh > /dev/null && lesspipe.sh | source /dev/stdin
+cached_eval lesspipe.sh lesspipe.sh
 # syntax highlighting
 export LESS=' -R '
 # bat: the base16 theme uses the terminal's 16 colours, i.e. the Ghostty theme
 export BAT_THEME=base16
 # file colours for eza, fzf-tab and zsh completion; the ansi theme uses the terminal's 16 colours, so it follows the Ghostty theme
-command -v vivid > /dev/null && export LS_COLORS="$(vivid generate ansi)"
+_ls_colors() { print -r -- "export LS_COLORS=${(q)$(vivid generate ansi)}" }
+cached_eval vivid _ls_colors
+unfunction _ls_colors
+
+export EDITOR=nvim
 
 export PATH="$HOME/bin:$PATH"
+# also where uv puts python, python3 and tools installed with `uv tool install`
 export PATH="$HOME/.local/bin:$PATH"
 
 # node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls), and cd into a
-# directory with .nvmrc / .node-version switches to that version
+# directory with .nvmrc / .node-version switches to that version. Not cached: it makes a link per shell.
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"
 
-# pyenv: the global python is `pyenv global <version>` (stored in ~/.pyenv/version), else the system one
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-if command -v pyenv > /dev/null; then
-  eval "$(pyenv init - zsh)"
-fi
-
-# remove duplicate in PATH
-typeset -U PATH
+# remove duplicates, and directories that no longer exist (left in an inherited PATH / FPATH, e.g. by a
+# tmux server started from an older shell)
+typeset -U path fpath
+path=(${^path}(N-/))
+fpath=(${^fpath}(N-/))

@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
-real_script_dir="$(dirname "$(stat -f '%Y' ~/.zshrc)")"
 
+# shell start-up time; zsh-bench (https://github.com/romkatv/zsh-bench) measures input lag too
 timezsh() {
-  shell=${1-$SHELL}
-  for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
+  hyperfine --warmup 3 --shell=none "${1-$SHELL} -i -c exit"
 }
 
 # pick a base16 scheme for nvim and Ghostty (config/ghostty/themes/base16) together.
@@ -62,24 +61,6 @@ function sync_cheatsheets() {
 # -------------------------
 # INSTALL / SETUP FUNCTIONS
 # -------------------------
-
-function install_and_update_zsh_plugins() {
-  current_dir=$(pwd)
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-  cd $ZSH_CUSTOM/plugins/zsh-syntax-highlighting && git pull -q
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-autosuggestions ]] && git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-  cd $ZSH_CUSTOM/plugins/zsh-autosuggestions && git pull -q
-
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
-  cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
-
-  [[ ! -d $ZSH_CUSTOM/plugins/fzf-tab ]] && git clone https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab
-  cd $ZSH_CUSTOM/plugins/fzf-tab && git pull -q
-
-  cd $current_dir
-}
 
 function brew_setup() {
   echo "=> Installing brew packages from the Brewfile"
@@ -153,6 +134,20 @@ PLIST
   launchctl bootstrap "gui/$(id -u)" "$plist"
 }
 
+function setup_atuin() {
+  # atuin keeps its data and config in ~/.atuin
+  mkdir -p ~/.atuin
+  ln -sfn "$real_script_dir/config/atuin/config.toml" ~/.atuin/config.toml
+  # once: copy the zsh history in, so C-r finds what was typed before atuin
+  [[ -f ~/.atuin/data/history.db ]] || atuin import zsh
+}
+
+function setup_python() {
+  # uv (Brewfile) installs python itself: `python` and `python3` in ~/.local/bin are the latest version.
+  # Projects pin theirs with `uv python pin` / .python-version; `uv tool install` puts CLI tools on PATH.
+  uv python install --default
+}
+
 function setup_tmux() {
   mkdir -p "$HOME/.config"
   ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux"
@@ -220,10 +215,11 @@ function install_ssh_ident() {
 
 function setup_dotfiles() {
   brew_setup
-  install_and_update_zsh_plugins
   fzf_setup
+  setup_atuin
   navi_data_dir_setup
   npm_setup
+  setup_python
   install_ssh_ident
   setup_git
   setup_tmux

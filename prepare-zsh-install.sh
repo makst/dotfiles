@@ -27,13 +27,6 @@ eval "$("$BREW_BIN" shellenv)"
 echo "=> Installing zsh"
 brew list zsh > /dev/null 2>&1 || brew install zsh
 
-echo "=> Installing Oh My Zsh"
-# KEEP_ZSHRC: don't replace our symlinked .zshrc. RUNZSH/CHSH: don't switch shells,
-# which would stop this script halfway.
-if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  KEEP_ZSHRC=yes RUNZSH=no CHSH=no /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fi
-
 echo "=> Setting Homebrew's zsh as the login shell"
 ZSH_BIN="$(brew --prefix)/bin/zsh"
 # chsh only accepts shells that are listed in /etc/shells.
