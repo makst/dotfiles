@@ -16,6 +16,12 @@ ts.install {
   'gomod',
   'gosum',
   'gowork',
+  'bash',
+  'markdown',
+  'markdown_inline',
+  'hcl',
+  'terraform',
+  'helm',
 }
 
 vim.treesitter.language.register('tsx', 'typescript.tsx')
