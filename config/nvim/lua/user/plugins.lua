@@ -14,7 +14,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  'chriskempson/base16-vim',
+  'tinted-theming/tinted-vim',
   'nvim-lua/plenary.nvim', -- Common utilities
 
   -- 'navarasu/onedark.nvim',
