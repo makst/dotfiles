@@ -53,3 +53,10 @@ keymap.set('n', '<leader>dt', '<cmd>:windo diffthis<cr>')
 
 -- diff 2 buffers in a split: off
 keymap.set('n', '<leader>do', '<cmd>:windo diffoff<cr>')
+
+-- nvim's default LSP maps (gra, gri, grn, grr, grt, grx) make `gr` (Trouble references) wait for a
+-- third key; code action and rename are on gc / gre already
+for _, lhs in ipairs({ 'gra', 'gri', 'grn', 'grr', 'grt', 'grx' }) do
+  pcall(vim.keymap.del, 'n', lhs)
+end
+pcall(vim.keymap.del, 'x', 'gra')

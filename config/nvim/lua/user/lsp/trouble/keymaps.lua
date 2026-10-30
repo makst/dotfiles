@@ -1,6 +1,7 @@
 local opts = { noremap = true, silent = true }
-vim.keymap.set('n', '<leader>xx', '<cmd>TroubleToggle<cr>', opts)
-vim.keymap.set('n', '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>', opts)
-vim.keymap.set('n', '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', opts)
-vim.keymap.set('n', 'gr', '<cmd>TroubleToggle lsp_references<cr>', opts)
-vim.keymap.set('n', 'gd', '<cmd>TroubleToggle lsp_definitions<cr>', opts)
+-- trouble.nvim v3 syntax (`:TroubleToggle <mode>` was removed)
+vim.keymap.set('n', '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', opts)
+vim.keymap.set('n', '<leader>xw', '<cmd>Trouble diagnostics toggle<cr>', opts) -- v3 diagnostics are workspace-wide
+vim.keymap.set('n', '<leader>xd', '<cmd>Trouble diagnostics toggle filter.buf=0<cr>', opts)
+vim.keymap.set('n', 'gr', '<cmd>Trouble lsp_references toggle<cr>', opts)
+vim.keymap.set('n', 'gd', '<cmd>Trouble lsp_definitions toggle<cr>', opts)

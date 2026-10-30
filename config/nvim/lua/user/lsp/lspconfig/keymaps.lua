@@ -7,7 +7,8 @@ M.setup_keymaps = function(bufnr)
   vim.keymap.set('n', '<C-j>', function() vim.diagnostic.jump({ count = 1, float = true }) end, bufopts)
   vim.keymap.set('n', '<C-k>', function() vim.diagnostic.jump({ count = -1, float = true }) end, bufopts)
   vim.keymap.set('n', '<leader>hd', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', 'L', vim.lsp.buf.signature_help, bufopts)
+  -- signature help: ,hs in normal mode; nvim maps CTRL-S in insert mode by default. `L` is treewalker's
+  vim.keymap.set('n', '<leader>hs', vim.lsp.buf.signature_help, bufopts)
 end
 
 return M;
