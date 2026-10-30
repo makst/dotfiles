@@ -29,16 +29,24 @@ function zvm_after_init() {
   eval "$(navi widget zsh)"
 }
 
+# order matters: fzf-tab before the plugins that wrap widgets, zsh-syntax-highlighting last
 plugins=(
   git
   z
-  zsh-syntax-highlighting
   fzf-tab
-  zsh-autosuggestions
   zsh-vi-mode
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 )
 
+# Oh My Zsh only raises these to its defaults (50000 in memory, 10000 on disk), so set them first
+HISTSIZE=100000
+SAVEHIST=100000
+
 source $ZSH/oh-my-zsh.sh
+
+# keep one copy of a repeated command in history
+setopt hist_ignore_all_dups
 
 export STARSHIP_CONFIG="$real_script_dir/config/starship.toml"
 command -v starship > /dev/null && eval "$(starship init zsh)"
