@@ -47,8 +47,6 @@ Alt+h/j/k/l in nvim or zsh, for instance, are handled by yabai.
 | `alt+t` | float the window, centred (toggle) |
 | `alt+g` | toggle gaps and padding |
 | `shift+alt+1`…`9` | move the window to space 1…9 and follow it (needs the scripting addition) |
+| `shift+alt+c` | create a space, move the window there and follow it (needs the scripting addition) |
 | `alt+0` | back to the previous space (needs the scripting addition) |
 | `shift+alt+n` / `shift+alt+p` | move the window to the next / previous display and follow it |
-
-`shift+alt+n` is bound twice in `.skhdrc`: also to "create a space and move the window there", which needs
-the scripting addition. Only one of the two takes effect; rebind one of them if you load the addition.
