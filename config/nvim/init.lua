@@ -1,5 +1,4 @@
--- To use impatient, you need only to include it near the top of your init.lua
-require('user.impatient')
+vim.loader.enable() -- bytecode cache, replaces impatient.nvim
 require('user.base')
 require('user.keymaps')
 require('user.ferret')

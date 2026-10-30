@@ -1,90 +1,85 @@
-local status, packer = pcall(require, 'packer')
-if (not status) then
-  print('Packer is not installed')
-  return
+-- lazy.nvim bootstraps itself on first start. Versions are pinned in lazy-lock.json
+-- (`:Lazy restore` installs exactly those, `:Lazy update` moves them).
+local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+if not vim.uv.fs_stat(lazypath) then
+  local out = vim.fn.system({
+    'git', 'clone', '--filter=blob:none', '--branch=stable',
+    'https://github.com/folke/lazy.nvim.git', lazypath,
+  })
+  if vim.v.shell_error ~= 0 then
+    print('Could not install lazy.nvim:\n' .. out)
+    return
+  end
 end
+vim.opt.rtp:prepend(lazypath)
 
-vim.cmd [[packadd packer.nvim]]
+require('lazy').setup({
+  'chriskempson/base16-vim',
+  'nvim-lua/plenary.nvim', -- Common utilities
 
-packer.startup(function(use)
-  use 'wbthomason/packer.nvim'
-  use 'chriskempson/base16-vim'
-  use 'nvim-lua/plenary.nvim' -- Common utilities
-
-  -- use 'navarasu/onedark.nvim'
-  use 'glepnir/lspsaga.nvim' -- LSP UIs
-  use 'onsails/lspkind-nvim' -- vscode-like pictograms
-  use 'hrsh7th/cmp-buffer' -- nvim-cmp source for buffer words
-  use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for neovim's built-in LSP
-  use 'hrsh7th/nvim-cmp' -- Completion
-  use 'hrsh7th/cmp-nvim-lsp-signature-help'
-  use 'saadparwaiz1/cmp_luasnip'
+  -- 'navarasu/onedark.nvim',
+  'glepnir/lspsaga.nvim', -- LSP UIs
+  'onsails/lspkind-nvim', -- vscode-like pictograms
+  'hrsh7th/cmp-buffer', -- nvim-cmp source for buffer words
+  'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim's built-in LSP
+  'hrsh7th/nvim-cmp', -- Completion
+  'hrsh7th/cmp-nvim-lsp-signature-help',
+  'saadparwaiz1/cmp_luasnip',
 
   -- status line
-  use 'feline-nvim/feline.nvim'
+  'feline-nvim/feline.nvim',
 
   -- LSP
-  use {
-    'williamboman/mason.nvim',
-    'williamboman/mason-lspconfig.nvim',
-    'neovim/nvim-lspconfig',
-  }
-  use 'L3MON4D3/LuaSnip'
-  use 'rafamadriz/friendly-snippets'
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
-  }
-  use 'drybalka/tree-climber.nvim'
-  use 'windwp/nvim-autopairs'
-  use 'windwp/nvim-ts-autotag'
-  use 'hashivim/vim-terraform'
+  'williamboman/mason.nvim',
+  'williamboman/mason-lspconfig.nvim',
+  'neovim/nvim-lspconfig',
 
-  use {
+  'L3MON4D3/LuaSnip',
+  'rafamadriz/friendly-snippets',
+  { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+  'drybalka/tree-climber.nvim',
+  'windwp/nvim-autopairs',
+  'windwp/nvim-ts-autotag',
+  'hashivim/vim-terraform',
+
+  {
     'nvim-telescope/telescope.nvim', branch = '0.1.x',
-    requires = { { 'nvim-lua/plenary.nvim' } }
-  }
-  use { 'nvim-telescope/telescope-fzf-native.nvim',
-    run = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
-  use 'kyazdani42/nvim-web-devicons' -- File icons
+    dependencies = { 'nvim-lua/plenary.nvim' },
+  },
+  {
+    'nvim-telescope/telescope-fzf-native.nvim',
+    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+  },
+  'kyazdani42/nvim-web-devicons', -- File icons
 
-  use {
+  {
     'kyazdani42/nvim-tree.lua',
-    requires = {
-      'kyazdani42/nvim-web-devicons', -- optional, for file icons
-    },
-    tag = 'nightly' -- optional, updated every week. (see issue #1193)
-  }
-  use {
-    'phaazon/hop.nvim',
-    branch = 'v2',
-  }
-  use 'tpope/vim-repeat'
-  use 'lewis6991/gitsigns.nvim'
-  use 'dinhhuy258/git.nvim' -- For git blame & browse
+    dependencies = { 'kyazdani42/nvim-web-devicons' }, -- optional, for file icons
+  },
+  'smoka7/hop.nvim', -- maintained fork: phaazon/hop.nvim is gone
+  'tpope/vim-repeat',
+  'lewis6991/gitsigns.nvim',
+  'dinhhuy258/git.nvim', -- For git blame & browse
 
   -- search/replace
-  use 'thinca/vim-qfreplace'
-  use 'wincent/ferret'
-  --
-  use 'lukas-reineke/indent-blankline.nvim'
-  use 'simrat39/symbols-outline.nvim'
-  use 'akinsho/toggleterm.nvim'
-  use 'ThePrimeagen/harpoon'
-  use {
-    'folke/trouble.nvim',
-    requires = 'kyazdani42/nvim-web-devicons'
-  }
-  use 'nvim-telescope/telescope-ui-select.nvim'
-  use 'terrortylor/nvim-comment'
-  use 'towolf/vim-helm'
+  'thinca/vim-qfreplace',
+  'wincent/ferret',
 
-  -- speed up
-  use 'lewis6991/impatient.nvim'
+  'lukas-reineke/indent-blankline.nvim',
+  'simrat39/symbols-outline.nvim',
+  'akinsho/toggleterm.nvim',
+  'ThePrimeagen/harpoon',
+  { 'folke/trouble.nvim', dependencies = { 'kyazdani42/nvim-web-devicons' } },
+  'nvim-telescope/telescope-ui-select.nvim',
+  'terrortylor/nvim-comment',
+  'towolf/vim-helm',
 
   -- project management
-  use 'nvim-telescope/telescope-project.nvim'
+  'nvim-telescope/telescope-project.nvim',
 
-  use 'tpope/vim-surround'
-  use 'tpope/vim-abolish'
-end)
+  'tpope/vim-surround',
+  'tpope/vim-abolish',
+}, {
+  lockfile = vim.fn.stdpath('config') .. '/lazy-lock.json',
+  change_detection = { notify = false },
+})

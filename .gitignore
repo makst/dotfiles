@@ -5,4 +5,3 @@ zsh/.private
 zsh/.zshdefault.zwc
 *.DS_Store
 config/nvim/lua/user/hidden/*
-config/nvim/plugin/packer_compiled.lua

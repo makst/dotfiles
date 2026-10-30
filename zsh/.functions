@@ -9,7 +9,7 @@ timezsh() {
 # change the nvim colorscheme (base16)
 # the terminal theme is set in config/ghostty/config (see `ghostty +list-themes`)
 function change_theme() {
-  echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/site/pack/packer/start/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/lua/user/base16-vim.lua
+  echo "vim.cmd [[colorscheme $(find ~/.local/share/nvim/lazy/base16-vim/colors/* -type f -exec basename {} .vim \; | fzf)]]" > ~/.config/nvim/lua/user/base16-vim.lua
 }
 
 # -------------------------
@@ -170,8 +170,9 @@ function setup_nvim() {
   printf '#!/bin/sh\nexec nvim "$@"\n' > "$HOME/bin/vim"
   chmod +x "$HOME/bin/vim"
 
-  # install nvim packer (lua package manager)
-  [[ ! -d ~/.local/share/nvim/site/pack/packer ]] && git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+  # plugins: lazy.nvim bootstraps itself on first start; install the versions pinned in
+  # config/nvim/lazy-lock.json (needs network, cmake for telescope-fzf-native)
+  command -v nvim > /dev/null && nvim --headless "+Lazy! restore" +qa
 }
 
 function setup_git() {
