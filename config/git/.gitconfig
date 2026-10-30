@@ -1,17 +1,37 @@
 [user]
 	name = Max Tkatschenko
 	email = makst@users.noreply.github.com
+	# commits and tags are signed with this SSH key (it must be in the ssh-agent, see docs/git.md); GitHub
+	# shows them as Verified once the key is added there as a *signing* key
+	signingkey = ~/.ssh/identities/github_personal/id_rsa.pub
+
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	# whose signatures `git log --show-signature` trusts
+	allowedSignersFile = ~/dotfiles/config/git/allowed_signers
+[commit]
+	gpgsign = true
+	# the diff is shown below the message in the editor
+	verbose = true
+[tag]
+	gpgsign = true
 
 [alias]
 	lca = log --pretty=format:'[%h] %cd - Committer: %cn (%ce), Author: %an (%ae)'
 
 	# Switch to a branch, creating it if necessary
-	go = "!f() { git checkout -b \"$1\" 2> /dev/null || git checkout \"$1\"; }; f"
+	go = "!f() { git switch \"$1\" 2> /dev/null || git switch -c \"$1\"; }; f"
 
 	# Switch to new branch and set it to track the upstream branch
 	get = "!f() { git checkout --track origin/\"$1\"; }; f"
 
 	aliases = config --get-regexp alias
+
+	# structural diffs (difftastic): compares syntax trees, so reformatting and re-wrapping aren't changes
+	dft = -c diff.external=difft diff
+	dlog = -c diff.external=difft log -p --ext-diff
+	dshow = -c diff.external=difft show --ext-diff
 
 [color]
 	# Use colors in Git commands that are capable of colored output when
@@ -23,14 +43,6 @@
 	local = yellow
 	remote = green
 
-[color "diff"]
-	meta = yellow
-	frag = magenta bold
-	old = red bold
-	new = green bold
-	commit = yellow bold
-	whitespace = red reverse
-
 [color "status"]
 	added = green
 	changed = red
@@ -39,17 +51,39 @@
 [diff]
 	# Detect copies as well as renames
 	renames = copies
+	# better hunks than the default myers
+	algorithm = histogram
+	# moved lines in their own colour
+	colorMoved = default
 
 [help]
-	# Automatically correct and execute mistyped commands
-	autocorrect = 1
+	# Suggest the corrected command for a typo and ask before running it
+	autocorrect = prompt
 
 [merge]
 	# Include summaries of merged commits in newly created merge commit messages
 	log = true
+	# conflict markers also show the common ancestor, minus the lines both sides share
+	conflictstyle = zdiff3
+
 [core]
-	pager = diff-so-fancy | less --tabs=4 -RFX
-	editor = vim
+	pager = delta
+	editor = nvim
+	# a file-system watcher per repo (git's own daemon) and a cache of untracked files: `git status` stays fast
+	# in big repos
+	fsmonitor = true
+	untrackedCache = true
+
+[interactive]
+	# `git add -p` hunks coloured by delta too
+	diffFilter = delta --color-only
+
+[delta]
+	# n / N jump between files
+	navigate = true
+	line-numbers = true
+	# the terminal's 16 colours, so it follows the Ghostty theme (like bat)
+	syntax-theme = base16
 
 [diff]
     tool = default-difftool
@@ -57,10 +91,30 @@
 [difftool "default-difftool"]
     cmd = vimdiff
 
-[color "diff-highlight"]
-	oldNormal = red bold
-	oldHighlight = red bold 52
-	newNormal = green bold
-	newHighlight = green bold 22
 [pull]
 	rebase = false
+
+[push]
+	# `git push` on a new branch creates it on origin and tracks it
+	autoSetupRemote = true
+
+[fetch]
+	# drop local copies of branches deleted on the remote
+	prune = true
+
+[rebase]
+	# stash before, pop after
+	autoStash = true
+	# stacked branches pointing into the rebased commits move with them
+	updateRefs = true
+
+[rerere]
+	# remember how a conflict was resolved and replay it when the same conflict comes back
+	enabled = true
+
+[branch]
+	# `git branch` lists recently committed-to branches first
+	sort = -committerdate
+
+[init]
+	defaultBranch = main
