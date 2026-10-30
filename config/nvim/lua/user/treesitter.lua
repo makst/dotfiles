@@ -12,6 +12,10 @@ ts.install {
   'json',
   'yaml',
   'lua',
+  'go',
+  'gomod',
+  'gosum',
+  'gowork',
 }
 
 vim.treesitter.language.register('tsx', 'typescript.tsx')
