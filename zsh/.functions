@@ -139,6 +139,10 @@ PLIST
 
 function setup_tmux() {
   ln -sfn "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
+
+  # plugin manager; the plugins themselves are listed in config/.tmux.conf
+  [[ ! -d ~/.tmux/plugins/tpm ]] && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  ~/.tmux/plugins/tpm/bin/install_plugins
 }
 
 function setup_ghostty() {

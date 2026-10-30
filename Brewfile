@@ -11,7 +11,6 @@ brew "pyenv"                       # zsh/.exports
 brew "zsh"
 brew "zsh-completions"
 brew "tmux"
-brew "reattach-to-user-namespace"  # clipboard inside tmux (config/.tmux.conf)
 brew "diff-so-fancy"               # git pager (config/git/.gitconfig)
 brew "gnu-sed"
 brew "cmake"

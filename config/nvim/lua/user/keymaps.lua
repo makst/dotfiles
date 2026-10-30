@@ -43,8 +43,8 @@ keymap.set('n', '<right>', '<C-w>>')
 keymap.set('n', '<up>', '<C-w>+')
 keymap.set('n', '<down>', '<C-w>-')
 
--- clear search highlights
-keymap.set('n', '<C-l>', '<cmd>:noh<cr>')
+-- clear search highlights (CTRL-L moves to the right nvim/tmux pane, see vim-tmux-navigator)
+keymap.set('n', '<Esc>', '<cmd>:noh<cr>')
 
 keymap.set('n', '<leader>re', '<cmd>lua reload_nvim_conf()<cr>')
 
