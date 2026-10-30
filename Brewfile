@@ -12,6 +12,7 @@ brew "zsh"
 brew "zsh-completions"
 brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
+brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"
 brew "diff-so-fancy"               # git pager (config/git/.gitconfig)
 brew "gnu-sed"

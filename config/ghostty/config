@@ -1,9 +1,41 @@
 # Ghostty config: https://ghostty.org/docs/config
-# Symlinked to ~/.config/ghostty/config by setup_ghostty (zsh/.functions).
+# ~/.config/ghostty/config and ~/.config/ghostty/themes are symlinked here by setup_ghostty (zsh/.functions).
+# Reload with cmd+shift+, ; list options with `ghostty +show-config --default --docs`.
 
-# Source Code Pro 18, carried over from the old iTerm profile
+# -- look -----------------------------------------------------------------------
+# themes/base16 is the base16 scheme nvim uses (base16-onedark); `change_theme` switches both.
+# Ghostty's own themes: `ghostty +list-themes`
+theme = base16
+
+# Source Code Pro 18, carried over from the old iTerm profile.
+# Nerd Font icons (eza, starship, nvim) come from Ghostty's built-in symbol fallback.
 font-family = Source Code Pro
 font-size = 18
+adjust-cell-height = 10%
 
+window-padding-x = 8
+window-padding-y = 6
+window-padding-balance = true
+window-padding-color = extend
+macos-titlebar-style = tabs
+window-save-state = always
+
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+# -- input ------------------------------------------------------------------------
 # Option acts as Alt, for vim / tmux / zsh-vi-mode bindings
 macos-option-as-alt = true
+
+# shell integration: cursor shape per vi mode is zsh-vi-mode's job, so leave the cursor alone
+shell-integration-features = no-cursor,sudo,title
+
+# Shift+Enter inserts a newline (Claude Code, multi-line prompts)
+keybind = shift+enter=text:\x1b\r
+
+# -- quick terminal ------------------------------------------------------------------
+# drop-down terminal from anywhere: ctrl+` (needs Accessibility access for Ghostty)
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-animation-duration = 0.1
