@@ -7,10 +7,6 @@ export CLICOLOR=1
 ZSH_THEME=""
 ZVM_VI_INSERT_ESCAPE_BINDKEY=jj
 
-# https://blog.mattclemente.com/2020/06/26/oh-my-zsh-slow-to-load/
-export NVM_LAZY_LOAD=true
-export NVM_COMPLETION=true
-
 # https://github.com/jeffreytse/zsh-vi-mode/issues/15
 function zvm_fix_partial_history_search() {
   zvm_bindkey viins '^[[A' history-beginning-search-backward
@@ -33,7 +29,6 @@ function zvm_after_init() {
 }
 
 plugins=(
-  zsh-nvm
   git
   z
   zsh-syntax-highlighting

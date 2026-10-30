@@ -11,11 +11,9 @@ export LESS=' -R '
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-# zsh-nvm loads nvm lazily (NVM_LAZY_LOAD), so node/npm are only shell functions until first use.
-# Programs started from the shell (nvim: mason, ts_ls) need a real node on PATH: use the newest installed one.
-nvm_node_dir=("$HOME"/.nvm/versions/node/v*(N/n[-1]))
-[[ -n $nvm_node_dir ]] && export PATH="$nvm_node_dir/bin:$PATH"
-unset nvm_node_dir
+# node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls), and cd into a
+# directory with .nvmrc / .node-version switches to that version
+command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"
 
 # Add pyenv executable to PATH and
 # enable shims by adding the following

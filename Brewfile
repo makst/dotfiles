@@ -11,6 +11,7 @@ brew "pyenv"                       # zsh/.exports
 brew "zsh"
 brew "zsh-completions"
 brew "starship"                    # prompt, config/starship.toml
+brew "fnm"                         # node versions, zsh/.exports
 brew "tmux"
 brew "diff-so-fancy"               # git pager (config/git/.gitconfig)
 brew "gnu-sed"
@@ -72,7 +73,7 @@ cask "gpg-suite"
 # brew "redis"
 # brew "saml2aws"
 # brew "tor"
-# brew "yarn"            # pulls in Homebrew's node; nvm already provides node
+# brew "yarn"            # pulls in Homebrew's node; fnm already provides node
 # brew "antigen"         # unused: plugins come from Oh My Zsh
 # brew "zsh-vi-mode"     # unused: installed as an Oh My Zsh plugin
 # cask "vagrant"

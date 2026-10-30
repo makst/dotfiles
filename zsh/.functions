@@ -57,9 +57,6 @@ function install_and_update_zsh_plugins() {
   [[ ! -d $ZSH_CUSTOM/plugins/zsh-vi-mode ]] && git clone https://github.com/jeffreytse/zsh-vi-mode $ZSH_CUSTOM/plugins/zsh-vi-mode
   cd $ZSH_CUSTOM/plugins/zsh-vi-mode && git pull -q
 
-  [[ ! -d $ZSH_CUSTOM/plugins/zsh-nvm ]] && git clone https://github.com/lukechilds/zsh-nvm $ZSH_CUSTOM/plugins/zsh-nvm
-  cd $ZSH_CUSTOM/plugins/zsh-nvm && git pull -q
-
   [[ ! -d $ZSH_CUSTOM/plugins/fzf-tab ]] && git clone https://github.com/Aloxaf/fzf-tab $ZSH_CUSTOM/plugins/fzf-tab
   cd $ZSH_CUSTOM/plugins/fzf-tab && git pull -q
 
@@ -98,8 +95,9 @@ function navi_data_dir_setup() {
 }
 
 function npm_setup() {
-  # node comes from nvm (zsh-nvm plugin)
-  nvm install --lts
+  # node comes from fnm (Brewfile, zsh/.exports)
+  fnm install --lts
+  fnm default lts-latest
   npm install -g \
     typescript 
 }
