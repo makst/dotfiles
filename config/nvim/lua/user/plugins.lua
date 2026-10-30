@@ -37,7 +37,7 @@ require('lazy').setup({
   'L3MON4D3/LuaSnip',
   'rafamadriz/friendly-snippets',
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
-  'drybalka/tree-climber.nvim',
+  'aaronik/treewalker.nvim', -- replaces tree-climber, which needs the removed nvim-treesitter APIs
   'windwp/nvim-autopairs',
   'windwp/nvim-ts-autotag',
   'hashivim/vim-terraform',
