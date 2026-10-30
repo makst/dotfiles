@@ -72,7 +72,6 @@ require('lazy').setup({
   'ThePrimeagen/harpoon',
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
   'nvim-telescope/telescope-ui-select.nvim',
-  'terrortylor/nvim-comment',
   'towolf/vim-helm',
 
   -- project management
