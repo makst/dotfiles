@@ -1,55 +1,78 @@
-- [About](#about)
-- [Install from scratch](#install-from-scratch)
-- [Working with the full installation](#working-with-the-full-installation)
+dotfiles
+===
 
-About
----
-MacOS development setup.
+A keyboard-driven macOS development setup for Apple silicon. Ghostty opens straight into tmux, tmux holds
+the shells, nvim sessions and Claude Code agents, and one base16 colour scheme is shared by all of them.
+
+| Layer | Tool | Docs |
+|---|---|---|
+| Install and update | Homebrew (`Brewfile`), `setup_dotfiles` | [setup](docs/setup.md) |
+| Terminal | Ghostty | [ghostty](docs/ghostty.md) |
+| Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
+| Shell | zsh, Oh My Zsh, zsh-vi-mode, starship, zoxide, fnm, pyenv | [zsh](docs/zsh.md) |
+| Fuzzy finding | fzf, fzf-tab, fd, bat, eza, navi | [fzf](docs/fzf.md) |
+| Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
+| Version control | git, diff-so-fancy, lazygit, ssh-ident | [git](docs/git.md) |
+| AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
+| Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
+| Window manager | yabai + skhd (optional) | [window-management](docs/window-management.md) |
 
 Install from scratch
 ---
-**Warning:**
-Make sure you fork this repo and adjust it to your own preferences before even starting the setup.
+**Fork this repo first** and change at least the git identity in `config/git/.gitconfig`: it is set up for
+one person.
 
-1. Install git.
-2. Clone this repo.
-3. From inside this repo, run
-   ```
-   $ ./prepare-zsh-install.sh
-   $ exec zsh
-   $ setup_dotfiles # idempotent, can be executed after every `git pull`
-   ```
+```sh
+git clone <your fork> ~/repos/dotfiles && cd ~/repos/dotfiles
+./prepare-zsh-install.sh   # Homebrew, zsh, Oh My Zsh, links ~/.zshrc, makes zsh the login shell
+exec zsh
+setup_dotfiles             # everything else; idempotent, rerun after every `git pull`
+```
 
-   `prepare-zsh-install.sh` links the dotfiles into `$HOME`, installs Homebrew (native `/opt/homebrew` on Apple
-   silicon), zsh and Oh My Zsh, and makes Homebrew's zsh your login shell. `setup_dotfiles` then installs the
-   packages from the [Brewfile](./Brewfile) (including nvim, starship and fnm), the zsh and tmux plugins, node (fnm), ssh-ident, links the git, tmux, nvim and Ghostty config and remaps Caps Lock to Ctrl at every login. `change_theme` switches the base16 colour scheme of nvim and Ghostty together.
+Then grant Accessibility access to Ghostty (for the drop-down terminal). [docs/setup.md](docs/setup.md) lists
+what each step does, every symlink it creates and the manual steps that remain.
 
-   yabai and skhd are installed by the Brewfile, but `setup_window_management` is not part of `setup_dotfiles`:
-   run it yourself after reading the SIP notes in that function.
-
-Terminal: Ghostty + tmux + nvim
+How the keyboard is split
 ---
-Ghostty's first window attaches to the tmux session `main`, so sessions, Claude Code agents and layouts survive
-quitting Ghostty (and, with tmux-resurrect/continuum, a reboot). Its Cmd shortcuts drive tmux (prefix is `C-a`):
+Every tool owns its own modifier, so the layers don't fight over keys:
 
-| Ghostty | tmux | |
+| Keys | Owner | Examples |
 |---|---|---|
-| cmd+t | prefix c | new window |
-| cmd+d / cmd+shift+d | prefix \| / prefix - | split right / down |
-| cmd+w | prefix x | close pane (asks first) |
-| cmd+1..9, cmd+[ / cmd+] | prefix 1..9, prefix C-h / C-l | go to window |
-| cmd+shift+enter | prefix z | zoom pane |
-| cmd+k | prefix f | session picker: running sessions and zoxide directories (`tm` outside tmux) |
-| cmd+j | prefix w | tree of all sessions and windows |
-| cmd+f | prefix / | search the scrollback |
+| `Cmd` | Ghostty, translated into tmux commands | `cmd+t` new window, `cmd+d` split, `cmd+k` session picker |
+| `C-a` | tmux prefix | `C-a f` session picker, `C-a w` session tree, `C-a z` zoom |
+| `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
+| `Option` (Alt) | yabai/skhd, globally, when running | `alt+h` focus window left |
+| `Caps Lock` | remapped to Ctrl | |
+| `,` | nvim leader | `,e` file tree, `,lg` lazygit |
+| `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
+| `jj` | leave insert mode, in nvim and in zsh | |
+| `C-r` / `C-t` / `C-g` | fzf history / files, navi cheatsheets, in zsh | |
 
-C-h/j/k/l move between tmux panes and nvim splits. Further Ghostty windows (cmd+n) and the quick terminal
-(ctrl+\`) are plain zsh.
-
-`agent <name> [prompt]` starts Claude Code in its own git worktree (`claude -w`) in a new tmux window named
-`<name>`. A window whose program rings the bell, e.g. an agent waiting for input, turns yellow in the status line
-until you visit it. nvim reloads files changed on disk when you come back to it.
-
-Working with the full installation
+A typical day
 ---
-Discover [functions](./zsh/.functions) that you can run/rerun/modify to set up your dev environment.
+1. Open Ghostty: you land in the tmux session `main`, exactly as you left it, even after a reboot.
+2. `cmd+k`, type part of a project name: a tmux session for that directory opens (or is reused).
+3. `vim .` in one window, `cmd+d` for a shell next to it, `C-h`/`C-l` to move between them.
+4. `agent fix-login "the login form rejects valid emails"` starts Claude Code in its own worktree and
+   window; when it needs you, its window turns yellow in the status bar.
+
+Repository layout
+---
+```
+Brewfile                  every package and app, commented by purpose
+prepare-zsh-install.sh    first-run bootstrap (bash, before zsh exists)
+.zshrc                    sources zsh/*; everything else is linked from config/
+zsh/                      shell config, aliases, functions (setup_dotfiles lives in .functions)
+.fzf.zsh                  fzf and fzf-tab configuration
+config/ghostty/           Ghostty config and the generated base16 theme
+config/tmux/              tmux.conf and the session picker
+config/nvim/              Neovim: one directory per plugin under lua/user/
+config/starship.toml      prompt
+config/git/.gitconfig     git
+config/.yabairc .skhdrc   window manager
+data_dir/navi/cheats/     own navi cheatsheets
+docs/                     this documentation
+```
+
+Private, machine-specific settings go in files that are gitignored and loaded when present:
+`zsh/.private` (shell, e.g. tokens) and `config/nvim/lua/user/hidden/init.lua` (nvim).

@@ -1,0 +1,110 @@
+zsh
+===
+
+Homebrew's zsh is the login shell, with Oh My Zsh as the plugin loader, vi keys on the command line, a
+starship prompt and zoxide for jumping between directories.
+
+How it loads
+---
+`~/.zshrc` is a link into the repo. It finds the repo through that link and sources, in order:
+
+| File | Contains |
+|---|---|
+| `zsh/.zshdefault` | Oh My Zsh, plugins, history, prompt, zoxide |
+| `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`), fnm, pyenv, pager and colour settings |
+| `zsh/.aliases` | aliases |
+| `zsh/.kubectl_aliases` | generated kubectl aliases |
+| `zsh/.functions` | shell functions, including the whole install (`setup_dotfiles`) |
+| `zsh/.private` | gitignored: tokens and machine-specific settings, if the file exists |
+
+Put new things in the file that matches; put anything secret in `.private`.
+
+Plugins
+---
+Oh My Zsh provides the `git` plugin's aliases (`gst`, `gco`, `gl`, … `alias | grep git` lists them) and
+loads four plugins cloned by `install_and_update_zsh_plugins`. Their order matters and is deliberate:
+
+| Plugin | Gives you |
+|---|---|
+| fzf-tab | `Tab` completion through fzf, see [fzf](fzf.md#completion-fzf-tab) |
+| zsh-vi-mode | vi modes on the command line |
+| zsh-autosuggestions | grey suggestion from history as you type; `→` or `End` accepts it |
+| zsh-syntax-highlighting | commands green when they exist, red when not; must load last |
+
+There's no Oh My Zsh theme: the prompt is starship.
+
+Vi mode
+---
+The command line starts in insert mode. `jj` switches to normal mode, where the usual vim motions,
+operators and text objects work, `v` selects, and `vv` opens the command line in nvim to edit it there. The
+cursor is a bar in insert mode and a block in normal mode.
+
+| Key | Mode | Action |
+|---|---|---|
+| `↑` / `↓` | both | previous / next history entry *starting with what you've typed* |
+| `C-k` / `C-j` | normal | the same, on the home row (outside tmux; inside tmux these keys move between panes) |
+| `C-r` | insert | fuzzy history search (fzf) |
+
+zsh-vi-mode resets key bindings when it starts, so fzf's and navi's widgets are loaded after it (in its
+`zvm_after_init` hook). Add other key bindings there too, or they'll silently disappear.
+
+History
+---
+100 000 commands, shared between all open shells, with duplicates removed (only the latest copy of a
+repeated command is kept).
+
+Prompt (starship)
+---
+Config: `config/starship.toml`, found through `STARSHIP_CONFIG`.
+
+Two lines: context on the first, your input on the second after a `❯` that turns red when the last
+command failed and flips to `❮` in vi normal mode. The first line shows the directory (shortened to the
+repo root), git branch, state and status, and only where relevant: kubernetes context and namespace, AWS
+profile, node / python / go version in projects of that language, terraform workspace, how long the last
+command took (over 2 s) and background jobs.
+
+All colours are ANSI names, so the prompt follows the [theme](theme.md).
+
+Navigation
+---
+zoxide learns the directories you visit:
+
+- `z foo` jumps to the most frecent directory matching `foo` (`z foo bar` for both words).
+- `zi foo` picks among matches with fzf.
+- `Alt+C` (fzf) changes into any subdirectory.
+
+The same zoxide list feeds the tmux session picker (`cmd+k`), so projects you `z` into become sessions
+you can open with two keystrokes.
+
+Language versions
+---
+- **node**: fnm. Entering a directory with `.nvmrc`, `.node-version` or a `package.json` `engines` field
+  switches to that version (in subdirectories too); otherwise the default version is used. The default
+  is on `PATH` everywhere, including for nvim's language servers. `fnm install <v>`, `fnm default <v>`.
+- **python**: pyenv. `pyenv global <version>` sets the default, `.python-version` files set it per
+  project.
+- **go**: from Homebrew.
+
+Aliases and functions worth knowing
+---
+| Command | Does |
+|---|---|
+| `ll`, `la` (`l`), `lt` | eza: long listing with git status and icons; with hidden files; tree two levels deep |
+| `lg` | lazygit |
+| `tm` | tmux session picker |
+| `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
+| `fif <text>` | files containing the text, with a preview of the matches |
+| `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
+| `docker` | podman (Docker Desktop isn't installed) |
+| `k`, `kgpo`, `kdp`, … | kubectl aliases from [kubectl-aliases](https://github.com/ahmetb/kubectl-aliases): `k` + verb + resource + flags |
+| `copy_last_cmd` | copy the previous command to the clipboard |
+| `sn` / `sp` | Spotify next / previous track |
+| `timezsh` | measure shell start-up time |
+
+`vim` runs nvim everywhere (it's a link in `~/bin`), including as git's editor.
+
+Pager and colours
+---
+`less` keeps colours and, through lesspipe, shows the contents of archives and other binary formats.
+`bat` uses the terminal palette. File colours for eza, fzf-tab and completion (`LS_COLORS`) come from
+vivid's `one-dark` theme: fixed colours that don't follow `change_theme`.
