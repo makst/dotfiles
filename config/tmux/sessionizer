@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+# Pick a tmux session: the running ones first, then directories from zoxide, which get a
+# session of their own named after the directory. Bound to prefix f (config/tmux/tmux.conf)
+# and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux.
+
+sessions=(${(f)"$(tmux list-sessions -F '#S' 2> /dev/null)"})
+choice=$({ print -rl -- $sessions; zoxide query --list } \
+  | fzf --reverse --no-sort --prompt 'session> ' --header 'running sessions, then zoxide directories')
+[[ -z $choice ]] && exit 0
+
+if (( ${sessions[(Ie)$choice]} )); then
+  target=$choice
+else
+  target=${${choice:t}//[.:]/_} # tmux turns . and : in session names into _ anyway
+  tmux has-session -t "=$target" 2> /dev/null || tmux new-session -d -s "$target" -c "$choice"
+fi
+
+if [[ -n $TMUX ]]; then
+  tmux switch-client -t "=$target"
+else
+  tmux attach-session -t "=$target"
+fi

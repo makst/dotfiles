@@ -29,7 +29,9 @@ mouse-hide-while-typing = true
 macos-option-as-alt = true
 
 # shell integration: cursor shape per vi mode is zsh-vi-mode's job, so leave the cursor alone
-shell-integration-features = no-cursor,sudo,title
+# ssh-terminfo / ssh-env: remote hosts get Ghostty's terminfo, or fall back to xterm-256color (plain windows;
+# inside tmux TERM is tmux-256color, see the ssh alias in zsh/.aliases)
+shell-integration-features = no-cursor,sudo,title,ssh-terminfo,ssh-env
 
 # Shift+Enter inserts a newline (Claude Code, multi-line prompts)
 keybind = shift+enter=text:\x1b\r
@@ -39,3 +41,40 @@ keybind = shift+enter=text:\x1b\r
 keybind = global:ctrl+grave_accent=toggle_quick_terminal
 quick-terminal-position = top
 quick-terminal-animation-duration = 0.1
+
+# -- tmux -----------------------------------------------------------------------------
+# The first window attaches to the tmux session "main" (created if needed), so sessions, agents and
+# layouts survive quitting Ghostty. It goes through a login zsh so the tmux server gets the full PATH
+# (fzf, zoxide, claude for popups and plugins). Further windows and the quick terminal are plain zsh.
+initial-command = /opt/homebrew/bin/zsh -lic 'exec tmux new-session -A -s main'
+
+# Cmd shortcuts drive tmux: they send the prefix (C-a, \x01) and a key bound in config/tmux/tmux.conf.
+# In a plain window (cmd+n, quick terminal) they type into the shell; close those with cmd+shift+w.
+keybind = super+t=text:\x01c
+keybind = super+d=text:\x01|
+keybind = super+shift+d=text:\x01-
+keybind = super+w=text:\x01x
+keybind = super+[=text:\x01\x08
+keybind = super+]=text:\x01\x0c
+keybind = super+shift+enter=text:\x01z
+keybind = super+k=text:\x01f
+keybind = super+j=text:\x01w
+keybind = super+f=text:\x01/
+keybind = super+digit_1=text:\x011
+keybind = super+1=text:\x011
+keybind = super+digit_2=text:\x012
+keybind = super+2=text:\x012
+keybind = super+digit_3=text:\x013
+keybind = super+3=text:\x013
+keybind = super+digit_4=text:\x014
+keybind = super+4=text:\x014
+keybind = super+digit_5=text:\x015
+keybind = super+5=text:\x015
+keybind = super+digit_6=text:\x016
+keybind = super+6=text:\x016
+keybind = super+digit_7=text:\x017
+keybind = super+7=text:\x017
+keybind = super+digit_8=text:\x018
+keybind = super+8=text:\x018
+keybind = super+digit_9=text:\x019
+keybind = super+9=text:\x019

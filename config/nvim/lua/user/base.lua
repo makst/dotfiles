@@ -49,6 +49,15 @@ vim.api.nvim_create_autocmd('InsertLeave', {
   command = 'set nopaste'
 })
 
+-- Reload files changed outside nvim (agents, git) when coming back to nvim, its tmux pane or a buffer.
+-- 'autoread' alone only acts once something checks the timestamps.
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'TermLeave' }, {
+  pattern = '*',
+  callback = function()
+    if vim.fn.getcmdwintype() == '' then vim.cmd('checktime') end
+  end,
+})
+
 -- Add asterisks in block comments
 vim.opt.formatoptions:append { 'r' }
 

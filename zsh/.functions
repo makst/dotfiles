@@ -154,11 +154,30 @@ PLIST
 }
 
 function setup_tmux() {
-  ln -sfn "$real_script_dir/config/.tmux.conf" "$HOME/.tmux.conf"
+  mkdir -p "$HOME/.config"
+  ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux"
+  # the config used to live in ~/.tmux.conf, which tmux would still prefer
+  [[ -L ~/.tmux.conf ]] && rm ~/.tmux.conf
 
-  # plugin manager; the plugins themselves are listed in config/.tmux.conf
+  # plugin manager; the plugins themselves are listed in config/tmux/tmux.conf
   [[ ! -d ~/.tmux/plugins/tpm ]] && git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
   ~/.tmux/plugins/tpm/bin/install_plugins
+}
+
+# Claude Code in its own git worktree (claude -w) and, inside
+# tmux, in a new window named after the task. The window stays a shell once Claude exits.
+#   agent fix-login
+#   agent fix-login "the login form rejects valid emails"
+function agent() {
+  local name=${1:?usage: agent <name> [claude args...]}
+  shift
+  if [[ -z $TMUX ]]; then
+    claude -w "$name" "$@"
+    return
+  fi
+  local pane
+  pane=$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$PWD") || return
+  tmux send-keys -t "$pane" "claude -w ${(q)name}${@:+ ${(j: :)${(q)@}}}" Enter
 }
 
 function setup_ghostty() {
