@@ -12,10 +12,7 @@ along:
 | Uses the scheme directly | Uses the 16 terminal colours |
 |---|---|
 | nvim (`tinted-vim` colour schemes) | tmux status bar, starship prompt, fzf, bat, lazygit |
-| Ghostty (`config/ghostty/themes/base16`, generated) | |
-
-**Not following it:** file colours in `ls`/eza/completion (`LS_COLORS`), which come from vivid's fixed
-`one-dark` theme in `zsh/.exports`. Change that by hand if you switch to a very different scheme.
+| Ghostty (`config/ghostty/themes/base16`, generated) | file colours in eza, fzf-tab and completion (vivid's `ansi` theme) |
 
 Switching schemes
 ---

@@ -9,8 +9,8 @@ command -v lesspipe.sh > /dev/null && lesspipe.sh | source /dev/stdin
 export LESS=' -R '
 # bat: the base16 theme uses the terminal's 16 colours, i.e. the Ghostty theme
 export BAT_THEME=base16
-# file colours for eza, fzf-tab and zsh completion
-command -v vivid > /dev/null && export LS_COLORS="$(vivid generate one-dark)"
+# file colours for eza, fzf-tab and zsh completion; the ansi theme uses the terminal's 16 colours, so it follows the Ghostty theme
+command -v vivid > /dev/null && export LS_COLORS="$(vivid generate ansi)"
 
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
