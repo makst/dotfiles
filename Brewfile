@@ -1,7 +1,7 @@
 # Installed by `brew_setup` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
 
-tap "koekeishiya/formulae"         # yabai, skhd
+tap "nikitabobko/tap"              # aerospace
 
 # --- Used by these dotfiles
 brew "git"
@@ -37,14 +37,13 @@ brew "lazygit"                     # `lg` alias
 brew "podman"                      # `docker` alias
 brew "docker-compose"
 brew "pup"                         # command line tool for processing HTML
-brew "kubernetes-cli"              # zsh/.kubectl_aliases
+brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
-brew "pass"
-brew "gnupg"
+brew "pass"                        # passwords; the only user of gnupg
+brew "gnupg"                       # setup_gpg
+brew "pinentry-mac"                # gpg passphrase dialog, can keep it in the keychain
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
-brew "koekeishiya/formulae/yabai"  # config/.yabairc, see setup_window_management
-brew "koekeishiya/formulae/skhd"   # config/.skhdrc
 
 # --- Everyday tools
 brew "jq"
@@ -61,6 +60,7 @@ brew "go"
 
 # --- Apps
 cask "ghostty"
+cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
 cask "font-source-code-pro"
 cask "google-chrome"
 cask "firefox@developer-edition"
@@ -68,7 +68,6 @@ cask "signal"
 cask "spotify"
 cask "cyberduck"
 cask "tunnelblick"
-cask "gpg-suite"
 
 # --- Review: installed on the old Mac, probably leftovers. Uncomment what you still use.
 # cask "docker-desktop"  # `docker` is aliased to podman

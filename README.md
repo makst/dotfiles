@@ -15,7 +15,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | Version control | git, delta, difftastic, lazygit, gh | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
-| Window manager | yabai + skhd (optional) | [window-management](docs/window-management.md) |
+| Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
 
 Install from scratch
 ---
@@ -29,7 +29,7 @@ exec zsh
 setup_dotfiles             # everything else; idempotent, rerun after every `git pull`
 ```
 
-Then grant Accessibility access to Ghostty (for the drop-down terminal). [docs/setup.md](docs/setup.md) lists
+Then grant Accessibility access to Ghostty (for the drop-down terminal) and AeroSpace. [docs/setup.md](docs/setup.md) lists
 what each step does, every symlink it creates and the manual steps that remain.
 
 How the keyboard is split
@@ -41,7 +41,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Cmd` | Ghostty, translated into tmux commands | `cmd+t` new window, `cmd+d` split, `cmd+k` session picker |
 | `C-a` | tmux prefix | `C-a f` session picker, `C-a w` session tree, `C-a z` zoom |
 | `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
-| `Option` (Alt) | yabai/skhd, globally, when running | `alt+h` focus window left |
+| `Option` (Alt) | AeroSpace, globally | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
 | `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
@@ -83,7 +83,9 @@ config/tmux/              tmux.conf and the session picker
 config/nvim/              Neovim: one directory per plugin under lua/user/
 config/starship.toml      prompt
 config/git/.gitconfig     git
-config/.yabairc .skhdrc   window manager
+config/ssh/config         ssh: keychain, which key for which host
+config/gnupg/             gpg-agent (for pass)
+config/aerospace/         window manager
 data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation
 ```

@@ -69,17 +69,15 @@ function brew_setup() {
 }
 
 function setup_window_management() {
-  # yabai and skhd are installed by the Brewfile.
-  # yabai's scripting addition (`yabai --load-sa` in .yabairc) needs SIP partially disabled and,
-  # on Apple silicon, the arm64e boot-arg: https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection
-
-  # both tools install and start their own launch agent. They need Accessibility access
-  # (System Settings > Privacy & Security > Accessibility) for yabai and skhd, then rerun this.
-  yabai --start-service
-  skhd --start-service
-
-  ln -sfn "$real_script_dir/config/.yabairc" "$HOME/.yabairc"
-  ln -sfn "$real_script_dir/config/.skhdrc" "$HOME/.skhdrc"
+  # AeroSpace comes from the Brewfile. Its first start asks for Accessibility access (System Settings >
+  # Privacy & Security > Accessibility); from then on it starts at login (start-at-login in the config).
+  mkdir -p "$HOME/.config/aerospace"
+  ln -sfn "$real_script_dir/config/aerospace/aerospace.toml" "$HOME/.config/aerospace/aerospace.toml"
+  # Mission Control shows the windows of other workspaces too small without this
+  defaults write com.apple.dock expose-group-apps -bool true && killall Dock
+  # ctrl+cmd and drag anywhere in a window moves it; applies after logging out and in
+  defaults write -g NSWindowShouldDragOnGesture -bool true
+  open -a AeroSpace
 }
 
 function fzf_setup() {
@@ -255,6 +253,43 @@ PLIST
   launchctl bootstrap "gui/$(id -u)" "$plist"
 }
 
+# new_ssh_key <identity> [github|gitlab]: a new ed25519 key in ~/.ssh/identities/<identity>/id_ed25519, which
+# config/ssh/config uses. Asks for a passphrase and keeps it in the keychain. With github, the key is also
+# added to the GitHub account for ssh and for signing commits, and to config/git/allowed_signers; with
+# gitlab, the public key is copied for pasting on the settings page that opens.
+function new_ssh_key() {
+  local name=${1:?usage: new_ssh_key <identity> [github|gitlab]} site=$2
+  local key=~/.ssh/identities/$name/id_ed25519 title=${HOST%%.*}
+  [[ -e $key ]] && { print -u2 "$key already exists"; return 1 }
+  mkdir -p ${key:h} && chmod 700 ${key:h}
+  ssh-keygen -t ed25519 -a 100 -f $key -C "$name@$title" || return
+  ssh-add --apple-use-keychain $key || return
+
+  case $site in
+    github)
+      # adding ssh keys needs one more permission than gh asks for at login
+      gh auth status 2>&1 | grep -q admin:public_key || gh auth refresh -h github.com -s admin:public_key || return
+      gh ssh-key add $key.pub --type authentication --title $title &&
+        gh ssh-key add $key.pub --type signing --title $title || return
+      print -r -- "$(git config user.email) namespaces=\"git\" ${$(<$key.pub)% *}" \
+        >> "$real_script_dir/config/git/allowed_signers"
+      ;;
+    gitlab)
+      pbcopy < $key.pub
+      open https://gitlab.com/-/user_settings/ssh_keys
+      print "public key copied, paste it on the GitLab page that opened"
+      ;;
+  esac
+}
+
+# GPG is only for pass; git signs with SSH
+function setup_gpg() {
+  mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+  ln -sfn "$real_script_dir/config/gnupg/gpg-agent.conf" ~/.gnupg/gpg-agent.conf
+  # it starts again with the new config the next time it's needed
+  gpgconf --kill gpg-agent
+}
+
 function setup_dotfiles() {
   brew_setup
   fzf_setup
@@ -263,11 +298,12 @@ function setup_dotfiles() {
   npm_setup
   setup_python
   setup_ssh
+  setup_gpg
   setup_git
   setup_tmux
   setup_nvim
   setup_ghostty
   remap_keys
   setup_macos_defaults
-  # not run by default, needs SIP changes first: setup_window_management
+  setup_window_management
 }

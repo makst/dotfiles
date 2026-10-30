@@ -55,7 +55,7 @@ isn't, signing asks for the passphrase.
 
 - **GitHub** shows the commits as *Verified* once the same public key is added as a **signing** key
   (separate from the authentication key, though it can be the same file):
-  `gh ssh-key add ~/.ssh/identities/github_personal/id_rsa.pub --type signing`.
+  `new_ssh_key <name> github` adds a new key as both (see [SSH keys](#ssh-keys)).
 - **Locally**, `git log --show-signature` checks signatures against `config/git/allowed_signers`.
 - For a repo where signing is unwanted: `git config commit.gpgsign false` inside it.
 
@@ -71,8 +71,11 @@ macOS's own ssh-agent and keychain hold the keys; nothing runs in the shell for 
 - `config/ssh/config` is included at the top of `~/.ssh/config` and sets `UseKeychain` and
   `AddKeysToAgent` for every host, and which key GitHub and GitLab get. Private hosts go in
   `~/.ssh/config` below the include.
-- **Once per key**, store its passphrase in the keychain:
-  `ssh-add --apple-use-keychain ~/.ssh/identities/github_personal/id_rsa`.
+- **A new key**: `new_ssh_key github_personal github` (or `new_ssh_key gitlab_personal gitlab`) makes an
+  ed25519 key in `~/.ssh/identities/<name>/id_ed25519`, stores its passphrase in the keychain and, for
+  GitHub, adds it to the account for ssh and signing and to `config/git/allowed_signers` (commit that). For
+  GitLab it copies the public key and opens the page to paste it.
+- **An existing key**, once: `ssh-add --apple-use-keychain <key>` stores its passphrase in the keychain.
 - From then on ssh never asks: a login item (`com.makst.ssh-add`) loads the keychain's keys into the agent
   at login, and any other key is added the first time it's used. `ssh-add -l` lists what's loaded.
 

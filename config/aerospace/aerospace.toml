@@ -1,0 +1,102 @@
+# AeroSpace: tiling window manager with its own workspaces; works with SIP on. Linked to
+# ~/.config/aerospace/aerospace.toml by setup_window_management, see docs/window-management.md.
+# Commands: https://nikitabobko.github.io/AeroSpace/commands (also `man aerospace-<command>`)
+
+config-version = 2
+
+start-at-login = true
+# saving this file applies it
+auto-reload-config = true
+
+# windows split the space side by side on a wide screen, stacked on a tall one; a container inside another
+# always splits the other way
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# with focus on another display, the mouse moves there too
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+gaps.inner.horizontal = 10
+gaps.inner.vertical = 10
+gaps.outer.left = 10
+gaps.outer.bottom = 10
+gaps.outer.top = 10
+gaps.outer.right = 10
+
+# apps that float instead of tiling
+on-window-detected = [
+  { if.app-id = 'com.apple.systempreferences', run = 'layout floating' },
+  { if.app-id = 'com.apple.archiveutility', run = 'layout floating' },
+]
+
+# All on Option (Alt), as with yabai before. AeroSpace takes these system-wide, so Alt+h/j/k/l and Alt+digit
+# don't reach nvim or zsh.
+[mode.main.binding]
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# swap with the window in that direction
+alt-shift-h = 'swap left'
+alt-shift-j = 'swap down'
+alt-shift-k = 'swap up'
+alt-shift-l = 'swap right'
+
+# move the window through the layout (into the neighbouring container, then out to the edge)
+alt-ctrl-shift-h = 'move left'
+alt-ctrl-shift-j = 'move down'
+alt-ctrl-shift-k = 'move up'
+alt-ctrl-shift-l = 'move right'
+
+alt-e = 'layout tiles horizontal vertical'      # split side by side / stacked
+alt-s = 'layout accordion tiles'                # windows on top of each other, the focused one in front (toggle)
+alt-t = 'layout floating tiling'                # float / tile
+alt-f = 'fullscreen'                            # fill the workspace (not macOS full screen)
+alt-minus = 'resize smart -50'
+alt-equal = 'resize smart +50'
+alt-shift-0 = 'balance-sizes'
+
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace-back-and-forth'
+
+# move the window to that workspace and follow it
+alt-shift-1 = 'move-node-to-workspace --focus-follows-window 1'
+alt-shift-2 = 'move-node-to-workspace --focus-follows-window 2'
+alt-shift-3 = 'move-node-to-workspace --focus-follows-window 3'
+alt-shift-4 = 'move-node-to-workspace --focus-follows-window 4'
+alt-shift-5 = 'move-node-to-workspace --focus-follows-window 5'
+alt-shift-6 = 'move-node-to-workspace --focus-follows-window 6'
+alt-shift-7 = 'move-node-to-workspace --focus-follows-window 7'
+alt-shift-8 = 'move-node-to-workspace --focus-follows-window 8'
+alt-shift-9 = 'move-node-to-workspace --focus-follows-window 9'
+
+# the window to the next / previous display, and follow it
+alt-shift-n = 'move-node-to-monitor --focus-follows-window --wrap-around next'
+alt-shift-p = 'move-node-to-monitor --focus-follows-window --wrap-around prev'
+# the whole workspace to the next display
+alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+alt-shift-semicolon = 'mode service'
+
+# alt-shift-; then one key, for things done rarely
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']             # reset the workspace's layout
+backspace = ['close-all-windows-but-current', 'mode main']
+# the focused window and the one in that direction go into a container of their own (alt-e then splits it
+# the other way)
+h = ['join-with left', 'mode main']
+j = ['join-with down', 'mode main']
+k = ['join-with up', 'mode main']
+l = ['join-with right', 'mode main']

@@ -13,9 +13,9 @@ Host *
 
 # which key each host gets (and only that one, so servers don't see the others)
 Host github.com
-  IdentityFile ~/.ssh/identities/github_personal/id_rsa
+  IdentityFile ~/.ssh/identities/github_personal/id_ed25519
   IdentitiesOnly yes
 
 Host gitlab.com
-  IdentityFile ~/.ssh/identities/gitlab_personal/id_rsa
+  IdentityFile ~/.ssh/identities/gitlab_personal/id_ed25519
   IdentitiesOnly yes

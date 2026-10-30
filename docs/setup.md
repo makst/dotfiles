@@ -26,17 +26,17 @@ Each step is a function you can also run on its own:
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, loads keychain keys into the agent at every login (see [git](git.md#ssh-keys)) |
+| `setup_gpg` | links `~/.gnupg/gpg-agent.conf`: passphrases in a macOS dialog (pinentry-mac) that can keep them in the keychain |
 | `setup_git` | links `~/.gitconfig` |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
 | `setup_ghostty` | links the Ghostty config and themes |
 | `remap_keys` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
+| `setup_window_management` | links the AeroSpace config and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [window-management](window-management.md)) |
 
 Not part of `setup_dotfiles`:
 
-- `setup_window_management` (yabai and skhd, see [window-management](window-management.md)), because yabai
-  needs decisions about SIP first.
 - `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
   `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
 
@@ -56,7 +56,8 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.config/nvim/` | `config/nvim/` |
 | `~/.config/ghostty/config`, `themes/` | `config/ghostty/…` |
 | `~/Library/Application Support/navi/cheats/makst_cheats` | `data_dir/navi/cheats/` |
-| `~/.yabairc`, `~/.skhdrc` | `config/…` (only after `setup_window_management`) |
+| `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
+| `~/.gnupg/gpg-agent.conf` | `config/gnupg/gpg-agent.conf` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
 
 `.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.
@@ -77,9 +78,9 @@ Manual steps
 These can't be scripted, or shouldn't be:
 
 - **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
-  drop-down terminal; yabai and skhd if you use them.
+  drop-down terminal; AeroSpace, which asks on its first start.
 - **Your identity**: name, email and signing key in `config/git/.gitconfig` and `config/git/allowed_signers`;
-  SSH keys in `~/.ssh`, which key goes to which host in `config/ssh/config`.
+  SSH keys in `~/.ssh` (`new_ssh_key` makes one, see [git](git.md#ssh-keys)), which key goes to which host in `config/ssh/config`.
 - **SSH passphrases into the keychain**, once per key: `ssh-add --apple-use-keychain <key>`. Then add the
   public key to GitHub as a signing key for *Verified* commits, see [git](git.md#signing).
 - **Secrets**: shell exports in `zsh/.private`, nvim settings in `config/nvim/lua/user/hidden/init.lua`.

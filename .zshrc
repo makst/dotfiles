@@ -20,7 +20,7 @@ cached_eval() {
 }
 
 # Load the shell dotfiles; .exports first, it puts Homebrew on PATH and fpath
-for file in "$real_script_dir"/zsh/.{exports,zshdefault,aliases,kubectl_aliases,functions,private}; do
+for file in "$real_script_dir"/zsh/.{exports,zshdefault,aliases,functions,private}; do
   # source `file` if it's a `readable file`
   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;

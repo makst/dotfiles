@@ -14,7 +14,6 @@ How it loads
 | `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`), fnm, pager and colour settings |
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide |
 | `zsh/.aliases` | aliases |
-| `zsh/.kubectl_aliases` | generated kubectl aliases |
 | `zsh/.functions` | shell functions, including the whole install (`setup_dotfiles`) |
 | `zsh/.private` | gitignored: tokens and machine-specific settings, if the file exists |
 
@@ -133,7 +132,7 @@ Aliases and functions worth knowing
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
 | `docker` | podman (Docker Desktop isn't installed) |
-| `k`, `kgpo`, `kdp`, … | kubectl aliases from [kubectl-aliases](https://github.com/ahmetb/kubectl-aliases): `k` + verb + resource + flags |
+| `k`, `kg`, `kd`, `kgpo`, `klo`, `kex`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
 | `copy_last_cmd` | copy the previous command to the clipboard |
 | `sn` / `sp` | Spotify next / previous track |
 | `timezsh` | benchmark shell start-up (hyperfine) |

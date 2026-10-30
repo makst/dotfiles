@@ -3,7 +3,7 @@
 	email = makst@users.noreply.github.com
 	# commits and tags are signed with this SSH key (it must be in the ssh-agent, see docs/git.md); GitHub
 	# shows them as Verified once the key is added there as a *signing* key
-	signingkey = ~/.ssh/identities/github_personal/id_rsa.pub
+	signingkey = ~/.ssh/identities/github_personal/id_ed25519.pub
 
 [gpg]
 	format = ssh
