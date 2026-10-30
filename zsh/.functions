@@ -88,9 +88,10 @@ function setup_window_management() {
   # yabai's scripting addition (`yabai --load-sa` in .yabairc) needs SIP partially disabled and,
   # on Apple silicon, the arm64e boot-arg: https://github.com/koekeishiya/yabai/wiki/Disabling-System-Integrity-Protection
 
-  # start services
-  brew services start yabai
-  brew services start skhd 
+  # both tools install and start their own launch agent. They need Accessibility access
+  # (System Settings > Privacy & Security > Accessibility) for yabai and skhd, then rerun this.
+  yabai --start-service
+  skhd --start-service
 
   ln -sfn "$real_script_dir/config/.yabairc" "$HOME/.yabairc"
   ln -sfn "$real_script_dir/config/.skhdrc" "$HOME/.skhdrc"
