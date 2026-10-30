@@ -27,9 +27,11 @@ The prefix is `C-a` (with Caps Lock as Ctrl, that's a left-hand roll). Press it 
 | `C-a x` | `cmd+w` | close pane |
 | `C-a 1`…`9` | `cmd+1`…`9` | go to window |
 | `C-a C-h` / `C-a C-l` | `cmd+[` / `cmd+]` | previous / next window (repeatable) |
+| `C-a l` | | last window |
+| `C-a (` / `C-a )` | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker |
-| `C-a w` | `cmd+j` | tree of sessions and windows, with previews |
+| `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a H/J/K/L` | | resize pane (repeatable) |
 | `C-a d` | | detach |

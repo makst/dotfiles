@@ -48,6 +48,18 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `jj` | leave insert mode, in nvim and in zsh | |
 | `C-r` / `C-t` / `C-g` | fzf history / files, navi cheatsheets, in zsh | |
 
+Switching sessions and windows
+---
+| Key | Action |
+|---|---|
+| `cmd+j` | every session and window as a tree with live previews; move with arrows or `j`/`k`, `Enter` switches |
+| `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
+| `cmd+shift+[` / `cmd+shift+]` | previous / next session |
+| `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
+| `C-a l` | back to the last window |
+
+More in [tmux](docs/tmux.md#keys).
+
 A typical day
 ---
 1. Open Ghostty: you land in the tmux session `main`, exactly as you left it, even after a reboot.

@@ -56,6 +56,9 @@ keybind = super+shift+d=text:\x01-
 keybind = super+w=text:\x01x
 keybind = super+[=text:\x01\x08
 keybind = super+]=text:\x01\x0c
+# previous / next session (tmux defaults prefix ( and prefix ), replacing Ghostty's tab switching)
+keybind = super+shift+[=text:\x01(
+keybind = super+shift+]=text:\x01)
 keybind = super+shift+enter=text:\x01z
 keybind = super+k=text:\x01f
 keybind = super+j=text:\x01w

@@ -30,6 +30,7 @@ they behave like native shortcuts but act on tmux:
 | `cmd+w` | `C-a x` | close pane (asks first) |
 | `cmd+1`…`9` | `C-a 1`…`9` | go to window |
 | `cmd+[` / `cmd+]` | `C-a C-h` / `C-a C-l` | previous / next window |
+| `cmd+shift+[` / `cmd+shift+]` | `C-a (` / `C-a )` | previous / next session |
 | `cmd+shift+enter` | `C-a z` | zoom the pane |
 | `cmd+k` | `C-a f` | session picker |
 | `cmd+j` | `C-a w` | tree of all sessions and windows |
