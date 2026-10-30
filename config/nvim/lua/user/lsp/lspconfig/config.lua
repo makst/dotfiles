@@ -1,15 +1,20 @@
 local icons_module = require('user.lsp.lspconfig.icons')
 
-for type, icon in pairs(icons_module.icons) do
-  local hl = 'DiagnosticSign' .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+-- signs in the number column; the icons are nerd font glyphs, see icons.lua
+local severity = vim.diagnostic.severity
+local sign_text, sign_numhl = {}, {}
+for type, severity_id in pairs({ Error = severity.ERROR, Warn = severity.WARN, Hint = severity.HINT, Info = severity.INFO }) do
+  sign_text[severity_id] = icons_module.icons[type]
+  sign_numhl[severity_id] = 'DiagnosticSign' .. type
 end
 
 vim.diagnostic.config({
   virtual_lines = false,
   virtual_text = false,
   signs = {
-    active = icons_module.icons,
+    text = sign_text,
+    texthl = sign_numhl,
+    numhl = sign_numhl,
   },
   float = {
     border = 'rounded',
@@ -17,18 +22,13 @@ vim.diagnostic.config({
 })
 
 -- disables diagnostics for buffers with filetype helm
-vim.cmd([[
-  autocmd FileType helm lua vim.diagnostic.disable(vim.fn.bufnr())
-]])
-
-
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = 'rounded',
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'helm',
+  callback = function(args) vim.diagnostic.enable(false, { bufnr = args.buf }) end,
 })
 
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-  border = 'rounded',
-})
+-- rounded borders for hover, signature help and other floats (replaces the deprecated vim.lsp.with)
+vim.o.winborder = 'rounded'
 
 -- https://vi.stackexchange.com/questions/38038/how-to-change-background-color-of-the-text-of-hover-window
 local set_hl_for_floating_window = function()

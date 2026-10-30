@@ -1,10 +1,4 @@
-local status, nvim_lsp = pcall(require, 'lspconfig')
-if (not status) then return end
-local base = require('user.lsp.lspconfig.base')
-
-nvim_lsp.lua_ls.setup {
-  on_attach = base.on_attach,
-  capabilities = base.capabilities,
+vim.lsp.config('lua_ls', {
   settings = {
     Lua = {
       diagnostics = {
@@ -19,5 +13,5 @@ nvim_lsp.lua_ls.setup {
       },
     },
   },
-}
-
+})
+vim.lsp.enable('lua_ls')
