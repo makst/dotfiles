@@ -82,23 +82,9 @@ packer.startup(function(use)
   -- speed up
   use 'lewis6991/impatient.nvim'
 
-  -- dap
-  use { 'rcarriga/nvim-dap-ui', requires = { 'mfussenegger/nvim-dap' } }
-  use { 'theHamsta/nvim-dap-virtual-text', requires = { 'mfussenegger/nvim-dap' } }
-
   -- project management
   use 'nvim-telescope/telescope-project.nvim'
 
   use 'tpope/vim-surround'
   use 'tpope/vim-abolish'
-
-  -- chatgpt
-  use({
-    'jackMort/ChatGPT.nvim',
-    requires = {
-      'MunifTanjim/nui.nvim',
-      'nvim-lua/plenary.nvim',
-      'nvim-telescope/telescope.nvim'
-    }
-  })
 end)

@@ -1,5 +1,0 @@
-require('user.debug.dap')
-require('user.debug.nvim-dap-virtual-text')
-require('user.debug.dapui')
-require('user.debug.keymaps')
-require('user.debug.adapters.node')
