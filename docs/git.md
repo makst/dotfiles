@@ -64,16 +64,17 @@ In nvim
 Changed lines are marked in the sign column (gitsigns), `,gb` shows blame and `,go` opens the file on
 GitHub. See [neovim](neovim.md#git).
 
-SSH keys (ssh-ident)
+SSH keys
 ---
-`ssh`, `scp` and `sftp` (and so git over ssh) go through [ssh-ident](https://github.com/ccontavalli/ssh-ident),
-which starts an ssh-agent on first use and loads the key when it's first needed, asking for the passphrase
-once. There's no need to run `ssh-add` or to start an agent in the shell.
+macOS's own ssh-agent and keychain hold the keys; nothing runs in the shell for it.
 
-ssh-ident can also keep separate agents and keys per identity (e.g. work and personal), chosen by the
-directory you're in or the host you connect to; that's configured in `~/.ssh-ident`, which is not part of
-this repo.
+- `config/ssh/config` is included at the top of `~/.ssh/config` and sets `UseKeychain` and
+  `AddKeysToAgent` for every host, and which key GitHub and GitLab get. Private hosts go in
+  `~/.ssh/config` below the include.
+- **Once per key**, store its passphrase in the keychain:
+  `ssh-add --apple-use-keychain ~/.ssh/identities/github_personal/id_rsa`.
+- From then on ssh never asks: a login item (`com.makst.ssh-add`) loads the keychain's keys into the agent
+  at login, and any other key is added the first time it's used. `ssh-add -l` lists what's loaded.
 
-`install_ssh_ident` downloads it to `~/bin` and patches two incompatibilities with current macOS and
-Python (an `env python` shebang, a too-small ioctl buffer). If ssh ever behaves oddly, `/usr/bin/ssh`
-bypasses it.
+`setup_ssh` adds the include line, installs the login item and removes the `ssh`/`scp`/`sftp` links to
+ssh-ident, which earlier versions of this repo used.

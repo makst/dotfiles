@@ -25,7 +25,7 @@ Each step is a function you can also run on its own:
 | `navi_data_dir_setup` | makes the cheatsheets in `data_dir/navi/cheats` visible to navi |
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
-| `install_ssh_ident` | downloads ssh-ident to `~/bin` and puts it in front of `ssh`, `scp`, `sftp` (see [git](git.md)) |
+| `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, loads keychain keys into the agent at every login (see [git](git.md#ssh-keys)) |
 | `setup_git` | links `~/.gitconfig` |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
@@ -53,7 +53,6 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/Library/Application Support/navi/cheats/makst_cheats` | `data_dir/navi/cheats/` |
 | `~/.yabairc`, `~/.skhdrc` | `config/…` (only after `setup_window_management`) |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
-| `~/bin/ssh`, `scp`, `sftp` | `~/bin/ssh-ident` |
 
 `.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.
 
@@ -74,7 +73,10 @@ These can't be scripted, or shouldn't be:
 
 - **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
   drop-down terminal; yabai and skhd if you use them.
-- **Your identity**: name and email in `config/git/.gitconfig`; SSH keys in `~/.ssh`.
+- **Your identity**: name, email and signing key in `config/git/.gitconfig` and `config/git/allowed_signers`;
+  SSH keys in `~/.ssh`, which key goes to which host in `config/ssh/config`.
+- **SSH passphrases into the keychain**, once per key: `ssh-add --apple-use-keychain <key>`. Then add the
+  public key to GitHub as a signing key for *Verified* commits, see [git](git.md#signing).
 - **Secrets**: shell exports in `zsh/.private`, nvim settings in `config/nvim/lua/user/hidden/init.lua`.
   Both are gitignored and loaded if they exist.
 - **tmux plugins after editing the plugin list**: `C-a I` inside tmux.

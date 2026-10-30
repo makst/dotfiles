@@ -196,21 +196,47 @@ function setup_git() {
   ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
 }
 
-# https://github.com/ccontavalli/ssh-ident
-function install_ssh_ident() {
-  if [[ ! -f ~/bin/ssh-ident ]]; then
-    mkdir -p ~/bin
-    curl -fsSL -o ~/bin/ssh-ident https://raw.githubusercontent.com/ccontavalli/ssh-ident/master/ssh-ident
-    # upstream still says `#!/usr/bin/env python`, which macOS no longer provides
-    sed -i '' '1s|.*|#!/usr/bin/env python3|' ~/bin/ssh-ident
-    # python 3.15 rejects the 2 byte ioctl buffer, TIOCGPGRP needs room for a pid_t
-    sed -i '' 's|fcntl.ioctl(fd, termios.TIOCGPGRP, "  ")|fcntl.ioctl(fd, termios.TIOCGPGRP, b"\\0" * 4)|' ~/bin/ssh-ident
-    chmod 0755 ~/bin/ssh-ident
+function setup_ssh() {
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh
+  touch ~/.ssh/config
+
+  # shared settings (keychain, agent, which key for which host) come from the repo
+  local include="Include ~/dotfiles/config/ssh/config"
+  if ! grep -qxF "$include" ~/.ssh/config; then
+    { print -r -- "$include"; print; cat ~/.ssh/config } > ~/.ssh/config.new && mv ~/.ssh/config.new ~/.ssh/config
   fi
 
-  ln -sfn ~/bin/ssh-ident ~/bin/ssh
-  ln -sfn ~/bin/ssh-ident ~/bin/scp
-  ln -sfn ~/bin/ssh-ident ~/bin/sftp
+  # ssh-ident used to stand in for ssh, scp and sftp
+  local tool
+  for tool in ssh scp sftp; do
+    [[ ${$(readlink ~/bin/$tool 2> /dev/null):t} == ssh-ident ]] && rm ~/bin/$tool
+  done
+
+  # at every login, load the keys whose passphrases are in the keychain into the agent, so commits can be
+  # signed before the first ssh connection
+  local label="com.makst.ssh-add"
+  local plist="$HOME/Library/LaunchAgents/$label.plist"
+  mkdir -p "$HOME/Library/LaunchAgents"
+  cat > "$plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>$label</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/ssh-add</string>
+    <string>--apple-load-keychain</string>
+    <string>-q</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+</dict>
+</plist>
+PLIST
+  launchctl bootout "gui/$(id -u)/$label" 2> /dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$plist"
 }
 
 function setup_dotfiles() {
@@ -220,7 +246,7 @@ function setup_dotfiles() {
   navi_data_dir_setup
   npm_setup
   setup_python
-  install_ssh_ident
+  setup_ssh
   setup_git
   setup_tmux
   setup_nvim

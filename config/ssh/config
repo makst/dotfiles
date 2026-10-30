@@ -1,0 +1,21 @@
+# Shared ssh settings. ~/.ssh/config includes this file on its first line (setup_ssh in zsh/.functions);
+# private or machine-specific hosts stay in ~/.ssh/config itself. The first value set wins, so these apply
+# before anything in there.
+
+# UseKeychain is macOS-only; other ssh builds skip it instead of failing
+IgnoreUnknown UseKeychain
+
+# Passphrases live in the macOS keychain: asked once (`ssh-add --apple-use-keychain <key>`), then a key is
+# added to the ssh-agent the first time it's used. macOS starts the agent itself (SSH_AUTH_SOCK).
+Host *
+  UseKeychain yes
+  AddKeysToAgent yes
+
+# which key each host gets (and only that one, so servers don't see the others)
+Host github.com
+  IdentityFile ~/.ssh/identities/github_personal/id_rsa
+  IdentitiesOnly yes
+
+Host gitlab.com
+  IdentityFile ~/.ssh/identities/gitlab_personal/id_rsa
+  IdentitiesOnly yes
