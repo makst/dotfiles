@@ -11,5 +11,8 @@ mason_lspconfig.setup({
     'eslint',
     'yamlls',
     'gopls'
-  }
+  },
+  -- servers are set up explicitly in user.lsp.lspconfig; the default (on) enables each
+  -- installed server a second time, giving two clients per buffer
+  automatic_enable = false,
 })
