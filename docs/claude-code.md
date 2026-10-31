@@ -56,12 +56,14 @@ Working alongside agents
 
 Config
 ---
-`setup_claude` links these from `config/claude` into `~/.claude`, so they're the same on every Mac:
+`config/claude` is the **global** part: settings and instructions that hold on any machine and in any project,
+with nothing about this Mac, its tools or this repo. `setup_claude` links it into `~/.claude`:
 
 - **`settings.json`**: model and effort, permissions, sandbox, hooks. Commits made by Claude carry only the
   `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
-- **`CLAUDE.md`**: instructions for every project: delete to the Trash, work on a branch, merge and push only
-  when asked, Apple silicon only. Project-specific instructions go in that project's own `CLAUDE.md`.
+- **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
+  when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
+  Mac it sets up).
 - **`hooks/`**: the scripts the hooks below run.
 - **`statusline.sh`**: the [status line](#status-line).
 
@@ -71,28 +73,37 @@ the changes into `config/claude/settings.json` and run `setup_claude` again.
 
 ### Permissions
 - **Allowed without asking**: read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `worktree list`),
-  read-only `gh pr` / `gh issue` / `gh run`, `brew list` / `info`, `eza`, `tldr`. Claude Code already lets
-  plain reads like `ls`, `cat` or `rg` through by itself.
-- **Never allowed**: force pushes (`--force-with-lease` still asks), reading old key files `~/.ssh/id_*` and
-  any `.private` file (`zsh/.private` holds secrets).
+  read-only `gh pr` / `gh issue` / `gh run`. Claude Code already lets plain reads like `ls`, `cat` or `rg`
+  through by itself.
+- **Never allowed**: force pushes (`--force-with-lease` still asks) and reading private key files
+  `~/.ssh/id_*`. In this repo also `zsh/.private` and `config/nvim/lua/user/hidden/`, which hold secrets
+  (`.claude/settings.json`, this repo's own project settings).
 - Everything else asks as usual, including `git commit` and `git push`.
-- **Sandbox**: sandboxed commands may use Secretive's agent socket, so signed commits work without leaving
-  the sandbox. Pushing still asks for Touch ID.
+
+### This machine
+The parts that depend on the Mac live in the dotfiles, not in `config/claude`:
+
+- **Signing in the sandbox**: the `claude` shell function (`zsh/.functions`) starts Claude Code with
+  `--settings` allowing the socket in `SSH_AUTH_SOCK` (Secretive's, from `zsh/.exports`), so sandboxed
+  commands can sign commits. Pushing still asks for Touch ID. Claude Code started some other way, from the
+  desktop app or an IDE, signs only outside the sandbox.
 
 ### Hooks
 | When | Does |
 |---|---|
-| before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to use `trash <path>` instead |
-| after Claude edits or writes a file | formats it like nvim does on save (conform): prettier and stylua only where the project has their config, `goimports`/`gofmt`, `ruff`, `shfmt` when installed |
-| Claude needs input, or has finished | rings the bell in its tmux pane: the window turns yellow, Ghostty bounces in the Dock |
+| before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to move things to the trash instead |
+| after Claude edits or writes a file | formats it with the language's formatter, if installed: prettier and stylua only where the project has their config (like conform in nvim), `goimports`/`gofmt`, `ruff`, `shfmt` |
+| Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
+
+The scripts need zsh and jq; a formatter or tmux that isn't there is skipped.
 
 `/hooks` lists them; `"disableAllHooks": true` in `settings.json` turns them all off.
 
 ### Status line
 ```
-dotfiles/docs  feat/claude-config* 󰙅 worktree  Opus 5.5 medium  ctx 18%  5h 62%
+dotfiles/docs feat/claude-config* (worktree)  Opus 5.5 medium  ctx 18%  5h 62%
 ```
 The directory from the repo root, the branch (`*` when there are uncommitted changes), `worktree` in an
 agent's own worktree, the model and effort, and how full the context window is: green, yellow from 50%, red
 from 80%, when it's time to `/compact` or `/clear`. Usage of the 5-hour and 7-day limits shows up once one
-passes 50%. The colours are the terminal's, like the starship prompt.
+passes 50%. ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).

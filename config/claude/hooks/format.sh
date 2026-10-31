@@ -1,7 +1,7 @@
 #!/bin/zsh
-# PostToolUse on Edit|Write: format the file Claude just changed, with the formatters nvim's conform uses
-# (config/nvim/lua/user/conform.lua) and under the same conditions: prettier and stylua only in projects that
-# configure them. A formatter that isn't installed is skipped; failures never block Claude.
+# PostToolUse on Edit|Write: format the file Claude just changed with the language's usual formatter, if it's
+# installed (on PATH, in the project's node_modules or in nvim's Mason). prettier and stylua run only in
+# projects that configure them, so a project without them isn't reformatted. Failures never block Claude.
 
 file=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty')
 [[ -f $file ]] || exit 0

@@ -173,6 +173,17 @@ function setup_tmux() {
   ~/.tmux/plugins/tpm/bin/install_plugins
 }
 
+# Claude Code may use this shell's SSH agent from inside its sandbox, so commits get signed there (git signs
+# through SSH_AUTH_SOCK, which zsh/.exports points at Secretive). The socket path differs per machine, so it's
+# passed here instead of in the shared config/claude/settings.json.
+function claude() {
+  if [[ -S $SSH_AUTH_SOCK ]]; then
+    command claude --settings "{\"sandbox\":{\"network\":{\"allowUnixSockets\":[\"$SSH_AUTH_SOCK\"]}}}" "$@"
+  else
+    command claude "$@"
+  fi
+}
+
 # Claude Code in its own git worktree (claude -w) and, inside
 # tmux, in a new window named after the task. The window stays a shell once Claude exits.
 #   agent fix-login

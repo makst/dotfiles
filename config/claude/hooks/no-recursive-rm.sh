@@ -8,7 +8,7 @@ if [[ $command =~ '(^|[;&|(]|sudo)[[:space:]]*rm[[:space:]]+(-[a-zA-Z]*[rR]|--re
   jq -n '{hookSpecificOutput: {
     hookEventName: "PreToolUse",
     permissionDecision: "deny",
-    permissionDecisionReason: "Recursive rm is blocked. Move it to the Trash instead: `trash <path>` (macOS), or `mv <path> ~/.Trash/`."
+    permissionDecisionReason: "Recursive rm is blocked. Move it to the trash instead: `trash <path>` on macOS, `gio trash <path>` on Linux."
   }}'
 fi
 exit 0

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(/zsh/.private)",
+      "Read(/config/nvim/lua/user/hidden/**)"
+    ]
+  }
+}

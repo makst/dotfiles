@@ -31,27 +31,15 @@
       "Bash(gh issue view*)",
       "Bash(gh issue list*)",
       "Bash(gh run view*)",
-      "Bash(gh run list*)",
-      "Bash(brew list*)",
-      "Bash(brew info*)",
-      "Bash(eza *)",
-      "Bash(tldr *)"
+      "Bash(gh run list*)"
     ],
     "deny": [
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git push * --force)",
       "Bash(git push * -f)",
-      "Read(~/.ssh/id_*)",
-      "Read(**/.private)"
+      "Read(~/.ssh/id_*)"
     ]
-  },
-  "sandbox": {
-    "network": {
-      "allowUnixSockets": [
-        "~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh"
-      ]
-    }
   },
   "hooks": {
     "PreToolUse": [
