@@ -19,14 +19,15 @@ Behaviour
 - **Signed commits and tags** with your SSH key, see [below](#signing).
 - **Typos**: `git stauts` suggests `git status` and asks before running it.
 - **Renames and copies** are detected in diffs.
-- **`git pull` merges** (no rebase); merge commits list the merged commits. `git fetch` drops branches
+- **`git pull` rebases** your local commits onto the fetched ones, so it never makes a merge commit;
+  `git merge` commits list the merged commits. `git fetch` drops branches
   deleted on the remote. `git push` on a new branch creates and tracks it on origin.
 - **Rebases** stash and restore uncommitted changes and move stacked branches along (`updateRefs`).
 - **`git status` stays fast** in big repos: git's file-system monitor runs per repo, untracked files are
   cached.
 - **`git branch`** lists recently used branches first. New repos start on `main`.
-- **Editor** is nvim and shows the diff below the commit message; **difftool** is nvim's diff mode
-  (`git difftool`).
+- **Editor** is nvim and shows the diff below the commit message; `git difftool` and
+  `git mergetool` open nvim's diff mode.
 
 Aliases
 ---

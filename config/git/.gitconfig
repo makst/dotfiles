@@ -55,6 +55,8 @@
 	algorithm = histogram
 	# moved lines in their own colour
 	colorMoved = default
+	# `git difftool`: nvim's diff mode (a tool git knows, no cmd needed)
+	tool = nvimdiff
 
 [help]
 	# Suggest the corrected command for a typo and ask before running it
@@ -65,6 +67,8 @@
 	log = true
 	# conflict markers also show the common ancestor, minus the lines both sides share
 	conflictstyle = zdiff3
+	# `git mergetool`: nvim with local, base and remote above the merged file
+	tool = nvimdiff
 
 [core]
 	pager = delta
@@ -85,14 +89,10 @@
 	# the terminal's 16 colours, so it follows the Ghostty theme (like bat)
 	syntax-theme = base16
 
-[diff]
-    tool = default-difftool
-
-[difftool "default-difftool"]
-    cmd = vimdiff
-
 [pull]
-	rebase = false
+	# local commits go on top of the fetched ones instead of a merge commit (rebase.autoStash keeps
+	# uncommitted changes)
+	rebase = true
 
 [push]
 	# `git push` on a new branch creates it on origin and tracks it
