@@ -45,13 +45,14 @@ Working alongside agents
 
 Config
 ---
-`setup_claude` links three things from `config/claude` into `~/.claude`, so they're the same on every Mac:
+`setup_claude` links these from `config/claude` into `~/.claude`, so they're the same on every Mac:
 
 - **`settings.json`**: model and effort, permissions, sandbox, hooks. Commits made by Claude carry only the
   `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
 - **`CLAUDE.md`**: instructions for every project: delete to the Trash, work on a branch, merge and push only
   when asked, Apple silicon only. Project-specific instructions go in that project's own `CLAUDE.md`.
 - **`hooks/`**: the scripts the hooks below run.
+- **`statusline.sh`**: the [status line](#status-line).
 
 Settings you change with `/config` or by installing a plugin are written through the link into the repo, so
 they show up in `git diff`. If `ls -l ~/.claude/settings.json` ever shows a plain file instead of a link, copy
@@ -75,3 +76,12 @@ the changes into `config/claude/settings.json` and run `setup_claude` again.
 | Claude needs input, or has finished | rings the bell in its tmux pane: the window turns yellow, Ghostty bounces in the Dock |
 
 `/hooks` lists them; `"disableAllHooks": true` in `settings.json` turns them all off.
+
+### Status line
+```
+dotfiles/docs  feat/claude-config* 󰙅 worktree  Opus 5.5 medium  ctx 18%  5h 62%
+```
+The directory from the repo root, the branch (`*` when there are uncommitted changes), `worktree` in an
+agent's own worktree, the model and effort, and how full the context window is: green, yellow from 50%, red
+from 80%, when it's time to `/compact` or `/clear`. Usage of the 5-hour and 7-day limits shows up once one
+passes 50%. The colours are the terminal's, like the starship prompt.
