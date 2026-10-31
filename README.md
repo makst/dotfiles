@@ -84,7 +84,6 @@ config/nvim/              Neovim: one directory per plugin under lua/user/
 config/starship.toml      prompt
 config/git/.gitconfig     git
 config/ssh/config         ssh: keychain, which key for which host
-config/gnupg/             gpg-agent (for pass)
 config/aerospace/         window manager
 data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation

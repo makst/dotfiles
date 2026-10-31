@@ -282,14 +282,6 @@ function new_ssh_key() {
   esac
 }
 
-# GPG is only for pass; git signs with SSH
-function setup_gpg() {
-  mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
-  ln -sfn "$real_script_dir/config/gnupg/gpg-agent.conf" ~/.gnupg/gpg-agent.conf
-  # it starts again with the new config the next time it's needed
-  gpgconf --kill gpg-agent
-}
-
 function setup_dotfiles() {
   brew_setup
   fzf_setup
@@ -298,7 +290,6 @@ function setup_dotfiles() {
   npm_setup
   setup_python
   setup_ssh
-  setup_gpg
   setup_git
   setup_tmux
   setup_nvim

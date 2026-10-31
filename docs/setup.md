@@ -26,7 +26,6 @@ Each step is a function you can also run on its own:
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, loads keychain keys into the agent at every login (see [git](git.md#ssh-keys)) |
-| `setup_gpg` | links `~/.gnupg/gpg-agent.conf`: passphrases in a macOS dialog (pinentry-mac) that can keep them in the keychain |
 | `setup_git` | links `~/.gitconfig` |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
@@ -57,7 +56,6 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.config/ghostty/config`, `themes/` | `config/ghostty/…` |
 | `~/Library/Application Support/navi/cheats/makst_cheats` | `data_dir/navi/cheats/` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
-| `~/.gnupg/gpg-agent.conf` | `config/gnupg/gpg-agent.conf` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
 
 `.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.

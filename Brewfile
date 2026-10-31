@@ -40,9 +40,6 @@ brew "pup"                         # command line tool for processing HTML
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
-brew "pass"                        # passwords; the only user of gnupg
-brew "gnupg"                       # setup_gpg
-brew "pinentry-mac"                # gpg passphrase dialog, can keep it in the keychain
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
 
 # --- Everyday tools
@@ -77,7 +74,6 @@ cask "tunnelblick"
 # brew "mitmproxy"
 # brew "openconnect"
 # brew "packer"
-# brew "paperkey"        # gpg key backup helper
 # brew "redis"
 # brew "saml2aws"
 # brew "tor"
