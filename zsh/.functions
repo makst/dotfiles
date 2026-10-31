@@ -189,6 +189,16 @@ function agent() {
   tmux send-keys -t "$pane" "claude -w ${(q)name}${@:+ ${(j: :)${(q)@}}}" Enter
 }
 
+function setup_claude() {
+  mkdir -p ~/.claude
+  local item
+  for item in settings.json CLAUDE.md hooks; do
+    # a copy Claude Code made itself goes to the Trash; the repo's version replaces it
+    [[ -e ~/.claude/$item && ! -L ~/.claude/$item ]] && mv ~/.claude/$item ~/.Trash/claude-$item-$(date +%s)
+    ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item
+  done
+}
+
 function setup_ghostty() {
   mkdir -p "$HOME/.config/ghostty"
   ln -sfn "$real_script_dir/config/ghostty/config" "$HOME/.config/ghostty/config"
@@ -293,6 +303,7 @@ function setup_dotfiles() {
   setup_tmux
   setup_nvim
   setup_ghostty
+  setup_claude
   remap_keys
   setup_macos_defaults
   setup_window_management

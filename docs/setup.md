@@ -30,6 +30,7 @@ Each step is a function you can also run on its own:
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
 | `setup_ghostty` | links the Ghostty config and themes |
+| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md` and hooks into `~/.claude` (see [claude-code](claude-code.md#config)) |
 | `remap_keys` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 | `setup_window_management` | links the AeroSpace config and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [window-management](window-management.md)) |
