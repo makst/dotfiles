@@ -2,7 +2,7 @@ git
 ===
 
 Plain git with current defaults, delta and difftastic for diffs, signed commits, a few aliases, lazygit for
-staging and history, and the macOS keychain for SSH keys.
+staging and history, and SSH keys that live in the Secure Enclave (Secretive).
 
 Config: `config/git/.gitconfig` (linked to `~/.gitconfig`). **Change `[user]` in your fork.** It holds the
 GitHub noreply address, so commits don't expose a private email.
@@ -50,13 +50,13 @@ It uses lazygit's default config; nothing is customised here.
 Signing
 ---
 Commits and tags are signed with the SSH key in `user.signingkey` (`gpg.format = ssh`); no GPG needed.
-`ssh-keygen` signs through the ssh-agent, so the key has to be in it (see [SSH keys](#ssh-keys)); if it
-isn't, signing asks for the passphrase.
+`ssh-keygen` signs through the agent in `SSH_AUTH_SOCK`, which `zsh/.exports` points at Secretive's. The
+signing key is a Secretive key that doesn't ask for Touch ID, so commits, rebases and amends never prompt.
 
-- **GitHub** shows the commits as *Verified* once the same public key is added as a **signing** key
-  (separate from the authentication key, though it can be the same file):
-  `new_ssh_key <name> github` adds a new key as both (see [SSH keys](#ssh-keys)).
-- **Locally**, `git log --show-signature` checks signatures against `config/git/allowed_signers`.
+- **GitHub** shows the commits as *Verified* once the public key is added as a **signing** key:
+  `secretive_key signing` does that (see [SSH keys](#ssh-keys)).
+- **Locally**, `git log --show-signature` checks signatures against `config/git/allowed_signers`. It also
+  keeps the earlier RSA and ed25519 keys, so older commits still verify.
 - For a repo where signing is unwanted: `git config commit.gpgsign false` inside it.
 
 In nvim
@@ -66,18 +66,34 @@ GitHub. See [neovim](neovim.md#git).
 
 SSH keys
 ---
-macOS's own ssh-agent and keychain hold the keys; nothing runs in the shell for it.
+The keys are made by [Secretive](https://github.com/maxgoedjen/secretive) in the Mac's Secure Enclave. The
+private halves can't be read or copied, not even by malware running as you; a key can only be *used*, through
+Secretive's agent, which shows a notification each time. The price: no backups, so a new Mac means new keys,
+and they are ECDSA P-256 (the only kind the Secure Enclave makes), which GitHub and GitLab accept like
+ed25519.
 
-- `config/ssh/config` is included at the top of `~/.ssh/config` and sets `UseKeychain` and
-  `AddKeysToAgent` for every host, and which key GitHub and GitLab get. Private hosts go in
-  `~/.ssh/config` below the include.
-- **A new key**: `new_ssh_key github_personal github` (or `new_ssh_key gitlab_personal gitlab`) makes an
-  ed25519 key in `~/.ssh/identities/<name>/id_ed25519`, stores its passphrase in the keychain and, for
-  GitHub, adds it to the account for ssh and signing and to `config/git/allowed_signers` (commit that). For
-  GitLab it copies the public key and opens the page to paste it.
-- **An existing key**, once: `ssh-add --apple-use-keychain <key>` stores its passphrase in the keychain.
-- From then on ssh never asks: a login item (`com.makst.ssh-add`) loads the keychain's keys into the agent
-  at login, and any other key is added the first time it's used. `ssh-add -l` lists what's loaded.
+There are two keys:
 
-`setup_ssh` adds the include line, installs the login item and removes the `ssh`/`scp`/`sftp` links to
-ssh-ident, which earlier versions of this repo used.
+| Key | Touch ID | Used for |
+|---|---|---|
+| `push` | on every use | ssh to GitHub and GitLab: push, pull, fetch, clone |
+| `signing` | never | signing commits and tags |
+
+So only connections to a server prompt; signing, which happens on every commit, doesn't. A stolen session can
+still sign while you're logged in, but can't push without your finger.
+
+- `config/ssh/config` is included at the top of `~/.ssh/config`. It sends every host to Secretive's agent
+  (`IdentityAgent`) and gives GitHub and GitLab only the push key. Private hosts go in `~/.ssh/config` below
+  the include; one that still uses a key file reads its passphrase from the keychain (`UseKeychain`, after
+  `ssh-add --apple-use-keychain <key>` once).
+- **Making the keys**: in the Secretive app, create a key named `push` with *Require Authentication* on, and
+  one named `signing` with it off. Then `secretive_key push` and `secretive_key signing`: each copies the
+  public key to `~/.ssh/identities/secretive/<role>.pub` (which the ssh and git config point to) and adds it
+  to GitHub, the push key for ssh and the signing key for signing (and to `config/git/allowed_signers`:
+  commit that). For GitLab, `secretive_key push` copies the public key and opens the page to paste it. Named
+  them differently? `secretive_key push "GitHub push"`.
+- `ssh-add -l` lists the keys Secretive offers; `ssh -T git@github.com` checks the push key.
+
+`setup_ssh` adds the include line, removes the `com.makst.ssh-add` login item (which loaded keychain keys
+into macOS's own agent before Secretive) and the `ssh`/`scp`/`sftp` links to ssh-ident, which earlier
+versions of this repo used.

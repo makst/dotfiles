@@ -5,17 +5,16 @@
 # UseKeychain is macOS-only; other ssh builds skip it instead of failing
 IgnoreUnknown UseKeychain
 
-# Passphrases live in the macOS keychain: asked once (`ssh-add --apple-use-keychain <key>`), then a key is
-# added to the ssh-agent the first time it's used. macOS starts the agent itself (SSH_AUTH_SOCK).
+# Keys live in Secretive, in the Secure Enclave: they can't be copied off this Mac. Its agent answers on this
+# socket (zsh/.exports also points SSH_AUTH_SOCK there, for git's commit signing). Private hosts that still
+# use a key file read its passphrase from the macOS keychain (`ssh-add --apple-use-keychain <key>` once).
 Host *
+  IdentityAgent ~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh
   UseKeychain yes
-  AddKeysToAgent yes
 
-# which key each host gets (and only that one, so servers don't see the others)
-Host github.com
-  IdentityFile ~/.ssh/identities/github_personal/id_ed25519
-  IdentitiesOnly yes
-
-Host gitlab.com
-  IdentityFile ~/.ssh/identities/gitlab_personal/id_ed25519
+# which key each host gets (and only that one, so servers don't see the others). The files are Secretive's
+# public keys, copied by `secretive_key`; the private halves never leave the Secure Enclave. The push key
+# asks for Touch ID on every use.
+Host github.com gitlab.com
+  IdentityFile ~/.ssh/identities/secretive/push.pub
   IdentitiesOnly yes

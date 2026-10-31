@@ -12,7 +12,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza, navi | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
-| Version control | git, delta, difftastic, lazygit, gh | [git](docs/git.md) |
+| Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
@@ -83,7 +83,7 @@ config/tmux/              tmux.conf and the session picker
 config/nvim/              Neovim: one directory per plugin under lua/user/
 config/starship.toml      prompt
 config/git/.gitconfig     git
-config/ssh/config         ssh: keychain, which key for which host
+config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
 data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation

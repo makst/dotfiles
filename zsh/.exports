@@ -22,6 +22,12 @@ unfunction _ls_colors
 
 export EDITOR=nvim
 
+# ssh keys come from Secretive's agent (Secure Enclave keys, see config/ssh/config). git signs commits through
+# SSH_AUTH_SOCK, not the ssh config, so it is set here too. A fixed path, so it doesn't go stale in tmux.
+_secretive_socket=~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/socket.ssh
+[[ -S $_secretive_socket ]] && export SSH_AUTH_SOCK=$_secretive_socket
+unset _secretive_socket
+
 export PATH="$HOME/bin:$PATH"
 # also where uv puts python, python3 and tools installed with `uv tool install`
 export PATH="$HOME/.local/bin:$PATH"

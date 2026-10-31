@@ -226,58 +226,57 @@ function setup_ssh() {
     [[ ${$(readlink ~/bin/$tool 2> /dev/null):t} == ssh-ident ]] && rm ~/bin/$tool
   done
 
-  # at every login, load the keys whose passphrases are in the keychain into the agent, so commits can be
-  # signed before the first ssh connection
-  local label="com.makst.ssh-add"
-  local plist="$HOME/Library/LaunchAgents/$label.plist"
-  mkdir -p "$HOME/Library/LaunchAgents"
-  cat > "$plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>Label</key>
-  <string>$label</string>
-  <key>ProgramArguments</key>
-  <array>
-    <string>/usr/bin/ssh-add</string>
-    <string>--apple-load-keychain</string>
-    <string>-q</string>
-  </array>
-  <key>RunAtLoad</key>
-  <true/>
-</dict>
-</plist>
-PLIST
-  launchctl bootout "gui/$(id -u)/$label" 2> /dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$plist"
+  # the keys are in Secretive now (config/ssh/config), so the login item that loaded keychain keys into macOS's
+  # own agent goes
+  local label="com.makst.ssh-add" plist="$HOME/Library/LaunchAgents/com.makst.ssh-add.plist"
+  if [[ -e $plist ]]; then
+    launchctl bootout "gui/$(id -u)/$label" 2> /dev/null
+    rm $plist
+  fi
 }
 
-# new_ssh_key <identity> [github|gitlab]: a new ed25519 key in ~/.ssh/identities/<identity>/id_ed25519, which
-# config/ssh/config uses. Asks for a passphrase and keeps it in the keychain. With github, the key is also
-# added to the GitHub account for ssh and for signing commits, and to config/git/allowed_signers; with
-# gitlab, the public key is copied for pasting on the settings page that opens.
-function new_ssh_key() {
-  local name=${1:?usage: new_ssh_key <identity> [github|gitlab]} site=$2
-  local key=~/.ssh/identities/$name/id_ed25519 title=${HOST%%.*}
-  [[ -e $key ]] && { print -u2 "$key already exists"; return 1 }
-  mkdir -p ${key:h} && chmod 700 ${key:h}
-  ssh-keygen -t ed25519 -a 100 -f $key -C "$name@$title" || return
-  ssh-add --apple-use-keychain $key || return
+# secretive_key <push|signing> [name]: use the Secretive key called <name> (default: the role) as the push or
+# the signing key. Make the key in the Secretive app first: push with "Require Authentication" (Touch ID for
+# every ssh connection: push, pull, fetch), signing without it (commits and rebases don't ask). Copies its
+# public key to ~/.ssh/identities/secretive/<role>.pub, which config/ssh/config and config/git/.gitconfig use,
+# and adds it to GitHub: push as an ssh key (also copied for the GitLab page that opens), signing as a
+# signing key and to config/git/allowed_signers.
+function secretive_key() {
+  local role=${1:?usage: secretive_key <push|signing> [name in Secretive]} name=${2:-$1}
+  [[ $role == (push|signing) ]] || { print -u2 "the role is push or signing"; return 1 }
 
-  case $site in
-    github)
-      # adding ssh keys needs one more permission than gh asks for at login
-      gh auth status 2>&1 | grep -q admin:public_key || gh auth refresh -h github.com -s admin:public_key || return
-      gh ssh-key add $key.pub --type authentication --title $title &&
-        gh ssh-key add $key.pub --type signing --title $title || return
-      print -r -- "$(git config user.email) namespaces=\"git\" ${$(<$key.pub)% *}" \
-        >> "$real_script_dir/config/git/allowed_signers"
-      ;;
-    gitlab)
-      pbcopy < $key.pub
+  # Secretive keeps each public key in a file named after its hash; find the one whose comment has the name
+  local dir=~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/PublicKeys pub
+  local -a found words
+  for pub in $dir/*.pub(N); do
+    words=(${=$(<$pub)})
+    [[ ${(L)${(j:-:)words[3,-1]}} == *${(L)name// /-}* ]] && found+=$pub
+  done
+  if (( $#found != 1 )); then
+    print -u2 "${#found} Secretive keys match '$name'; pass the name as the second argument. Keys:"
+    for pub in $dir/*.pub(N); do words=(${=$(<$pub)}); print -u2 "  ${words[3,-1]}"; done
+    return 1
+  fi
+
+  local key=~/.ssh/identities/secretive/$role.pub title="${HOST%%.*} (Secretive)"
+  mkdir -p ${key:h} && chmod 700 ${key:h}
+  cp $found[1] $key || return
+  words=(${=$(<$key)})
+
+  # adding ssh keys needs one more permission than gh asks for at login
+  gh auth status 2>&1 | grep -q admin:public_key || gh auth refresh -h github.com -s admin:public_key || return
+  case $role in
+    push)
+      gh ssh-key add $key --type authentication --title $title || return
+      pbcopy < $key
       open https://gitlab.com/-/user_settings/ssh_keys
       print "public key copied, paste it on the GitLab page that opened"
+      ;;
+    signing)
+      gh ssh-key add $key --type signing --title $title || return
+      local signer="$(git config user.email) namespaces=\"git\" ${words[1]} ${words[2]}"
+      local signers=$real_script_dir/config/git/allowed_signers
+      grep -qxF -- $signer $signers || print -r -- $signer >> $signers
       ;;
   esac
 }

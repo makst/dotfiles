@@ -57,6 +57,7 @@ brew "go"
 # --- Apps
 cask "ghostty"
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
+cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key
 cask "font-source-code-pro"
 cask "google-chrome"
 cask "firefox@developer-edition"
