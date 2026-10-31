@@ -20,12 +20,12 @@ accordion-padding = 0
 # with focus on another display, the mouse moves there too
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 
-gaps.inner.horizontal = 10
-gaps.inner.vertical = 10
-gaps.outer.left = 10
-gaps.outer.bottom = 10
-gaps.outer.top = 10
-gaps.outer.right = 10
+gaps.inner.horizontal = 6
+gaps.inner.vertical = 6
+gaps.outer.left = 6
+gaps.outer.bottom = 6
+gaps.outer.top = 6
+gaps.outer.right = 6
 
 # apps that float instead of tiling
 on-window-detected = [
