@@ -36,7 +36,6 @@ brew "tree-sitter-cli"            # compiles the nvim treesitter parsers
 brew "lazygit"                     # `lg` alias
 brew "podman"                      # `docker` alias
 brew "docker-compose"
-brew "pup"                         # command line tool for processing HTML
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
