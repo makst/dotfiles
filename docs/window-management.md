@@ -13,7 +13,7 @@ after that it starts at login.
 Layout
 ---
 New windows split the focused area: side by side on a wide screen, stacked on a tall one, each nested split
-the other way. 10 px gaps and padding. System Settings and Archive Utility float.
+the other way. 10 px gaps and padding. System Settings, Archive Utility and NordVPN float.
 
 Workspaces 1–9 are AeroSpace's, not macOS Spaces: windows on other workspaces are moved just off screen.
 Leave macOS on a single Space per display. `setup_window_management` also turns on *Group windows by
