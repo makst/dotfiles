@@ -15,7 +15,8 @@ Layout
 A new window goes next to the focused one, in the same row (or column), and they share it equally: three
 windows are three columns. There is no automatic halving as in yabai; nested layouts are made by hand
 (below). When a window closes or leaves the workspace, the others grow into its space. 6 px gaps and
-padding. System Settings, Archive Utility and NordVPN float.
+padding. System Settings, Archive Utility and NordVPN float, and so does the bar Chrome, Brave or Firefox
+shows while sharing the screen (Google Meet and the like).
 
 Workspaces 1–9 are AeroSpace's, not macOS Spaces: windows on other workspaces are moved just off screen.
 Leave macOS on a single Space per display. `setup_window_management` also turns on *Group windows by
@@ -67,4 +68,7 @@ Good to know
 - **A gap nothing fills**: `aerospace list-windows --workspace focused` shows what AeroSpace thinks is there.
 - **Everything stacked on top of each other**: that's the accordion (`alt+s`); `alt+s` again goes back to
   tiles.
+- **Screen sharing**: share a single window or tab rather than the whole screen; then switching workspaces
+  doesn't change what others see. If a sharing bar still takes a tile (some set their title late), `alt+t`
+  floats it.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.

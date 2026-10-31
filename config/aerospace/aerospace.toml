@@ -32,6 +32,10 @@ on-window-detected = [
   { if.app-id = 'com.apple.systempreferences', run = 'layout floating' },
   { if.app-id = 'com.apple.archiveutility', run = 'layout floating' },
   { if.app-id = 'com.nordvpn.NordVPN', run = 'layout floating' },
+  # the bar a browser shows while sharing the screen ("meet.google.com is sharing your screen · Stop sharing")
+  { if.app-id = 'com.google.Chrome', if.window-title-regex-substring = 'is sharing (your screen|a window|this tab)', run = 'layout floating' },
+  { if.app-id = 'com.brave.Browser', if.window-title-regex-substring = 'is sharing (your screen|a window|this tab)', run = 'layout floating' },
+  { if.app-id = 'org.mozilla.firefox', if.window-title-regex-substring = 'Sharing Indicator', run = 'layout floating' },
 ]
 
 # All on Option (Alt), as with yabai before. AeroSpace takes these system-wide, so Alt+h/j/k/l and Alt+digit
