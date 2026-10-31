@@ -17,8 +17,19 @@ never edit the same checkout as you or each other. Inside tmux it opens in a **n
 `<name>`**, in the current directory; outside tmux it runs right there. Arguments after the name are passed
 on to `claude`.
 
-When Claude exits, the window stays open as a shell in the worktree. Merge or delete the branch as usual;
-`git worktree list` shows the worktrees left behind and `git worktree remove` cleans them up.
+When Claude exits, the window stays open as a shell in the worktree. The worktrees live in
+`.claude/worktrees/`, which the global gitignore hides from `git status` in every repo.
+
+Finishing an agent
+---
+```sh
+agent_done                    # list the repo's agents: branch, merged or not, uncommitted changes
+agent_done fix-login          # remove the worktree, delete the branch, close the tmux window
+agent_done --force fix-login  # the same for a branch you don't want to merge
+```
+Merge the agent's branch first (`git merge fix-login` or a PR); `agent_done` only removes things when nothing
+would be lost: it stops if the worktree has uncommitted changes, and without `--force` if the branch has
+commits that aren't in the default branch. It works from anywhere in the repo, the worktree itself included.
 
 Noticing an agent that waits
 ---

@@ -189,6 +189,57 @@ function agent() {
   tmux send-keys -t "$pane" "claude -w ${(q)name}${@:+ ${(j: :)${(q)@}}}" Enter
 }
 
+# agent_done [--force] [name]: finish an agent started with `agent`. Without a name, lists the repo's agent
+# worktrees: their branch, whether it's merged and whether there are uncommitted changes. With one, removes the
+# worktree, deletes its branch and closes its tmux window, but only if nothing would be lost: no uncommitted
+# changes and the branch merged into the default branch. --force deletes an unmerged branch too (uncommitted
+# changes still stop it).
+function agent_done() {
+  local force=0
+  [[ $1 == --force ]] && { force=1; shift }
+  local main=${"$(git worktree list --porcelain 2> /dev/null | head -1)"#worktree }
+  [[ -n $main ]] || { print -u2 "not in a git repo"; return 1 }
+  local root=$main/.claude/worktrees
+  local default=${"$(git -C $main symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
+  [[ -n $default ]] || default=$(git -C $main rev-parse --abbrev-ref HEAD)
+
+  if [[ -z $1 ]]; then
+    local wt branch tip state
+    for wt in $root/*(N/); do
+      branch=$(git -C $wt branch --show-current) tip=$(git -C $wt rev-parse HEAD)
+      if git -C $main merge-base --is-ancestor $tip $default; then state="merged"
+      else state="$(git -C $main rev-list --count $default..$tip) commits not in $default"; fi
+      [[ -n $(git -C $wt status --porcelain) ]] && state+=", uncommitted changes"
+      print "${wt:t}  ($branch: $state)"
+    done
+    return
+  fi
+
+  local name=$1 wt=$root/$1
+  [[ -d $wt ]] || { print -u2 "no agent worktree $wt"; return 1 }
+  local branch=$(git -C $wt branch --show-current) tip=$(git -C $wt rev-parse HEAD)
+  if [[ -n $(git -C $wt status --porcelain) ]]; then
+    print -u2 "$name has uncommitted changes; commit or discard them first:"
+    git -C $wt status --short >&2
+    return 1
+  fi
+  if ! git -C $main merge-base --is-ancestor $tip $default && (( ! force )); then
+    print -u2 "${branch:-$name} isn't merged into $default; merge it, or agent_done --force $name to drop it:"
+    git -C $main log --oneline $default..$tip >&2
+    return 1
+  fi
+
+  [[ $PWD == $wt(|/*) ]] && cd $main
+  git -C $main worktree remove $wt || return
+  [[ -n $branch ]] && git -C $main branch -D $branch
+  # the window `agent` opened, unless it's the one running this
+  if [[ -n $TMUX ]]; then
+    local window=$(tmux list-windows -F '#{window_id} #{window_name}' | awk -v n=$name '$2 == n { print $1; exit }')
+    [[ -n $window && $window != $(tmux display-message -p '#{window_id}') ]] && tmux kill-window -t $window
+  fi
+  return 0
+}
+
 function setup_claude() {
   mkdir -p ~/.claude
   local item
@@ -218,6 +269,8 @@ function setup_nvim() {
 
 function setup_git() {
   ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
+  mkdir -p "$HOME/.config/git"
+  ln -sfn "$real_script_dir/config/git/ignore" "$HOME/.config/git/ignore"
 }
 
 function setup_ssh() {

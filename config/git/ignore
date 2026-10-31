@@ -1,0 +1,8 @@
+# Ignored in every repo. setup_git links this to ~/.config/git/ignore, where git looks for it by default.
+
+# macOS folder metadata
+.DS_Store
+
+# Claude Code: agent worktrees (claude -w, `agent`) and personal per-project settings
+.claude/worktrees/
+.claude/settings.local.json

@@ -26,7 +26,7 @@ Each step is a function you can also run on its own:
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
-| `setup_git` | links `~/.gitconfig` |
+| `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore` |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
 | `setup_ghostty` | links the Ghostty config and themes |

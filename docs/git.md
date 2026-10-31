@@ -26,6 +26,8 @@ Behaviour
 - **`git status` stays fast** in big repos: git's file-system monitor runs per repo, untracked files are
   cached.
 - **`git branch`** lists recently used branches first. New repos start on `main`.
+- **Ignored in every repo** (`config/git/ignore`, linked to `~/.config/git/ignore`): `.DS_Store`, Claude
+  Code's agent worktrees (`.claude/worktrees/`) and personal `.claude/settings.local.json`.
 - **Editor** is nvim and shows the diff below the commit message; `git difftool` and
   `git mergetool` open nvim's diff mode.
 
