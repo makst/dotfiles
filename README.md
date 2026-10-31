@@ -85,8 +85,10 @@ config/starship.toml      prompt
 config/git/.gitconfig     git
 config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
+config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation
+CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 
 Private, machine-specific settings go in files that are gitignored and loaded when present:
