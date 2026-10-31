@@ -55,6 +55,7 @@ These override built-in vim keys, which is easy to forget:
 | `jj` (insert) | leave insert mode | |
 | `x` | delete without yanking | |
 | `m` | flash: jump to any visible position | set a mark (use `:mark`) |
+| `-` | oil: the current file's directory | line up, to its first character (`k^`) |
 | `H` `J` `K` `L` | treewalker: move by syntax node | screen top, **join lines**, keyword help, screen bottom |
 | `Space` | next split | |
 | arrow keys | resize the split | move the cursor |
@@ -113,6 +114,29 @@ Other ways around:
 | `,so` | outline of the symbols in the file |
 
 The file tree follows the current file and the working directory.
+
+### Files as text (oil)
+
+`-` opens the current file's directory in [oil](https://github.com/stevearc/oil.nvim): one line per file,
+hidden files included. Edit it like any buffer, then `:w` applies the changes after a confirmation:
+
+| Edit | Does |
+|---|---|
+| change a name (`cw`, `:s`, …) | rename |
+| `dd` | delete (to the macOS trash) |
+| new line with a name | create a file; a name ending in `/` creates a directory, `a/b.txt` both |
+| `dd` here, `p` in another directory | move (`yy` + `p`: copy) |
+
+| Key (in oil) | Action |
+|---|---|
+| `Enter` / `-` | open the file or directory / go up a level |
+| `C-s` / `C-t` | open in a vertical split / a tab |
+| `C-p` | preview the file under the cursor |
+| `_` / `` ` `` | the working directory / make this directory the working directory |
+| `g.` | show / hide dotfiles |
+| `g?` | all keys |
+
+`vim .` still opens nvim-tree. oil reloads on its own when files change on disk.
 
 ### Code (LSP)
 

@@ -52,6 +52,7 @@ require('lazy').setup({
     'nvim-tree/nvim-tree.lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' }, -- optional, for file icons
   },
+  'stevearc/oil.nvim', -- a directory as an editable buffer: rename, move, delete files by editing text
   'folke/flash.nvim', -- jump to any visible position with labels
   'tpope/vim-repeat',
   'lewis6991/gitsigns.nvim',
