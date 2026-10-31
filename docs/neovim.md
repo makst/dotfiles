@@ -33,7 +33,10 @@ Behaviour worth knowing
 - **System clipboard**: every yank and delete goes to the macOS clipboard, `p` pastes from it.
 - **Files reload when changed on disk** as soon as you come back to nvim, its tmux pane or the buffer.
   Handy with agents and git working on the same files.
-- **Format on save** when the language server can format; for JS/TS, eslint additionally fixes what it can.
+- **Format on save** with [conform.nvim](https://github.com/stevearc/conform.nvim): the project's own
+  formatter if it has one (prettier from `node_modules` with a prettier config, ruff, goimports/gofmt,
+  stylua with a `stylua.toml`, shfmt), otherwise the language server. For JS/TS, eslint additionally fixes
+  what it can. `:ConformInfo` shows what a buffer uses; formatters are configured in `lua/user/conform.lua`.
 - 2-space indent with spaces, no line wrapping, case-insensitive search, 10 lines of context when
   scrolling, `:s` shows a live preview of the substitution.
 - Diagnostics are shown as icons in the sign column and coloured line numbers, not as text at the end of
@@ -51,7 +54,7 @@ These override built-in vim keys, which is easy to forget:
 |---|---|---|
 | `jj` (insert) | leave insert mode | |
 | `x` | delete without yanking | |
-| `m` | hop: jump to any visible word | set a mark (use `:mark`) |
+| `m` | flash: jump to any visible position | set a mark (use `:mark`) |
 | `H` `J` `K` `L` | treewalker: move by syntax node | screen top, **join lines**, keyword help, screen bottom |
 | `Space` | next split | |
 | arrow keys | resize the split | move the cursor |
@@ -102,7 +105,7 @@ Other ways around:
 
 | Key | Action |
 |---|---|
-| `m` | hop: labels every visible word, type the label to jump. Works after operators: `dm`, `ym` |
+| `m` | flash: type a few characters of the target, then the label that appears there. Works after operators and in visual mode: `dm`, `ym`, `vm` |
 | `,m` / `;m` | harpoon: add the file to the list / open the list (reorder and delete in it) |
 | `;j` / `;k` | harpoon: next / previous file in the list |
 | `,e` | file tree on the right (`l` opens, `g?` shows all keys) |
@@ -139,9 +142,11 @@ All in normal and visual mode, so `vJJ` selects across nodes.
 
 ### Completion and snippets
 
-Completion pops up from the language server, its signature help and snippets
-([friendly-snippets](https://github.com/rafamadriz/friendly-snippets); TypeScript also gets the JavaScript
-ones). The first match shows as grey ghost text.
+[blink.cmp](https://github.com/saghen/blink.cmp) completes from the language server, file paths, snippets
+([friendly-snippets](https://github.com/rafamadriz/friendly-snippets), expanded by nvim's own
+`vim.snippet`; TypeScript also gets the JavaScript ones) and words in the buffer. The first match shows as
+grey ghost text, the documentation of the selected item next to the menu, and the signature help while you
+type a function's arguments. `:BlinkCmp status` checks the setup.
 
 | Key | Action |
 |---|---|
@@ -170,17 +175,26 @@ else). They keep running while hidden.
 
 ### Search and replace across files
 
-1. Find the matches: `;r` (mark entries with `Tab`, then `C-s`), `:Ack <pattern>` (ripgrep, includes hidden
-   files, case-insensitive), or `,av` on a visual selection. The matches land in the quickfix list.
-2. Replace:
-   - `:Acks /old/new/` substitutes in every file in the quickfix list, or
-   - `:Qfreplace` opens the matching lines as one editable buffer; edit them like normal text, `:w` writes
-     the changes back to their files.
+`,sr` opens [grug-far](https://github.com/MagicDuck/grug-far.nvim) in a split; in visual mode the
+selection is the search. Fill in search, replacement, and optionally a files filter (`*.ts`) or ripgrep
+flags: the results update live, with the replacement shown as a diff. Search is ripgrep, including hidden
+files, case-insensitive unless the search has a capital letter.
+
+| Key (in grug-far) | Action |
+|---|---|
+| `\r` | replace in all files |
+| `\s` | sync: write manual edits of the result lines back to their files |
+| `Enter` | open the match under the cursor |
+| `g?` | all keys |
+
+Or the built-in way: send matches to the quickfix list (`;r`, mark entries with `Tab`, then `C-s`) and run
+`:cdo s/old/new/ | update`.
 
 ### Editing helpers
 
-- [vim-surround](https://github.com/tpope/vim-surround): `cs"'` change surrounding quotes, `ds(` delete
-  parentheses, `ysiw"` surround a word.
+- [nvim-surround](https://github.com/kylechui/nvim-surround): `cs"'` change surrounding quotes, `ds(`
+  delete parentheses, `ysiw"` surround a word, `S"` in visual mode; also `dsf` deletes a function call
+  around its arguments, `dst` / `cst` delete / change an HTML tag.
 - [vim-abolish](https://github.com/tpope/vim-abolish): `:S/child{,ren}/adult{,s}/` substitutes all case
   and plural variants; `crs` / `crc` / `crm` / `cru` coerce the word to snake / camel / Mixed / UPPER case.
 - Brackets and quotes close themselves (autopairs), HTML/JSX tags too (ts-autotag).

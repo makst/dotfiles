@@ -18,13 +18,9 @@ require('lazy').setup({
   'nvim-lua/plenary.nvim', -- Common utilities
 
   -- 'navarasu/onedark.nvim',
-  'nvimdev/lspsaga.nvim', -- LSP UIs
-  'onsails/lspkind.nvim', -- vscode-like pictograms
-  'hrsh7th/cmp-buffer', -- nvim-cmp source for buffer words
-  'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim's built-in LSP
-  'hrsh7th/nvim-cmp', -- Completion
-  'hrsh7th/cmp-nvim-lsp-signature-help',
-  'saadparwaiz1/cmp_luasnip',
+  -- completion, signature help and snippets (nvim's own vim.snippet); 1.* ships a prebuilt fuzzy matcher
+  { 'saghen/blink.cmp', version = '1.*' },
+  'stevearc/conform.nvim', -- format on save with the project's formatters, the language server as fallback
 
   -- status line
   'nvim-lualine/lualine.nvim',
@@ -34,8 +30,7 @@ require('lazy').setup({
   'mason-org/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
 
-  'L3MON4D3/LuaSnip',
-  'rafamadriz/friendly-snippets',
+  'rafamadriz/friendly-snippets', -- snippets for blink.cmp
   { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
   'aaronik/treewalker.nvim', -- replaces tree-climber, which needs the removed nvim-treesitter APIs
   'windwp/nvim-autopairs',
@@ -57,14 +52,12 @@ require('lazy').setup({
     'nvim-tree/nvim-tree.lua',
     dependencies = { 'nvim-tree/nvim-web-devicons' }, -- optional, for file icons
   },
-  'smoka7/hop.nvim', -- maintained fork: phaazon/hop.nvim is gone
+  'folke/flash.nvim', -- jump to any visible position with labels
   'tpope/vim-repeat',
   'lewis6991/gitsigns.nvim',
   'dinhhuy258/git.nvim', -- For git blame & browse
 
-  -- search/replace
-  'thinca/vim-qfreplace',
-  'wincent/ferret',
+  'MagicDuck/grug-far.nvim', -- search and replace across files
 
   'lukas-reineke/indent-blankline.nvim',
   'hedyhli/outline.nvim', -- maintained fork: simrat39/symbols-outline.nvim is archived
@@ -78,7 +71,7 @@ require('lazy').setup({
   -- project management
   'nvim-telescope/telescope-project.nvim',
 
-  'tpope/vim-surround',
+  'kylechui/nvim-surround',
   'tpope/vim-abolish',
 }, {
   lockfile = vim.fn.stdpath('config') .. '/lazy-lock.json',
