@@ -12,8 +12,10 @@ after that it starts at login.
 
 Layout
 ---
-New windows split the focused area: side by side on a wide screen, stacked on a tall one, each nested split
-the other way. 6 px gaps and padding. System Settings, Archive Utility and NordVPN float.
+A new window goes next to the focused one, in the same row (or column), and they share it equally: three
+windows are three columns. There is no automatic halving as in yabai; nested layouts are made by hand
+(below). When a window closes or leaves the workspace, the others grow into its space. 6 px gaps and
+padding. System Settings, Archive Utility and NordVPN float.
 
 Workspaces 1–9 are AeroSpace's, not macOS Spaces: windows on other workspaces are moved just off screen.
 Leave macOS on a single Space per display. `setup_window_management` also turns on *Group windows by
@@ -45,3 +47,24 @@ nvim or zsh, for instance, are handled by AeroSpace.
 
 `aerospace list-windows --all` shows every window with its app id, for adding more floating apps in
 `on-window-detected`.
+
+Arranging windows
+---
+Three windows side by side, and you want one big window on the left with the other two stacked on the
+right: focus the rightmost, `shift+alt+;` then `h`. The two right windows now share a column, one above the
+other. `alt+e` inside that column switches it back to side by side.
+
+`ctrl+shift+alt+h/j/k/l` does the same step by step: it moves the window into the neighbouring column or row,
+or out of it again at the edge. `shift+alt+;` then `r` undoes all nesting: every window back in one row.
+
+Good to know
+---
+- **Don't use macOS desktops** (Mission Control Spaces). AeroSpace doesn't see them: a window moved to
+  another desktop still counts as being on its workspace, and its space stays empty. Use `shift+alt+<n>`
+  instead, and keep a single desktop per display.
+- **A window that doesn't tile** is floating: `alt+t` puts it back. New windows of the floating apps above
+  always start floating.
+- **A gap nothing fills**: `aerospace list-windows --workspace focused` shows what AeroSpace thinks is there.
+- **Everything stacked on top of each other**: that's the accordion (`alt+s`); `alt+s` again goes back to
+  tiles.
+- **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.
