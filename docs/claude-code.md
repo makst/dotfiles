@@ -81,6 +81,7 @@ with nothing about this Mac, its tools or this repo. `setup_claude` links it int
   when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
 - **`hooks/`**: the scripts the hooks below run.
+- **`skills/`**: the [skills](#skills) every project gets.
 - **`statusline.sh`**: the [status line](#status-line).
 
 Settings you change with `/config` or by installing a plugin are written through the link into the repo, so
@@ -158,6 +159,17 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 The scripts need zsh and jq; a formatter or tmux that isn't there is skipped.
 
 `/hooks` lists them; `"disableAllHooks": true` in `settings.json` turns them all off.
+
+### Skills
+A skill is a set of instructions Claude follows when you type its name as a slash command. They live in
+`config/claude/skills/<name>/SKILL.md`; `setup_claude` links each one into `~/.claude/skills`, which stays a
+real directory because the skills claude.ai syncs live there too.
+
+| Command | Does |
+|---|---|
+| `/ship [pr] [about]` | finishes the work in this checkout: moves to a branch if on the default one, checks the diff against the project's `CLAUDE.md` (docs, lock files, tests that should come with it), runs the project's checks, commits in the project's style. With `pr` it also pushes and opens a pull request. Only you can start it; Claude doesn't run it by itself |
+
+In an agent's window, `/ship` then `agent_done <name>` after merging is the whole finish.
 
 ### Status line
 ```

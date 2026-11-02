@@ -35,7 +35,7 @@ Each step is a function you can also run on its own:
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` |
 | `setup_ghostty` | links the Ghostty config and themes |
-| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md` and hooks into `~/.claude` (see [claude-code](claude-code.md#config)) |
+| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
 | `remap_keys` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 | `setup_window_management` | links the AeroSpace config and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [window-management](window-management.md)) |
@@ -150,6 +150,17 @@ git pull && setup_dotfiles
 That installs and upgrades brew packages (the zsh plugins are among them), installs newly listed tmux plugins and
 restores nvim plugins to the versions in `lazy-lock.json`. Updating tmux plugins (`C-a U`) and nvim plugins
 are deliberate steps, see [tmux](tmux.md#plugins) and [neovim](neovim.md#plugins).
+
+Checks
+---
+```sh
+check_dotfiles
+```
+
+Runs the checks before a commit: `zsh -n` on every zsh file, `shellcheck` on `prepare-zsh-install.sh`,
+`jq -e .` on every JSON file, and whether the Brewfile loads (`brew bundle list`). It lists what fails and
+returns 1. GitHub runs the same function on every push and pull request on a macOS runner
+(`.github/workflows/check.yml`), so a red check there means the same as a red check here.
 
 Other helpers
 ---

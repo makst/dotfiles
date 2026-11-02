@@ -351,6 +351,13 @@ function setup_claude() {
     [[ -e ~/.claude/$item && ! -L ~/.claude/$item ]] && mv ~/.claude/$item ~/.Trash/claude-$item-$(date +%s)
     ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item
   done
+  # skills one by one: ~/.claude/skills also holds the skills claude.ai syncs, so it stays a real directory
+  mkdir -p ~/.claude/skills
+  for item in $real_script_dir/config/claude/skills/*(N/); do
+    [[ -e ~/.claude/skills/${item:t} && ! -L ~/.claude/skills/${item:t} ]] &&
+      mv ~/.claude/skills/${item:t} ~/.Trash/claude-skill-${item:t}-$(date +%s)
+    ln -sfn $item ~/.claude/skills/${item:t}
+  done
 }
 
 function setup_ghostty() {
@@ -592,4 +599,35 @@ function setup_dotfiles() {
     print -u2 -P "%F{red}Failed: ${(j:, :)failed}.%f Fix the cause (see the output above) and run each again."
     return 1
   fi
+}
+
+# check_dotfiles: the checks CI runs on every push (.github/workflows/check.yml), to run before committing:
+# zsh syntax of every zsh file, shellcheck on the one bash script, every JSON file parses, the Brewfile loads.
+# Prints what fails and returns 1; a tool that isn't installed is skipped with a note.
+function check_dotfiles() {
+  local repo=$real_script_dir f
+  local -a failed
+  for f in $repo/{.zshrc,.fzf.zsh} $repo/zsh/.*(N.) $repo/config/machine/zshrc $repo/config/tmux/sessionizer \
+    $repo/config/claude/{hooks/*.sh,statusline.sh}(N) $repo/docs/tapes/demo-home; do
+    zsh -n $f || failed+="zsh -n ${f#$repo/}"
+  done
+  if command -v shellcheck > /dev/null; then
+    shellcheck $repo/prepare-zsh-install.sh || failed+="shellcheck prepare-zsh-install.sh"
+  else
+    print "shellcheck not installed, skipped"
+  fi
+  for f in $repo/**/*.json(N.D); do
+    [[ $f == */.claude/worktrees/* ]] && continue
+    jq -e . $f > /dev/null || failed+="jq ${f#$repo/}"
+  done
+  if command -v brew > /dev/null; then
+    brew bundle list --all --file=$repo/Brewfile > /dev/null || failed+="brew bundle list"
+  else
+    print "brew not installed, skipped the Brewfile"
+  fi
+  if (( $#failed )); then
+    print -u2 -P "%F{red}Failed:%f ${(j:, :)failed}"
+    return 1
+  fi
+  print -P "%F{green}All checks passed%f"
 }

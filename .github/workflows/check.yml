@@ -1,0 +1,18 @@
+# check_dotfiles (zsh/.functions) on every push and pull request, on the macOS this repo is for.
+name: check
+on:
+  push:
+  pull_request:
+jobs:
+  check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: command -v shellcheck || brew install shellcheck
+      - name: check_dotfiles
+        shell: zsh {0}
+        run: |
+          real_script_dir=$PWD
+          source zsh/.functions
+          check_dotfiles

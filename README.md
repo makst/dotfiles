@@ -17,7 +17,7 @@ lazygit, `cmd+j` shows every session.
 
 | Layer | Tool | Docs |
 |---|---|---|
-| Install and update | Homebrew (`Brewfile`), `setup_dotfiles` | [setup](docs/setup.md) |
+| Install and update | Homebrew (`Brewfile`), `setup_dotfiles`, `check_dotfiles` (also CI) | [setup](docs/setup.md) |
 | Terminal | Ghostty | [ghostty](docs/ghostty.md) |
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
