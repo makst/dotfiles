@@ -116,7 +116,7 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
    `secretive_key signing`, see [git](git.md#ssh-keys). The signing key turns on signing for this Mac and is
    added to `config/git/allowed_signers`: commit that. Then switch the clone to SSH:
    `git remote set-url origin git@github.com:makst/dotfiles.git`. So every Mac has its own pair of keys, listed
-   on GitHub under the Mac's name; when a Mac is lost or handed back, delete its two keys there.
+   on GitHub under the Mac's name (see [One set of keys per Mac](git.md#one-set-of-keys-per-mac)).
 5. **What only this Mac needs**, in `~/.config/dotfiles` (see [Several Macs](#several-macs)): on a work Mac
    the work email in `gitconfig` (and add it to your GitHub account under Settings → Emails, so work commits
    count as yours and show as Verified), work plugins in `claude.json`, work hosts in `~/.ssh/config` below
@@ -130,6 +130,19 @@ For a fork, change the identity first: name and email in `config/git/.gitconfig`
 
 After editing the tmux plugin list: `C-a I` inside tmux.
 
+Retiring a Mac
+---
+When a Mac is sold, wiped, handed back or lost, stop trusting its keys. On another Mac:
+
+1. **`mac_keys`** lists every Mac's keys on GitHub and in `config/git/allowed_signers`; find its name.
+2. **`retire_mac <name>`** shows what it will do and asks first. It deletes the Mac's push and signing keys
+   on GitHub and marks its signing key in `allowed_signers` as valid only until now, so the commits it signed
+   still show as verified. Commit `allowed_signers`.
+3. **By hand**, as `retire_mac` lists them: its key on GitLab, its key in any server's
+   `~/.ssh/authorized_keys`, and tokens made only for that Mac (revoke them where they were made).
+4. **If you still have the Mac**: sign out of GitHub (`gh auth logout`) and delete its keys in Secretive
+   before wiping it.
+
 Staying up to date
 ---
 ```sh
@@ -142,5 +155,7 @@ are deliberate steps, see [tmux](tmux.md#plugins) and [neovim](neovim.md#plugins
 
 Other helpers
 ---
+- `mac_keys` lists which keys belong to which Mac; `retire_mac <name>` revokes one Mac's keys (see
+  [Retiring a Mac](#retiring-a-mac)).
 - `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
 - `sync_cheatsh` downloads the whole cheat.sh catalogue to `~/cheatsheets` for offline use (takes 15–20 min).

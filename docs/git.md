@@ -77,14 +77,42 @@ signing key is a Secretive key that doesn't ask for Touch ID, so commits, rebase
 
 - **GitHub** shows the commits as *Verified* once the public key is added as a **signing** key:
   `secretive_key signing` does that (see [SSH keys](#ssh-keys)).
-- **Locally**, `git log --show-signature` checks signatures against `config/git/allowed_signers`. It also
-  keeps the earlier RSA and ed25519 keys, so older commits still verify.
+- **Locally**, `git log --show-signature` checks signatures against `config/git/allowed_signers`. Each line
+  ends with the name of the Mac the key belongs to. A retired key keeps its line with
+  `valid-before="<time>"`, so the commits it signed before then still verify and nothing signed with it later
+  does; the RSA and ed25519 key files used before Secretive are kept that way.
 - For a repo where signing is unwanted: `git config commit.gpgsign false` inside it.
 
 In nvim
 ---
 Changed lines are marked in the sign column (gitsigns), `,gb` shows blame and `,go` opens the file on
 GitHub. See [neovim](neovim.md#git).
+
+One set of keys per Mac
+---
+Every Mac makes its own keys, and they never leave it: not into git, a backup, a password manager or another
+Mac. A new Mac gets new keys; a Mac that goes away takes its keys with it, and they are revoked. So a lost or
+stolen Mac costs one Mac's keys, which you revoke from any other, and every key on GitHub and in
+`config/git/allowed_signers` carries the name of the Mac it belongs to.
+
+| What | Where it lives | On a new Mac |
+|---|---|---|
+| SSH keys for pushing and signing | Secretive, in the Mac's Secure Enclave (can't be exported) | made fresh: `secretive_key push`, `secretive_key signing` |
+| GitHub CLI token | the Keychain | `gh auth login` |
+| Other logins (cloud CLIs, registries) | each tool's own login, per Mac | log in again |
+| Secrets that exist only once (a vendor's API key, recovery codes) | the password manager | copy into `zsh/.private` when a Mac needs it |
+
+Prefer a token per Mac wherever a service offers one, so it can be revoked on its own; only what can't be
+made twice goes in the password manager.
+
+| When | Do |
+|---|---|
+| A new Mac | [A new Mac](setup.md#a-new-mac), step 4: make its two keys in Secretive, then `secretive_key push` and `secretive_key signing`, commit `allowed_signers` |
+| A Mac is sold, wiped, handed back or lost | on another Mac: `retire_mac <name>`, then commit `allowed_signers` and do what it lists (GitLab, servers, tokens) |
+| Which keys belong to which Mac | `mac_keys` |
+
+`retire_mac` asks before it changes anything. It deletes the Mac's push and signing keys on GitHub (found by
+the Mac's name in their titles) and marks its line in `allowed_signers` `valid-before` the current time.
 
 SSH keys
 ---
@@ -112,7 +140,7 @@ still sign while you're logged in, but can't push without your finger.
   one named `signing` with it off. Then `secretive_key push` and `secretive_key signing`: each copies the
   public key to `~/.ssh/identities/secretive/<role>.pub` (which the ssh and git config point to) and adds it
   to GitHub under the Mac's name from `setup_machine`, the push key for ssh and the signing key for signing
-  (and to `config/git/allowed_signers`: commit that). For GitLab, `secretive_key push` copies the public key
+  (and to `config/git/allowed_signers`, with the Mac's name: commit that). For GitLab, `secretive_key push` copies the public key
   and opens the page to paste it. Named them differently? `secretive_key push "GitHub push"`.
 - `ssh-add -l` lists the keys Secretive offers; `ssh -T git@github.com` checks the push key.
 
