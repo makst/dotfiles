@@ -16,6 +16,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
+| GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
 
 Install from scratch
 ---
@@ -88,7 +89,7 @@ config/aerospace/         window manager
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 data_dir/navi/cheats/     own navi cheatsheets
-docs/                     this documentation
+docs/                     this documentation; tapes/ and img/ are the GIFs in it
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 

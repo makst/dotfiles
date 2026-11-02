@@ -20,6 +20,8 @@ Keys
 The prefix is `C-a` (with Caps Lock as Ctrl, that's a left-hand roll). Press it twice to send a literal
 `C-a` to the program. The `cmd` column is what Ghostty sends for you, see [ghostty](ghostty.md).
 
+![Splitting, moving between and zooming panes, then a new window](img/tmux-panes.gif)
+
 | Key | cmd | Action |
 |---|---|---|
 | `C-a c` | `cmd+t` | new window |

@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+# keycast <tmux socket> <ghostty config> <command…>: run the command in a pseudo-terminal and show each key
+# typed into it in the tmux option @keys on that socket, which docs/tapes/demo.tmux.conf draws as a caption
+# under the status bar. make_gifs (zsh/.functions) runs tmux through it, so the GIFs show which keys do what.
+# A prefix chord that a Ghostty keybind sends (keybind = super+d=text:\x01|) shows as that key, cmd+d, since
+# that's the one you'd press.
+# Python because it needs a pty in the middle of the input; zsh's zpty can't pass a terminal through.
+import fcntl, os, pty, re, select, signal, subprocess, sys, termios, tty
+
+socket, ghostty, command = sys.argv[1], sys.argv[2], sys.argv[3:]
+
+NAMES = {0x1b: 'Esc', 0x0d: 'Enter', 0x09: 'Tab', 0x7f: 'BS', 0x20: 'Space'}
+ARROWS = {b'\x1b[A': 'Up', b'\x1b[B': 'Down', b'\x1b[C': 'Right', b'\x1b[D': 'Left'}
+PREFIX = 0x01  # C-a, the prefix in config/tmux/tmux.conf
+
+
+def name(data):
+    if data in ARROWS:
+        return ARROWS[data]
+    if len(data) != 1:
+        return None
+    b = data[0]
+    if b in NAMES:
+        return NAMES[b]
+    if b < 0x20:
+        return 'C-' + chr(b + 0x60)
+    return chr(b)
+
+
+# the bytes each Ghostty keybind sends -> its key, written the way the docs do: cmd+shift+d
+GHOSTTY = {}
+for line in open(ghostty):
+    m = re.match(r'keybind = super\+(\S+?)=text:(\S+)', line)
+    if m:
+        key = 'cmd+' + m[1].replace('digit_', '')
+        GHOSTTY.setdefault(m[2].encode().decode('unicode_escape').encode('latin-1'), key)
+
+
+def badge(key):
+    return f'#[fg=black,bg=yellow,bold] {key} #[default]'
+
+
+def show(keys):
+    text = ' '.join(badge(k.replace('#', '##')) for k in keys)
+    subprocess.run(['tmux', '-L', socket, 'set', '-g', '@keys', text, ';', 'refresh-client', '-S'],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+pid, master = pty.fork()
+if pid == 0:
+    os.execvp(command[0], command)
+
+
+def resize(*_):
+    size = fcntl.ioctl(sys.stdin.fileno(), termios.TIOCGWINSZ, b'\0' * 8)
+    fcntl.ioctl(master, termios.TIOCSWINSZ, size)
+
+
+resize()
+signal.signal(signal.SIGWINCH, resize)
+saved = termios.tcgetattr(sys.stdin)
+tty.setraw(sys.stdin)
+prefixed, typing = False, False
+try:
+    while True:
+        try:
+            ready, _, _ = select.select([sys.stdin, master], [], [])
+        except InterruptedError:
+            continue
+        if master in ready:
+            try:
+                out = os.read(master, 65536)
+            except OSError:
+                break
+            if not out:
+                break
+            os.write(sys.stdout.fileno(), out)
+        if sys.stdin in ready:
+            data = os.read(sys.stdin.fileno(), 1024)
+            key = name(data)
+            # a chord after the prefix, or a key a program reacts to; plain typing clears the caption.
+            # The prefix alone shows nothing yet: the next key decides whether it was a Ghostty key.
+            if prefixed:
+                chord = bytes([PREFIX]) + data
+                show([GHOSTTY[chord]] if chord in GHOSTTY else ['C-a', key or '?'])
+                prefixed, typing = False, False
+            elif data[0] == PREFIX:
+                prefixed = True
+            elif key and (len(key) > 1 or data[0] < 0x20) and key != 'Space':
+                show([key])
+                typing = False
+            elif not typing:
+                show([])
+                typing = True
+            os.write(master, data)
+finally:
+    termios.tcsetattr(sys.stdin, termios.TCSAFLUSH, saved)
+    os.waitpid(pid, 0)

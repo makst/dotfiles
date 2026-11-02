@@ -173,6 +173,63 @@ function setup_tmux() {
   ~/.tmux/plugins/tpm/bin/install_plugins
 }
 
+# make_gifs [tape…]: render the GIFs in docs/img from the VHS tapes in docs/tapes (all of them, or the ones
+# named, e.g. `make_gifs tmux-panes`). Each tape runs in the real tmux config with the Ghostty theme and font,
+# in a separate tmux server (docs/tapes/demo.tmux.conf), and docs/tapes/keycast shows the keys pressed under
+# the status bar. Rerun after changing a binding or the theme, and commit the GIFs.
+function make_gifs() {
+  local repo=$real_script_dir tmp tape name
+  (( $+commands[vhs] )) || { print -u2 "make_gifs needs vhs (Brewfile)"; return 1 }
+  tmp=$(mktemp -d) || return
+  # a HOME with only the plugins the demo needs; resurrect and continuum stay out
+  mkdir -p $tmp/home/.tmux/plugins $tmp/home/.config
+  ln -s ~/.tmux/plugins/{tpm,vim-tmux-navigator} $tmp/home/.tmux/plugins/
+  # tpm reads the plugin list from here
+  ln -s $repo/config/tmux $tmp/home/.config/tmux
+
+  # the Ghostty theme as a VHS theme
+  local -A c
+  local key value
+  while IFS=' =' read -r key value; do
+    [[ $key == palette ]] && key=${value%%=*} value=${value#*=}
+    c[$key]=$value
+  done < <(grep -v '^#' $repo/config/ghostty/themes/base16)
+  local -a names=(black red green yellow blue magenta cyan white)
+  local theme="{\"name\":\"base16\",\"background\":\"$c[background]\",\"foreground\":\"$c[foreground]\""
+  theme+=",\"cursor\":\"$c[cursor-color]\",\"selection\":\"$c[selection-background]\""
+  local i
+  for i in {1..8}; do
+    theme+=",\"$names[i]\":\"$c[$((i - 1))]\",\"bright${(C)names[i]}\":\"$c[$((i + 7))]\""
+  done
+  theme+='}'
+
+  local -a tapes=(${@:+$repo/docs/tapes/${^@}.tape})
+  (( $#tapes )) || tapes=($repo/docs/tapes/*.tape(N))
+  for tape in $tapes; do
+    name=${tape:t:r}
+    print -P "%F{blue}=> $name%f"
+    tmux -L demo kill-server 2> /dev/null
+    {
+      print -r -- 'Set Shell zsh'
+      print -r -- 'Set FontFamily "Source Code Pro, Symbols Nerd Font Mono"'
+      print -r -- 'Set FontSize 18'
+      print -r -- 'Set Width 1200'
+      print -r -- 'Set Height 640'
+      print -r -- 'Set Padding 16'
+      print -r -- 'Set TypingSpeed 80ms'
+      print -r -- "Set Theme $theme"
+      print -r -- 'Hide'
+      print -r -- "Type \"cd ${(q)repo} && REAL_HOME=\$HOME HOME=$tmp/home DOTFILES=\$PWD docs/tapes/keycast demo config/ghostty/config tmux -L demo -f docs/tapes/demo.tmux.conf new -s main\" Enter"
+      print -r -- 'Sleep 3s'
+      print -r -- 'Show'
+      cat $tape
+    } > $tmp/$name.tape
+    (cd $repo && vhs $tmp/$name.tape) || { tmux -L demo kill-server 2> /dev/null; return 1 }
+    tmux -L demo kill-server 2> /dev/null
+  done
+  trash $tmp
+}
+
 # Claude Code with this Mac's settings on top of the shared config/claude/settings.json, passed with --settings
 # so they never land in the repo:
 # - this shell's SSH agent socket is allowed in the sandbox, so commits get signed there (git signs through

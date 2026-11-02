@@ -21,6 +21,7 @@ brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"
+brew "vhs"                         # records the GIFs in docs/ from docs/tapes, make_gifs
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI
@@ -66,6 +67,7 @@ cask "ghostty"
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
 cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key
 cask "font-source-code-pro"
+cask "font-symbols-only-nerd-font" # Nerd Font icons in the GIFs, make_gifs
 cask "google-chrome"
 cask "firefox@developer-edition"
 cask "cyberduck"
