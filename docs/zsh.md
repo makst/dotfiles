@@ -160,6 +160,7 @@ From the Brewfile, worth knowing about:
 | `xh` | HTTP requests with httpie's syntax: `xh POST api.example.com name=x`, `xh -d <url>` downloads |
 | `btop` | processes, CPU, memory, disks and network |
 | `yazi` | file manager with previews; `q` quits, `?` lists keys |
+| `img <file>` | chafa: shows a photo or plays a GIF in the terminal, sized to the pane; `ctrl-c` stops a GIF |
 | `tldr <cmd>` | short, practical examples instead of the man page |
 | `dust` | what takes the space in a directory tree |
 | `hyperfine '<cmd>'` | benchmarks a command, compares several |

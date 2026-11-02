@@ -8,6 +8,9 @@ alias copy_last_cmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 
 alias lg='lazygit'
 
+# images and GIFs in the terminal: Ghostty's Kitty graphics protocol, through tmux's passthrough
+alias img='chafa'
+
 # tmux session picker: running sessions and zoxide directories (prefix f / cmd+k inside tmux)
 alias tm='~/.config/tmux/sessionizer'
 # remote hosts often lack tmux-256color's terminfo: inside tmux, ssh with a TERM every server knows
