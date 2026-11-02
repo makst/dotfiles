@@ -48,8 +48,10 @@ four keys don't reach programs in the shell (`C-l` no longer clears the screen; 
 Session picker
 ---
 `cmd+k` (or `tm` in a shell outside tmux) opens fzf with the running sessions first, then every directory
-zoxide knows, most used first. Choosing a directory creates a session there named after it, or switches to
-it if it exists. Outside tmux, `tm` attaches.
+zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there
+named after it, or switches to it if it exists. Outside tmux, `tm` attaches.
+
+![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+] switches sessions](img/tmux-sessions.gif)
 
 So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#navigation).
 

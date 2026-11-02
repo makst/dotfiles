@@ -1,0 +1,74 @@
+#!/usr/bin/env zsh
+# demo-home <dir> <repo>: build the HOME the GIFs are recorded in (make_gifs, zsh/.functions). It has the
+# repo's config linked the way the setup_* functions link it, nvim's installed plugins, and made-up history,
+# zoxide directories and projects, so no real command, path or project of this Mac shows up in a GIF.
+# Nothing from ~/.config/dotfiles is linked: the GIFs show the shared setup.
+home=$1 repo=$2
+setopt err_exit
+zmodload zsh/datetime
+
+mkdir -p $home/.config $home/.atuin $home/.tmux/plugins $home/.local/share $home/repos
+ln -s $repo $home/dotfiles
+ln -s $repo/.zshrc $home/.zshrc
+ln -s $repo/.fzf.zsh $home/.fzf.zsh
+ln -s $repo/config/git/.gitconfig $home/.gitconfig
+ln -s $repo/config/atuin/config.toml $home/.atuin/config.toml
+ln -s $repo/config/tmux $home/.config/tmux
+ln -s $repo/config/nvim $home/.config/nvim
+# plugins and language servers, read only; nvim's state (shada, undo, harpoon) starts empty
+ln -s ~/.local/share/nvim $home/.local/share/nvim
+# only the plugins the demo needs: resurrect and continuum would restore and save sessions
+ln -s ~/.tmux/plugins/{tpm,vim-tmux-navigator} $home/.tmux/plugins/
+
+# lazygit without its welcome and "breaking changes" popups, which would swallow the first keys: the two
+# lines of its state that say they were seen (not the rest, it lists recent repos)
+local lazygit=$home/Library/Application\ Support/lazygit
+mkdir -p $lazygit
+grep -E '^(startuppopupversion|lastversion):' ~/Library/Application\ Support/lazygit/state.yml \
+  > $lazygit/state.yml 2> /dev/null || true
+
+# projects for the session picker and zoxide
+local project
+for project in api website notes; do
+  mkdir -p $home/repos/$project
+done
+ln -s $repo $home/repos/dotfiles
+
+# a small git project with history and an uncommitted change, for the git GIF
+local -a git=(git -C $home/repos/api -c user.name=Demo -c user.email=demo@example.com -c commit.gpgsign=false)
+$git init -q -b main
+print -r -- '# api
+
+A small HTTP service.' > $home/repos/api/README.md
+print -r -- 'export function greet(name: string): string {
+  return `Hello, ${name}`;
+}' > $home/repos/api/greet.ts
+$git add -A
+$git commit -q -m 'feat: greet'
+print -r -- 'export function greet(name: string, excited = false): string {
+  const greeting = `Hello, ${name}`;
+  return excited ? `${greeting}!` : greeting;
+}' > $home/repos/api/greet.ts
+$git commit -q -am 'feat(greet): excited greetings'
+print -r -- 'export function greet(name: string, excited = false): string {
+  const greeting = `Hello, ${name.trim()}`;
+  return excited ? `${greeting}!` : greeting;
+}
+
+export const farewell = (name: string) => `Bye, ${name}`;' > $home/repos/api/greet.ts
+
+# shell history: zsh's own (the up arrow, grey suggestions) and atuin's (C-r), imported from it
+local -i t=$(( EPOCHSECONDS - 86400 ))
+local cmd
+for cmd in 'brew upgrade' 'git status' 'nvim README.md' 'docker compose up -d' 'docker compose logs -f api' \
+  'npm run dev' 'npm test' 'gh pr create --fill' 'gh pr checks' 'rg TODO' 'fd -e md' 'git log --oneline -10' \
+  'kubectl get pods' 'curl -s localhost:8080/health | jq' 'git push' 'z api' 'lg'; do
+  print -r -- ": $(( t += 600 )):0;$cmd"
+done > $home/.zsh_history
+HOME=$home atuin import zsh > /dev/null 2>&1
+
+# zoxide: most used first
+for project in dotfiles api website notes; do
+  HOME=$home zoxide add $home/repos/$project
+done
+HOME=$home zoxide add $home/repos/dotfiles $home/repos/api

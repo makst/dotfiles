@@ -5,18 +5,24 @@
 # A prefix chord that a Ghostty keybind sends (keybind = super+d=text:\x01|) shows as that key, cmd+d, since
 # that's the one you'd press.
 # Python because it needs a pty in the middle of the input; zsh's zpty can't pass a terminal through.
-import fcntl, os, pty, re, select, signal, subprocess, sys, termios, tty
+import fcntl, os, pty, re, select, signal, subprocess, sys, termios, time, tty
 
 socket, ghostty, command = sys.argv[1], sys.argv[2], sys.argv[3:]
 
 NAMES = {0x1b: 'Esc', 0x0d: 'Enter', 0x09: 'Tab', 0x7f: 'BS', 0x20: 'Space'}
-ARROWS = {b'\x1b[A': 'Up', b'\x1b[B': 'Down', b'\x1b[C': 'Right', b'\x1b[D': 'Left'}
+# both forms: \x1bO… is what terminals send when a program asks for application cursor keys (zsh does)
+ARROWS = {s + d: name for s in (b'\x1b[', b'\x1bO')
+          for d, name in ((b'A', 'Up'), (b'B', 'Down'), (b'C', 'Right'), (b'D', 'Left'))}
 PREFIX = 0x01  # C-a, the prefix in config/tmux/tmux.conf
+# programs where every key is a command, so typed letters get badges too
+APPS = {'nvim', 'lazygit'}
 
 
 def name(data):
     if data in ARROWS:
         return ARROWS[data]
+    if len(data) == 2 and data[0] == 0x1b and 0x20 < data[1] < 0x7f:
+        return 'Alt+' + chr(data[1])
     if len(data) != 1:
         return None
     b = data[0]
@@ -34,6 +40,11 @@ for line in open(ghostty):
     if m:
         key = 'cmd+' + m[1].replace('digit_', '')
         GHOSTTY.setdefault(m[2].encode().decode('unicode_escape').encode('latin-1'), key)
+
+
+def pane_command():
+    return subprocess.run(['tmux', '-L', socket, 'display', '-p', '#{pane_current_command}'],
+                          capture_output=True, text=True).stdout.strip()
 
 
 def badge(key):
@@ -61,6 +72,8 @@ signal.signal(signal.SIGWINCH, resize)
 saved = termios.tcgetattr(sys.stdin)
 tty.setraw(sys.stdin)
 prefixed, typing = False, False
+# in APPS, letters typed in one go (VHS: Type ",e") share a badge
+word, last = '', 0.0
 try:
     while True:
         try:
@@ -83,12 +96,18 @@ try:
             if prefixed:
                 chord = bytes([PREFIX]) + data
                 show([GHOSTTY[chord]] if chord in GHOSTTY else ['C-a', key or '?'])
-                prefixed, typing = False, False
+                prefixed, typing, word = False, False, ''
             elif data[0] == PREFIX:
                 prefixed = True
             elif key and (len(key) > 1 or data[0] < 0x20) and key != 'Space':
                 show([key])
-                typing = False
+                typing, word = False, ''
+            elif key and pane_command() in APPS:
+                now = time.monotonic()
+                key = ' ' if key == 'Space' else key
+                word = word + key if word and now - last < 0.4 else key
+                last = now
+                show(['Space' if word == ' ' else word])
             elif not typing:
                 show([])
                 typing = True

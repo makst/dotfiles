@@ -18,6 +18,8 @@ Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, w
 
 Shell keys
 ---
+![C-t puts a picked file on the command line, **<Tab> completes a directory](img/fzf.gif)
+
 | Key | Action |
 |---|---|
 | `C-r` | search history with [atuin](zsh.md#history), put the chosen command on the command line |

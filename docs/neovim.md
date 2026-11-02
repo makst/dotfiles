@@ -46,6 +46,8 @@ Keys
 ---
 The leader is `,`. `;` starts the pickers.
 
+![;f finds a file, ,e opens the tree, C-h and C-l cross between nvim and a tmux pane](img/nvim.gif)
+
 ### Changed defaults
 
 These override built-in vim keys, which is easy to forget:

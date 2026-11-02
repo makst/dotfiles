@@ -175,17 +175,13 @@ function setup_tmux() {
 
 # make_gifs [tape…]: render the GIFs in docs/img from the VHS tapes in docs/tapes (all of them, or the ones
 # named, e.g. `make_gifs tmux-panes`). Each tape runs in the real tmux config with the Ghostty theme and font,
-# in a separate tmux server (docs/tapes/demo.tmux.conf), and docs/tapes/keycast shows the keys pressed under
-# the status bar. Rerun after changing a binding or the theme, and commit the GIFs.
+# in a separate tmux server (docs/tapes/demo.tmux.conf) and a made-up HOME (docs/tapes/demo-home), and
+# docs/tapes/keycast shows the keys pressed under the status bar. Rerun after changing a binding or the theme,
+# and commit the GIFs.
 function make_gifs() {
   local repo=$real_script_dir tmp tape name
   (( $+commands[vhs] )) || { print -u2 "make_gifs needs vhs (Brewfile)"; return 1 }
   tmp=$(mktemp -d) || return
-  # a HOME with only the plugins the demo needs; resurrect and continuum stay out
-  mkdir -p $tmp/home/.tmux/plugins $tmp/home/.config
-  ln -s ~/.tmux/plugins/{tpm,vim-tmux-navigator} $tmp/home/.tmux/plugins/
-  # tpm reads the plugin list from here
-  ln -s $repo/config/tmux $tmp/home/.config/tmux
 
   # the Ghostty theme as a VHS theme
   local -A c
@@ -209,6 +205,8 @@ function make_gifs() {
     name=${tape:t:r}
     print -P "%F{blue}=> $name%f"
     tmux -L demo kill-server 2> /dev/null
+    # a fresh HOME per tape, so one tape's history or changes don't show up in the next
+    $repo/docs/tapes/demo-home $tmp/$name $repo || return
     {
       print -r -- 'Set Shell zsh'
       print -r -- 'Set FontFamily "Source Code Pro, Symbols Nerd Font Mono"'
@@ -219,8 +217,12 @@ function make_gifs() {
       print -r -- 'Set TypingSpeed 80ms'
       print -r -- "Set Theme $theme"
       print -r -- 'Hide'
-      print -r -- "Type \"cd ${(q)repo} && REAL_HOME=\$HOME HOME=$tmp/home DOTFILES=\$PWD docs/tapes/keycast demo config/ghostty/config tmux -L demo -f docs/tapes/demo.tmux.conf new -s main\" Enter"
-      print -r -- 'Sleep 3s'
+      print -r -- "Type \"cd ${(q)repo} && HOME=$tmp/$name docs/tapes/keycast demo config/ghostty/config tmux -L demo -f docs/tapes/demo.tmux.conf new -s main -c $tmp/$name/dotfiles\" Enter"
+      # the first start in a new HOME sets up the prompt and plugins' caches
+      print -r -- 'Wait+Screen@30s /❯/'
+      # a first command lets tmux name the window after the shell; the caption for its Enter is cleared
+      print -r -- "Type \" clear; tmux set -g @keys ''\" Enter"
+      print -r -- 'Sleep 1s'
       print -r -- 'Show'
       cat $tape
     } > $tmp/$name.tape

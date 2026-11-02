@@ -74,6 +74,8 @@ bindings after it too.
 
 History
 ---
+![The up arrow searches by prefix, grey suggestions come from history, C-r opens atuin](img/zsh-history.gif)
+
 `~/.zsh_history` keeps 100 000 commands with timestamps, shared between all open shells, with duplicates
 removed (only the latest copy of a repeated command is kept). A command typed with a leading space isn't
 saved.
