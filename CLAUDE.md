@@ -39,6 +39,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   isn't obvious.
 - **Keys**: each layer owns its modifier (README, "How the keyboard is split"). Check for clashes with tmux,
   Ghostty, AeroSpace and nvim before binding anything.
+- **GIFs** in any Markdown file sit in a `<details>` toggle, closed by default, on the same page where they
+  belong; the `<summary>` is the image's alt text, word for word. Format in `docs/gifs.md`, "Adding one".
 - **Colours**: ANSI colour names, never hex, so starship, the Claude status line, tmux etc. follow the base16
   theme (`docs/theme.md`).
 - **Secrets** never go in the repo: `zsh/.private` and `config/nvim/lua/user/hidden/` are gitignored and

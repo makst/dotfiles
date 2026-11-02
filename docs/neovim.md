@@ -46,7 +46,12 @@ Keys
 ---
 The leader is `,`. `;` starts the pickers.
 
+<details>
+<summary>;f finds a file, ,e opens the tree, C-h and C-l cross between nvim and a tmux pane</summary>
+
 ![;f finds a file, ,e opens the tree, C-h and C-l cross between nvim and a tmux pane](img/nvim.gif)
+
+</details>
 
 ### Changed defaults
 

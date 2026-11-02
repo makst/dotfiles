@@ -4,7 +4,12 @@ GIFs
 The animations in these docs show what a key does. They're recorded from scripts, not by hand, so they can
 be made again whenever a binding or the colour scheme changes.
 
+<details>
+<summary>tmux panes</summary>
+
 ![tmux panes](img/tmux-panes.gif)
+
+</details>
 
 | GIF | In | Shows |
 |---|---|---|
@@ -52,7 +57,18 @@ Adding one
    in the session `main`, in `~/dotfiles` (the repo). See the
    [VHS commands](https://github.com/charmbracelet/vhs#vhs-command-reference).
 2. `make_gifs <name>` and look at the result. If the GIF needs more made-up data, add it to `demo-home`.
-3. Embed it next to the keys it shows, `![what it shows](img/<name>.gif)`, and add it to the table above.
+3. Embed it next to the keys it shows, in a toggle that's closed by default so the page reads as text until
+   you open it, and add it to the table above. The toggle's title is the image's alt text, word for word, with
+   `<`, `>` and `&` escaped, since `<summary>` is HTML:
+
+   ```markdown
+   <details>
+   <summary>what it shows</summary>
+
+   ![what it shows](img/<name>.gif)
+
+   </details>
+   ```
 
 Keep them short (around 15 s) and under ~1 MB, since every version stays in git.
 

@@ -65,7 +65,12 @@ lazygit
 way to stage hunks or single lines, write commits, rebase interactively, and browse branches and history.
 `?` shows the keys for the current panel.
 
+<details>
+<summary>git diff through delta, git dft through difftastic, then staging and committing in lazygit</summary>
+
 ![git diff through delta, git dft through difftastic, then staging and committing in lazygit](img/git.gif)
+
+</details>
 
 It uses lazygit's default config; nothing is customised here.
 
