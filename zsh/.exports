@@ -32,6 +32,16 @@ export PATH="$HOME/bin:$PATH"
 # also where uv puts python, python3 and tools installed with `uv tool install`
 export PATH="$HOME/.local/bin:$PATH"
 
+# Android: the SDK that Android Studio installs, so adb, the emulator and Gradle work from the shell and nvim.
+# Gradle needs a JDK; Android Studio's own is used unless JAVA_HOME is set already.
+if [[ -d ~/Library/Android/sdk ]]; then
+  export ANDROID_HOME=~/Library/Android/sdk
+  path+=($ANDROID_HOME/platform-tools $ANDROID_HOME/emulator $ANDROID_HOME/cmdline-tools/latest/bin)
+  _studio_jdk='/Applications/Android Studio.app/Contents/jbr/Contents/Home'
+  [[ -z ${JAVA_HOME:-} && -d $_studio_jdk ]] && export JAVA_HOME=$_studio_jdk
+  unset _studio_jdk
+fi
+
 # node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls), and cd into a
 # directory with .nvmrc / .node-version switches to that version. Not cached: it makes a link per shell.
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"

@@ -25,7 +25,7 @@ lazygit, `cmd+j` shows every session.
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
-| iOS apps | nvim (sourcekit-lsp, xcodebuild.nvim) next to Xcode | [mobile](docs/mobile.md) |
+| iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
 | GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
@@ -48,7 +48,7 @@ only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step do
 iOS projects
 ---
 Code is edited in nvim, Xcode stays open for previews, signing and debugging. More in
-[mobile](docs/mobile.md).
+[mobile](docs/mobile.md#ios).
 
 **Once per Mac**, after `setup_dotfiles` (which installs xcode-build-server, xcbeautify and swiftformat):
 
@@ -66,6 +66,54 @@ Code is edited in nvim, Xcode stays open for previews, signing and debugging. Mo
 2. `,ib` to build once, so sourcekit-lsp has an index: completion and go-to-definition work from then on.
 
 Then `,ir` builds and runs, `,it` runs the tests and `,io` opens the current line in Xcode.
+
+**To look out for:**
+- With only the Command Line Tools and no Xcode, sourcekit-lsp starts but crashes: no completion in Swift.
+- sourcekit-lsp learns about new files, targets and packages from a build: when go-to-definition misses
+  something new, `,ib` again.
+- `buildServer.json` and `.nvim/xcodebuild/` hold paths and choices of this Mac and aren't committed, so a
+  fresh clone (or another Mac) needs `,iS` again. `,is` / `,id` change the scheme or device later.
+- Swift is formatted on save only when the project has a `.swiftformat` or `.swift-format`; otherwise
+  nothing touches the style.
+- Breakpoints and the debugger are Xcode's: `,io`, then run with `cmd+r` there.
+
+Android projects
+---
+Code is edited in nvim, Android Studio stays open for layout previews, profiling and debugging. More in
+[mobile](docs/mobile.md#android).
+
+**Once per Mac**, after `setup_dotfiles` (which installs Android Studio, kotlin-lsp and ktlint):
+
+1. Open Android Studio and go through its setup wizard: it downloads the Android SDK into
+   `~/Library/Android/sdk`.
+2. In its Device Manager, create an emulator (or connect a phone with USB debugging on).
+3. Open a new shell and restart nvim, so they see the SDK: `adb devices` should work, and lists the phone
+   or a running emulator.
+4. Check kotlin-lsp in an Android project: open a `.kt` file, give the first Gradle import a minute, then
+   `gd` on a name should jump to its definition (`:checkhealth vim.lsp` shows the server if not).
+
+**Once per project**: nothing. Open nvim anywhere in it; the first time, kotlin-lsp imports the project
+through Gradle, so completion and go-to-definition take a minute to arrive.
+
+Then `,ae` starts an emulator, `,ar` builds, installs and launches the app, `,at` runs the unit tests, `,al`
+shows the app's logcat and `,ao` opens the current line in Android Studio.
+
+**To look out for:**
+- `adb`, the emulator and `JAVA_HOME` only exist once the SDK is installed: open a new shell and restart
+  nvim after Android Studio's setup.
+- Gradle from the shell uses Android Studio's own JDK, so both share one Gradle daemon. A project that
+  needs another JDK: set `JAVA_HOME` in `~/.config/dotfiles/zshrc`, and the same Gradle JDK in Android
+  Studio (Settings → Build Tools → Gradle), or two daemons build side by side.
+- After changing `build.gradle(.kts)` or the version catalog, `:lsp restart` makes kotlin-lsp import the
+  project again. kotlin-lsp is young: when it gets something wrong, `,ao` and use Android Studio.
+- The keys build the debug variant of the app module. Other flavours and tasks go through `,aa`, e.g.
+  `installFreeDebug`.
+- With a phone and an emulator connected at once, adb needs to be told which:
+  `export ANDROID_SERIAL=<id from adb devices>` before starting nvim.
+- `,al` follows the running app: launch it first (`,ar`), and again after it restarts.
+- Kotlin is formatted on save only when the project's `.editorconfig` sets up ktlint; projects on ktfmt or
+  spotless run `,aa` `spotlessApply`.
+- Breakpoints and the debugger are Android Studio's: `,ao`, then the debug button there.
 
 How the keyboard is split
 ---

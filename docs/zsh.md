@@ -11,7 +11,7 @@ How it loads
 
 | File | Contains |
 |---|---|
-| `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`), fnm, pager and colour settings |
+| `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`, the Android SDK's tools), fnm, pager and colour settings |
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide |
 | `zsh/.aliases` | aliases |
 | `zsh/.functions` | shell functions, including the whole install (`setup_dotfiles`) |

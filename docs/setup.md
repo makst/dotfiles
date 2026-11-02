@@ -122,8 +122,9 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
 6. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once). Secrets in
    `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in `config/nvim/lua/user/hidden/init.lua`;
    none of them is in git, each is loaded if it exists.
-   For iOS work, Xcode from the App Store, then `sudo xcode-select -s /Applications/Xcode.app`, see
-   [mobile](mobile.md#whats-needed).
+   For iOS work, Xcode from the App Store, then `sudo xcode-select -s /Applications/Xcode.app`; for Android
+   work, open Android Studio once so it installs the SDK. See [iOS](mobile.md#ios) and
+   [Android](mobile.md#android).
 
 For a fork, change the identity first: name and email in `config/git/.gitconfig`, the keys in
 `config/git/allowed_signers`, the repo URL above.

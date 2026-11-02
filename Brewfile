@@ -67,6 +67,9 @@ brew "go"
 brew "xcode-build-server"          # sourcekit-lsp in nvim understands Xcode projects, xcodebuild.nvim
 brew "xcbeautify"                  # readable xcodebuild output in nvim, xcodebuild.nvim
 brew "swiftformat"                 # formats Swift where a project has a .swiftformat, conform in nvim
+cask "android-studio"              # Android SDK, emulators, layout previews, debugging; `,ao` in nvim, zsh/.exports
+cask "kotlin-lsp"                  # Kotlin language server (JetBrains) in nvim, lsp/lspconfig/kotlin_lsp.lua
+brew "ktlint"                      # formats Kotlin where a project's .editorconfig sets up ktlint, conform in nvim
 
 # --- Apps
 cask "ghostty"

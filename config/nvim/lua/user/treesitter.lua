@@ -23,6 +23,9 @@ ts.install {
   'terraform',
   'helm',
   'swift',
+  'kotlin',
+  'groovy',
+  'xml',
 }
 
 vim.treesitter.language.register('tsx', 'typescript.tsx')
