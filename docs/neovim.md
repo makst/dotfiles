@@ -214,15 +214,16 @@ Or the built-in way: send matches to the quickfix list (`;r`, mark entries with 
 
 Languages
 ---
-**Language servers** are installed by Mason (`:Mason` shows them): TypeScript/JavaScript (`ts_ls` and
-`eslint`), Lua (`lua_ls`, aware of the nvim API), YAML (`yamlls`), Go (`gopls`). Swift and Objective-C use
-`sourcekit-lsp` from Xcode instead, Kotlin JetBrains' `kotlin-lsp` from the Brewfile; see [mobile](mobile.md),
-along with building and running iOS (`,i`) and Android (`,a`) apps. Each project's root is the git root, so a
-monorepo gets one server instance rather than one per package. Helm templates get syntax highlighting but no
-diagnostics, which would all be false alarms.
+**Language servers** come from the Brewfile, like every other tool, so `brew upgrade` updates them:
+TypeScript/JavaScript (`ts_ls` and `eslint`), Lua (`lua_ls`, aware of the nvim API), YAML (`yamlls`), Go
+(`gopls`), Kotlin (JetBrains' `kotlin-lsp`). `ts_ls` uses the project's own TypeScript from `node_modules`, so
+a lone `.ts` file outside a project gets no language server. Swift and Objective-C use `sourcekit-lsp` from
+Xcode; see [mobile](mobile.md), along with building and running iOS (`,i`) and Android (`,a`) apps. Each
+project's root is the git root, so a monorepo gets one server instance rather than one per package. Helm
+templates get syntax highlighting but no diagnostics, which would all be false alarms.
 
-To add a server: add it to `ensure_installed` in `lua/user/lsp/mason-lspconfig/config.lua`, add a file for
-it in `lua/user/lsp/lspconfig/` like the existing ones, and require it in that directory's `init.lua`.
+To add a server: add its formula to the `Brewfile`, add a file for it in `lua/user/lsp/lspconfig/` like the
+existing ones, and require it in that directory's `init.lua`.
 Servers aren't enabled automatically, so the last step matters.
 
 **Treesitter parsers** (highlighting, indentation, treewalker) are listed in `lua/user/treesitter.lua` and

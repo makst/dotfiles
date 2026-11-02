@@ -1,7 +1,4 @@
--- order of mason->mason-lspconfig->lspconfig is important
--- https://github.com/williamboman/mason-lspconfig.nvim#setup
-require('user.lsp.mason')
-require('user.lsp.mason-lspconfig')
+-- The language servers themselves come from the Brewfile, so they are on PATH; lspconfig only configures them.
 require('user.lsp.lspconfig')
 
 -- then set up everything else

@@ -36,6 +36,11 @@ brew "fd"
 brew "glow"                        # mdv, zsh/.functions: renders markdown in the terminal
 brew "ripgrep"
 brew "neovim"                      # setup_nvim, config/nvim
+brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua
+brew "typescript-language-server"  # TypeScript/JavaScript language server in nvim, lsp/lspconfig/ts_ls.lua
+brew "vscode-langservers-extracted" # ESLint language server in nvim, lsp/lspconfig/eslint.lua
+brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig/yamlls.lua
+brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
 brew "tree-sitter"
 brew "tree-sitter-cli"            # compiles the nvim treesitter parsers
 brew "lazygit"                     # `lg` alias

@@ -40,7 +40,7 @@ Swift packages (`Package.swift`) need neither step for the language server. Then
 `,it` runs the tests and `,io` opens the current line in Xcode.
 
 ### In nvim
-- **Language server**: `sourcekit-lsp`, which comes with Xcode, so not with Mason. It handles Swift and
+- **Language server**: `sourcekit-lsp`, which comes with Xcode, so not from the Brewfile. It handles Swift and
   Objective-C; C and C++ are left out so it doesn't start in other projects. Its root is the nearest
   `buildServer.json`, `.xcodeproj` or `Package.swift`, not the git root, so each app in a repo is its own
   project.

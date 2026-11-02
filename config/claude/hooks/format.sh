@@ -1,13 +1,12 @@
 #!/bin/zsh
 # PostToolUse on Edit|Write: format the file Claude just changed with the language's usual formatter, if it's
-# installed (on PATH, in the project's node_modules or in nvim's Mason). Formatters with style options run
-# only in projects that configure them (prettier, ruff, stylua, shfmt through .editorconfig), so other
-# people's projects keep their own style; gofmt has none. Failures never block Claude.
+# installed (on PATH or in the project's node_modules). Formatters with style options run only in projects
+# that configure them (prettier, ruff, stylua, shfmt through .editorconfig), so other people's projects keep
+# their own style; gofmt has none. Failures never block Claude.
 
 file=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty')
 [[ -f $file ]] || exit 0
 dir=${file:h}
-path+=(~/.local/share/nvim/mason/bin)
 
 # up_find <names...>: the nearest of these files in the file's directory or above it
 up_find() {
