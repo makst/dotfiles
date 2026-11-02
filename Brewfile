@@ -63,6 +63,10 @@ brew "graphviz"
 brew "dockutil"
 brew "go"
 
+# --- Debugging, docs/debugging.md
+cask "visual-studio-code"          # the visual debugger for backends and the web, setup_vscode, `,vo` in nvim
+brew "delve"                       # Go debugger, used by VS Code's Go extension
+
 # --- Mobile development, docs/mobile.md (Xcode itself comes from the App Store)
 brew "xcode-build-server"          # sourcekit-lsp in nvim understands Xcode projects, xcodebuild.nvim
 brew "xcbeautify"                  # readable xcodebuild output in nvim, xcodebuild.nvim

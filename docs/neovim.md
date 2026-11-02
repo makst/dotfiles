@@ -258,5 +258,8 @@ Integrations
   tmux; focus events trigger the reload of changed files.
 - **Theme**: the colour scheme is a base16 one shared with Ghostty, switched with `change_theme`, see
   [theme](theme.md).
+- **Debugging**: `,vo` opens the current file and line in VS Code, in the project's window, to set
+  breakpoints and debug there, see [debugging](debugging.md). Xcode (`,io`) and Android Studio (`,ao`) do the
+  same for apps, see [mobile](mobile.md).
 - **Status line** (lualine, one for all splits): mode, git branch and diff counts, path relative to the
   working directory, diagnostics, active language servers, position.

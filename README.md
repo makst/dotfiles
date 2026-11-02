@@ -26,6 +26,7 @@ lazygit, `cmd+j` shows every session.
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
+| Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
 | GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
@@ -116,6 +117,30 @@ shows the app's logcat and `,ao` opens the current line in Android Studio.
   spotless run `,aa` `spotlessApply`.
 - Breakpoints and the debugger are Android Studio's: `,ao`, then the debug button there.
 
+Debugging
+---
+Code is edited in nvim; VS Code is the visual debugger for backends and the web (Go, Node and TypeScript, the
+browser, Python), on workspace 7 (`alt+7`), on the second display if there is one. iOS and Android apps are
+debugged in Xcode and Android Studio (above). More in [debugging](docs/debugging.md).
+
+**Once per Mac**: nothing beyond `setup_dotfiles`, which installs VS Code, delve and the extensions.
+
+**Once per project**: a `.vscode/launch.json` that says how to start or attach to the program. In VS Code,
+Run and Debug → *create a launch.json file* writes one for the language; many projects already have one.
+
+Then `,vo` in nvim opens the current line in VS Code, click left of the line number for a breakpoint, `F5`
+starts debugging.
+
+**To look out for:**
+- VS Code saves when you leave it, and nvim reloads the file when you come back, so the two don't fight;
+  still, edit a file in one at a time.
+- Settings changed in VS Code's UI are written to `config/vscode/settings.json` in this repo: commit them or
+  undo them. New extensions go in `config/vscode/extensions.txt`, or another Mac won't get them.
+- VS Code doesn't format on save; nvim does, with the project's formatter.
+- Backends in containers (podman): the program has to listen for a debugger (e.g. `dlv --headless`,
+  `node --inspect=0.0.0.0`, `debugpy --listen`) with the port published, and `launch.json` *attaches* to it.
+- Its colours are One Dark Pro, close to the base16 scheme but not switched by `change_theme`.
+
 How the keyboard is split
 ---
 Every tool owns its own modifier, so the layers don't fight over keys:
@@ -169,6 +194,7 @@ config/starship.toml      prompt
 config/git/.gitconfig     git
 config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
+config/vscode/            VS Code, the debugger: settings and the extensions to install
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it

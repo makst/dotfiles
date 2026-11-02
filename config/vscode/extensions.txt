@@ -1,0 +1,7 @@
+# VS Code extensions setup_vscode installs (docs/debugging.md). JavaScript and TypeScript debugging, in Node
+# and in Chrome, is built into VS Code.
+golang.go                   # Go: debugging through delve (Brewfile)
+ms-python.python            # Python, brings Pylance (completion) with it
+ms-python.debugpy           # Python debugging
+vscodevim.vim               # vim keys, for the edits made while debugging
+zhuangtongfa.material-theme # One Dark Pro, close to the base16-onedark scheme of nvim and Ghostty

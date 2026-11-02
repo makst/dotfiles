@@ -1,0 +1,12 @@
+{
+  "workbench.colorTheme": "One Dark Pro",
+  "workbench.startupEditor": "none",
+  "editor.fontFamily": "Source Code Pro",
+  "terminal.integrated.fontFamily": "Source Code Pro",
+  "editor.formatOnSave": false,
+  "files.autoSave": "onFocusChange",
+  "debug.toolBarLocation": "docked",
+  "debug.openDebug": "openOnDebugBreak",
+  "go.toolsManagement.autoUpdate": true,
+  "telemetry.telemetryLevel": "off"
+}
