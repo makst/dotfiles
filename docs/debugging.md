@@ -9,8 +9,10 @@ apps are debugged in Xcode and Android Studio instead, see [mobile](mobile.md).
 VS Code isn't a second editor here: it opens on workspace 7, on the second display when there are two (see
 [window management](window-management.md#layout)), and nvim's `,vo` takes you to the same line in it.
 
-What's installed
+Once per Mac
 ---
+Nothing beyond `setup_dotfiles`, which does the following.
+
 - **VS Code** and **delve** (the Go debugger) from the Brewfile.
 - `setup_vscode` (part of `setup_dotfiles`) links `config/vscode/settings.json` into VS Code and installs the
   extensions in `config/vscode/extensions.txt`: Go, Python and its debugger, vim keys (set up like nvim's,
@@ -21,7 +23,7 @@ What's installed
   writes settings changed in its UI straight into the repo's file, which has no comments as `check_dotfiles`
   parses it as plain JSON.
 
-Setting up a project
+Once per project
 ---
 VS Code needs a `.vscode/launch.json` in the project saying how to start the program, or how to attach to
 one that is running. Many projects have one already. Otherwise, in VS Code: Run and Debug (`cmd+shift+d`)
@@ -53,6 +55,9 @@ waits for a debugger (`dlv debug --headless --listen=:2345`, `node --inspect=0.0
 Whether `.vscode/` is committed is the project's choice: a shared `launch.json` helps everyone, but some
 projects ignore the whole directory.
 
+Then `,vo` in nvim opens the current line in VS Code, click left of the line number for a breakpoint, `F5`
+starts debugging.
+
 Keys
 ---
 In nvim:
@@ -76,11 +81,16 @@ breakpoint, `,ds` start, `,dc` continue, `,dn` / `,di` / `,du` step over / into 
 
 Right-click a breakpoint for a condition or a hit count; a *logpoint* prints a message instead of stopping.
 
-Good to know
+To look out for
 ---
 - **Edit in one place at a time.** VS Code saves when you leave it and nvim reloads changed files when you
   come back, but a file with unsaved changes in both still means one side's changes get lost.
 - **Breakpoints in VS Code don't move when nvim edits the file.** After a big edit, check them.
 - **Colours**: VS Code can't use the terminal's ANSI colours, so it has its own theme, One Dark Pro, close to
   the base16 scheme; `change_theme` doesn't switch it.
-- **A new extension** goes in `config/vscode/extensions.txt` too, so `setup_vscode` installs it on every Mac.
+- **Settings changed in VS Code's UI** land in `config/vscode/settings.json` in this repo: commit them or
+  undo them. **A new extension** goes in `config/vscode/extensions.txt` too, so `setup_vscode` installs it
+  on every Mac.
+- **VS Code doesn't format on save**; nvim does, with the project's formatter.
+- **Backends in containers** (podman): the program has to listen for a debugger with the port published,
+  and `launch.json` *attaches* to it (see Once per project).
