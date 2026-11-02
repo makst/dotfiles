@@ -5,7 +5,9 @@ The animations in these docs show what a key does. They're recorded from scripts
 be made again whenever a binding or the colour scheme changes.
 
 <details>
-<summary>tmux panes</summary>
+<summary>Show GIF</summary>
+
+Splitting, moving between and zooming panes, then a new window.
 
 ![tmux panes](img/tmux-panes.gif)
 
@@ -57,15 +59,17 @@ Adding one
    in the session `main`, in `~/dotfiles` (the repo). See the
    [VHS commands](https://github.com/charmbracelet/vhs#vhs-command-reference).
 2. `make_gifs <name>` and look at the result. If the GIF needs more made-up data, add it to `demo-home`.
-3. Embed it next to the keys it shows, in a toggle that's closed by default so the page reads as text until
-   you open it, and add it to the table above. The toggle's title is the image's alt text, word for word, with
-   `<`, `>` and `&` escaped, since `<summary>` is HTML:
+3. Embed it next to the keys it shows, in a toggle that's closed by default, and add it to the table above.
+   The toggle's title is always `Show GIF`, so every page marks a GIF the same way; inside, one short line
+   says what it shows (keys in backticks), and the image's alt text says the same in plain text:
 
    ```markdown
    <details>
-   <summary>what it shows</summary>
+   <summary>Show GIF</summary>
 
-   ![what it shows](img/<name>.gif)
+   `C-t` does this, `C-r` does that.
+
+   ![C-t does this, C-r does that](img/<name>.gif)
 
    </details>
    ```

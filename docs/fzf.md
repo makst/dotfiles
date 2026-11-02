@@ -18,7 +18,9 @@ Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, w
 Shell keys
 ---
 <details>
-<summary>C-t puts a picked file on the command line, **&lt;Tab&gt; completes a directory</summary>
+<summary>Show GIF</summary>
+
+`C-t` puts a picked file on the command line, `**<Tab>` completes a directory.
 
 ![C-t puts a picked file on the command line, **<Tab> completes a directory](img/fzf.gif)
 

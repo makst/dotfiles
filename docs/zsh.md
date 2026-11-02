@@ -75,7 +75,9 @@ bindings after it too.
 History
 ---
 <details>
-<summary>The up arrow searches by prefix, grey suggestions come from history, C-r opens atuin</summary>
+<summary>Show GIF</summary>
+
+The up arrow searches by prefix, grey suggestions come from history, `C-r` opens atuin.
 
 ![The up arrow searches by prefix, grey suggestions come from history, C-r opens atuin](img/zsh-history.gif)
 

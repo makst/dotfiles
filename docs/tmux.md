@@ -21,7 +21,9 @@ The prefix is `C-a` (with Caps Lock as Ctrl, that's a left-hand roll). Press it 
 `C-a` to the program. The `cmd` column is what Ghostty sends for you, see [ghostty](ghostty.md).
 
 <details>
-<summary>Splitting, moving between and zooming panes, then a new window</summary>
+<summary>Show GIF</summary>
+
+Splitting, moving between and zooming panes, then a new window.
 
 ![Splitting, moving between and zooming panes, then a new window](img/tmux-panes.gif)
 
@@ -56,7 +58,14 @@ Session picker
 zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there
 named after it, or switches to it if it exists. Outside tmux, `tm` attaches.
 
-![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+] switches sessions](img/tmux-sessions.gif)
+<details>
+<summary>Show GIF</summary>
+
+`cmd+k` opens a project as a session, `cmd+j` shows the tree, `cmd+shift+]` switches sessions.
+
+![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+\] switches sessions](img/tmux-sessions.gif)
+
+</details>
 
 So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#navigation).
 
