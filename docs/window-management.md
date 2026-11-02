@@ -18,6 +18,13 @@ windows are three columns. There is no automatic halving as in yabai; nested lay
 padding. System Settings, Archive Utility and NordVPN float, and so does the bar Chrome, Brave or Firefox
 shows while sharing the screen (Google Meet and the like).
 
+Mobile IDEs get workspaces of their own, so nvim and the shells keep theirs: Xcode opens on workspace 8 with
+the iOS Simulator floating over it, Android Studio on 9 with the Android emulator floating over it (see
+[mobile](mobile.md)). With two displays, 8 and 9 always show on the one that isn't the main display (System
+Settings → Displays → *Use as*), so the IDE sits on one screen and nvim on the other. `alt+8` / `alt+9` go
+there, and `,io` / `,ao` in nvim switch to it as well, since AeroSpace follows the app that comes to the
+front. `shift+alt+tab` doesn't move these two workspaces: they are pinned.
+
 Workspaces 1–9 are AeroSpace's, not macOS Spaces: windows on other workspaces are moved just off screen.
 Leave macOS on a single Space per display. `setup_window_management` also turns on *Group windows by
 application* (Mission Control shows those off-screen windows too small otherwise) and lets `ctrl+cmd` and a
@@ -71,4 +78,8 @@ Good to know
 - **Screen sharing**: share a single window or tab rather than the whole screen; then switching workspaces
   doesn't change what others see. If a sharing bar still takes a tile (some set their title late), `alt+t`
   floats it.
+- **The IDE opened on another workspace**: the rules only act on new windows. A window that was open
+  before AeroSpace started stays where it was: `shift+alt+8` / `shift+alt+9` moves it.
+- **The IDE should be on the main display**: change `'secondary'` to `'main'` under
+  `[workspace-to-monitor-force-assignment]` in the config.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.

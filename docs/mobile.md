@@ -7,6 +7,10 @@ profilers, the debugger. Building, running on a simulator or emulator and runnin
 Both edit the same files on disk and each picks up the other's changes (nvim when you come back to it, the
 IDE on its own).
 
+AeroSpace puts Xcode on workspace 8 and Android Studio on 9, each with its simulator or emulator floating on
+top; with two displays both workspaces stay on the second one, so nvim and the IDE are side by side on
+different screens (`alt+8`, `alt+9`). See [window management](window-management.md#layout).
+
 iOS
 ---
 

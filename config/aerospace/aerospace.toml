@@ -36,7 +36,20 @@ on-window-detected = [
   { if.app-id = 'com.google.Chrome', if.window-title-regex-substring = 'is sharing (your screen|a window|this tab)', run = 'layout floating' },
   { if.app-id = 'com.brave.Browser', if.window-title-regex-substring = 'is sharing (your screen|a window|this tab)', run = 'layout floating' },
   { if.app-id = 'org.mozilla.firefox', if.window-title-regex-substring = 'Sharing Indicator', run = 'layout floating' },
+  # mobile IDEs on workspaces of their own (docs/mobile.md): Xcode on 8, Android Studio on 9, each with its
+  # simulator or emulator floating on top, so nvim keeps its workspace
+  { if.app-id = 'com.apple.dt.Xcode', run = 'move-node-to-workspace 8' },
+  { if.app-id = 'com.apple.iphonesimulator', run = ['layout floating', 'move-node-to-workspace 8'] },
+  { if.app-id = 'com.google.android.studio', run = 'move-node-to-workspace 9' },
+  # the Android emulator started on its own (`,ae` in nvim, `emulator -avd`) is a qemu process, no bundle id
+  { if.app-name-regex-substring = '^qemu-system', run = ['layout floating', 'move-node-to-workspace 9'] },
 ]
+
+# 8 and 9 stay on the display that isn't the main one (System Settings → Displays → "Use as"), with two
+# displays; with one, there is nowhere else for them
+[workspace-to-monitor-force-assignment]
+8 = 'secondary'
+9 = 'secondary'
 
 # All on Option (Alt), as with yabai before. AeroSpace takes these system-wide, so Alt+h/j/k/l and Alt+digit
 # don't reach nvim or zsh.

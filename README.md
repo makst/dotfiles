@@ -47,8 +47,8 @@ only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step do
 
 iOS projects
 ---
-Code is edited in nvim, Xcode stays open for previews, signing and debugging. More in
-[mobile](docs/mobile.md#ios).
+Code is edited in nvim, Xcode stays open for previews, signing and debugging. Xcode and the Simulator open
+on workspace 8 (`alt+8`), on the second display if there is one. More in [mobile](docs/mobile.md#ios).
 
 **Once per Mac**, after `setup_dotfiles` (which installs xcode-build-server, xcbeautify and swiftformat):
 
@@ -79,7 +79,8 @@ Then `,ir` builds and runs, `,it` runs the tests and `,io` opens the current lin
 
 Android projects
 ---
-Code is edited in nvim, Android Studio stays open for layout previews, profiling and debugging. More in
+Code is edited in nvim, Android Studio stays open for layout previews, profiling and debugging. Android
+Studio and the emulator open on workspace 9 (`alt+9`), on the second display if there is one. More in
 [mobile](docs/mobile.md#android).
 
 **Once per Mac**, after `setup_dotfiles` (which installs Android Studio, kotlin-lsp and ktlint):
