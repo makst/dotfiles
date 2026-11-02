@@ -4,9 +4,12 @@
 # and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux.
 
 sessions=(${(f)"$(tmux list-sessions -F '#S' 2> /dev/null)"})
-choice=$({ print -rl -- $sessions; zoxide query --list } \
+# directories under $HOME are listed as ~/…, shorter to read; the choice is expanded back
+dirs=(${(f)"$(zoxide query --list)"})
+choice=$({ print -rl -- $sessions ${dirs/#$HOME/\~} } \
   | fzf --reverse --no-sort --prompt 'session> ' --header 'running sessions, then zoxide directories')
 [[ -z $choice ]] && exit 0
+choice=${choice/#\~/$HOME}
 
 if (( ${sessions[(Ie)$choice]} )); then
   target=$choice
