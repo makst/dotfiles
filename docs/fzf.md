@@ -18,7 +18,7 @@ Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, w
 Shell keys
 ---
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 `C-t` puts a picked file on the command line, `**<Tab>` completes a directory.
 

@@ -4,6 +4,17 @@ dotfiles
 A keyboard-driven macOS development setup for Apple silicon. Ghostty opens straight into tmux, tmux holds
 the shells, nvim sessions and Claude Code agents, and one base16 colour scheme is shared by all of them.
 
+<details>
+<summary><b>Show GIF</b></summary>
+
+A quick tour: `cmd+k` opens a project as a session, `git diff` through delta, `;f` finds a file in nvim,
+`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `lg` opens lazygit, `cmd+j` shows every
+session.
+
+![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, lg opens lazygit, cmd+j shows every session](docs/img/tour.gif)
+
+</details>
+
 | Layer | Tool | Docs |
 |---|---|---|
 | Install and update | Homebrew (`Brewfile`), `setup_dotfiles` | [setup](docs/setup.md) |

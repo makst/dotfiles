@@ -66,7 +66,7 @@ way to stage hunks or single lines, write commits, rebase interactively, and bro
 `?` shows the keys for the current panel.
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 `git diff` through delta, `git dft` through difftastic, then staging and committing in lazygit.
 

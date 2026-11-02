@@ -21,7 +21,7 @@ The prefix is `C-a` (with Caps Lock as Ctrl, that's a left-hand roll). Press it 
 `C-a` to the program. The `cmd` column is what Ghostty sends for you, see [ghostty](ghostty.md).
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 Splitting, moving between and zooming panes, then a new window.
 
@@ -59,7 +59,7 @@ zoxide knows, most used first, those in your home as `~/…`. Choosing a directo
 named after it, or switches to it if it exists. Outside tmux, `tm` attaches.
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 `cmd+k` opens a project as a session, `cmd+j` shows the tree, `cmd+shift+]` switches sessions.
 

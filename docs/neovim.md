@@ -47,7 +47,7 @@ Keys
 The leader is `,`. `;` starts the pickers.
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 `;f` finds a file, `,e` opens the tree, `C-h` and `C-l` cross between nvim and a tmux pane.
 

@@ -40,7 +40,7 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - **Keys**: each layer owns its modifier (README, "How the keyboard is split"). Check for clashes with tmux,
   Ghostty, AeroSpace and nvim before binding anything.
 - **GIFs** in any Markdown file sit in a `<details>` toggle, closed by default, where they belong on the page.
-  The `<summary>` is always `Show GIF`; inside, one short line says what the GIF shows, then the image.
+  The `<summary>` is always `<b>Show GIF</b>`; inside, one short line says what the GIF shows, then the image.
   Format in `docs/gifs.md`, "Adding one".
 - **Colours**: ANSI colour names, never hex, so starship, the Claude status line, tmux etc. follow the base16
   theme (`docs/theme.md`).

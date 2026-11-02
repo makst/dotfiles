@@ -6,7 +6,7 @@ other's way, and so you notice when one of them needs you. Claude Code's own set
 hooks are in `config/claude`, see [Config](#config).
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 `agent` starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, `cmd+j` jumps there, then merge and `agent_done`.
 

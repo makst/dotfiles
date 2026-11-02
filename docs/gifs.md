@@ -5,7 +5,7 @@ The animations in these docs show what a key does. They're recorded from scripts
 be made again whenever a binding or the colour scheme changes.
 
 <details>
-<summary>Show GIF</summary>
+<summary><b>Show GIF</b></summary>
 
 Splitting, moving between and zooming panes, then a new window.
 
@@ -15,6 +15,7 @@ Splitting, moving between and zooming panes, then a new window.
 
 | GIF | In | Shows |
 |---|---|---|
+| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, panes, lazygit, the session tree |
 | `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
 | `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, switching sessions |
 | `zsh-history` | [zsh](zsh.md#history) | prefix search with the up arrow, grey suggestions, atuin |
@@ -60,12 +61,12 @@ Adding one
    [VHS commands](https://github.com/charmbracelet/vhs#vhs-command-reference).
 2. `make_gifs <name>` and look at the result. If the GIF needs more made-up data, add it to `demo-home`.
 3. Embed it next to the keys it shows, in a toggle that's closed by default, and add it to the table above.
-   The toggle's title is always `Show GIF`, so every page marks a GIF the same way; inside, one short line
-   says what it shows (keys in backticks), and the image's alt text says the same in plain text:
+   The toggle's title is always a bold `Show GIF`, so every page marks a GIF the same way and it stands out;
+   inside, one short line says what it shows (keys in backticks), and the alt text says the same in plain text:
 
    ```markdown
    <details>
-   <summary>Show GIF</summary>
+   <summary><b>Show GIF</b></summary>
 
    `C-t` does this, `C-r` does that.
 
