@@ -101,8 +101,7 @@ Telescope pickers (`;` + letter):
 | `;;` or `;c` | reopen the last picker with its query and results (the last 100 are kept) |
 
 In a picker: `C-s` sends the marked entries to the quickfix list and opens it, `q` closes it in normal
-mode. In `;f` and `;g`, `t` in normal mode shows the file read-only in a side terminal (meant for the
-offline cheatsheets in `~/cheatsheets`).
+mode. In `;f` and `;g`, `t` in normal mode shows the file read-only in a side terminal.
 
 Other ways around:
 

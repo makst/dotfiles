@@ -37,7 +37,7 @@ visited in this shell. Typing a directory name alone `cd`s into it.
 Start-up speed
 ---
 - **No framework.** Oh My Zsh cost more than everything else together (its update check alone ~30 ms).
-- **Tool setup is cached.** `starship init`, `zoxide init`, `fzf --zsh`, `atuin init`, `navi widget`,
+- **Tool setup is cached.** `starship init`, `zoxide init`, `fzf --zsh`, `atuin init`,
   vivid's colours and lesspipe print shell code; `cached_eval` (in `.zshrc`) keeps that output in
   `~/.cache/zsh` and only reruns the tool when it was upgraded. fnm is the exception: it makes a link per
   shell. Homebrew's environment is written out instead of running `brew shellenv`.
@@ -69,7 +69,7 @@ block in normal mode.
 | `C-k` / `C-j` | normal | the same, on the home row (outside tmux; inside tmux these keys move between panes) |
 | `C-r` | insert | history search (atuin) |
 
-`bindkey -v` resets the main keymap, so fzf's, navi's and atuin's widgets are loaded after it. Put new key
+`bindkey -v` resets the main keymap, so fzf's and atuin's widgets are loaded after it. Put new key
 bindings after it too.
 
 History

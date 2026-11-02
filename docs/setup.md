@@ -28,7 +28,6 @@ Each step is a function you can also run on its own:
 | `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile) |
 | `fzf_setup` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time |
-| `navi_data_dir_setup` | makes the cheatsheets in `data_dir/navi/cheats` visible to navi |
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
@@ -79,7 +78,6 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.config/tmux/` | `config/tmux/` |
 | `~/.config/nvim/` | `config/nvim/` |
 | `~/.config/ghostty/config`, `themes/` | `config/ghostty/…` |
-| `~/Library/Application Support/navi/cheats/makst_cheats` | `data_dir/navi/cheats/` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
 
@@ -158,4 +156,3 @@ Other helpers
 - `mac_keys` lists which keys belong to which Mac; `retire_mac <name>` revokes one Mac's keys (see
   [Retiring a Mac](#retiring-a-mac)).
 - `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
-- `sync_cheatsh` downloads the whole cheat.sh catalogue to `~/cheatsheets` for offline use (takes 15–20 min).

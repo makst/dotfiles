@@ -10,7 +10,7 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 | Terminal | Ghostty | [ghostty](docs/ghostty.md) |
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
-| Fuzzy finding | fzf, fzf-tab, fd, bat, eza, navi | [fzf](docs/fzf.md) |
+| Fuzzy finding | fzf, fzf-tab, fd, bat, eza | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
@@ -47,7 +47,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
 | `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
 | `jj` | leave insert mode, in nvim and in zsh | |
-| `C-r` / `C-t` / `C-g` | atuin history, fzf files, navi cheatsheets, in zsh | |
+| `C-r` / `C-t` | atuin history, fzf files, in zsh | |
 
 Switching sessions and windows
 ---
@@ -88,7 +88,6 @@ config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
-data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```

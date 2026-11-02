@@ -30,35 +30,6 @@ function change_theme() {
 }
 
 # -------------------------
-# CHEATSHEETS 
-# -------------------------
-
-# Takes ~15-20 min to sync the full catalog
-function sync_cheatsh() {
-  mkdir -p ~/cheatsheets/cheatsh/
-  
-  # get a list with all cheatsheets
-  curl -s cheat.sh/:list --output ~/cheatsheets/cheatsh/list
-
-  while IFS= read -r line; do
-    chsh_req=$line
-    file_name=$(echo "$line" | sed -E 's/[^[:alnum:][:space:]]/_/g')
-    curl -s cheat.sh/$chsh_req --output ~/cheatsheets/cheatsh/$file_name
-  done < ~/cheatsheets/cheatsh/list
-
-  echo "Done syncing cheat.sh"
-}
-
-function sync_learnx_in_y_minutes() {
-  mkdir -p ~/cheatsheets/learnxinyminutes/
-}
-
-function sync_cheatsheets() {
-  sync_cheatsh
-  sync_learnx_in_y_minutes
-}
-
-# -------------------------
 # INSTALL / SETUP FUNCTIONS
 # -------------------------
 
@@ -84,11 +55,6 @@ function fzf_setup() {
   # fzf, eza (improved file/directory listing), bat (cat with syntax highlighting) and
   # lesspipe (display more with less) come from the Brewfile
   ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
-}
-
-function navi_data_dir_setup() {
-  mkdir -p "$HOME/Library/Application Support/navi/cheats"
-  ln -sfn "$real_script_dir/data_dir/navi/cheats" "$HOME/Library/Application Support/navi/cheats/makst_cheats"
 }
 
 function npm_setup() {
@@ -574,7 +540,7 @@ function setup_dotfiles() {
   setup_machine || return
   local step
   local -a failed
-  for step in brew_setup fzf_setup setup_atuin navi_data_dir_setup npm_setup setup_python setup_ssh \
+  for step in brew_setup fzf_setup setup_atuin npm_setup setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude remap_keys setup_macos_defaults \
     setup_window_management; do
     print -P "%F{blue}=> $step%f"

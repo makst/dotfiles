@@ -98,7 +98,6 @@ add-zle-hook-widget line-finish _vi_cursor_block
 
 # -- widgets and plugins that wrap them ------------------------------------------
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-cached_eval navi navi widget zsh
 # after fzf, so C-r is atuin's; the up arrow stays the prefix search above, `?` stays a plain character
 cached_eval atuin atuin init zsh --disable-up-arrow --disable-ai
 # fzf also took C-r in normal mode; there it's redo, as in vim (atuin's search is `/`)

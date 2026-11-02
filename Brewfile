@@ -32,7 +32,6 @@ brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"
 brew "lesspipe"                    # zsh/.exports
-brew "navi"                        # zsh/.zshdefault widget, data_dir/navi
 brew "fd"
 brew "ripgrep"
 brew "neovim"                      # setup_nvim, config/nvim
@@ -102,3 +101,4 @@ instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(mach
 # cask "skype"           # discontinued by Microsoft
 # cask "qownnotes"
 # cask "gifcapture"
+# brew "navi"            # cheatsheets on C-g; atuin, tldr and Claude Code cover it
