@@ -33,6 +33,7 @@ brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"
 brew "lesspipe"                    # zsh/.exports
 brew "fd"
+brew "glow"                        # mdv, zsh/.functions: renders markdown in the terminal
 brew "ripgrep"
 brew "neovim"                      # setup_nvim, config/nvim
 brew "tree-sitter"

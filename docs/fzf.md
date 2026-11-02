@@ -11,6 +11,7 @@ completions, tmux sessions, colour schemes. A few small tools feed it or show it
 | [bat](https://github.com/sharkdp/bat) | file previews with syntax highlighting |
 | [eza](https://github.com/eza-community/eza) | directory previews as a tree |
 | [ripgrep](https://github.com/BurntSushi/ripgrep) | content search (`fif`, nvim) |
+| [glow](https://github.com/charmbracelet/glow) | renders markdown in the terminal for `mdv` |
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 
 Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
@@ -58,6 +59,13 @@ Every `Tab` completion opens in fzf instead of zsh's menu: type to filter, `Ente
 - Completions are grouped (commands, aliases, files, …); `,` and `.` switch groups.
 - `cd <Tab>` previews each directory's contents.
 - Files are coloured like `ls`.
+
+Markdown (mdv)
+---
+`mdv [dir]` picks a markdown file under `dir` (default: the current directory) with fzf and opens it rendered
+in glow's pager. The preview pane shows the rendered file as you move through the list. Only one file can be
+picked, and `q` leaves the pager. Glow uses its own dark style, not the base16 theme, so its colours differ
+from the rest of the terminal.
 - `git checkout <Tab>` keeps git's own order (recent branches first) instead of sorting.
 
 Find in files

@@ -57,6 +57,17 @@ function fzf_setup() {
   ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
 }
 
+# mdv [dir]: pick a markdown file under dir (default: here) and read it rendered in glow's pager.
+# The preview pane shows the rendered file while you move through the list. Single pick only,
+# so a stray Tab can't pass several files to glow.
+#   mdv
+#   mdv docs
+function mdv() {
+  local file
+  file=$(fd --extension md . "${1:-.}" | fzf --no-multi --preview 'glow -s dark {}') || return
+  glow -p "$file"
+}
+
 function npm_setup() {
   # node comes from fnm (Brewfile, zsh/.exports)
   fnm install --lts
