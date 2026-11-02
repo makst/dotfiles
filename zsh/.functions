@@ -147,7 +147,9 @@ function setup_tmux() {
 function make_gifs() {
   local repo=$real_script_dir tmp tape name
   (( $+commands[vhs] )) || { print -u2 "make_gifs needs vhs (Brewfile)"; return 1 }
-  tmp=$(mktemp -d) || return
+  # resolved, since mktemp's path runs through the /var symlink; programs that show paths relative to HOME
+  # (Claude Code's header) would show the long resolved one instead of ~/…
+  tmp=$(mktemp -d) && tmp=${tmp:A} || return
 
   # the Ghostty theme as a VHS theme
   local -A c
@@ -269,7 +271,10 @@ function agent_done() {
     for wt in $root/*(N/); do
       branch=$(git -C $wt branch --show-current) tip=$(git -C $wt rev-parse HEAD)
       if git -C $main merge-base --is-ancestor $tip $default; then state="merged"
-      else state="$(git -C $main rev-list --count $default..$tip) commits not in $default"; fi
+      else
+        local ahead=$(git -C $main rev-list --count $default..$tip)
+        state="$ahead commit${${ahead:#1}:+s} not in $default"
+      fi
       [[ -n $(git -C $wt status --porcelain) ]] && state+=", uncommitted changes"
       print "${wt:t}  ($branch: $state)"
     done
@@ -290,14 +295,32 @@ function agent_done() {
     return 1
   fi
 
-  [[ $PWD == $wt(|/*) ]] && cd $main
-  git -C $main worktree remove $wt || return
-  [[ -n $branch ]] && git -C $main branch -D $branch
-  # the window `agent` opened, unless it's the one running this
+  # the window `agent` opened, unless it's the one running this. It goes first: closing it ends Claude Code,
+  # which locks its worktree for as long as it runs
   if [[ -n $TMUX ]]; then
     local window=$(tmux list-windows -F '#{window_id} #{window_name}' | awk -v n=$name '$2 == n { print $1; exit }')
     [[ -n $window && $window != $(tmux display-message -p '#{window_id}') ]] && tmux kill-window -t $window
   fi
+  # wait up to 2 s for Claude to unlock; a lock whose Claude no longer runs (pid in the reason) is lifted
+  local lock i
+  for i in {1..20}; do
+    lock=$(git -C $main worktree list --porcelain | awk -v wt=$wt '
+      $1 == "worktree" { here = ($2 == wt) } here && $1 == "locked" { print; exit }')
+    [[ -z $lock ]] && break
+    sleep 0.1
+  done
+  if [[ -n $lock ]]; then
+    local pid=${${lock#*pid }%% *}
+    if [[ $pid == <-> ]] && kill -0 $pid 2> /dev/null; then
+      print -u2 "$name is still locked by a running Claude Code (pid $pid); quit it first"
+      return 1
+    fi
+    git -C $main worktree unlock $wt
+  fi
+
+  [[ $PWD == $wt(|/*) ]] && cd $main
+  git -C $main worktree remove $wt || return
+  [[ -n $branch ]] && git -C $main branch -D $branch
   return 0
 }
 

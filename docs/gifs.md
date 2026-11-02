@@ -29,11 +29,10 @@ How they're made
   `~/.config/dotfiles` either: the GIFs show the shared setup. tmux runs as a separate server (`tmux -L
   demo`, with `docs/tapes/demo.tmux.conf`), so your sessions aren't touched; resurrect and continuum don't
   load. Every tape gets a fresh HOME, so one tape's commands don't turn up in the next.
-- `claude` in that HOME is `docs/tapes/claude-stand-in`, not Claude Code: the real one needs a login, costs
-  tokens, answers differently each time and shows the account. The stand-in says so on screen and does what
-  the GIF is about the way Claude Code would: makes the worktree and branch of `claude -w`, adds a file,
-  rings the bell when it needs an answer and commits. Everything around it (`agent`, the yellow window,
-  `cmd+j`, `agent_done`) is the real thing.
+- `claude` in that HOME is the real Claude Code, logged in with the Mac's Keychain entry. Its
+  `~/.claude.json` there has the account's IDs and plan but not its name, email or organisation, so those
+  can't appear in a GIF. Rendering `claude-code` is a real (small) session on your plan, and Claude's words
+  differ each time; the tape waits for what's on screen and hides the waiting.
 - `docs/tapes/keycast` sits between the terminal and tmux and shows each key pressed as a yellow badge on a
   second status line:
   - a prefix chord that a Ghostty `cmd` key sends shows as that key, the one you'd press: the tape types

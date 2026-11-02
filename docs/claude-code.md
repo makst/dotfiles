@@ -7,7 +7,8 @@ hooks are in `config/claude`, see [Config](#config).
 
 ![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/claude-code.gif)
 
-In the GIF, `claude` is a stand-in that does what the real one would (see [gifs](gifs.md#how-theyre-made)).
+The GIF is recorded with the real Claude Code in a made-up project (see [gifs](gifs.md#how-theyre-made)), so
+its words differ each time it's rendered.
 
 Starting an agent
 ---
@@ -16,8 +17,8 @@ agent fix-login
 agent fix-login "the login form rejects valid emails"
 ```
 
-`agent <name> [prompt]` runs `claude -w <name>`: Claude Code in a **git worktree** of its own, so agents
-never edit the same checkout as you or each other. Inside tmux it opens in a **new window named
+`agent <name> [prompt]` runs `claude -w <name>`: Claude Code in a **git worktree** of its own, on a branch
+`worktree-<name>`, so agents never edit the same checkout as you or each other. Inside tmux it opens in a **new window named
 `<name>`**, in the current directory; outside tmux it runs right there. Arguments after the name are passed
 on to `claude`.
 
@@ -31,9 +32,11 @@ agent_done                    # list the repo's agents: branch, merged or not, u
 agent_done fix-login          # remove the worktree, delete the branch, close the tmux window
 agent_done --force fix-login  # the same for a branch you don't want to merge
 ```
-Merge the agent's branch first (`git merge fix-login` or a PR); `agent_done` only removes things when nothing
-would be lost: it stops if the worktree has uncommitted changes, and without `--force` if the branch has
-commits that aren't in the default branch. It works from anywhere in the repo, the worktree itself included.
+Merge the agent's branch first (`git merge worktree-fix-login` or a PR); `agent_done` only removes things
+when nothing would be lost: it stops if the worktree has uncommitted changes, and without `--force` if the
+branch has commits that aren't in the default branch. It works from anywhere in the repo, the worktree itself
+included. Claude Code locks its worktree while it runs, so `agent_done` closes the window first, which ends
+Claude, and waits a moment for the lock to go.
 
 Noticing an agent that waits
 ---

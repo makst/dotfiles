@@ -1,21 +1,29 @@
-# An agent in its own worktree and tmux window, its window turning yellow when it needs an answer, jumping
-# there with the session tree, then merging and cleaning up. `claude` here is docs/tapes/claude-stand-in.
+# An agent from start to finish: Claude Code in its own worktree and window, its window turning yellow when it
+# rings the bell (done, or needs an answer), cmd+j to get there, then agent_done. This is the real Claude Code
+# (docs/gifs.md), so its words differ on every render; the wait for it is hidden.
 # Render with `make_gifs claude-code`.
 Output docs/img/claude-code.gif
 
 Type "z api" Enter Sleep 800ms
-Type `agent greet-test "add a test for greet"` Enter Sleep 2s
+Type `agent greet-test "add a test for greet in greet.test.ts (don't run it), then commit it"` Enter
+Sleep 7s
 
-# cmd+1: back to work while the agent runs; its window turns yellow when it rings the bell
-Ctrl+a Type "1" Sleep 5s
+# cmd+1: back to your own window while it works; its window turns yellow when Claude rings the bell
+Ctrl+a Type "1" Sleep 1s
+Hide
+Wait+Screen@240s /󰂞/
+Show
+Sleep 2s
 
-# cmd+j: every window with a preview; pick the agent's
-Ctrl+a Type "w" Sleep 1.5s
-Down Sleep 1.5s
-Enter Sleep 1.2s
-Type "y" Sleep 2s
+# cmd+j: every window with a live preview; pick the agent's to read what it did
+Ctrl+a Type "w" Sleep 2.5s
+Down Sleep 2s
+Enter Sleep 4s
 
-# cmd+1: merge the agent's branch, then remove its worktree, branch and window
+# cmd+1: back; agent_done lists the agents, and won't remove one whose branch isn't merged (or use --force)
 Ctrl+a Type "1" Sleep 800ms
-Type "git merge greet-test" Enter Sleep 1.5s
+Type "agent_done" Enter Sleep 2s
 Type "agent_done greet-test" Enter Sleep 3s
+Type "clear" Enter
+Type "git merge worktree-greet-test" Enter Sleep 2s
+Type "agent_done greet-test" Enter Sleep 5s

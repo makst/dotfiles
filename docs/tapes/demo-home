@@ -20,9 +20,23 @@ ln -s ~/.local/share/nvim $home/.local/share/nvim
 # only the plugins the demo needs: resurrect and continuum would restore and save sessions
 ln -s ~/.tmux/plugins/{tpm,vim-tmux-navigator} $home/.tmux/plugins/
 
-# `claude` is a stand-in (docs/tapes/claude-stand-in): the real one isn't on this HOME's PATH
-mkdir -p $home/.local/bin
-ln -s $repo/docs/tapes/claude-stand-in $home/.local/bin/claude
+# Claude Code, the real one: its binary and the repo's config, linked as setup_claude links them, and a
+# ~/.claude.json that says onboarding is done and the demo project trusted. It logs in with the Mac's Keychain
+# entry, which Claude Code only looks up when the account is in ~/.claude.json: that gets the account's IDs and
+# plan, never its name, email or organisation name, so those can't show up in a GIF.
+mkdir -p $home/.local/bin $home/.claude $home/Library
+ln -s ${commands[claude]:A} $home/.local/bin/claude
+# macOS finds the login keychain through HOME
+ln -s ~/Library/Keychains $home/Library/Keychains
+local item
+for item in settings.json CLAUDE.md hooks statusline.sh; do
+  ln -s $repo/config/claude/$item $home/.claude/$item
+done
+jq --arg version "$(claude --version | cut -d' ' -f1)" --arg api ${home:A}/repos/api '{
+  hasCompletedOnboarding: true, lastOnboardingVersion: $version, lastReleaseNotesSeen: $version,
+  hasSeenAutoDefaultNotice: true, theme: "dark", projects: {($api): {hasTrustDialogAccepted: true}},
+  oauthAccount: (.oauthAccount | del(.emailAddress, .displayName, .fullName, .organizationName))
+}' ~/.claude.json > $home/.claude.json
 
 # lazygit without its welcome and "breaking changes" popups, which would swallow the first keys: the two
 # lines of its state that say they were seen (not the rest, it lists recent repos)
