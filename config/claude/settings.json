@@ -89,11 +89,11 @@
     }
   },
   "tui": "fullscreen",
-  "theme": "auto",
-  "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
   "voice": {
     "enabled": true,
     "mode": "hold"
-  }
+  },
+  "theme": "auto",
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true
 }
