@@ -33,10 +33,11 @@ Behaviour worth knowing
 - **System clipboard**: every yank and delete goes to the macOS clipboard, `p` pastes from it.
 - **Files reload when changed on disk** as soon as you come back to nvim, its tmux pane or the buffer.
   Handy with agents and git working on the same files.
-- **Format on save** with [conform.nvim](https://github.com/stevearc/conform.nvim): the project's own
-  formatter if it has one (prettier from `node_modules` with a prettier config, ruff, goimports/gofmt,
-  stylua with a `stylua.toml`, shfmt), otherwise the language server. For JS/TS, eslint additionally fixes
-  what it can. `:ConformInfo` shows what a buffer uses; formatters are configured in `lua/user/conform.lua`.
+- **Format on save** with [conform.nvim](https://github.com/stevearc/conform.nvim): the project's own formatter
+  if it has one (prettier from `node_modules` with a prettier config, ruff, goimports/gofmt, stylua with a
+  `stylua.toml`, shfmt, SwiftFormat or swift-format with their config), otherwise the language server (never
+  for Swift). For JS/TS, eslint additionally fixes what it can. `:ConformInfo` shows what a buffer uses;
+  formatters are configured in `lua/user/conform.lua`.
 - 2-space indent with spaces, no line wrapping, case-insensitive search, 10 lines of context when
   scrolling, `:s` shows a live preview of the substitution.
 - Diagnostics are shown as icons in the sign column and coloured line numbers, not as text at the end of
@@ -236,9 +237,10 @@ Or the built-in way: send matches to the quickfix list (`;r`, mark entries with 
 Languages
 ---
 **Language servers** are installed by Mason (`:Mason` shows them): TypeScript/JavaScript (`ts_ls` and
-`eslint`), Lua (`lua_ls`, aware of the nvim API), YAML (`yamlls`), Go (`gopls`). Each project's root is the
-git root, so a monorepo gets one server instance rather than one per package. Helm templates get syntax
-highlighting but no diagnostics, which would all be false alarms.
+`eslint`), Lua (`lua_ls`, aware of the nvim API), YAML (`yamlls`), Go (`gopls`). Swift and Objective-C use
+`sourcekit-lsp` from Xcode instead, see [mobile](mobile.md), along with building and running iOS apps (`,i`).
+Each project's root is the git root, so a monorepo gets one server instance rather than one per package. Helm
+templates get syntax highlighting but no diagnostics, which would all be false alarms.
 
 To add a server: add it to `ensure_installed` in `lua/user/lsp/mason-lspconfig/config.lua`, add a file for
 it in `lua/user/lsp/lspconfig/` like the existing ones, and require it in that directory's `init.lua`.
@@ -246,7 +248,7 @@ Servers aren't enabled automatically, so the last step matters.
 
 **Treesitter parsers** (highlighting, indentation, treewalker) are listed in `lua/user/treesitter.lua` and
 compiled on first start with the `tree-sitter` CLI: TypeScript/TSX/JavaScript, Go (with mod/sum/work
-files), Lua, Bash, JSON, YAML, TOML, Markdown, HCL/Terraform, Helm. Add a language there and restart.
+files), Lua, Bash, JSON, YAML, TOML, Markdown, HCL/Terraform, Helm, Swift. Add a language there and restart.
 
 Integrations
 ---

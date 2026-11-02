@@ -25,6 +25,7 @@ lazygit, `cmd+j` shows every session.
 | Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
+| iOS apps | nvim (sourcekit-lsp, xcodebuild.nvim) next to Xcode | [mobile](docs/mobile.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
 | GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |

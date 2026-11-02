@@ -74,6 +74,9 @@ require('lazy').setup({
 
   'kylechui/nvim-surround',
   'tpope/vim-abolish',
+
+  -- iOS: build, run and test Xcode projects (user/xcodebuild)
+  { 'wojciech-kulik/xcodebuild.nvim', dependencies = { 'MunifTanjim/nui.nvim', 'nvim-telescope/telescope.nvim' } },
 }, {
   lockfile = vim.fn.stdpath('config') .. '/lazy-lock.json',
   change_detection = { notify = false },

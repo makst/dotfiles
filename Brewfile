@@ -63,6 +63,11 @@ brew "graphviz"
 brew "dockutil"
 brew "go"
 
+# --- Mobile development, docs/mobile.md (Xcode itself comes from the App Store)
+brew "xcode-build-server"          # sourcekit-lsp in nvim understands Xcode projects, xcodebuild.nvim
+brew "xcbeautify"                  # readable xcodebuild output in nvim, xcodebuild.nvim
+brew "swiftformat"                 # formats Swift where a project has a .swiftformat, conform in nvim
+
 # --- Apps
 cask "ghostty"
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
