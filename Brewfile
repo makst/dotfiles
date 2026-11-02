@@ -38,11 +38,15 @@ brew "podman"                      # `docker` alias
 brew "docker-compose"
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
+brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
 
 # --- Everyday tools
 brew "jq"
+brew "yq"                          # jq for YAML (and TOML, XML)
+brew "shellcheck"                  # finds bugs in shell scripts
+brew "ast-grep"                    # search and rewrite code by syntax, not text
 brew "xh"                          # HTTP requests, httpie-compatible syntax
 brew "btop"                        # processes, CPU, memory, network
 brew "yazi"                        # file manager with previews

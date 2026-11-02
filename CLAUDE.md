@@ -5,9 +5,9 @@ README has the overview and the repository layout; `docs/<tool>.md` explains eac
 
 ## What this repo assumes
 Apple silicon Mac, native arm64 only: Homebrew in `/opt/homebrew`, no Rosetta, Intel builds or `/usr/local`.
-zsh is the shell; the tools come from the `Brewfile` (`rg`, `fd`, `eza`, `bat`, `jq`, `gh`, delta,
-difftastic, …). SSH keys are in Secretive: commits are signed through `SSH_AUTH_SOCK` without a prompt,
-pushing asks for Touch ID, so a push waits for the user.
+zsh is the shell; the tools come from the `Brewfile` (`rg`, `fd`, `eza`, `bat`, `jq`, `yq`, `gh`, delta,
+difftastic, `shellcheck`, `shfmt`, `ast-grep`, …). SSH keys are in Secretive: commits are signed through
+`SSH_AUTH_SOCK` without a prompt, pushing asks for Touch ID, so a push waits for the user.
 
 ## config/claude is global
 `config/claude` becomes `~/.claude` on any machine, so it stays free of anything specific to this Mac, its

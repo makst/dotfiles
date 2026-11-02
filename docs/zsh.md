@@ -153,6 +153,9 @@ From the Brewfile, worth knowing about:
 | `tldr <cmd>` | short, practical examples instead of the man page |
 | `dust` | what takes the space in a directory tree |
 | `hyperfine '<cmd>'` | benchmarks a command, compares several |
+| `yq` | `jq` for YAML, TOML and XML: `yq '.services \| keys' compose.yaml`, `yq -i '.a.b = 1' x.yaml` edits in place |
+| `shellcheck <file>` | finds bugs in shell scripts: quoting, unset variables, wrong tests. bash and sh, not zsh |
+| `ast-grep -p '<pattern>'` | search code by syntax, `$X` matches any expression: `ast-grep -p 'console.log($X)' -l js`; `-r '<new>'` rewrites |
 | `uv`, `uvx` | python projects and tools, see [above](#language-versions) |
 
 Pager and colours

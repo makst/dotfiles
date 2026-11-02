@@ -123,7 +123,7 @@ hidden files included. Edit it like any buffer, then `:w` applies the changes af
 | Edit | Does |
 |---|---|
 | change a name (`cw`, `:s`, …) | rename |
-| `dd` | delete (to the macOS trash) |
+| `dd` | delete: moved to the macOS trash (oil moves it itself, so Finder's "Put Back" doesn't know the origin) |
 | new line with a name | create a file; a name ending in `/` creates a directory, `a/b.txt` both |
 | `dd` here, `p` in another directory | move (`yy` + `p`: copy) |
 
