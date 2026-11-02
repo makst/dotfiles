@@ -8,10 +8,10 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 <summary><b>Show GIF</b></summary>
 
 A quick tour: `cmd+k` opens a project as a session, `git diff` through delta, `;f` finds a file in nvim,
-`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `lg` opens lazygit, `cmd+j` shows every
-session.
+`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `cmd+w` closes the nvim pane, `lg` opens
+lazygit, `cmd+j` shows every session.
 
-![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, lg opens lazygit, cmd+j shows every session](docs/img/tour.gif)
+![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, cmd+w closes the nvim pane, lg opens lazygit, cmd+j shows every session](docs/img/tour.gif)
 
 </details>
 

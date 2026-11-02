@@ -28,7 +28,7 @@
       "Read(~/.ssh/id_*)"
     ]
   },
-  "model": "opus",
+  "model": "haiku",
   "hooks": {
     "PreToolUse": [
       {

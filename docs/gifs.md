@@ -15,7 +15,7 @@ Splitting, moving between and zooming panes, then a new window.
 
 | GIF | In | Shows |
 |---|---|---|
-| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, panes, lazygit, the session tree |
+| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, lazygit, the session tree |
 | `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
 | `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, switching sessions |
 | `zsh-history` | [zsh](zsh.md#history) | prefix search with the up arrow, grey suggestions, atuin |
