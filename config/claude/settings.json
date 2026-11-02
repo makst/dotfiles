@@ -28,7 +28,7 @@
       "Read(~/.ssh/id_*)"
     ]
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -94,10 +94,10 @@
     "mode": "hold"
   },
   "theme": "auto",
-  "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
   "editorMode": "vim",
   "vimInsertModeRemaps": {
     "jj": "<Esc>"
-  }
+  },
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": true
 }
