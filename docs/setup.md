@@ -115,7 +115,8 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
    `SSH_AUTH_SOCK` points at Secretive), `gh auth login`, then `secretive_key push` and
    `secretive_key signing`, see [git](git.md#ssh-keys). The signing key turns on signing for this Mac and is
    added to `config/git/allowed_signers`: commit that. Then switch the clone to SSH:
-   `git remote set-url origin git@github.com:makst/dotfiles.git`.
+   `git remote set-url origin git@github.com:makst/dotfiles.git`. So every Mac has its own pair of keys, listed
+   on GitHub under the Mac's name; when a Mac is lost or handed back, delete its two keys there.
 5. **What only this Mac needs**, in `~/.config/dotfiles` (see [Several Macs](#several-macs)): on a work Mac
    the work email in `gitconfig` (and add it to your GitHub account under Settings → Emails, so work commits
    count as yours and show as Verified), work plugins in `claude.json`, work hosts in `~/.ssh/config` below
