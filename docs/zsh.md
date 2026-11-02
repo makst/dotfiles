@@ -3,7 +3,7 @@ zsh
 
 Homebrew's zsh is the login shell, without a framework: three plugins from Homebrew, vi keys on the command
 line, a starship prompt, atuin for history and zoxide for jumping between directories. A new shell is
-ready in about 45 ms (220 ms with Oh My Zsh and zsh-vi-mode).
+ready in about 45 ms on an M5 and about 75 ms on an M1 Max (220 ms with Oh My Zsh and zsh-vi-mode).
 
 How it loads
 ---
@@ -47,7 +47,9 @@ Start-up speed
 atuin would also take over the grey suggestions, starting itself on every key press; they stay on zsh's
 own history instead.
 
-`timezsh` measures the start with hyperfine; check it after adding anything.
+`timezsh` measures the start with hyperfine; check it after adding anything. The time depends on the Mac
+(an M1 Max takes about 1.7 times as long as an M5), so compare before and after a change on the same Mac
+rather than against a fixed number.
 
 Vi mode
 ---

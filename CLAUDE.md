@@ -62,7 +62,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 
 ## Testing
 - `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks").
-- `zsh -n <file>` for syntax; `hyperfine -i 'zsh -i -c exit'` for start-up time (~43 ms; keep it there).
+- `zsh -n <file>` for syntax; `hyperfine -i 'zsh -i -c exit'` for start-up time (~43 ms on an M5,
+  ~75 ms on an M1 Max): compare before and after a change on the same Mac; it shouldn't grow.
   `zsh -i -c` prints a harmless fzf "can't change option: zle".
 - Interactive zsh, tmux or nvim: a separate tmux server, `tmux -L probe`, driven with `send-keys` and read
   with `capture-pane`. Wrap it in a function (`p() { tmux -L probe "$@" }`), not a variable.
