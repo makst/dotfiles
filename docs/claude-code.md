@@ -5,6 +5,10 @@ The terminal setup is built so several Claude Code agents can run side by side w
 other's way, and so you notice when one of them needs you. Claude Code's own settings, instructions and
 hooks are in `config/claude`, see [Config](#config).
 
+![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/claude-code.gif)
+
+In the GIF, `claude` is a stand-in that does what the real one would (see [gifs](gifs.md#how-theyre-made)).
+
 Starting an agent
 ---
 ```sh

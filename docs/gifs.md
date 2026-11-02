@@ -14,6 +14,7 @@ be made again whenever a binding or the colour scheme changes.
 | `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
 | `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
 | `git` | [git](git.md#lazygit) | delta, difftastic, staging and committing in lazygit |
+| `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
 
 How they're made
 ---
@@ -28,6 +29,11 @@ How they're made
   `~/.config/dotfiles` either: the GIFs show the shared setup. tmux runs as a separate server (`tmux -L
   demo`, with `docs/tapes/demo.tmux.conf`), so your sessions aren't touched; resurrect and continuum don't
   load. Every tape gets a fresh HOME, so one tape's commands don't turn up in the next.
+- `claude` in that HOME is `docs/tapes/claude-stand-in`, not Claude Code: the real one needs a login, costs
+  tokens, answers differently each time and shows the account. The stand-in says so on screen and does what
+  the GIF is about the way Claude Code would: makes the worktree and branch of `claude -w`, adds a file,
+  rings the bell when it needs an answer and commits. Everything around it (`agent`, the yellow window,
+  `cmd+j`, `agent_done`) is the real thing.
 - `docs/tapes/keycast` sits between the terminal and tmux and shows each key pressed as a yellow badge on a
   second status line:
   - a prefix chord that a Ghostty `cmd` key sends shows as that key, the one you'd press: the tape types

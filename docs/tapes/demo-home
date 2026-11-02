@@ -20,6 +20,10 @@ ln -s ~/.local/share/nvim $home/.local/share/nvim
 # only the plugins the demo needs: resurrect and continuum would restore and save sessions
 ln -s ~/.tmux/plugins/{tpm,vim-tmux-navigator} $home/.tmux/plugins/
 
+# `claude` is a stand-in (docs/tapes/claude-stand-in): the real one isn't on this HOME's PATH
+mkdir -p $home/.local/bin
+ln -s $repo/docs/tapes/claude-stand-in $home/.local/bin/claude
+
 # lazygit without its welcome and "breaking changes" popups, which would swallow the first keys: the two
 # lines of its state that say they were seen (not the rest, it lists recent repos)
 local lazygit=$home/Library/Application\ Support/lazygit
@@ -72,3 +76,7 @@ for project in dotfiles api website notes; do
   HOME=$home zoxide add $home/repos/$project
 done
 HOME=$home zoxide add $home/repos/dotfiles $home/repos/api
+
+# the prompt's and plugins' caches (cached_eval in .zshrc), so the first shells start as fast as usual: a
+# window opened by `agent` gets its command before a slow first start would be ready for it
+HOME=$home zsh -i -c exit > /dev/null 2>&1 || true
