@@ -59,8 +59,8 @@ Config
 `config/claude` is the **global** part: settings and instructions that hold on any machine and in any project,
 with nothing about this Mac, its tools or this repo. `setup_claude` links it into `~/.claude`:
 
-- **`settings.json`**: model and effort, permissions, sandbox, hooks. Commits made by Claude carry only the
-  `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
+- **`settings.json`**: model and effort, permissions, sandbox, hooks, voice dictation (hold space). Commits
+  made by Claude carry only the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
   when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
