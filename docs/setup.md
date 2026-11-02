@@ -52,7 +52,7 @@ files from the templates in `config/machine` when they are missing and never ove
 | File | Used by | For |
 |---|---|---|
 | `name` | `secretive_key` | what the Mac is called, e.g. `home-m5`; its keys show up on GitHub under this name |
-| `kind` | the Brewfile | `home` or `work`, whether the Mac is home-like or work-like. Packages in an `if kind == "work"` (or `"home"`) block install only on that kind; none are at the moment |
+| `kind` | the Brewfile | `home` or `work`, whether the Mac is home-like or work-like. Packages in an `if kind == "home"` (or `"work"`) block install only on that kind: Tunnelblick only on home-like Macs |
 | `gitconfig` | `~/.gitconfig`, included last | the work email in work repos, see [git](git.md#identity) |
 | `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
 | `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
@@ -89,7 +89,7 @@ Data that is *not* in the repo: tmux plugins (`~/.tmux/plugins`), nvim plugins a
 The Brewfile
 ---
 Grouped by why a package is there: tools these dotfiles depend on (each commented with the file that uses
-it), everyday CLI tools, GUI apps (casks), this Mac's own list from
+it), everyday CLI tools, GUI apps (casks), apps for one kind of Mac only, this Mac's own list from
 `~/.config/dotfiles/Brewfile`, and a commented-out review list of things from an older Mac.
 Add a package by adding a line and rerunning `brew_setup`. `brew bundle check --verbose` shows what is
 missing; `brew bundle cleanup` shows what is installed but not listed.

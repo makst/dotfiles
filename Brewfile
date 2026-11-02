@@ -69,10 +69,14 @@ cask "font-source-code-pro"
 cask "google-chrome"
 cask "firefox@developer-edition"
 cask "cyberduck"
-cask "tunnelblick"
 cask "signal"
 cask "spotify"
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
+
+# --- Home-like Macs only
+if kind == "home"
+  cask "tunnelblick"               # personal VPN; a work Mac has the company's, and two VPN clients clash
+end
 
 # --- This Mac's own packages, not in the repo (setup_machine, config/machine/Brewfile)
 machine_brewfile = File.expand_path("~/.config/dotfiles/Brewfile")
