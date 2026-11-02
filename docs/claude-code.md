@@ -75,8 +75,8 @@ Config
 `config/claude` is the **global** part: settings and instructions that hold on any machine and in any project,
 with nothing about this Mac, its tools or this repo. `setup_claude` links it into `~/.claude`:
 
-- **`settings.json`**: model and effort, permissions, sandbox, hooks, voice dictation (hold space). Commits
-  made by Claude carry only the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
+- **`settings.json`**: model (Opus) and effort, permissions, sandbox, hooks, voice dictation (hold space).
+  Commits made by Claude carry only the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
   when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
@@ -104,7 +104,8 @@ The parts that depend on the Mac live in the dotfiles, not in `config/claude`. T
 - **Signing in the sandbox**: the socket in `SSH_AUTH_SOCK` (Secretive's, from `zsh/.exports`) is allowed,
   so sandboxed commands can sign commits. Pushing still asks for Touch ID.
 - **This Mac's settings**: `~/.config/dotfiles/claude.json` (from `setup_machine`, `{}` at first), merged
-  in. Anything a settings file can hold: plugins and marketplaces, `env`, permissions, a different `model`.
+  in. Anything a settings file can hold: plugins and marketplaces, `env`, permissions, a different `model`,
+  and auto mode's description of the environment (`autoMode.environment`), which names this Mac's repos.
 
 Claude Code started some other way, from the desktop app or an IDE, gets neither.
 
