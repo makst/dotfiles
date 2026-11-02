@@ -29,8 +29,8 @@ exec zsh
 setup_dotfiles             # asks the Mac's name and kind once, then everything; rerun after `git pull`
 ```
 
-Then grant Accessibility access to Ghostty (for the drop-down terminal) and AeroSpace. [docs/setup.md](docs/setup.md) lists
-what each step does, every symlink it creates and the manual steps that remain.
+Then follow [A new Mac](docs/setup.md#a-new-mac): Accessibility access, the SSH keys in Secretive and what
+only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step does and every symlink.
 
 How the keyboard is split
 ---

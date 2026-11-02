@@ -379,6 +379,11 @@ function secretive_key() {
       local signer="$(git config user.email) namespaces=\"git\" ${words[1]} ${words[2]}"
       local signers=$real_script_dir/config/git/allowed_signers
       grep -qxF -- $signer $signers || print -r -- $signer >> $signers
+      # sign from now on, on this Mac only (config/git/.gitconfig includes this file)
+      local machine_git=~/.config/dotfiles/gitconfig
+      git config --file $machine_git user.signingkey ${key/#$HOME/\~}
+      git config --file $machine_git commit.gpgsign true
+      git config --file $machine_git tag.gpgsign true
       ;;
   esac
 }
@@ -415,23 +420,28 @@ function setup_machine() {
   for file in $real_script_dir/config/machine/*(N); do
     [[ -e $dir/${file:t} ]] || cp $file $dir/
   done
+
+  [[ $(git config --file $dir/gitconfig commit.gpgsign) == true ]] ||
+    print "Commits on this Mac aren't signed until its Secretive keys exist: see 'A new Mac' in docs/setup.md."
+  return 0
 }
 
+# setup_dotfiles: the whole setup, idempotent; rerun after every `git pull`. A step that fails doesn't stop the
+# others (on a managed work Mac, MDM may block one, or an app may already be installed outside Homebrew); the
+# failed ones are listed at the end, to fix and run again on their own.
 function setup_dotfiles() {
-  setup_machine
-  brew_setup
-  fzf_setup
-  setup_atuin
-  navi_data_dir_setup
-  npm_setup
-  setup_python
-  setup_ssh
-  setup_git
-  setup_tmux
-  setup_nvim
-  setup_ghostty
-  setup_claude
-  remap_keys
-  setup_macos_defaults
-  setup_window_management
+  # everything below needs the Mac's name and kind
+  setup_machine || return
+  local step
+  local -a failed
+  for step in brew_setup fzf_setup setup_atuin navi_data_dir_setup npm_setup setup_python setup_ssh \
+    setup_git setup_tmux setup_nvim setup_ghostty setup_claude remap_keys setup_macos_defaults \
+    setup_window_management; do
+    print -P "%F{blue}=> $step%f"
+    $step || failed+=$step
+  done
+  if (( $#failed )); then
+    print -u2 -P "%F{red}Failed: ${(j:, :)failed}.%f Fix the cause (see the output above) and run each again."
+    return 1
+  fi
 }

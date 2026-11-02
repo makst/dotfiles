@@ -10,7 +10,10 @@ The setup runs in two stages, because the second needs zsh and Homebrew to exist
    `~/.zshrc.backup`.
 2. **`setup_dotfiles`** (a zsh function from `zsh/.functions`) does the rest. The first time, it asks for
    the Mac's name and whether it's home-like or work-like, see [Several Macs](#several-macs). Every step is
-   idempotent, so rerun it after pulling changes.
+   idempotent, so rerun it after pulling changes. A step that fails doesn't stop the others; the failed ones
+   are listed at the end, to fix and run again on their own.
+
+On a new Mac, follow [A new Mac](#a-new-mac): a few steps around these two can't be scripted.
 
 Both only ever use the native arm64 Homebrew in `/opt/homebrew`. A Homebrew in `/usr/local` on an Apple
 silicon Mac is a leftover Intel install running under Rosetta and is deliberately ignored.
@@ -94,22 +97,37 @@ it), everyday CLI tools, GUI apps (casks), apps for one kind of Mac only, this M
 Add a package by adding a line and rerunning `brew_setup`. `brew bundle check --verbose` shows what is
 missing; `brew bundle cleanup` shows what is installed but not listed.
 
-Manual steps
+A new Mac
 ---
-These can't be scripted, or shouldn't be:
+In this order; the steps that aren't scripted can't be, or shouldn't be.
 
-- **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
-  drop-down terminal; AeroSpace, which asks on its first start.
-- **Your identity**: name, email and signing key in `config/git/.gitconfig` and `config/git/allowed_signers`;
-  which key goes to which host in `config/ssh/config`. On a work Mac, the work email in
-  `~/.config/dotfiles/gitconfig`.
-- **SSH keys**, on every Mac (Secure Enclave keys can't leave the Mac they were made on): open Secretive
-  once and let it start its agent at login, create the keys `push` (Require Authentication on) and
-  `signing` (off), then run `secretive_key push` and `secretive_key signing`, see [git](git.md#ssh-keys).
-  Open a new shell first, so `SSH_AUTH_SOCK` points at Secretive.
-- **Secrets**: shell exports in `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in
-  `config/nvim/lua/user/hidden/init.lua`. None of them is in git; each is loaded if it exists.
-- **tmux plugins after editing the plugin list**: `C-a I` inside tmux.
+1. **Clone over HTTPS**: `git clone https://github.com/makst/dotfiles.git ~/repos/dotfiles`. SSH needs the
+   keys from step 4 first. The first `git` on a new Mac offers to install Apple's command line tools: accept.
+2. **`./prepare-zsh-install.sh`**, then `exec zsh` and **`setup_dotfiles`** (name and kind of the Mac). On a
+   managed work Mac, a step MDM blocks shows up in the list of failed steps at the end. A failed `brew_setup`
+   often means MDM already installed one of the apps: remove that line on this Mac, or hand the app to
+   Homebrew with `brew install --cask --adopt <cask>`.
+3. **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
+   drop-down terminal; AeroSpace, which asks on its first start.
+4. **SSH keys**, on every Mac, since Secure Enclave keys can't leave the Mac they were made on. Until then
+   commits aren't signed and ssh to GitHub doesn't work. Open Secretive and let it start its agent at login,
+   create the keys `push` (Require Authentication on) and `signing` (off), open a new shell (so
+   `SSH_AUTH_SOCK` points at Secretive), `gh auth login`, then `secretive_key push` and
+   `secretive_key signing`, see [git](git.md#ssh-keys). The signing key turns on signing for this Mac and is
+   added to `config/git/allowed_signers`: commit that. Then switch the clone to SSH:
+   `git remote set-url origin git@github.com:makst/dotfiles.git`.
+5. **What only this Mac needs**, in `~/.config/dotfiles` (see [Several Macs](#several-macs)): on a work Mac
+   the work email in `gitconfig` (and add it to your GitHub account under Settings → Emails, so work commits
+   count as yours and show as Verified), work plugins in `claude.json`, work hosts in `~/.ssh/config` below
+   the include line.
+6. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once). Secrets in
+   `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in `config/nvim/lua/user/hidden/init.lua`;
+   none of them is in git, each is loaded if it exists.
+
+For a fork, change the identity first: name and email in `config/git/.gitconfig`, the keys in
+`config/git/allowed_signers`, the repo URL above.
+
+After editing the tmux plugin list: `C-a I` inside tmux.
 
 Staying up to date
 ---

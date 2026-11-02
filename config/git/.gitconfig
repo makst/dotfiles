@@ -1,21 +1,19 @@
 [user]
 	name = Max Tkatschenko
 	email = makst@users.noreply.github.com
-	# commits and tags are signed with this SSH key: Secretive's signing key, which doesn't ask for Touch ID
-	# (see docs/git.md). GitHub shows them as Verified once the key is added there as a *signing* key
-	signingkey = ~/.ssh/identities/secretive/signing.pub
 
+# Commits and tags are signed with an SSH key: each Mac's own Secretive signing key, which doesn't ask for
+# Touch ID (see docs/git.md). `secretive_key signing` turns signing on for the Mac, in its
+# ~/.config/dotfiles/gitconfig (user.signingkey, commit.gpgsign, tag.gpgsign); until then commits aren't
+# signed instead of failing. GitHub shows them as Verified once the key is added there as a *signing* key
 [gpg]
 	format = ssh
 [gpg "ssh"]
 	# whose signatures `git log --show-signature` trusts
 	allowedSignersFile = ~/dotfiles/config/git/allowed_signers
 [commit]
-	gpgsign = true
 	# the diff is shown below the message in the editor
 	verbose = true
-[tag]
-	gpgsign = true
 
 [alias]
 	lca = log --pretty=format:'[%h] %cd - Committer: %cn (%ce), Author: %an (%ae)'

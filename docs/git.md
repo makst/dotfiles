@@ -69,7 +69,9 @@ It uses lazygit's default config; nothing is customised here.
 
 Signing
 ---
-Commits and tags are signed with the SSH key in `user.signingkey` (`gpg.format = ssh`); no GPG needed.
+Commits and tags are signed with the SSH key in `user.signingkey` (`gpg.format = ssh`); no GPG needed. Each
+Mac signs with its own key: `secretive_key signing` sets the key and turns signing on in the Mac's
+`~/.config/dotfiles/gitconfig`. A Mac without one yet commits unsigned instead of failing.
 `ssh-keygen` signs through the agent in `SSH_AUTH_SOCK`, which `zsh/.exports` points at Secretive's. The
 signing key is a Secretive key that doesn't ask for Touch ID, so commits, rebases and amends never prompt.
 
