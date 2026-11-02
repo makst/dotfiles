@@ -44,7 +44,8 @@ Behaviour
   cached.
 - **`git branch`** lists recently used branches first. New repos start on `main`.
 - **Ignored in every repo** (`config/git/ignore`, linked to `~/.config/git/ignore`): `.DS_Store`, Claude
-  Code's agent worktrees (`.claude/worktrees/`) and personal `.claude/settings.local.json`.
+  Code's agent worktrees (`.claude/worktrees/`) and personal `.claude/settings.local.json`, and the files
+  xcodebuild.nvim writes into iOS projects (`.nvim/xcodebuild/`, `buildServer.json`, see [mobile](mobile.md)).
 - **Editor** is nvim and shows the diff below the commit message; `git difftool` and
   `git mergetool` open nvim's diff mode.
 

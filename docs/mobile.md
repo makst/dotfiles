@@ -38,8 +38,8 @@ Setting up a project
 ---
 Once per project, open nvim in its directory and press `,iS`: it asks for the project or workspace, the
 scheme, the test plan and the device, then writes `.nvim/xcodebuild/settings.json` and `buildServer.json`
-into the project. Add both to the project's `.gitignore` (they hold your choices and local paths). Then
-`,ib` to build once, so sourcekit-lsp has the index it needs.
+into the project. Your global gitignore (`config/git/ignore`) already ignores both, as they hold your
+choices and paths on this Mac. Then `,ib` to build once, so sourcekit-lsp has the index it needs.
 
 Keys
 ---

@@ -6,3 +6,7 @@
 # Claude Code: agent worktrees (claude -w, `agent`) and personal per-project settings
 .claude/worktrees/
 .claude/settings.local.json
+
+# xcodebuild.nvim (docs/mobile.md): your scheme and device choices, and paths on this Mac for sourcekit-lsp
+.nvim/xcodebuild/
+buildServer.json

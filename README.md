@@ -45,6 +45,28 @@ setup_dotfiles             # asks the Mac's name and kind once, then everything;
 Then follow [A new Mac](docs/setup.md#a-new-mac): Accessibility access, the SSH keys in Secretive and what
 only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step does and every symlink.
 
+iOS projects
+---
+Code is edited in nvim, Xcode stays open for previews, signing and debugging. More in
+[mobile](docs/mobile.md).
+
+**Once per Mac**, after `setup_dotfiles` (which installs xcode-build-server, xcbeautify and swiftformat):
+
+1. Install Xcode from the App Store.
+2. Make it the active toolchain and accept its licence:
+   ```sh
+   sudo xcode-select -s /Applications/Xcode.app && sudo xcodebuild -license accept
+   ```
+3. In nvim, `:checkhealth xcodebuild` should show nothing missing.
+
+**Once per project**, in nvim at the project's root:
+
+1. `,iS`: pick the project or workspace, the scheme, the test plan and the device. This writes
+   `buildServer.json` and `.nvim/xcodebuild/` into the project; the global gitignore keeps them out of git.
+2. `,ib` to build once, so sourcekit-lsp has an index: completion and go-to-definition work from then on.
+
+Then `,ir` builds and runs, `,it` runs the tests and `,io` opens the current line in Xcode.
+
 How the keyboard is split
 ---
 Every tool owns its own modifier, so the layers don't fight over keys:
