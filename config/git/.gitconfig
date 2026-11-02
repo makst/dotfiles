@@ -118,3 +118,8 @@
 
 [init]
 	defaultBranch = main
+
+# this Mac's own settings, e.g. the work email for work repos (setup_machine, config/machine/gitconfig).
+# Last, so they win; git skips the file if it doesn't exist
+[include]
+	path = ~/.config/dotfiles/gitconfig

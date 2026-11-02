@@ -1,0 +1,3 @@
+# This Mac's own shell settings. setup_machine copies this file to ~/.config/dotfiles/zshrc once; ~/.zshrc
+# sources that copy last, so it can override anything. The copy isn't in the repo: exports, aliases and
+# tokens that only this Mac needs go there.

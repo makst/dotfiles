@@ -15,9 +15,10 @@ How it loads
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide |
 | `zsh/.aliases` | aliases |
 | `zsh/.functions` | shell functions, including the whole install (`setup_dotfiles`) |
-| `zsh/.private` | gitignored: tokens and machine-specific settings, if the file exists |
+| `zsh/.private` | gitignored: tokens, if the file exists |
+| `~/.config/dotfiles/zshrc` | outside the repo: what only this Mac needs (see [setup](setup.md#several-macs)) |
 
-Put new things in the file that matches; put anything secret in `.private`.
+Put new things in the file that matches; put anything secret in `.private` or this Mac's `zshrc`.
 
 Plugins
 ---

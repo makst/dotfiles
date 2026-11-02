@@ -68,8 +68,9 @@ with nothing about this Mac, its tools or this repo. `setup_claude` links it int
 - **`statusline.sh`**: the [status line](#status-line).
 
 Settings you change with `/config` or by installing a plugin are written through the link into the repo, so
-they show up in `git diff`. If `ls -l ~/.claude/settings.json` ever shows a plain file instead of a link, copy
-the changes into `config/claude/settings.json` and run `setup_claude` again.
+they show up in `git diff`; for plugins that's usually not what you want, see [Plugins](#plugins). If
+`ls -l ~/.claude/settings.json` ever shows a plain file instead of a link, copy the changes into
+`config/claude/settings.json` and run `setup_claude` again.
 
 ### Permissions
 - **Allowed without asking**: read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `worktree list`),
@@ -81,18 +82,60 @@ the changes into `config/claude/settings.json` and run `setup_claude` again.
 - Everything else asks as usual, including `git commit` and `git push`.
 
 ### This machine
-The parts that depend on the Mac live in the dotfiles, not in `config/claude`:
+The parts that depend on the Mac live in the dotfiles, not in `config/claude`. The `claude` shell function
+(`zsh/.functions`) starts Claude Code with `--settings` on top of the shared settings:
 
-- **Signing in the sandbox**: the `claude` shell function (`zsh/.functions`) starts Claude Code with
-  `--settings` allowing the socket in `SSH_AUTH_SOCK` (Secretive's, from `zsh/.exports`), so sandboxed
-  commands can sign commits. Pushing still asks for Touch ID. Claude Code started some other way, from the
-  desktop app or an IDE, signs only outside the sandbox.
+- **Signing in the sandbox**: the socket in `SSH_AUTH_SOCK` (Secretive's, from `zsh/.exports`) is allowed,
+  so sandboxed commands can sign commits. Pushing still asks for Touch ID.
+- **This Mac's settings**: `~/.config/dotfiles/claude.json` (from `setup_machine`, `{}` at first), merged
+  in. Anything a settings file can hold: plugins and marketplaces, `env`, permissions, a different `model`.
+
+Claude Code started some other way, from the desktop app or an IDE, gets neither.
+
+### Plugins
+Where a plugin is turned on decides who gets it:
+
+| Plugin for | Turn it on in | Reaches |
+|---|---|---|
+| every Mac | `config/claude/settings.json`, committed | all Macs, after `git pull` |
+| this Mac only (e.g. work plugins on the work Mac) | `~/.config/dotfiles/claude.json` | only this Mac, all projects |
+| one project, for you | the project's `.claude/settings.local.json` (`/plugin` → scope *local*) | only you, ignored by git everywhere |
+| one project, for the whole team | the project's `.claude/settings.json` (scope *project*) | everyone working on it |
+
+A plugin turned on in `claude.json` needs its marketplace there too:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "my-company": { "source": { "source": "github", "repo": "my-company/claude-plugins" } }
+  },
+  "enabledPlugins": { "some-plugin@my-company": true }
+}
+```
+
+`/plugin install` with the default scope (*user*) writes into the shared `settings.json`. When a session ends,
+the `claude` function checks for that and says so; move the entries to `claude.json`, or commit them if
+every Mac should have them. Plugins shared with your claude.ai organisation sync by themselves and touch no
+file.
+
+### Work projects
+The global config is meant to sit unnoticed next to a team's own Claude Code setup:
+
+- A project's `.claude/settings.json` and `CLAUDE.md` add to these settings or override them; nothing here
+  writes into a project. Personal project settings go in `.claude/settings.local.json`, which the global
+  gitignore keeps out of every repo, as it does agent worktrees.
+- The format hook formats only with what the project itself configures (see [Hooks](#hooks)), so files
+  aren't restyled in someone else's style.
+- **Settings managed by the company**: if IT installs Claude Code settings through MDM
+  (`/Library/Application Support/ClaudeCode/managed-settings.json`), they take precedence over everything
+  here, including the `claude` function's. Plugins they turn on simply join the others. If they allow only
+  managed hooks or permission rules, the hooks and permissions here stop applying; nothing else changes.
 
 ### Hooks
 | When | Does |
 |---|---|
 | before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to move things to the trash instead |
-| after Claude edits or writes a file | formats it with the language's formatter, if installed: prettier and stylua only where the project has their config (like conform in nvim), `goimports`/`gofmt`, `ruff`, `shfmt` |
+| after Claude edits or writes a file | formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style) |
 | Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
 
 The scripts need zsh and jq; a formatter or tmux that isn't there is skipped.

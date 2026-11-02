@@ -3,12 +3,14 @@ Setup and maintenance
 
 The setup runs in two stages, because the second needs zsh and Homebrew to exist first.
 
-1. **`prepare-zsh-install.sh`** (bash) links `~/dotfiles` and `~/.zshrc` to this repo, installs Homebrew in
+1. **`prepare-zsh-install.sh`** (bash) links `~/dotfiles` (unless the clone is `~/dotfiles` itself) and
+   `~/.zshrc` to this repo, installs Homebrew in
    `/opt/homebrew` and Homebrew's zsh, and makes Homebrew's zsh your login shell (asks for
    your password once, for `/etc/shells` and `chsh`). An existing real `~/.zshrc` is kept as
    `~/.zshrc.backup`.
-2. **`setup_dotfiles`** (a zsh function from `zsh/.functions`) does the rest. Every step is idempotent, so
-   rerun it after pulling changes.
+2. **`setup_dotfiles`** (a zsh function from `zsh/.functions`) does the rest. The first time, it asks for
+   the Mac's name and whether it's home-like or work-like, see [Several Macs](#several-macs). Every step is
+   idempotent, so rerun it after pulling changes.
 
 Both only ever use the native arm64 Homebrew in `/opt/homebrew`. A Homebrew in `/usr/local` on an Apple
 silicon Mac is a leftover Intel install running under Rosetta and is deliberately ignored.
@@ -19,6 +21,7 @@ Each step is a function you can also run on its own:
 
 | Function | Does |
 |---|---|
+| `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
 | `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile) |
 | `fzf_setup` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time |
@@ -40,6 +43,24 @@ Not part of `setup_dotfiles`:
 - `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
   `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
 
+Several Macs
+---
+The repo holds what every Mac shares, and every Mac gets all of it. What only one Mac needs lives in `~/.config/dotfiles`, outside the
+repo, so a work email, work plugins or a company's tools never end up in it. `setup_machine` creates these
+files from the templates in `config/machine` when they are missing and never overwrites them:
+
+| File | Used by | For |
+|---|---|---|
+| `name` | `secretive_key` | what the Mac is called, e.g. `home-m5`; its keys show up on GitHub under this name |
+| `kind` | the Brewfile | `home` or `work`, whether the Mac is home-like or work-like. Packages in an `if kind == "work"` (or `"home"`) block install only on that kind; none are at the moment |
+| `gitconfig` | `~/.gitconfig`, included last | the work email in work repos, see [git](git.md#identity) |
+| `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
+| `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
+| `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude-code](claude-code.md#this-machine) |
+
+Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared
+`config/ssh/config`. Rename the Mac or change its kind with `setup_machine <name> <home|work>`.
+
 Symlinks
 ---
 The repo is never copied: everything is linked, so editing a file in the repo takes effect immediately
@@ -47,7 +68,7 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 
 | In `$HOME` | Points to |
 |---|---|
-| `~/dotfiles` | the repo |
+| `~/dotfiles` | the repo, wherever it's cloned (`~/.ssh/config` and `~/.gitconfig` use this path) |
 | `~/.zshrc` | `.zshrc` |
 | `~/.fzf.zsh` | `.fzf.zsh` |
 | `~/.atuin/config.toml` | `config/atuin/config.toml` |
@@ -68,7 +89,8 @@ Data that is *not* in the repo: tmux plugins (`~/.tmux/plugins`), nvim plugins a
 The Brewfile
 ---
 Grouped by why a package is there: tools these dotfiles depend on (each commented with the file that uses
-it), everyday CLI tools, GUI apps (casks), and a commented-out review list of things from an older Mac.
+it), everyday CLI tools, GUI apps (casks), this Mac's own list from
+`~/.config/dotfiles/Brewfile`, and a commented-out review list of things from an older Mac.
 Add a package by adding a line and rerunning `brew_setup`. `brew bundle check --verbose` shows what is
 missing; `brew bundle cleanup` shows what is installed but not listed.
 
@@ -79,12 +101,14 @@ These can't be scripted, or shouldn't be:
 - **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
   drop-down terminal; AeroSpace, which asks on its first start.
 - **Your identity**: name, email and signing key in `config/git/.gitconfig` and `config/git/allowed_signers`;
-  which key goes to which host in `config/ssh/config`.
-- **SSH keys**: open Secretive once and let it start its agent at login, create the keys `push` (Require
-  Authentication on) and `signing` (off), then run `secretive_key push` and `secretive_key signing`, see
-  [git](git.md#ssh-keys). Open a new shell first, so `SSH_AUTH_SOCK` points at Secretive.
-- **Secrets**: shell exports in `zsh/.private`, nvim settings in `config/nvim/lua/user/hidden/init.lua`.
-  Both are gitignored and loaded if they exist.
+  which key goes to which host in `config/ssh/config`. On a work Mac, the work email in
+  `~/.config/dotfiles/gitconfig`.
+- **SSH keys**, on every Mac (Secure Enclave keys can't leave the Mac they were made on): open Secretive
+  once and let it start its agent at login, create the keys `push` (Require Authentication on) and
+  `signing` (off), then run `secretive_key push` and `secretive_key signing`, see [git](git.md#ssh-keys).
+  Open a new shell first, so `SSH_AUTH_SOCK` points at Secretive.
+- **Secrets**: shell exports in `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in
+  `config/nvim/lua/user/hidden/init.lua`. None of them is in git; each is loaded if it exists.
 - **tmux plugins after editing the plugin list**: `C-a I` inside tmux.
 
 Staying up to date

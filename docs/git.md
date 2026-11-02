@@ -7,6 +7,23 @@ staging and history, and SSH keys that live in the Secure Enclave (Secretive).
 Config: `config/git/.gitconfig` (linked to `~/.gitconfig`). **Change `[user]` in your fork.** It holds the
 GitHub noreply address, so commits don't expose a private email.
 
+Identity
+---
+`[user]` is the same on every Mac. What differs per Mac goes in `~/.config/dotfiles/gitconfig`, which
+`~/.gitconfig` includes last (`setup_machine` creates it from `config/machine/gitconfig`, see
+[setup](setup.md#several-macs)). On a work Mac that is the work email, only in work repos:
+
+```ini
+[includeIf "hasconfig:remote.*.url:git@github.com:my-company/**"]   # by remote, in any folder
+	path = ~/.config/dotfiles/gitconfig-work
+[includeIf "gitdir:~/work/"]                                        # or by folder
+	path = ~/.config/dotfiles/gitconfig-work
+```
+
+with `[user] email = me@my-company.com` in `gitconfig-work`. `git config user.email` inside a repo shows
+which one applies. Each Mac signs with its own Secretive key, so run `secretive_key signing` on each (see
+[SSH keys](#ssh-keys)); GitHub verifies a work commit when the key is on the account that has the work email.
+
 Behaviour
 ---
 - **Diffs, logs and `git add -p`** go through [delta](https://github.com/dandavison/delta): syntax
@@ -92,9 +109,9 @@ still sign while you're logged in, but can't push without your finger.
 - **Making the keys**: in the Secretive app, create a key named `push` with *Require Authentication* on, and
   one named `signing` with it off. Then `secretive_key push` and `secretive_key signing`: each copies the
   public key to `~/.ssh/identities/secretive/<role>.pub` (which the ssh and git config point to) and adds it
-  to GitHub, the push key for ssh and the signing key for signing (and to `config/git/allowed_signers`:
-  commit that). For GitLab, `secretive_key push` copies the public key and opens the page to paste it. Named
-  them differently? `secretive_key push "GitHub push"`.
+  to GitHub under the Mac's name from `setup_machine`, the push key for ssh and the signing key for signing
+  (and to `config/git/allowed_signers`: commit that). For GitLab, `secretive_key push` copies the public key
+  and opens the page to paste it. Named them differently? `secretive_key push "GitHub push"`.
 - `ssh-add -l` lists the keys Secretive offers; `ssh -T git@github.com` checks the push key.
 
 `setup_ssh` adds the include line, removes the `com.makst.ssh-add` login item (which loaded keychain keys

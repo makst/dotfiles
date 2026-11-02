@@ -1,0 +1,12 @@
+# This Mac's own git settings. setup_machine copies this file to ~/.config/dotfiles/gitconfig once; ~/.gitconfig
+# includes that copy last, so whatever is set there wins. The copy isn't in the repo: edit it freely.
+#
+# Work repos get the work email, recognised by their remote (in any folder) or by their folder:
+# [includeIf "hasconfig:remote.*.url:git@github.com:my-company/**"]
+# 	path = ~/.config/dotfiles/gitconfig-work
+# [includeIf "gitdir:~/work/"]
+# 	path = ~/.config/dotfiles/gitconfig-work
+#
+# with ~/.config/dotfiles/gitconfig-work containing
+# [user]
+# 	email = me@my-company.com

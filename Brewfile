@@ -1,6 +1,10 @@
 # Installed by `brew_setup` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
 
+# This Mac's kind, home or work (setup_machine asks once). Every Mac gets all packages below; one that only
+# one kind needs goes in a block like `if kind == "work"` … `end`
+kind = File.read(File.expand_path("~/.config/dotfiles/kind")).strip rescue ""
+
 tap "nikitabobko/tap"              # aerospace
 
 # --- Used by these dotfiles
@@ -39,7 +43,6 @@ brew "docker-compose"
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
-brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
 
 # --- Everyday tools
@@ -65,10 +68,15 @@ cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/
 cask "font-source-code-pro"
 cask "google-chrome"
 cask "firefox@developer-edition"
-cask "signal"
-cask "spotify"
 cask "cyberduck"
 cask "tunnelblick"
+cask "signal"
+cask "spotify"
+brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
+
+# --- This Mac's own packages, not in the repo (setup_machine, config/machine/Brewfile)
+machine_brewfile = File.expand_path("~/.config/dotfiles/Brewfile")
+instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(machine_brewfile)
 
 # --- Review: installed on the old Mac, probably leftovers. Uncomment what you still use.
 # cask "docker-desktop"  # `docker` is aliased to podman

@@ -24,3 +24,6 @@ for file in "$real_script_dir"/zsh/.{exports,zshdefault,aliases,functions,privat
   # source `file` if it's a `readable file`
   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;
+
+# this Mac's own settings (setup_machine), last so they can override anything above
+[[ -r ~/.config/dotfiles/zshrc ]] && source ~/.config/dotfiles/zshrc

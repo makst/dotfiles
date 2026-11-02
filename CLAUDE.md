@@ -14,7 +14,13 @@ difftastic, `shellcheck`, `shfmt`, `ast-grep`, …). SSH keys are in Secretive: 
 tools or this repo: no machine paths, no fonts, no hard dependency beyond zsh, jq, git and gh (anything else,
 like a formatter or tmux, is used when present and skipped otherwise). Machine-specific Claude settings go
 in the dotfiles (the `claude` wrapper in `zsh/.functions`), repo-specific ones in `.claude/settings.json`
-and this file.
+and this file. It also runs next to work projects' own Claude setups: never write into a project, and
+format only with what the project configures.
+
+## Several Macs
+The repo serves any number of Macs, each with a name and a kind (home-like or work-like). Shared config goes
+in the repo and every Mac gets it; what one Mac needs goes in `~/.config/dotfiles` (name, kind, gitconfig,
+zshrc, Brewfile, claude.json), created from `config/machine` by `setup_machine` and loaded when present. Nothing in the repo may name a company, work email or work host.
 
 ## This is the live setup
 `~/.zshrc`, `~/.config/nvim`, `~/.config/tmux`, `~/.gitconfig`, `~/.claude/settings.json` and others are

@@ -173,15 +173,40 @@ function setup_tmux() {
   ~/.tmux/plugins/tpm/bin/install_plugins
 }
 
-# Claude Code may use this shell's SSH agent from inside its sandbox, so commits get signed there (git signs
-# through SSH_AUTH_SOCK, which zsh/.exports points at Secretive). The socket path differs per machine, so it's
-# passed here instead of in the shared config/claude/settings.json.
+# Claude Code with this Mac's settings on top of the shared config/claude/settings.json, passed with --settings
+# so they never land in the repo:
+# - this shell's SSH agent socket is allowed in the sandbox, so commits get signed there (git signs through
+#   SSH_AUTH_SOCK, which zsh/.exports points at Secretive; the path differs per machine)
+# - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
+# Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
+# for the user does.
 function claude() {
-  if [[ -S $SSH_AUTH_SOCK ]]; then
-    command claude --settings "{\"sandbox\":{\"network\":{\"allowUnixSockets\":[\"$SSH_AUTH_SOCK\"]}}}" "$@"
-  else
-    command claude "$@"
+  local machine=~/.config/dotfiles/claude.json settings='{}'
+  [[ -S $SSH_AUTH_SOCK ]] &&
+    settings=$(jq -nc --arg sock $SSH_AUTH_SOCK '{sandbox: {network: {allowUnixSockets: [$sock]}}}')
+  if [[ -r $machine ]]; then
+    local merged
+    merged=$(jq -c --argjson base $settings '$base * .' $machine) && settings=$merged ||
+      print -u2 "$machine isn't valid JSON, starting without it"
   fi
+  command claude --settings "$settings" "$@"
+  local exit_code=$?
+  claude_plugins_check
+  return $exit_code
+}
+
+# claude_plugins_check: warn when the shared config/claude/settings.json has plugins or marketplaces that
+# aren't committed. Installing a plugin "for you" writes it there, through the ~/.claude link, and from there
+# it would reach every Mac with the next commit.
+function claude_plugins_check() {
+  local filter='[.enabledPlugins // {}, .extraKnownMarketplaces // {}]'
+  local now=$(jq -cS $filter $real_script_dir/config/claude/settings.json 2> /dev/null)
+  local committed=$(git -C $real_script_dir show HEAD:config/claude/settings.json 2> /dev/null | jq -cS $filter)
+  [[ $now == $committed ]] && return 0
+  print -u2 "Claude Code added plugins to the shared config/claude/settings.json (see git diff). Move them to" \
+    "~/.config/dotfiles/claude.json for this Mac only, or to a project's .claude/settings.local.json;" \
+    "commit only what every Mac should get."
+  return 1
 }
 
 # Claude Code in its own git worktree (claude -w) and, inside
@@ -332,7 +357,10 @@ function secretive_key() {
     return 1
   fi
 
-  local key=~/.ssh/identities/secretive/$role.pub title="${HOST%%.*} (Secretive)"
+  # GitHub lists the key under this Mac's name (setup_machine)
+  local machine=${HOST%%.*}
+  [[ -r ~/.config/dotfiles/name ]] && machine=$(<~/.config/dotfiles/name)
+  local key=~/.ssh/identities/secretive/$role.pub title="$machine (Secretive)"
   mkdir -p ${key:h} && chmod 700 ${key:h}
   cp $found[1] $key || return
   words=(${=$(<$key)})
@@ -355,7 +383,42 @@ function secretive_key() {
   esac
 }
 
+# setup_machine [<name> <home|work>]: this Mac's own settings, kept out of the repo in ~/.config/dotfiles. Asks
+# the first time for its name (used for its keys on GitHub) and whether it's home-like or work-like (the
+# Brewfile can install packages for one kind only); then creates the files git, zsh, brew and Claude Code load
+# from there, from config/machine, leaving existing ones alone. Also points ~/dotfiles at this clone, wherever
+# it is, since ~/.ssh/config and ~/.gitconfig use that path.
+function setup_machine() {
+  local dir=~/.config/dotfiles name=$1 kind=$2 file
+  if [[ -e ~/dotfiles && ! -L ~/dotfiles && ! ~/dotfiles -ef $real_script_dir ]]; then
+    print -u2 "~/dotfiles exists and isn't this repo ($real_script_dir); move it away and rerun"
+  else
+    [[ ~/dotfiles -ef $real_script_dir ]] || ln -sfn $real_script_dir ~/dotfiles
+  fi
+
+  mkdir -p $dir
+  [[ -z $name && -r $dir/name ]] && name=$(<$dir/name)
+  [[ -z $kind && -r $dir/kind ]] && kind=$(<$dir/kind)
+  local suggested=${(L)${HOST%%.*}}
+  until [[ -n $name && $name != *[^[:alnum:]_-]* ]]; do
+    read -r "name?Name for this Mac (letters, digits, - and _; shown with its keys on GitHub) [$suggested]: " ||
+      return 1
+    name=${name:-$suggested}
+  done
+  until [[ $kind == (home|work) ]]; do
+    print "Is it home-like or work-like? Every Mac gets all the shared apps; the kind only adds what the"
+    read -r "kind?Brewfile marks for home or for work [home/work]: " || return 1
+  done
+  print -r -- $name > $dir/name
+  print -r -- $kind > $dir/kind
+
+  for file in $real_script_dir/config/machine/*(N); do
+    [[ -e $dir/${file:t} ]] || cp $file $dir/
+  done
+}
+
 function setup_dotfiles() {
+  setup_machine
   brew_setup
   fzf_setup
   setup_atuin

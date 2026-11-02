@@ -5,7 +5,14 @@ set -e
 cd "$(dirname "$0")"
 DOTFILES="$(pwd)"
 
-ln -sfn "$DOTFILES" "$HOME/dotfiles"
+# ~/dotfiles points to this clone wherever it is (the configs use that path), unless the clone is ~/dotfiles
+if [ ! "$DOTFILES" -ef "$HOME/dotfiles" ]; then
+  if [ -e "$HOME/dotfiles" ] && [ ! -L "$HOME/dotfiles" ]; then
+    echo "=> ~/dotfiles exists and isn't this repo; move it away and rerun" >&2
+    exit 1
+  fi
+  ln -sfn "$DOTFILES" "$HOME/dotfiles"
+fi
 
 # Keep an existing, non-symlinked .zshrc around instead of silently replacing it.
 if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then

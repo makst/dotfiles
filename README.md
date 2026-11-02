@@ -26,7 +26,7 @@ one person.
 git clone <your fork> ~/repos/dotfiles && cd ~/repos/dotfiles
 ./prepare-zsh-install.sh   # Homebrew, zsh, links ~/.zshrc, makes zsh the login shell
 exec zsh
-setup_dotfiles             # everything else; idempotent, rerun after every `git pull`
+setup_dotfiles             # asks the Mac's name and kind once, then everything; rerun after `git pull`
 ```
 
 Then grant Accessibility access to Ghostty (for the drop-down terminal) and AeroSpace. [docs/setup.md](docs/setup.md) lists
@@ -86,10 +86,13 @@ config/git/.gitconfig     git
 config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
+config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 data_dir/navi/cheats/     own navi cheatsheets
 docs/                     this documentation
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 
-Private, machine-specific settings go in files that are gitignored and loaded when present:
-`zsh/.private` (shell, e.g. tokens) and `config/nvim/lua/user/hidden/init.lua` (nvim).
+The same repo serves any number of Macs, e.g. one for home and one for work. What only one Mac needs (work email,
+work plugins for Claude Code, extra packages, shell settings) lives outside the repo in `~/.config/dotfiles`,
+see [setup](docs/setup.md#several-macs). Secrets go in files that are gitignored and loaded when
+present: `zsh/.private` (shell, e.g. tokens) and `config/nvim/lua/user/hidden/init.lua` (nvim).
