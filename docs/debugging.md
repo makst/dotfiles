@@ -13,7 +13,8 @@ What's installed
 ---
 - **VS Code** and **delve** (the Go debugger) from the Brewfile.
 - `setup_vscode` (part of `setup_dotfiles`) links `config/vscode/settings.json` into VS Code and installs the
-  extensions in `config/vscode/extensions.txt`: Go, Python and its debugger, vim keys, the One Dark Pro theme.
+  extensions in `config/vscode/extensions.txt`: Go, Python and its debugger, vim keys (set up like nvim's,
+  see [vim-keys](vim-keys.md)), the One Dark Pro theme.
   JavaScript and TypeScript debugging, in Node and in Chrome, is built in.
 - The settings: Source Code Pro, no format on save (nvim formats, with the project's own formatter), saving
   when VS Code loses focus, so nvim sees the change as soon as you switch back, and no telemetry. VS Code
@@ -60,8 +61,10 @@ In nvim:
 |---|---|
 | `,vo` | open this file at this line in VS Code, in the project's window (git root) |
 
-In VS Code (with the vim extension, normal vim keys work in the editor). On a Mac keyboard, the F keys need
-`fn` unless *Use F1, F2, etc. keys as standard function keys* is on in System Settings → Keyboard.
+In VS Code, the vim extension has nvim's keys (see [vim-keys](vim-keys.md)), plus `,d` for debugging: `,db`
+breakpoint, `,ds` start, `,dc` continue, `,dn` / `,di` / `,du` step over / into / out, `,dx` stop. The same
+`,d` keys work in Android Studio. VS Code's own keys work too; on a Mac keyboard, the F keys need `fn` unless
+*Use F1, F2, etc. keys as standard function keys* is on in System Settings → Keyboard.
 
 | Key | Does |
 |---|---|

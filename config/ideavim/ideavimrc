@@ -1,0 +1,83 @@
+" IdeaVim in Android Studio (and any JetBrains IDE): the same keys as nvim, as far as the IDE has a matching
+" action. nvim's config is the reference; docs/vim-keys.md has the table of what is shared. Linked to
+" ~/.ideavimrc by setup_ideavim. `:action` lists action ids, `,re` reloads this file.
+
+let mapleader = ','
+
+set clipboard+=unnamed
+set ignorecase smartcase incsearch hlsearch
+set scrolloff=10
+" J joins lines the way the IDE does (removes comment markers, joins strings)
+set ideajoin
+
+" emulated vim plugins, built into IdeaVim: ys/ds/cs and S, gc/gcc
+set surround
+set commentary
+
+" these keys go to vim, not to the IDE's own shortcuts
+sethandler <C-h> a:vim
+sethandler <C-j> a:vim
+sethandler <C-k> a:vim
+sethandler <C-l> a:vim
+
+inoremap jj <Esc>
+nnoremap x "_x
+nnoremap <leader>re :source ~/.ideavimrc<CR>
+
+" m: jump anywhere on screen by label, like flash.nvim (AceJump plugin)
+nmap m <Action>(AceAction)
+
+" between splits, as C-h/j/k/l between nvim splits and tmux panes
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" ; pickers (telescope in nvim)
+nmap ;f <Action>(GotoFile)
+nmap ;g <Action>(GotoFile)
+nmap ;r <Action>(FindInPath)
+nmap ;s <Action>(FindInPath)
+nmap ;b <Action>(RecentFiles)
+nmap ;d <Action>(FileStructurePopup)
+nmap ;w <Action>(GotoSymbol)
+nmap ;e <Action>(ActivateProblemsViewToolWindow)
+nmap ;p <Action>(ManageRecentProjects)
+
+" code, as the LSP keys in nvim
+nmap gd <Action>(GotoDeclaration)
+nmap gr <Action>(ShowUsages)
+nmap gre <Action>(RenameElement)
+nmap ]d <Action>(GotoNextError)
+nmap [d <Action>(GotoPreviousError)
+nmap <leader>hd <Action>(QuickJavaDoc)
+nmap <leader>hs <Action>(ParameterInfo)
+
+" files, buffers, splits
+nmap <leader>e <Action>(ActivateProjectToolWindow)
+nmap <leader>f <Action>(SelectInProjectView)
+nmap <leader>w <Action>(SaveAll)
+nmap <leader>q <Action>(CloseContent)
+nmap <leader>bd <Action>(CloseContent)
+nmap <leader>bn <Action>(NextTab)
+nmap <leader>bp <Action>(PreviousTab)
+nmap <leader>sv <Action>(SplitVertically)
+nmap <leader>ss <Action>(SplitHorizontally)
+nmap <leader>zi <Action>(MaximizeEditorInSplit)
+nmap <leader>zo <Action>(MaximizeEditorInSplit)
+nmap <leader>so <Action>(ActivateStructureToolWindow)
+nmap <leader>sr <Action>(ReplaceInPath)
+nmap <leader>xx <Action>(ActivateProblemsViewToolWindow)
+
+" debugging: the same ,d keys as in VS Code (nvim has no debugger)
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>ds <Action>(Debug)
+nmap <leader>dc <Action>(Resume)
+nmap <leader>dn <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>du <Action>(StepOut)
+nmap <leader>dx <Action>(Stop)
+
+" Android, as the ,a keys in nvim
+nmap <leader>ar <Action>(Run)
+nmap <leader>ax <Action>(Stop)

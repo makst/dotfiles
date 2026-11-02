@@ -13,6 +13,8 @@ Layout of the config
 - `lua/user/base.lua` options, `lua/user/keymaps.lua` general keys, `lua/user/plugins.lua` the plugin list.
 - `lua/user/<plugin>/` per plugin: `config.lua` (setup) and `keymaps.lua`. To find where a key is defined,
   look in the `keymaps.lua` of the plugin it belongs to.
+- These keys are also the reference for VS Code and Android Studio, which get the same ones as far as they
+  can: see [vim-keys](vim-keys.md).
 - `lua/user/hidden/init.lua` is gitignored and loaded if present, for private settings.
 
 **Adding a plugin:** add it to `plugins.lua`, create `lua/user/<name>/` with its config and keymaps,

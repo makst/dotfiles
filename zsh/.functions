@@ -73,6 +73,21 @@ function setup_vscode() {
   done
 }
 
+# setup_ideavim: nvim's keys in Android Studio (docs/vim-keys.md). Links ~/.ideavimrc and installs the IdeaVim
+# and AceJump plugins when Android Studio doesn't have them yet; that needs Android Studio closed, so a running
+# one is left alone with a note.
+function setup_ideavim() {
+  ln -sfn "$real_script_dir/config/ideavim/ideavimrc" ~/.ideavimrc
+  command -v studio > /dev/null || return 0
+  local -a plugins=(~/Library/'Application Support'/Google/AndroidStudio*/plugins/{IdeaVIM,acejump}(N/))
+  (( $#plugins == 2 )) && return 0
+  if pgrep -qf 'Android Studio.app'; then
+    print "Android Studio is running: close it and run setup_ideavim again to install IdeaVim and AceJump"
+    return 0
+  fi
+  studio installPlugins IdeaVIM AceJump 2>&1 | grep 'installed plugin'
+}
+
 function fzf_setup() {
   # fzf, eza (improved file/directory listing), bat (cat with syntax highlighting) and
   # lesspipe (display more with less) come from the Brewfile
@@ -613,7 +628,7 @@ function setup_dotfiles() {
   local -a failed
   for step in brew_setup fzf_setup setup_atuin npm_setup setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude remap_keys setup_macos_defaults \
-    setup_window_management setup_vscode; do
+    setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
     $step || failed+=$step
   done

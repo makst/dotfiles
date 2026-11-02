@@ -26,6 +26,7 @@ lazygit, `cmd+j` shows every session.
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
+| Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
 | Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
@@ -59,6 +60,7 @@ on workspace 8 (`alt+8`), on the second display if there is one. More in [mobile
    sudo xcode-select -s /Applications/Xcode.app && sudo xcodebuild -license accept
    ```
 3. In nvim, `:checkhealth xcodebuild` should show nothing missing.
+4. In Xcode, Editor → Vim Mode, for vim keys there too (Xcode takes no mappings, so not nvim's own keys).
 
 **Once per project**, in nvim at the project's root:
 
@@ -89,9 +91,11 @@ Studio and the emulator open on workspace 9 (`alt+9`), on the second display if 
 1. Open Android Studio and go through its setup wizard: it downloads the Android SDK into
    `~/Library/Android/sdk`.
 2. In its Device Manager, create an emulator (or connect a phone with USB debugging on).
-3. Open a new shell and restart nvim, so they see the SDK: `adb devices` should work, and lists the phone
+3. If Android Studio was open during `setup_dotfiles`, close it and run `setup_ideavim`: IdeaVim gives it
+   nvim's keys (see [vim-keys](docs/vim-keys.md)).
+4. Open a new shell and restart nvim, so they see the SDK: `adb devices` should work, and lists the phone
    or a running emulator.
-4. Check kotlin-lsp in an Android project: open a `.kt` file, give the first Gradle import a minute, then
+5. Check kotlin-lsp in an Android project: open a `.kt` file, give the first Gradle import a minute, then
    `gd` on a name should jump to its definition (`:checkhealth vim.lsp` shows the server if not).
 
 **Once per project**: nothing. Open nvim anywhere in it; the first time, kotlin-lsp imports the project
@@ -154,7 +158,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
 | `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
-| `jj` | leave insert mode, in nvim and in zsh | |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code and Android Studio | |
 | `C-r` / `C-t` | atuin history, fzf files, in zsh | |
 
 Switching sessions and windows
@@ -194,7 +198,8 @@ config/starship.toml      prompt
 config/git/.gitconfig     git
 config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
-config/vscode/            VS Code, the debugger: settings and the extensions to install
+config/vscode/            VS Code, the debugger: settings (with nvim's keys) and the extensions to install
+config/ideavim/           nvim's keys in Android Studio (IdeaVim)
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it

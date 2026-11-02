@@ -21,6 +21,7 @@ iOS
 - From the Brewfile: `xcode-build-server` (lets sourcekit-lsp understand Xcode projects), `xcbeautify`
   (readable build output) and `swiftformat`.
 - `:checkhealth xcodebuild` in nvim lists anything still missing.
+- Vim keys in Xcode: Editor → Vim Mode. Plain vim only: Xcode takes no mappings (see [vim-keys](vim-keys.md)).
 
 With only the Command Line Tools, sourcekit-lsp starts but its `sourcekitd` service keeps crashing, so
 there is no completion or go-to-definition in Swift until Xcode is installed.
@@ -69,6 +70,8 @@ Android
 
 ### What's needed
 - From the Brewfile: **Android Studio**, **kotlin-lsp** (JetBrains' Kotlin language server) and **ktlint**.
+- `setup_ideavim` gives Android Studio nvim's keys: IdeaVim and AceJump, and `~/.ideavimrc` from this repo
+  (see [vim-keys](vim-keys.md)). It installs the plugins only while Android Studio is closed.
 - Open Android Studio once and go through its setup: it installs the SDK into `~/Library/Android/sdk`.
   `zsh/.exports` then puts `adb`, `emulator` and `sdkmanager` on `PATH` and sets `JAVA_HOME` to Android
   Studio's own JDK (unless it is set already), which Gradle needs. Open a new shell (or restart nvim) after.

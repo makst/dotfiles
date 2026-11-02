@@ -38,7 +38,9 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.
 - **Keys**: each layer owns its modifier (README, "How the keyboard is split"). Check for clashes with tmux,
-  Ghostty, AeroSpace and nvim before binding anything.
+  Ghostty, AeroSpace and nvim before binding anything. nvim's keys are the reference for every editor: a key
+  added or changed in nvim also goes into VS Code (`config/vscode/settings.json`) and Android Studio
+  (`config/ideavim/ideavimrc`) where they have a matching action, and into the table in `docs/vim-keys.md`.
 - **GIFs** in any Markdown file sit in a `<details>` toggle, closed by default, where they belong on the page.
   The `<summary>` is always `<b>Show GIF</b>`; inside, one short line says what the GIF shows, then the image.
   Format in `docs/gifs.md`, "Adding one".
