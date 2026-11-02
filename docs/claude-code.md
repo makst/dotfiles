@@ -41,9 +41,11 @@ agent_done --force fix-login  # the same for a branch you don't want to merge
 ```
 Merge the agent's branch first (`git merge worktree-fix-login` or a PR); `agent_done` only removes things
 when nothing would be lost: it stops if the worktree has uncommitted changes, and without `--force` if the
-branch has commits that aren't in the default branch. It works from anywhere in the repo, the worktree itself
-included. Claude Code locks its worktree while it runs, so `agent_done` closes the window first, which ends
-Claude, and waits a moment for the lock to go.
+branch has commits that aren't in the default branch. A commit counts as merged when it's in the local
+default branch or in origin's, so an agent that pushed its work straight to `origin/main` can be finished
+without pulling first. It works from anywhere in the repo, the worktree itself included. Claude Code locks
+its worktree while it runs, so `agent_done` closes the window first, which ends Claude, and waits a moment
+for the lock to go.
 
 Noticing an agent that waits
 ---

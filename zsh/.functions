@@ -267,7 +267,8 @@ function agent() {
 # worktrees: their branch, whether it's merged and whether there are uncommitted changes. With one, removes the
 # worktree, deletes its branch and closes its tmux window, but only if nothing would be lost: no uncommitted
 # changes and the branch merged into the default branch. --force deletes an unmerged branch too (uncommitted
-# changes still stop it).
+# changes still stop it). Merged means in the local default branch or in origin's: an agent that pushed its
+# work straight to origin leaves the local branch behind.
 function agent_done() {
   local force=0
   [[ $1 == --force ]] && { force=1; shift }
@@ -276,18 +277,25 @@ function agent_done() {
   local root=$main/.claude/worktrees
   local default=${"$(git -C $main symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
   [[ -n $default ]] || default=$(git -C $main rev-parse --abbrev-ref HEAD)
+  local -a merged_into=($default)
+  git -C $main rev-parse -q --verify refs/remotes/origin/$default > /dev/null && merged_into+=origin/$default
+  _agent_merged() {
+    local ref
+    for ref in $merged_into; do git -C $main merge-base --is-ancestor $1 $ref && return; done
+    return 1
+  }
 
   if [[ -z $1 ]]; then
     local wt branch tip state
     for wt in $root/*(N/); do
       branch=$(git -C $wt branch --show-current) tip=$(git -C $wt rev-parse HEAD)
-      if git -C $main merge-base --is-ancestor $tip $default; then state="merged"
+      if _agent_merged $tip; then state="merged"
       else
         local ahead=$(git -C $main rev-list --count $default..$tip)
         state="$ahead commit${${ahead:#1}:+s} not in $default"
       fi
       [[ -n $(git -C $wt status --porcelain) ]] && state+=", uncommitted changes"
-      print "${wt:t}  ($branch: $state)"
+      print "${wt:t}  (${branch:-detached}: $state)"
     done
     return
   fi
@@ -300,7 +308,7 @@ function agent_done() {
     git -C $wt status --short >&2
     return 1
   fi
-  if ! git -C $main merge-base --is-ancestor $tip $default && (( ! force )); then
+  if ! _agent_merged $tip && (( ! force )); then
     print -u2 "${branch:-$name} isn't merged into $default; merge it, or agent_done --force $name to drop it:"
     git -C $main log --oneline $default..$tip >&2
     return 1
