@@ -1,6 +1,6 @@
 #!/bin/zsh
 # Claude Code's status line: directory, git branch, worktree, model and effort, how full the context is, and
-# the 5-hour / 7-day usage once it gets high. ANSI colour names and no icon font, so it fits any terminal and
+# the 5-hour / 7-day usage of the plan's limits. ANSI colour names and no icon font, so it fits any terminal and
 # theme. Claude Code passes the session as JSON on stdin; needs zsh, jq and git.
 
 local -a f
@@ -9,8 +9,8 @@ f=("${(@f)$(jq -r '
   .model.display_name // "?",
   .effort.level // "",
   (.context_window.used_percentage // 0 | floor),
-  (.rate_limits.five_hour.used_percentage // 0 | floor),
-  (.rate_limits.seven_day.used_percentage // 0 | floor)')}")
+  (.rate_limits.five_hour.used_percentage // "" | if . == "" then . else floor end),
+  (.rate_limits.seven_day.used_percentage // "" | if . == "" then . else floor end)')}")
 local dir=$f[1] model=$f[2] effort=$f[3] ctx=$f[4] five=$f[5] week=$f[6]
 
 local reset=$'\e[0m' bold_blue=$'\e[1;34m' purple=$'\e[35m' cyan=$'\e[36m' yellow=$'\e[33m' red=$'\e[31m'
@@ -41,7 +41,8 @@ fi
 
 out+="  $dim$model${effort:+ $effort}$reset"
 out+="  $(level $ctx 50 80)ctx $ctx%$reset"
-(( five >= 50 )) && out+="  $(level $five 50 80)5h $five%$reset"
-(( week >= 50 )) && out+="  $(level $week 50 80)7d $week%$reset"
+# the plan's limits; missing before the first reply in a session and when signed in with an API key
+[[ -n $five ]] && out+="  $(level $five 50 80)5h $five%$reset"
+[[ -n $week ]] && out+="  $(level $week 50 80)7d $week%$reset"
 
 print -rn -- $out

@@ -175,9 +175,10 @@ In an agent's window, `/ship` then `agent_done <name>` after merging is the whol
 
 ### Status line
 ```
-dotfiles/docs feat/claude-config* (worktree)  Opus 5.5 medium  ctx 18%  5h 62%
+dotfiles/docs feat/claude-config* (worktree)  Opus 5.5 medium  ctx 18%  5h 12%  7d 34%
 ```
 The directory from the repo root, the branch (`*` when there are uncommitted changes), `worktree` in an
 agent's own worktree, the model and effort, and how full the context window is: green, yellow from 50%, red
-from 80%, when it's time to `/compact` or `/clear`. Usage of the 5-hour and 7-day limits shows up once one
-passes 50%. ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).
+from 80%, when it's time to `/compact` or `/clear`. Then how much of the plan's 5-hour session and 7-day
+weekly limits is used, in the same colours; they appear after the first reply in a session, and not at all
+when signed in with an API key. ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).
