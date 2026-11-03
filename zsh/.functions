@@ -422,7 +422,12 @@ function setup_nvim() {
 
   # plugins: lazy.nvim bootstraps itself on first start; install the versions pinned in
   # config/nvim/lazy-lock.json (needs network, cmake for telescope-fzf-native)
-  command -v nvim > /dev/null && nvim --headless "+Lazy! restore" +qa
+  command -v nvim > /dev/null || return 1
+  # nvim exits 0 even when the config throws; a clean run writes nothing to stderr, so anything there (a Lua
+  # error on start) fails the step and setup_dotfiles lists it. lazy.nvim logs failed tasks to stdout, not here
+  local errors
+  { errors=$(nvim --headless "+Lazy! restore" +qa 2>&1 1>&3) } 3>&1
+  [[ -z $errors ]] || { print -u2 -r -- $errors; return 1 }
 }
 
 function setup_git() {
