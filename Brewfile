@@ -10,7 +10,7 @@ tap "nikitabobko/tap"              # aerospace
 # --- Used by these dotfiles
 brew "git"
 brew "wget"
-brew "uv"                          # python versions, venvs, tools; setup_python
+brew "uv"                          # python versions, venvs, tools; setup_python, mds
 brew "zsh"
 brew "zsh-completions"
 brew "fzf-tab"                     # zsh plugins, sourced in zsh/.zshdefault

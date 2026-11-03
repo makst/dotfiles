@@ -142,6 +142,7 @@ Aliases and functions worth knowing
 | `tm` | tmux session picker |
 | `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
 | `agent_done [--force] [name]` | lists the agents, or removes a finished one's worktree, branch and window, see [claude-code](claude-code.md#finishing-an-agent) |
+| `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
 | `docker` | podman (Docker Desktop isn't installed) |

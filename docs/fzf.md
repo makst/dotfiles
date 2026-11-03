@@ -59,6 +59,7 @@ Every `Tab` completion opens in fzf instead of zsh's menu: type to filter, `Ente
 - Completions are grouped (commands, aliases, files, …); `,` and `.` switch groups.
 - `cd <Tab>` previews each directory's contents.
 - Files are coloured like `ls`.
+- `git checkout <Tab>` keeps git's own order (recent branches first) instead of sorting.
 
 Markdown (mdv)
 ---
@@ -66,7 +67,11 @@ Markdown (mdv)
 in glow's pager. The preview pane shows the rendered file as you move through the list, wrapped to the pane's
 width. Only one file can be picked, and `q` leaves the pager. `mdv <file>` skips the list and opens that file.
 Glow uses its own dark style, not the base16 theme, so its colours differ from the rest of the terminal.
-- `git checkout <Tab>` keeps git's own order (recent branches first) instead of sorting.
+
+`mds [dir]` shows the same files in the browser instead: a local site with the folders as a sidebar, search,
+and a reload whenever a file is saved (MkDocs with the Material theme, through `uvx`, on `127.0.0.1:8000`, or
+`MDS_PORT`). Nothing is installed or written into the folder, and nothing leaves the Mac; a folder with its
+own `mkdocs.yml` is served with that. `C-c` stops it.
 
 Find in files
 ---

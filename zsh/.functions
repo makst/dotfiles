@@ -109,6 +109,27 @@ function mdv() {
   glow -p "$file"
 }
 
+# mds [dir]: browse the markdown files under dir (default: here) as a local site in the browser: a sidebar
+# from the folders, search, and a reload on every save. MkDocs with the Material theme, run through uvx, so
+# nothing is installed and nothing leaves the Mac (localhost only). A dir with its own mkdocs.yml uses that;
+# otherwise a throwaway config points at dir, which stays untouched. C-c stops it. Material is maintained until
+# May 2027 (its notice is switched off); Zensical, from the same team, reads the same config after that.
+#   mds
+#   mds ~/work/gcp
+function mds() {
+  local dir=${1:-.}
+  [[ -d $dir ]] || { print -u2 "mds: $dir isn't a directory"; return 1 }
+  dir=${dir:A}
+  local -a run=(env NO_MKDOCS_2_WARNING=1 uvx --with mkdocs-material mkdocs serve --open --dev-addr 127.0.0.1:${MDS_PORT:-8000})
+  if [[ -r $dir/mkdocs.yml ]]; then
+    (cd $dir && $run)
+  else
+    # =(…) is a temp file zsh deletes when mkdocs exits; JSON is valid YAML and jq quotes the path
+    $run -f =(jq -n --arg dir $dir '{site_name: ($dir | split("/") | last), docs_dir: $dir,
+      theme: {name: "material", palette: {media: "(prefers-color-scheme)"}}}')
+  fi
+}
+
 function npm_setup() {
   # node comes from fnm (Brewfile, zsh/.exports)
   fnm install --lts
