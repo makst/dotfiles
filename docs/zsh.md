@@ -170,6 +170,7 @@ From the Brewfile, worth knowing about:
 | `yq` | `jq` for YAML, TOML and XML: `yq '.services \| keys' compose.yaml`, `yq -i '.a.b = 1' x.yaml` edits in place |
 | `shellcheck <file>` | finds bugs in shell scripts: quoting, unset variables, wrong tests. bash and sh, not zsh |
 | `ast-grep -p '<pattern>'` | search code by syntax, `$X` matches any expression: `ast-grep -p 'console.log($X)' -l js`; `-r '<new>'` rewrites |
+| `just` | runs a project's tasks from its `justfile`: `just` runs the first recipe, `just <recipe> <args>` a named one, `just --list`; tab-completes recipes |
 | `uv`, `uvx` | python projects and tools, see [above](#language-versions) |
 
 Pager and colours

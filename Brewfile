@@ -56,6 +56,7 @@ brew "jq"
 brew "yq"                          # jq for YAML (and TOML, XML)
 brew "shellcheck"                  # finds bugs in shell scripts
 brew "ast-grep"                    # search and rewrite code by syntax, not text
+brew "just"                        # project task runner: `just <recipe>` from a justfile
 brew "xh"                          # HTTP requests, httpie-compatible syntax
 brew "btop"                        # processes, CPU, memory, network
 brew "yazi"                        # file manager with previews
