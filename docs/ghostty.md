@@ -9,10 +9,15 @@ Config: `config/ghostty/config`. Reload with `cmd+shift+,`. All options with the
 
 Windows: tmux and plain
 ---
-- **The first window** attaches to the tmux session `main` (creating it if needed). Quitting Ghostty only
-  detaches, so everything running in tmux keeps running and is there the next time you open it.
-- **Further windows** (`cmd+n`) and the **quick terminal** are plain zsh, for when you want a shell
-  outside tmux.
+- **A new window** attaches to the tmux session `main` (creating it if needed) when no other window shows
+  it. Quitting Ghostty only detaches, so everything running in tmux keeps running and is there the next
+  time you open it.
+- **Further windows** (`cmd+n`) and the **quick terminal**, opened while a window already shows `main`, are
+  plain zsh, for when you want a shell outside tmux.
+
+Each window decides when it opens, not just the first one Ghostty starts with: Ghostty restores the last
+session's windows, and a restored window you can't see must not keep tmux to itself. Close the tmux window
+and the next one you open attaches again.
 
 The tmux session is started through a login zsh, so the tmux server inherits the full `PATH` (Homebrew,
 fnm, `~/bin`). Without that, tmux popups and plugins started from Ghostty wouldn't find `fzf`, `zoxide` or

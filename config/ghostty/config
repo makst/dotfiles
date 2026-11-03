@@ -43,10 +43,12 @@ quick-terminal-position = top
 quick-terminal-animation-duration = 0.1
 
 # -- tmux -----------------------------------------------------------------------------
-# The first window attaches to the tmux session "main" (created if needed), so sessions, agents and
-# layouts survive quitting Ghostty. It goes through a login zsh so the tmux server gets the full PATH
-# (fzf, zoxide, claude for popups and plugins). Further windows and the quick terminal are plain zsh.
-initial-command = /opt/homebrew/bin/zsh -lic 'exec tmux new-session -A -s main'
+# A new window attaches to the tmux session "main" (created if needed) when no other window shows it, so
+# sessions, agents and layouts survive quitting Ghostty; otherwise it's plain zsh. Decided per window, not
+# for the first one only: a window that window-save-state restores out of sight must not keep tmux to
+# itself. tmux starts through a login zsh so its server gets the full PATH (fzf, zoxide, claude for popups
+# and plugins). zsh first in the command keeps Ghostty's zsh shell integration.
+command = /opt/homebrew/bin/zsh -fc 'if /opt/homebrew/bin/tmux list-clients -t main 2>/dev/null | read -r; then exec /opt/homebrew/bin/zsh -l; else exec /opt/homebrew/bin/zsh -lic "exec tmux new-session -A -s main"; fi'
 
 # Cmd shortcuts drive tmux: they send the prefix (C-a, \x01) and a key bound in config/tmux/tmux.conf.
 # In a plain window (cmd+n, quick terminal) they type into the shell; close those with cmd+shift+w.
