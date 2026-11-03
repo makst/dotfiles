@@ -96,12 +96,12 @@ function fzf_setup() {
 
 # mdv [dir]: pick a markdown file under dir (default: here) and read it rendered in glow's pager.
 # The preview pane shows the rendered file while you move through the list (nohidden: the fzf defaults hide
-# the preview until `?`). Single pick only, so a stray Tab can't pass several files to glow.
+# the preview until `?`), wrapped to the pane's width. Single pick only, so a stray Tab can't pass several files to glow.
 #   mdv
 #   mdv docs
 function mdv() {
   local file
-  file=$(fd --extension md . "${1:-.}" | fzf --no-multi --preview-window=nohidden --preview 'glow -s dark {}') ||
+  file=$(fd --extension md . "${1:-.}" | fzf --no-multi --preview-window=nohidden --preview 'glow -s dark -w $FZF_PREVIEW_COLUMNS {}') ||
     return
   glow -p "$file"
 }

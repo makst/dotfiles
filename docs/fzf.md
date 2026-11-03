@@ -63,7 +63,7 @@ Every `Tab` completion opens in fzf instead of zsh's menu: type to filter, `Ente
 Markdown (mdv)
 ---
 `mdv [dir]` picks a markdown file under `dir` (default: the current directory) with fzf and opens it rendered
-in glow's pager. The preview pane shows the rendered file as you move through the list. Only one file can be
+in glow's pager. The preview pane shows the rendered file as you move through the list, wrapped to the pane's width. Only one file can be
 picked, and `q` leaves the pager. Glow uses its own dark style, not the base16 theme, so its colours differ
 from the rest of the terminal.
 - `git checkout <Tab>` keeps git's own order (recent branches first) instead of sorting.
