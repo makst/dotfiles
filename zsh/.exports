@@ -42,6 +42,10 @@ if [[ -d ~/Library/Android/sdk ]]; then
   unset _studio_jdk
 fi
 
+# Google Cloud (gcloud-cli cask): bq and the components `gcloud components install` adds, like
+# gke-gcloud-auth-plugin for kubectl, live here; brew links only gcloud, bq and gsutil
+[[ -d /opt/homebrew/share/google-cloud-sdk/bin ]] && path+=(/opt/homebrew/share/google-cloud-sdk/bin)
+
 # node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls), and cd into a
 # directory with .nvmrc / .node-version switches to that version. Not cached: it makes a link per shell.
 command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"

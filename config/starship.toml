@@ -10,6 +10,7 @@ $git_branch\
 $git_state\
 $git_status\
 $kubernetes\
+$gcloud\
 $aws\
 $nodejs\
 $python\
@@ -48,6 +49,13 @@ disabled = false
 format = "[$symbol$context( \\($namespace\\))]($style) "
 symbol = "󱃾 "
 style = "cyan"
+
+[gcloud]
+# the active gcloud project, so it's clear whether commands go to staging or production; the account is left
+# out (always the same, and long)
+format = "[$symbol$project]($style) "
+symbol = "󱇶 "
+style = "blue"
 
 [aws]
 format = "[$symbol($profile)(\\($region\\))]($style) "

@@ -98,6 +98,8 @@ they show up in `git diff`; for plugins that's usually not what you want, see [P
 - **Never allowed**: force pushes (`--force-with-lease` still asks) and reading private key files
   `~/.ssh/id_*`. In this repo also `zsh/.private` and `config/nvim/lua/user/hidden/`, which hold secrets
   (`.claude/settings.json`, this repo's own project settings).
+- **Google Cloud is read-only**: `gcloud`, `bq` and `gsutil` commands that create, change or delete
+  resources or access, and `gcloud config set`, are denied (see [gcloud](gcloud.md#what-claude-code-can-do)).
 - Everything else asks as usual, including `git commit` and `git push`.
 
 ### This machine

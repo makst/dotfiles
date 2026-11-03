@@ -43,6 +43,9 @@ zstyle ':completion:*' special-dirs true
 zstyle ':completion:*' use-cache yes
 zstyle ':completion:*' cache-path $ZSH_CACHE_DIR/compcache
 setopt complete_in_word always_to_end
+# gcloud, bq and gsutil (gcloud-cli cask): a bash-style completion script, ~1 ms
+[[ -r $HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc ]] &&
+  source $HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc
 
 # -- plugins ---------------------------------------------------------------------
 # fzf-tab replaces the completion menu: it loads after compinit and before the plugins that wrap widgets

@@ -98,6 +98,11 @@ if kind == "home"
   cask "tunnelblick"               # personal VPN; a work Mac has the company's, and two VPN clients clash
 end
 
+# --- Work-like Macs only
+if kind == "work"
+  cask "gcloud-cli"                # gcloud, bq, gsutil; PATH and completion in zsh/.exports, zsh/.zshdefault
+end
+
 # --- This Mac's own packages, not in the repo (setup_machine, config/machine/Brewfile)
 machine_brewfile = File.expand_path("~/.config/dotfiles/Brewfile")
 instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(machine_brewfile)
