@@ -257,16 +257,23 @@ function make_gifs() {
 # - this shell's SSH agent socket is allowed in the sandbox, so commits get signed there (git signs through
 #   SSH_AUTH_SOCK, which zsh/.exports points at Secretive; the path differs per machine)
 # - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
+# - the project's .claude/settings.local.json enabledPlugins on top, because --settings outranks that file:
+#   without this a project couldn't switch off a plugin that claude.json turns on
 # Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
 # for the user does.
 function claude() {
-  local machine=~/.config/dotfiles/claude.json settings='{}'
+  local machine=~/.config/dotfiles/claude.json settings='{}' merged
+  local root=${"$(git rev-parse --show-toplevel 2> /dev/null)":-$PWD}
+  local project=$root/.claude/settings.local.json
   [[ -S $SSH_AUTH_SOCK ]] &&
     settings=$(jq -nc --arg sock $SSH_AUTH_SOCK '{sandbox: {network: {allowUnixSockets: [$sock]}}}')
   if [[ -r $machine ]]; then
-    local merged
     merged=$(jq -c --argjson base $settings '$base * .' $machine) && settings=$merged ||
       print -u2 "$machine isn't valid JSON, starting without it"
+  fi
+  if [[ -r $project ]]; then
+    merged=$(jq -c --argjson base $settings '$base * {enabledPlugins: (.enabledPlugins // {})}' $project) &&
+      settings=$merged || print -u2 "$project isn't valid JSON, its plugins aren't applied"
   fi
   command claude --settings "$settings" "$@"
   local exit_code=$?

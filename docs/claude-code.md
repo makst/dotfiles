@@ -109,6 +109,9 @@ The parts that depend on the Mac live in the dotfiles, not in `config/claude`. T
 - **This Mac's settings**: `~/.config/dotfiles/claude.json` (from `setup_machine`, `{}` at first), merged
   in. Anything a settings file can hold: plugins and marketplaces, `env`, permissions, a different `model`,
   and auto mode's description of the environment (`autoMode.environment`), which names this Mac's repos.
+- **The project's plugin choices**: `enabledPlugins` from the project's `.claude/settings.local.json`, put on
+  top. Settings passed with `--settings` outrank that file, so without this a project couldn't switch off a
+  plugin that `claude.json` turns on.
 
 Claude Code started some other way, from the desktop app or an IDE, gets neither.
 
@@ -137,6 +140,11 @@ A plugin turned on in `claude.json` needs its marketplace there too:
 the `claude` function checks for that and says so; move the entries to `claude.json`, or commit them if
 every Mac should have them. Plugins shared with your claude.ai organisation sync by themselves and touch no
 file.
+
+To keep a plugin from `claude.json` out of one project, set it to `false` in that project's
+`.claude/settings.local.json` (`"enabledPlugins": { "some-plugin@my-company": false }`) and restart
+Claude Code. Plugins your organisation turns on through managed settings can't be switched off this way;
+managed settings outrank everything.
 
 ### Work projects
 The global config is meant to sit unnoticed next to a team's own Claude Code setup:
