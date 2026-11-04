@@ -56,7 +56,8 @@ Session picker
 ---
 `cmd+k` (or `tm` in a shell outside tmux) opens fzf with the running sessions first, then every directory
 zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there
-named after it, or switches to it if it exists. Outside tmux, `tm` attaches.
+named after it, or switches to it if it exists. Outside tmux, `tm` attaches. It opens in a popup that looks
+like fzf in the shell: the terminal's background, a rounded border, the theme's colours.
 
 <details>
 <summary><b>Show GIF</b></summary>
@@ -92,7 +93,8 @@ and **a window that rang the bell in yellow with a bell icon** until you visit i
 when they want attention, Claude Code for example when it waits for input (see
 [claude-code](claude-code.md)). Right: a `PREFIX` badge while the prefix is pressed, date, time, battery.
 
-It uses only the 16 ANSI colours, so it follows the [theme](theme.md).
+It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus and the tree
+(`cmd+j`): tmux 3.8 gives them a grey background of its own, which the config replaces with the terminal's.
 
 Plugins
 ---

@@ -1,13 +1,14 @@
 #!/usr/bin/env zsh
 # Pick a tmux session: the running ones first, then directories from zoxide, which get a
 # session of their own named after the directory. Bound to prefix f (config/tmux/tmux.conf)
-# and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux.
+# and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux. Arguments go to fzf, e.g.
+# --height=100% to fill the tmux popup.
 
 sessions=(${(f)"$(tmux list-sessions -F '#S' 2> /dev/null)"})
 # directories under $HOME are listed as ~/…, shorter to read; the choice is expanded back
 dirs=(${(f)"$(zoxide query --list)"})
 choice=$({ print -rl -- $sessions ${dirs/#$HOME/\~} } \
-  | fzf --reverse --no-sort --prompt 'session> ' --header 'running sessions, then zoxide directories')
+  | fzf --reverse --no-sort --prompt 'session> ' --header 'running sessions, then zoxide directories' "$@")
 [[ -z $choice ]] && exit 0
 choice=${choice/#\~/$HOME}
 
