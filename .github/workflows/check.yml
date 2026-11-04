@@ -18,5 +18,9 @@ jobs:
           HOMEBREW_PREFIX=$(brew --prefix) real_script_dir=$PWD
           source zsh/.functions
           fix_completion_dirs
+      - name: debug compaudit
+        shell: zsh {0}
+        run: |
+          TERM=xterm-256color ZDOTDIR=$PWD zsh -i -c 'autoload -Uz compaudit; for d in $(compaudit 2>&1); do ls -ld $d; done; print -l $fpath' < /dev/null 2>&1 || true
       - name: check_dotfiles
         run: checks/check_dotfiles -v
