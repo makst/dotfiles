@@ -172,7 +172,9 @@ and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists ever
 `skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
 shellcheck, Python 3.11 for TOML) is skipped and says why. GitHub runs `checks/check_dotfiles -v` on every
 push and pull request on a macOS runner (`.github/workflows/check.yml`), so the run's log shows each check,
-and a red check there means the same as a red check here.
+and a red check there means the same as a red check here. Before the checks, CI runs `fix_completion_dirs`
+as `brew_setup` does on a Mac: the runner's Homebrew leaves group-writable directories, and zsh would stop to
+ask about them.
 
 | Group | File | What it checks |
 |---|---|---|
