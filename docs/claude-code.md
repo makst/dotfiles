@@ -185,12 +185,20 @@ In an agent's window, `/ship` then `agent_done <name>` after merging is the whol
 
 ### Status line
 ```
-dotfiles/docs feat/claude-config* (worktree)  Opus 5.5 medium  ctx 18% 184k  5h 12% 3h  7d 34% 4d
+dotfiles/docs feat/claude-config* (worktree)  Opus 5.5 medium  ctx 18% 184k  cache 42m  5h 12% 3h  7d 34% 4d
 ```
 The directory from the repo root, the branch (`*` when there are uncommitted changes), `worktree` in an
 agent's own worktree, the model and effort, and how full the context window is, in percent and tokens: green,
 yellow from 50%, red from 80%, when it's time to `/compact` or `/clear`. Then how much of the plan's 5-hour
 session and 7-day weekly limits is used, in the same colours, each followed by the time until it resets:
 hours, or minutes in the last hour, for the session; days, or hours in the last day, for the week. They appear
-after the first reply in a session, and not at all when signed in with an API key. ANSI colours and no icon
-font, so it follows the terminal's theme (here base16, like starship).
+after the first reply in a session, and not at all when signed in with an API key.
+
+Between the context and the limits, how long the prompt cache stays warm: `cache 42m` in green, yellow in its
+last 10 minutes, and `cache cold` in red once it has expired: the next message then reads the whole context
+again, which is slower and uses more of the limits, so it's a good moment to `/clear` or `/compact` instead of
+carrying on. The cache lasts a set time after the last request (`prompt_cache.ttl` in the input, an hour on
+this setup). The status line redraws every 60 seconds (`refreshInterval` in `settings.json`), so this shows
+while the session sits idle too.
+
+ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).

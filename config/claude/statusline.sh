@@ -1,7 +1,8 @@
 #!/bin/zsh
-# Claude Code's status line: directory, git branch, worktree, model and effort, how full the context is (percent
-# and tokens), and the 5-hour / 7-day usage of the plan's limits and the time until each resets. ANSI colour
-# names and no icon font, so it fits any terminal and theme. Claude Code passes the session as JSON on stdin; needs zsh, jq and git.
+# Claude Code's status line: directory, git branch, worktree, model and effort, how full the context is
+# (percent and tokens), how long the prompt cache stays warm, and the 5-hour / 7-day usage of the plan's
+# limits and the time until each resets. ANSI colour names and no icon font, so it fits any terminal and
+# theme. Claude Code passes the session as JSON on stdin; needs zsh, jq and git.
 
 local -a f
 f=("${(@f)$(jq -r '
@@ -26,9 +27,11 @@ f=("${(@f)$(jq -r '
   (.rate_limits.five_hour.used_percentage // "" | if . == "" then . else floor end),
   (.rate_limits.seven_day.used_percentage // "" | if . == "" then . else floor end),
   (.rate_limits.five_hour.resets_at | left),
-  (.rate_limits.seven_day.resets_at | left)')}")
+  (.rate_limits.seven_day.resets_at | left),
+  # seconds until the prompt cache expires, 0 when it is cold
+  (.prompt_cache | if . == null then "" elif .warm == false then 0 else .expires_at | left end)')}")
 local dir=$f[1] model=$f[2] effort=$f[3] ctx=$f[4] tokens=$f[5] five=$f[6] week=$f[7] five_left=$f[8]
-local week_left=$f[9]
+local week_left=$f[9] cache_left=$f[10]
 
 local reset=$'\e[0m' bold_blue=$'\e[1;34m' purple=$'\e[35m' cyan=$'\e[36m' yellow=$'\e[33m' red=$'\e[31m'
 local green=$'\e[32m' dim=$'\e[90m'
@@ -64,6 +67,15 @@ fi
 
 out+="  $dim$model${effort:+ $effort}$reset"
 out+="  $(level $ctx 50 80)ctx $ctx%$reset${tokens:+ $dim$tokens$reset}"
+# the prompt cache: the time until it expires, green, yellow in its last 10 minutes, red once cold, when the next
+# message reads the whole context again, slower and dearer
+if [[ -n $cache_left ]]; then
+  if (( cache_left == 0 )); then
+    out+="  ${red}cache cold$reset"
+  else
+    out+="  $( (( cache_left <= 600 )) && print -rn -- $yellow || print -rn -- $green)cache $(left $cache_left 3600 h 60 m)$reset"
+  fi
+fi
 # the plan's limits; missing before the first reply in a session and when signed in with an API key
 # and the time until each resets: hours or, within the last hour, minutes; days or, within the last day, hours
 [[ -n $five ]] && out+="  $(level $five 50 80)5h $five%$reset${five_left:+ $dim$(left $five_left 3600 h 60 m)$reset}"
