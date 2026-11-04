@@ -11,7 +11,7 @@ along:
 
 | Uses the scheme directly | Uses the 16 terminal colours |
 |---|---|
-| nvim (`tinted-vim` colour schemes) | tmux status bar, starship prompt, fzf, bat, lazygit |
+| nvim (`tinted-vim` colour schemes) | tmux (status bar, popups, menus, copy mode), starship prompt, fzf, bat, delta, glow (`mdv`), lazygit |
 | Ghostty (`config/ghostty/themes/base16`, generated) | file colours in eza, fzf-tab and completion (vivid's `ansi` theme) |
 
 Switching schemes

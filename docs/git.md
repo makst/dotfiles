@@ -27,8 +27,9 @@ which one applies. Each Mac signs with its own Secretive key, so run `secretive_
 Behaviour
 ---
 - **Diffs, logs and `git add -p`** go through [delta](https://github.com/dandavison/delta): syntax
-  highlighting in the terminal's colours, line numbers, changed words highlighted within lines, moved
-  lines in their own colour. `n` / `N` jump between files.
+  context lines syntax-highlighted, removed lines red and added ones green, the changed words within them on a
+  red / green background, line numbers, moved lines in their own colour. All in the terminal's 16 colours, so
+  diffs follow the [theme](theme.md) (delta's own red and green backgrounds are fixed shades). `n` / `N` jump between files.
 - **Structural diffs** with [difftastic](https://difftastic.wilfred.me.uk): `git dft`, `git dlog`,
   `git dshow` compare syntax trees, so reformatting and re-wrapping don't show up as changes.
 - **Better hunks and conflicts**: the histogram diff algorithm; conflict markers show the common ancestor

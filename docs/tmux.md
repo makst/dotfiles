@@ -93,8 +93,9 @@ and **a window that rang the bell in yellow with a bell icon** until you visit i
 when they want attention, Claude Code for example when it waits for input (see
 [claude-code](claude-code.md)). Right: a `PREFIX` badge while the prefix is pressed, date, time, battery.
 
-It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus and the tree
-(`cmd+j`): tmux 3.8 gives them a grey background of its own, which the config replaces with the terminal's.
+It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus, the tree
+(`cmd+j`), search matches and the command prompt: tmux 3.8 colours them from a theme of fixed shades (a grey
+popup background, `skyblue3`, …), which the config maps onto the ANSI colours.
 
 Plugins
 ---

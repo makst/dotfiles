@@ -66,7 +66,9 @@ Markdown (mdv)
 `mdv [dir]` picks a markdown file under `dir` (default: the current directory) with fzf and opens it rendered
 in glow's pager. The preview pane shows the rendered file as you move through the list, wrapped to the pane's
 width. Only one file can be picked, and `q` leaves the pager. `mdv <file>` skips the list and opens that file.
-Glow uses its own dark style, not the base16 theme, so its colours differ from the rest of the terminal.
+glow renders with `config/glow/ansi.json`, a style in the terminal's 16 colours, so it follows the
+[theme](theme.md): headings blue, inline code red, links cyan, quotes grey. Code blocks are plain: glow's
+highlighter only takes fixed colours.
 
 `mds [dir]` shows the same files in the browser instead: a local site with the folders as a sidebar, search,
 and a reload whenever a file is saved (MkDocs with the Material theme, through `uvx`, on `127.0.0.1:8000`, or

@@ -118,16 +118,19 @@ function fzf_setup() {
 # mdv [dir|file]: pick a markdown file under dir (default: here) and read it rendered in glow's pager; a file
 # opens straight away. The preview pane shows the rendered file while you move through the list (nohidden:
 # the fzf defaults hide the preview until `?`), wrapped to the pane's width. Single pick only, so a stray Tab
-# can't pass several files to glow.
+# can't pass several files to glow. The style (config/glow/ansi.json) uses the terminal's 16 colours, so it
+# follows the theme; glow's own are fixed ones.
 #   mdv
 #   mdv docs
 #   mdv README.md
 function mdv() {
-  [[ -f $1 ]] && { glow -p "$1"; return }
+  local style=$real_script_dir/config/glow/ansi.json
+  [[ -f $1 ]] && { glow -p -s "$style" "$1"; return }
   local file
-  file=$(fd --extension md . "${1:-.}" | fzf --no-multi --preview-window=nohidden --preview 'glow -s dark -w $FZF_PREVIEW_COLUMNS {}') ||
+  file=$(fd --extension md . "${1:-.}" |
+    fzf --no-multi --preview-window=nohidden --preview "glow -s ${(q)style} -w \$FZF_PREVIEW_COLUMNS {}") ||
     return
-  glow -p "$file"
+  glow -p -s "$style" "$file"
 }
 
 # mds [dir]: browse the markdown files under dir (default: here) as a local site in the browser: a sidebar

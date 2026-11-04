@@ -84,8 +84,19 @@
 	# n / N jump between files
 	navigate = true
 	line-numbers = true
-	# the terminal's 16 colours, so it follows the Ghostty theme (like bat)
+	# the terminal's 16 colours, so it follows the Ghostty theme (like bat). delta's own defaults for changed
+	# lines are fixed dark red / green backgrounds; here removed lines are red, added ones green, and the
+	# changed words within them get a red / green background.
 	syntax-theme = base16
+	minus-style = red
+	minus-emph-style = black red
+	minus-empty-line-marker-style = normal red
+	plus-style = green
+	plus-emph-style = black green
+	plus-empty-line-marker-style = normal green
+	line-numbers-minus-style = red
+	line-numbers-plus-style = green
+	line-numbers-zero-style = brightblack
 
 [pull]
 	# local commits go on top of the fetched ones instead of a merge commit (rebase.autoStash keeps
