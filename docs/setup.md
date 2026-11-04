@@ -167,11 +167,22 @@ Checks
 check_dotfiles
 ```
 
-Runs the checks before a commit: `zsh -n` on every zsh file, `shellcheck` on `prepare-zsh-install.sh`,
-`jq -e .` on every JSON file, and whether the Brewfile loads (`brew bundle list`). It lists what fails and
-returns 1. `check_dotfiles -v` also lists every check with `ok` or `FAILED`, grouped by kind. GitHub runs
-`check_dotfiles -v` on every push and pull request on a macOS runner (`.github/workflows/check.yml`), so the
-run's log shows each check, and a red check there means the same as a red check here.
+Runs the checks in `checks/` before a commit, in about half a second. Each check prints what it found wrong
+and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED` or
+`skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
+shellcheck, Python 3.11 for TOML) is skipped and says why. GitHub runs `checks/check_dotfiles -v` on every
+push and pull request on a macOS runner (`.github/workflows/check.yml`), so the run's log shows each check,
+and a red check there means the same as a red check here.
+
+| Group | File | What it checks |
+|---|---|---|
+| Syntax | `checks/syntax.zsh` | every zsh, bash, JSON, TOML, YAML and Lua file parses; tmux.conf, gitconfig, ssh config, Brewfile, Ghostty, starship and AeroSpace configs load in their own tool |
+| Behaviour | `checks/behaviour.zsh` | zsh starts without errors; Claude Code's hooks (recursive `rm`, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
+| References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
+| Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim; each layer keeps to its modifier |
+
+`checks/lib.zsh` builds what the groups share; the groups then run at the same time. The recursive `rm`
+cases are in `checks/rm-hook.cases`, one per line: `block` or `allow`, then the command.
 
 Other helpers
 ---

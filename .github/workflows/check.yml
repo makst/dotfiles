@@ -1,4 +1,4 @@
-# check_dotfiles (zsh/.functions) on every push and pull request, on the macOS this repo is for.
+# checks/check_dotfiles on every push and pull request, on the macOS this repo is for.
 name: check
 on:
   push:
@@ -8,11 +8,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install shellcheck
-        run: command -v shellcheck || brew install shellcheck
+      - name: Install the tools the checks run
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+        run: brew install shellcheck neovim tmux
       - name: check_dotfiles
-        shell: zsh {0}
-        run: |
-          real_script_dir=$PWD
-          source zsh/.functions
-          check_dotfiles -v
+        run: checks/check_dotfiles -v

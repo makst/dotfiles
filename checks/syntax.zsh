@@ -161,12 +161,14 @@ check_brew_names() {
   note=$(count $checked package)
 }
 
-# Ghostty: its own validator, when Ghostty is installed
+# Ghostty: its own validator, when Ghostty is installed. Its themes come from this checkout through a config
+# dir of its own, so the check needs neither setup_ghostty nor ~/.config.
 check_ghostty() {
   note="config/ghostty/config"
   local ghostty=${commands[ghostty]:-/Applications/Ghostty.app/Contents/MacOS/ghostty}
   [[ -x $ghostty ]] || { print "Ghostty not installed"; return 2 }
-  $ghostty +validate-config --config-file=config/ghostty/config
+  mkdir -p $tmp/xdg/ghostty && ln -sfn $repo/config/ghostty/themes $tmp/xdg/ghostty/themes
+  XDG_CONFIG_HOME=$tmp/xdg $ghostty +validate-config --config-file=config/ghostty/config
 }
 
 # starship: it warns about keys it doesn't know (a misspelt option is otherwise ignored), when installed

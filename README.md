@@ -106,6 +106,7 @@ config/ideavim/           nvim's keys in Android Studio (IdeaVim)
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
+checks/                   check_dotfiles: the checks run before a commit and on CI
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 

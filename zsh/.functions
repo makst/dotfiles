@@ -697,56 +697,8 @@ function setup_dotfiles() {
 }
 
 # check_dotfiles [-v]: the checks CI runs on every push (.github/workflows/check.yml), to run before
-# committing: zsh syntax of every zsh file, shellcheck on the one bash script, every JSON file parses, the
-# Brewfile loads. Prints what fails and returns 1; a tool that isn't installed is skipped with a note. -v (CI
-# uses it) also lists every check with its result, so the run's log shows what was checked.
+# committing. Runs checks/check_dotfiles from this repo, wherever the shell is; it prints what fails and
+# returns 1. -v (CI uses it) lists every check with its result and time.
 function check_dotfiles() {
-  local repo=$real_script_dir f verbose=0
-  [[ $1 == -v ]] && verbose=1
-  local -a passed failed
-  (( verbose )) && print "zsh syntax (zsh -n)"
-  for f in $repo/{.zshrc,.fzf.zsh} $repo/zsh/.*(N.) $repo/config/machine/zshrc $repo/config/tmux/sessionizer \
-    $repo/config/claude/{hooks/*.sh,statusline.sh}(N) $repo/docs/tapes/demo-home; do
-    _dotfiles_check "zsh -n ${f#$repo/}" zsh -n $f
-  done
-  (( verbose )) && print "bash script (shellcheck)"
-  if command -v shellcheck > /dev/null; then
-    _dotfiles_check "shellcheck prepare-zsh-install.sh" shellcheck $repo/prepare-zsh-install.sh
-  else
-    print "shellcheck not installed, skipped"
-  fi
-  (( verbose )) && print "JSON files (jq -e .)"
-  for f in $repo/**/*.json(N.D); do
-    [[ $f == */.claude/worktrees/* ]] && continue
-    _dotfiles_check -q "jq ${f#$repo/}" jq -e . $f
-  done
-  (( verbose )) && print "Brewfile (brew bundle list)"
-  if command -v brew > /dev/null; then
-    _dotfiles_check -q "brew bundle list" brew bundle list --all --file=$repo/Brewfile
-  else
-    print "brew not installed, skipped the Brewfile"
-  fi
-  if (( $#failed )); then
-    print -u2 -P "%F{red}Failed $#failed of $(( $#passed + $#failed )):%f ${(j:, :)failed}"
-    return 1
-  fi
-  print -P "%F{green}All $#passed checks passed%f"
-}
-
-# _dotfiles_check [-q] <label> <command…>: one check for check_dotfiles: runs the command and adds the label
-# to the caller's passed or failed list; with -v there, prints the label and the result. -q hides the
-# command's output (jq prints the file, brew the package list); its errors still show.
-function _dotfiles_check() {
-  local out=/dev/stdout
-  [[ $1 == -q ]] && { out=/dev/null; shift }
-  local label=$1
-  shift
-  if "$@" > $out; then
-    passed+=$label
-    (( verbose )) && print -r -- "  "$'\e[32m'"ok"$'\e[0m'"      $label"
-  else
-    failed+=$label
-    (( verbose )) && print -r -- "  "$'\e[31m'"FAILED"$'\e[0m'"  $label"
-  fi
-  return 0
+  $real_script_dir/checks/check_dotfiles "$@"
 }

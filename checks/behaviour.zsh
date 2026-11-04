@@ -10,9 +10,10 @@ minimal_path=$tmp/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 # zsh: the repo's .zshrc starts an interactive zsh without an error. Without a terminal, zle can't start, and
 # the widgets that need it say so; that's the only message allowed. On CI none of the Homebrew tools exist,
-# which the config has to cope with too.
+# which the config has to cope with too. TERM is set as in a terminal: CI may have none or a dumb one, where
+# starship refuses to start.
 check_zsh_start() {
-  ZDOTDIR=$repo zsh -i -c exit < /dev/null > /dev/null 2> $tmp/zsh.err
+  TERM=xterm-256color ZDOTDIR=$repo zsh -i -c exit < /dev/null > /dev/null 2> $tmp/zsh.err
   grep -v "can't change option: zle" $tmp/zsh.err
   return 0
 }
