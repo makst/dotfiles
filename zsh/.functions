@@ -37,6 +37,27 @@ function brew_setup() {
   echo "=> Installing brew packages from the Brewfile"
   # see the Brewfile for what is installed and why
   brew bundle --file="$real_script_dir/Brewfile"
+  local bundle=$?
+  # also after a failed bundle: the packages it did install may have changed permissions
+  fix_completion_dirs
+  return $bundle
+}
+
+# fix_completion_dirs: removes group and other write access from the completion directories under Homebrew's
+# prefix that zsh's compaudit calls insecure. An install can leave one group-writable (/opt/homebrew/share,
+# once); zsh then asks once a day whether to use them and, told no, loads no completion at all. Anything
+# insecure outside Homebrew's prefix is only listed, to look at by hand.
+function fix_completion_dirs() {
+  autoload -Uz compaudit
+  local d
+  for d in ${(f)"$(compaudit 2> /dev/null)"}; do
+    if [[ $d == $HOMEBREW_PREFIX/* ]]; then
+      chmod go-w $d && print "=> chmod go-w $d"
+    else
+      print -u2 "insecure for zsh completion, outside Homebrew, left alone: $d"
+    fi
+  done
+  return 0
 }
 
 function setup_window_management() {

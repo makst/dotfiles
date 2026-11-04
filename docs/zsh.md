@@ -42,7 +42,9 @@ Start-up speed
   `~/.cache/zsh` and only reruns the tool when it was upgraded. fnm is the exception: it makes a link per
   shell. Homebrew's environment is written out instead of running `brew shellenv`.
 - **Completion** is initialised from a dump in `~/.cache/zsh`, rebuilt and security-checked once a day.
-  If zsh ever says *insecure directories*, run `compaudit` and `chmod g-w` what it lists.
+  If zsh ever says *insecure directories*, run `fix_completion_dirs`: it removes group and other write access
+  from what `compaudit` lists under `/opt/homebrew` (an install can leave `/opt/homebrew/share`
+  group-writable) and lists anything else to fix by hand. `brew_setup` runs it after every `brew bundle`.
 
 atuin would also take over the grey suggestions, starting itself on every key press; they stay on zsh's
 own history instead.

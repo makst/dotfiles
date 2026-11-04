@@ -25,7 +25,7 @@ Each step is a function you can also run on its own:
 | Function | Does |
 |---|---|
 | `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
-| `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile) |
+| `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
 | `fzf_setup` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time |
 | `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
