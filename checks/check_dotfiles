@@ -1,0 +1,109 @@
+#!/bin/zsh
+# check_dotfiles [-v]: checks the whole repo in about half a second: every config file parses in the tool that
+# reads it, the Claude Code hooks and status line behave, what the docs and comments point at exists, and the
+# files that describe the same thing agree. Prints each check that fails with its problems and exits 1; -v
+# lists every check with its result and time. A check whose tool isn't installed is skipped and says so. One
+# file per group of checks sits next to this one, lib.zsh has what they share. The groups run at the same time.
+
+zmodload zsh/datetime
+setopt extended_glob
+start=$EPOCHREALTIME
+repo=${0:A:h:h}
+cd $repo || exit 1
+verbose=0
+[[ $1 == -v ]] && verbose=1
+
+reset=$'\e[0m' bold=$'\e[1m' green=$'\e[32m' red=$'\e[31m' yellow=$'\e[33m'
+tmp=$(mktemp -d) && tmp=${tmp:A} || exit 1
+
+# every file of the repo: the tracked ones and new ones not yet added, never ignored ones; text_files without
+# the GIFs, md_files the Markdown ones, shebangs[file] each text file's #! line
+typeset -a files text_files md_files
+typeset -A shebangs
+for f in ${(f)"$(git ls-files --cached --others --exclude-standard)"}; do
+  [[ -f $f ]] && files+=$f
+done
+text_files=(${files:#*.gif})
+md_files=(${(M)text_files:#*.md})
+for f in $text_files; do
+  line=
+  read -r line < $f
+  [[ $line == '#!'* ]] && shebangs[$f]=$line
+done
+
+source checks/lib.zsh
+
+# group <title>: starts a group of checks; -v prints its title
+group() {
+  (( verbose )) && print -r -- "$bold$1$reset"
+  return 0
+}
+
+# check <label> <function> [args…]: runs one check. The function prints each problem it finds on a line of its
+# own (any output fails the check), or prints why it can't run and returns 2 to be skipped. It can set `note`,
+# which -v shows after the label (what was checked, how many) with the time the check took. The result goes
+# to the group's results file.
+check() {
+  local label=$1 note= rc out took
+  shift
+  local started=$EPOCHREALTIME
+  "$@" > $tmp/out.$group_name 2>&1
+  rc=$?
+  took="$(printf %.0f $(( (EPOCHREALTIME - started) * 1000 ))) ms"
+  out=$(<$tmp/out.$group_name)
+  if (( rc == 2 )); then
+    print -r -- "skip"$'\t'"$label" >> $tmp/results.$group_name
+    (( verbose )) && print -r -- "  ${yellow}skip$reset    $label${out:+: $out}"
+  elif (( rc == 0 )) && [[ -z $out ]]; then
+    print -r -- "ok"$'\t'"$label" >> $tmp/results.$group_name
+    (( verbose )) && print -r -- "  ${green}ok$reset      $label (${note:+$note, }$took)"
+  else
+    print -r -- "failed"$'\t'"$label" >> $tmp/results.$group_name
+    print -r -- "  ${red}FAILED$reset  $label${note:+ ($note)}"
+    [[ -n $out ]] && print -rl -- ${${(f)out}/#/          }
+  fi
+  return 0
+}
+
+build_indexes
+
+# every group in a subshell of its own, all at once; their output is printed in this order
+groups=(syntax behaviour references consistency)
+typeset -A pids
+for group_name in $groups; do
+  ( source checks/$group_name.zsh ) > $tmp/group.$group_name 2>&1 &
+  # through a plain variable: zsh stores `pids[x]=$!` as the text $!
+  pid=$!
+  pids[$group_name]=$pid
+done
+typeset -a passed failed skipped
+for group_name in $groups; do
+  wait $pids[$group_name]
+  rc=$?
+  out=$(<$tmp/group.$group_name)
+  [[ -n $out ]] && print -r -- $out
+  # a group that stops halfway (a zsh error in its file) fails, with what it printed
+  (( rc )) && print -r -- "failed"$'\t'"checks/$group_name.zsh runs to its end" >> $tmp/results.$group_name
+  [[ -r $tmp/results.$group_name ]] || continue
+  while IFS=$'\t' read -r result label; do
+    case $result in
+      (ok) passed+=$label ;;
+      (skip) skipped+=$label ;;
+      (*) failed+=$label ;;
+    esac
+  done < $tmp/results.$group_name
+done
+
+# the temp dir holds only what this run wrote into it
+rm -f -- $tmp/**/*(.DN)
+rmdir -- $tmp/**/*(/DNod) $tmp 2> /dev/null
+
+seconds=$(printf '%.2f' $(( EPOCHREALTIME - start )))
+total=$(( $#passed + $#failed + $#skipped ))
+if (( $#failed )); then
+  print -u2 -r -- "${red}Failed $#failed of $total checks$reset in $seconds s: ${(j:, :)failed}"
+  exit 1
+fi
+summary="${green}All $#passed checks passed$reset in $seconds s"
+(( $#skipped )) && summary+=", $#skipped skipped (${(j:, :)skipped})"
+print -r -- $summary

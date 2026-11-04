@@ -1,0 +1,62 @@
+# What config/claude/hooks/no-recursive-rm.sh must block or allow, one Bash command per line: "block" or
+# "allow", a space, then the command, where \n stands for a newline. checks/behaviour.zsh runs each through the
+# hook as Claude Code would.
+
+block rm -rf x
+block rm -r x
+block rm -R x
+block rm -fr x
+block rm -Rfv x
+block rm --recursive x
+block rm -f -r x
+block rm -v -R x
+block rm -i --recursive x
+block ls; rm -rf x
+block ls && rm -rf x
+block false || rm -rf x
+block ls | rm -rf x
+block (rm -rf x)
+block { rm -rf x; }
+block echo hi\nrm -rf x
+block if true; then rm -rf x; fi
+block for d in a b; do rm -rf $d; done
+block /bin/rm -rf x
+block \rm -rf x
+block "rm" -rf x
+block command rm -rf x
+block sudo rm -rf x
+block sudo -u root rm -rf x
+block env rm -rf x
+block FOO=1 rm -rf x
+block env FOO=1 rm -rf x
+block time rm -rf x
+block nice -n 5 rm -rf x
+block timeout 10 rm -rf x
+block xargs rm -rf
+block xargs -0 -n 1 rm -rf
+block find . -name x -exec rm -rf {} \;
+block find . -type d -execdir rm -r {} +
+block echo $(rm -rf x)
+block echo "$(rm -rf x)"
+block echo `rm -rf x`
+block sh -c 'rm -rf x'
+block bash -lc "rm -r x"
+block eval 'rm -rf x'
+block cat > f <<'EOF'\ntext\nEOF\nrm -rf x
+allow rm file.txt
+allow rm -f file.txt
+allow rm -i a b c
+allow rm -- -r
+allow rmdir x
+allow trash x
+allow echo "rm -rf is blocked"
+allow git commit -m "fix: rm -rf is blocked"
+allow git rm -r --cached x
+allow grep -r rm .
+allow ls -R
+allow cp -r a b
+allow chmod -R go-w x
+allow ls # rm -rf x
+allow cat > f <<'EOF'\nrm -rf build\nEOF
+allow cat > f <<-EOF\n\trm -rf build\n\tEOF\nls
+allow find . -name '*.log' -print

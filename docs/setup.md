@@ -77,10 +77,15 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.fzf.zsh` | `.fzf.zsh` |
 | `~/.atuin/config.toml` | `config/atuin/config.toml` |
 | `~/.gitconfig` | `config/git/.gitconfig` |
+| `~/.config/git/ignore` | `config/git/ignore` |
 | `~/.config/tmux/` | `config/tmux/` |
 | `~/.config/nvim/` | `config/nvim/` |
-| `~/.config/ghostty/config`, `themes/` | `config/ghostty/…` |
+| `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
+| `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/hooks/`, `~/.claude/statusline.sh` | `config/claude/…` |
+| `~/.claude/skills/<name>/` | each skill in `config/claude/skills/`; `~/.claude/skills` itself stays a real directory |
+| `~/.ideavimrc` | `config/ideavim/ideavimrc` |
+| `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
 
 `.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.

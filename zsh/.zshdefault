@@ -48,8 +48,10 @@ setopt complete_in_word always_to_end
   source $HOMEBREW_PREFIX/share/google-cloud-sdk/completion.zsh.inc
 
 # -- plugins ---------------------------------------------------------------------
-# fzf-tab replaces the completion menu: it loads after compinit and before the plugins that wrap widgets
-source $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh
+# fzf-tab replaces the completion menu: it loads after compinit and before the plugins that wrap widgets. The
+# plugins come from the Brewfile; until brew_setup installs them (the first shell on a new Mac), zsh starts
+# without them instead of printing errors
+[[ -r $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh ]] && source $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh
 
 # -- vi mode ---------------------------------------------------------------------
 # zsh's own vi mode; the lines below add what a vim user expects on top of it
@@ -110,8 +112,10 @@ bindkey -M vicmd '^R' redo
 ZSH_AUTOSUGGEST_STRATEGY=(history)
 
 # these two wrap every widget defined so far; syntax highlighting goes last
-source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $HOMEBREW_PREFIX/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+[[ -r $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]] &&
+  source $HOMEBREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+[[ -r $HOMEBREW_PREFIX/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh ]] &&
+  source $HOMEBREW_PREFIX/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 # -- prompt and navigation -------------------------------------------------------
 export STARSHIP_CONFIG="$real_script_dir/config/starship.toml"
