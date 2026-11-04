@@ -10,14 +10,15 @@ $git_branch\
 $git_state\
 $git_status\
 $kubernetes\
-$gcloud\
-$aws\
+${env_var._PROMPT_GCLOUD}\
+${env_var._PROMPT_GCLOUD_PROD}\
 $nodejs\
 $python\
 $golang\
-$terraform\
 $cmd_duration\
-$jobs
+$jobs\
+$fill\
+$time
 $character"""
 
 add_newline = true
@@ -50,17 +51,15 @@ format = "[$symbol$context( \\($namespace\\))]($style) "
 symbol = "󱃾 "
 style = "cyan"
 
-[gcloud]
-# the active gcloud project, so it's clear whether commands go to staging or production; the account is left
-# out (always the same, and long)
-format = "[$symbol$project]($style) "
-symbol = "󱇶 "
+# the active gcloud project, inside git repos only, set by _prompt_gcloud (zsh/.zshdefault): it's clear whether
+# commands go to staging or production, and production is red
+[env_var._PROMPT_GCLOUD]
+format = "[󱇶 $env_value]($style) "
 style = "blue"
 
-[aws]
-format = "[$symbol($profile)(\\($region\\))]($style) "
-symbol = " "
-style = "yellow"
+[env_var._PROMPT_GCLOUD_PROD]
+format = "[󱇶 PROD $env_value]($style) "
+style = "bold red"
 
 [nodejs]
 format = "[$symbol($version)]($style) "
@@ -79,11 +78,6 @@ format = "[$symbol($version)]($style) "
 symbol = " "
 style = "cyan"
 
-[terraform]
-format = "[$symbol$workspace]($style) "
-symbol = "󱁢 "
-style = "purple"
-
 [cmd_duration]
 min_time = 2_000
 format = "[ $duration]($style) "
@@ -91,6 +85,16 @@ style = "bright-black"
 
 [jobs]
 symbol = " "
+style = "bright-black"
+
+# the time the prompt appeared, at the right end of the first line: when the command above finished
+[fill]
+symbol = " "
+
+[time]
+disabled = false
+format = "[$time]($style)"
+time_format = "%H:%M"
 style = "bright-black"
 
 [character]

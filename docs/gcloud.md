@@ -9,7 +9,7 @@ organisation with your login but can't change it.
 | `gcloud-cli` cask | `Brewfile`, `kind == "work"` block | `gcloud`, `gsutil`, `bq` and a bundled Python; updates with `brew upgrade` |
 | PATH | `zsh/.exports` | adds `/opt/homebrew/share/google-cloud-sdk/bin`: components that `gcloud components install` adds, such as `gke-gcloud-auth-plugin`, live there |
 | Completion | `zsh/.zshdefault` | gcloud's own completion script, sourced after `compinit` when the cask is installed (~1 ms) |
-| Prompt | `config/starship.toml` | the active project next to the kubernetes context, so it's clear whether a command goes to staging or production |
+| Prompt | `config/starship.toml`, `_prompt_gcloud` in `zsh/.zshdefault` | the active project inside git repos, so it's clear whether a command goes to staging or production; a project with "prod" in its name is red, with `PROD` in front. zsh reads it from gcloud's config files before each prompt, without starting a process |
 | Claude Code | `config/claude/settings.json` | `deny` rules for commands that change things (below) |
 
 Config and credentials live in `~/.config/gcloud`, outside the repo.

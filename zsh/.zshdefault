@@ -121,5 +121,34 @@ ZSH_AUTOSUGGEST_STRATEGY=(history)
 export STARSHIP_CONFIG="$real_script_dir/config/starship.toml"
 cached_eval starship starship init zsh --print-full-init
 
+# _prompt_gcloud: precmd hook. Exports the active gcloud project for the prompt (config/starship.toml), only
+# inside a git repo, where it matters; a project with "prod" in its name goes in _PROMPT_GCLOUD_PROD instead,
+# which the prompt shows in red. Reads gcloud's own files with builtins, so no process runs per prompt.
+function _prompt_gcloud() {
+  unset _PROMPT_GCLOUD _PROMPT_GCLOUD_PROD
+  local dir=$PWD
+  until [[ -e $dir/.git ]]; do
+    [[ $dir == / ]] && return
+    dir=${dir:h}
+  done
+  local gcloud=${CLOUDSDK_CONFIG:-$HOME/.config/gcloud} project=$CLOUDSDK_CORE_PROJECT config line
+  if [[ -z $project ]]; then
+    config=$CLOUDSDK_ACTIVE_CONFIG_NAME
+    [[ -z $config && -r $gcloud/active_config ]] && read -r config < $gcloud/active_config
+    [[ -r $gcloud/configurations/config_${config:-default} ]] || return
+    while read -r line; do
+      [[ $line =~ '^project *= *(.+)' ]] && project=$match[1]
+    done < $gcloud/configurations/config_${config:-default}
+  fi
+  [[ -z $project ]] && return
+  if [[ $project == *prod* ]]; then
+    export _PROMPT_GCLOUD_PROD=$project
+  else
+    export _PROMPT_GCLOUD=$project
+  fi
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _prompt_gcloud
+
 # zoxide: `z foo` jumps to the best match, `zi` picks with fzf
 cached_eval zoxide zoxide init zsh

@@ -108,9 +108,10 @@ Config: `config/starship.toml`, found through `STARSHIP_CONFIG`.
 
 Two lines: context on the first, your input on the second after a `❯` that turns red when the last
 command failed and flips to `❮` in vi normal mode. The first line shows the directory (shortened to the
-repo root), git branch, state and status, and only where relevant: kubernetes context and namespace,
-gcloud project, AWS profile, node / python / go version in projects of that language, terraform workspace,
-how long the last command took (over 2 s) and background jobs.
+repo root), git branch, state and status, and only where relevant: kubernetes context and namespace, the
+gcloud project inside git repos (in red with `PROD` when its name contains "prod"), node / python / go
+version in projects of that language, how long the last command took (over 2 s) and background jobs. At the
+right end, the time the prompt appeared, so scrolling back shows when each command finished.
 
 All colours are ANSI names, so the prompt follows the [theme](theme.md).
 
