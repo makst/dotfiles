@@ -164,8 +164,9 @@ check_dotfiles
 
 Runs the checks before a commit: `zsh -n` on every zsh file, `shellcheck` on `prepare-zsh-install.sh`,
 `jq -e .` on every JSON file, and whether the Brewfile loads (`brew bundle list`). It lists what fails and
-returns 1. GitHub runs the same function on every push and pull request on a macOS runner
-(`.github/workflows/check.yml`), so a red check there means the same as a red check here.
+returns 1. `check_dotfiles -v` also lists every check with `ok` or `FAILED`, grouped by kind. GitHub runs
+`check_dotfiles -v` on every push and pull request on a macOS runner (`.github/workflows/check.yml`), so the
+run's log shows each check, and a red check there means the same as a red check here.
 
 Other helpers
 ---
