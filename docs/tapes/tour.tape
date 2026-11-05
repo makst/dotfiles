@@ -38,6 +38,6 @@ Type "q" Sleep 1s
 
 # cmd+j: every session and window as a tree, back to main
 Ctrl+a Type "w" Sleep 2s
-Up Sleep 700ms
-Up Sleep 1s
+Type "k" Sleep 700ms
+Type "k" Sleep 1s
 Enter Sleep 1.5s

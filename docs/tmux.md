@@ -42,7 +42,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker, ready to type ([picker keys](#picker-keys)) |
-| `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
+| `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them ([tree](#tree)) |
 | `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. Opens in normal mode: `j`/`k` move, `/` filters ([picker keys](#picker-keys)) |
 | `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after, `cmd+shift+0` back |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
@@ -78,9 +78,20 @@ It opens ready to type; `jj` switches to moving with `j`/`k` ([picker keys](#pic
 
 So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#navigation).
 
+Tree
+---
+`cmd+j` shows every session and window, drawn as tmux's own tree (`choose-tree`): `├─>` / `└─>` lines, a
+session's window count and whether it's attached, window flags (`*` current, `-` last), and the panes of
+windows that have more than one. Each line carries the mark of its most urgent agent and what its agents work
+on. It's fzf in a popup, so it has the [picker keys](#picker-keys); it opens on the current window, list and
+preview update while it's open, and the preview's label says which window it shows. `Enter` switches to the
+session, window or pane. Unlike `choose-tree` it can't collapse sessions, kill (`x`) or tag; a filter matches
+the text of each line, so a window matches by its own name, not its session's.
+
 Picker keys
 ---
-The fzf pickers, the session picker (`cmd+k`), the agents (`cmd+shift+j`) and `agent_resume`, share their keys
+The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`) and
+`agent_resume`, share their keys
 and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker opens ready
 to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode:
 `session> ` while typing, `session: ` in normal mode.
@@ -128,8 +139,8 @@ battery.
 The tree (`cmd+j`) and the session picker (`cmd+k`) show the same marks: on each pane, window and session,
 the most urgent agent in it. Visiting a window marks its finished agents as seen.
 
-It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus, the tree
-(`cmd+j`), search matches and the command prompt: tmux 3.8 colours them from a theme of fixed shades (a grey
+It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus, tmux's own tree
+(`C-a s`), search matches and the command prompt: tmux 3.8 colours them from a theme of fixed shades (a grey
 popup background, `skyblue3`, …), which the config maps onto the ANSI colours.
 
 Plugins

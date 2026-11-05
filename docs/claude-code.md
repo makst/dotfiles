@@ -99,7 +99,7 @@ or sessions:
 
 A window shows the mark of its most urgent agent, in that order; a session the most urgent of its windows.
 The marks appear on the windows in the status bar, in the tree (`cmd+j`) next to every session, window and
-pane, and next to the running sessions in the session picker (`cmd+k`). The right of the status bar counts
+pane with more than one in its window, and next to the running sessions in the session picker (`cmd+k`). The right of the status bar counts
 the agents in each state across all sessions, e.g. `󰂞 1 󰄬 2 󰔟 3`, so you see them from any session.
 
 The hook also rings the bell when Claude needs input or has finished its turn, whatever the notification

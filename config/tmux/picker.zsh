@@ -1,5 +1,6 @@
-# The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k) and agent_resume
-# (zsh/.functions): the agent marks, nvim's keys, and a list and preview that stay current while fzf is open.
+# The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j) and
+# agent_resume (zsh/.functions): the agent marks, nvim's keys, and a list and preview that stay current while
+# fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")
 typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')

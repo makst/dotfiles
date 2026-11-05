@@ -11,13 +11,13 @@ Sleep 7s
 # cmd+1: back to your own window while it works; its window turns yellow when Claude rings the bell
 Ctrl+a Type "1" Sleep 1s
 Hide
-Wait+Screen@240s /󰂞/
+Wait+Screen@240s /󰂞|󰄬/
 Show
 Sleep 2s
 
 # cmd+j: every window with a live preview; pick the agent's to read what it did
 Ctrl+a Type "w" Sleep 2.5s
-Down Sleep 2s
+Type "j" Sleep 2s
 Enter Sleep 4s
 
 # cmd+1: back; agent_done lists the agents, and won't remove one whose branch isn't merged (or use --force)
