@@ -97,7 +97,8 @@ saved.
 command. `C-r` (`/` in normal mode) searches it in fzf, so it looks and works like every other fzf picker:
 
 - Newest first, each command once, with how long it ran (red when it failed) and how long ago.
-- Type to search the commands; `C-r` again cycles the filter, shown on the list's border: everywhere
+- Type to search the commands; `jj` switches to moving with `j`/`k`, as in every picker
+  ([picker keys](tmux.md#picker-keys)). `C-r` again cycles the filter, shown on the list's border: everywhere
   (`global`), this Mac (`host`), this session, this git repo (`workspace`), this directory.
 - `?` shows the whole command, wrapped, with its directory and exit code.
 - `Enter` puts the command on the command line, ready to edit or run.

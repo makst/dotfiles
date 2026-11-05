@@ -91,10 +91,10 @@ the text of each line, so a window matches by its own name, not its session's.
 
 Picker keys
 ---
-The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`) and
-`agent_resume`, share their keys
-and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker opens ready
-to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode:
+The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`),
+`agent_resume` and the shell's history search (`C-r`, [zsh](zsh.md#history)), share their keys and work like
+nvim: a normal mode to move and an insert mode to type a filter. The session picker and the history search open
+ready to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode:
 `session> ` while typing, `session: ` in normal mode.
 
 | Key | Mode | Does |

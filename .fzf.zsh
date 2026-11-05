@@ -50,22 +50,25 @@ fif() {
 
 # fzf-history-widget (ctrl+r, and / in normal mode; bound in zsh/.zshdefault after atuin's own): atuin's history
 # in fzf, so it looks and works like every other fzf. Newest first, each command once, with how long it ran
-# (red when it failed) and how long ago; typing filters the commands only. ctrl+r again cycles atuin's filter
-# modes, shown on the list's border: global, host, session, workspace (the git repo), directory. ? shows the whole command with its
-# directory and exit code. Enter puts the command on the command line to edit, as atuin's enter_accept = false.
-# atuin still records every command; config/atuin/fzf-history lists them.
-typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history
+# (red when it failed) and how long ago; typing filters the commands only. Keys as in every picker
+# (config/tmux/picker.zsh): it opens ready to type, jj for j/k. ctrl+r again cycles atuin's filter modes, shown
+# on the list's border: global, host, session, workspace (the git repo), directory. ? shows the whole command
+# with its directory and exit code. Enter puts the command on the command line to edit, as atuin's
+# enter_accept = false. atuin still records every command; config/atuin/fzf-history lists them.
+typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history _fzf_picker=${${(%):-%x}:A:h}/config/tmux/picker.zsh
 fzf-history-widget() {
+  source $_fzf_picker
   local cycle="case \$FZF_LIST_LABEL in
       ' global ') m=host ;; ' host ') m=session ;; ' session ') m=workspace ;; ' workspace ') m=directory ;;
       *) m=global ;;
     esac
     echo \"change-list-label( \$m )+reload($_fzf_history \$m)\""
+  # over picker's options: ranked by the match (--sort), the command the only field searched, and no --track: it
+  # kept the cursor on what the first j of jj matched
   local choice
-  choice=$($_fzf_history global | fzf --read0 --ansi --no-multi --scheme history --tabstop 1 \
-    --delimiter '\t' --with-nth $'{1}\t{4}' --nth 2 --accept-nth 4 \
-    --prompt 'history> ' --list-label ' global ' --query "$BUFFER" \
-    --header 'ctrl+r cycles global, host, session, workspace, directory · ? shows the whole command' \
+  choice=$($_fzf_history global | picker history --insert --read0 --sort --scheme history --tabstop 1 \
+    --with-nth $'{1}\t{4}' --nth 2 --no-track --accept-nth 4 --list-label ' global ' --query "$BUFFER" \
+    --header 'type to filter, jj for j/k · ctrl+r cycles global, host, session, workspace, directory · ? whole command' \
     --bind "ctrl-r:transform:$cycle" \
     --preview $'printf "\e[90m%s · exit %s\e[0m\n\n%s\n" {2} {3} {4}' --preview-window 'down,40%,wrap')
   [[ -n $choice ]] && BUFFER=$choice CURSOR=$#choice
