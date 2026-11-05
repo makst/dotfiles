@@ -364,21 +364,22 @@ function _agent_window() {
   tmux send-keys -t "$pane" "${(j: :)${(q)@}}" Enter
 }
 
-# agent_resume [name | session id]: go back to an agent's conversation, also after agent_done removed its
-# worktree. Without an argument, lists the repo's agent sessions newest first: name, last active, title,
-# session id. With a name, resumes that agent's newest session (claude -r <id>) in a new window like `agent`:
-# in its worktree if it's still there, else in the main checkout. Claude Code keeps transcripts per directory
-# under ~/.claude/projects: an agent's stay in its worktree's folder, or move to the main checkout's when
-# Claude removes the worktree itself on exit, so both are searched for sessions that ran in a worktree.
-function agent_resume() {
+# _agent_main: the repo's main checkout, where .claude/worktrees/ lives, from anywhere in the repo or a worktree
+function _agent_main() {
   local main=${"$(git worktree list --porcelain 2> /dev/null | head -1)"#worktree }
   [[ -n $main ]] || { print -u2 "not in a git repo"; return 1 }
-  local root=$main/.claude/worktrees
-  local -a files=(${(f)"$(rg -l --sortr modified -F "\"cwd\":\"$root/" -- \
-    ~/.claude/projects/${main//[^A-Za-z0-9]/-}*(N/) 2> /dev/null)"})
-  (( $#files )) || { print -u2 "no agent sessions for $main"; return 1 }
+  print -r -- $main
+}
 
-  local f name title id
+# _agent_sessions <main>: the conversations of the agents of the repo at <main>, newest first, one per line:
+# transcript<tab>name<tab>last active<tab>title. Claude Code keeps a transcript per directory under
+# ~/.claude/projects: an agent's stays in its worktree's folder, or moves to the main checkout's when Claude
+# removes the worktree itself on exit, so both are searched for conversations that ran in .claude/worktrees/.
+function _agent_sessions() {
+  local root=$1/.claude/worktrees f name title
+  local -a dirs=(~/.claude/projects/${1//[^A-Za-z0-9]/-}*(N/))
+  (( $#dirs )) || return 0  # rg without a path would wait for stdin
+  local -a files=(${(f)"$(rg -l --sortr modified -F "\"cwd\":\"$root/" -- $dirs 2> /dev/null)"})
   for f in $files; do
     # the agent's name from the first worktree path it ran in; the title Claude gave it, else the last prompt
     IFS=$'\t' read -r name title < <(jq -rn --arg root $root/ '[inputs] as $e | [
@@ -386,17 +387,80 @@ function agent_resume() {
       (($e | map(select(.type == "ai-title")) | last.aiTitle)
         // ($e | map(select(.type == "last-prompt")) | last.lastPrompt) // "" | gsub("\\s+"; " ") | .[0:70])
     ] | join("\t")' $f)
-    id=${f:t:r}
-    if [[ -z $1 ]]; then
-      print -r -- "${(r:16:)name} $(date -r $f '+%Y-%m-%d %H:%M')  $title  ($id)"
-    elif [[ $1 == ($name|$id) ]]; then
-      local dir=$main
-      [[ -d $root/$name ]] && dir=$root/$name
-      _agent_window $name $dir claude -r $id
+    [[ -n $name ]] && print -r -- "$f"$'\t'"$name"$'\t'"$(date -r $f '+%Y-%m-%d %H:%M')"$'\t'"$title"
+  done
+}
+
+# _agent_worktree <main> <name>: makes sure the agent's worktree exists, re-creating one agent_done removed: on
+# its branch if that's still there, else on a new worktree-<name> from what agent_done saved in
+# refs/agents/<name>, or from the default branch once that holds the saved work (it was merged).
+function _agent_worktree() {
+  local main=$1 name=$2 wt=$1/.claude/worktrees/$2 branch=worktree-$2 saved=refs/agents/$2
+  [[ -d $wt ]] && return
+  if git -C $main rev-parse -q --verify refs/heads/$branch > /dev/null; then
+    git -C $main worktree add -q $wt $branch
+    return
+  fi
+  local base=$(_agent_default $main)
+  if git -C $main rev-parse -q --verify $saved > /dev/null &&
+    ! git -C $main merge-base --is-ancestor $saved $base; then
+    base=$saved
+  fi
+  git -C $main worktree add -q -b $branch $wt $base && print "re-created $name's worktree on $branch from ${base#refs/}"
+}
+
+# _agent_default <main>: the default branch, origin's or else the one checked out in <main>
+function _agent_default() {
+  local default=${"$(git -C $1 symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
+  print -r -- ${default:-$(git -C $1 rev-parse --abbrev-ref HEAD)}
+}
+
+# agent_resume [name | session id]: go back to an agent's conversation, also after agent_done removed its
+# worktree. Without an argument, an fzf list of the repo's agent conversations, newest first, with the end of
+# each in the preview; keys as in the cmd+shift+j agents popup (j/k, g/G, ctrl+d/u, / filters, q quits).
+# With a name, that agent's newest conversation; with a session id, that one. It runs claude -r <id> in the
+# agent's worktree, re-created first if agent_done removed it (_agent_worktree), in a new window like `agent`.
+# Piped, it prints the list instead.
+function agent_resume() {
+  local main
+  main=$(_agent_main) || return
+  local -a rows=(${(f)"$(_agent_sessions $main)"})
+  (( $#rows )) || { print -u2 "no agent conversations for $main"; return 1 }
+  local row
+  if [[ -n $1 ]]; then
+    # by name (rows are newest first), else by session id
+    row=${${(M)rows:#*$'\t'${(b)1}$'\t'*}[1]}
+    [[ -n $row ]] || row=${${(M)rows:#*/${(b)1}.jsonl$'\t'*}[1]}
+    [[ -n $row ]] || { print -u2 "no agent conversation $1 (agent_resume lists them)"; return 1 }
+  else
+    local -a shown
+    for row in $rows; do
+      local -a cols=("${(@ps:\t:)row}")
+      shown+="$cols[1]"$'\t'"${(r:16:)cols[2]} $cols[3]  $cols[4]  (${cols[1]:t:r})"
+    done
+    if [[ ! -t 1 ]]; then
+      print -rl -- ${shown#*$'\t'}
       return
     fi
-  done
-  [[ -z $1 ]] || { print -u2 "no agent session $1 (agent_resume lists them)"; return 1 }
+    # the preview: the conversation's prompts (bold) and Claude's replies, without tool calls, ending at the last
+    local preview='select(.type == "user" or .type == "assistant") | select(.isMeta | not) | .type as $t
+      | .message.content | if type == "string" then [.] else map(select(.type == "text") | .text) end
+      | map(select(startswith("<") | not)) | .[]
+      | if $t == "user" then "\u001b[1m❯ " + . + "\u001b[0m" else "⏺ " + . end, ""'
+    # keys as in config/tmux/agents: opens with the input hidden, / shows it, Esc hides it, Esc again quits
+    local normal='j,k,g,G,ctrl-d,ctrl-u,q,/'
+    row=$(print -rl -- $shown | fzf --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 \
+      --prompt 'resume> ' --no-input \
+      --header 'j/k move · Enter resumes · / filters · q quits' \
+      --bind 'j:down,k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort' \
+      --bind "/:show-input+unbind($normal)" \
+      --bind "esc:clear-query+transform:[[ \$FZF_INPUT_STATE == hidden ]] && echo abort || echo 'hide-input+rebind($normal)'" \
+      --preview "jq -r ${(q)preview} {1}" --preview-window 'nohidden,down,60%,wrap,follow') || return 0
+    row=${(M)rows:#${(b)row%%$'\t'*}$'\t'*}
+  fi
+  local f=${row%%$'\t'*} name=${${row#*$'\t'}%%$'\t'*}
+  _agent_worktree $main $name || return
+  _agent_window $name $main/.claude/worktrees/$name claude -r ${f:t:r}
 }
 
 # agent_done [--force] [name]: finish an agent started with `agent`. Without a name, lists the repo's agent
@@ -408,11 +472,9 @@ function agent_resume() {
 function agent_done() {
   local force=0
   [[ $1 == --force ]] && { force=1; shift }
-  local main=${"$(git worktree list --porcelain 2> /dev/null | head -1)"#worktree }
-  [[ -n $main ]] || { print -u2 "not in a git repo"; return 1 }
-  local root=$main/.claude/worktrees
-  local default=${"$(git -C $main symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
-  [[ -n $default ]] || default=$(git -C $main rev-parse --abbrev-ref HEAD)
+  local main
+  main=$(_agent_main) || return
+  local root=$main/.claude/worktrees default=$(_agent_default $main)
   local -a merged_into=($default)
   git -C $main rev-parse -q --verify refs/remotes/origin/$default > /dev/null && merged_into+=origin/$default
   _agent_merged() {
@@ -475,12 +537,34 @@ function agent_done() {
 
   [[ $PWD == $wt(|/*) ]] && cd $main
   git -C $main worktree remove $wt || return
+  # the work is kept in refs/agents/<name>, which agent_resume re-creates the worktree from; the conversation
+  # stays in ~/.claude/projects
+  git -C $main update-ref -m "agent_done $name" refs/agents/$name $tip
   [[ -n $branch ]] && git -C $main branch -D $branch
-  # the transcripts stay in ~/.claude/projects
-  [[ -n ~/.claude/projects/${wt//[^A-Za-z0-9]/-}/*.jsonl(#qN[1]) ]] &&
-    print "$name's conversation is kept: agent_resume $name"
+  print "kept $name's work and conversation: agent_resume $name brings it back"
   return 0
 }
+
+# completion: agent_resume offers the agents with a conversation (with its title), agent_done the worktrees
+function _agent_resume() {
+  local main=$(_agent_main 2> /dev/null) row name
+  [[ -n $main ]] || return 1
+  local -a entries
+  local -A seen
+  for row in ${(f)"$(_agent_sessions $main)"}; do
+    local -a f=("${(@ps:\t:)row}")
+    (( $+seen[$f[2]] )) && continue
+    seen[$f[2]]=1
+    entries+="${f[2]//:/\\:}:$f[3]  $f[4]"
+  done
+  _describe agent entries
+}
+function _agent_done() {
+  local main=$(_agent_main 2> /dev/null)
+  [[ -n $main ]] || return 1
+  _arguments '--force[drop an unmerged branch]' "1:agent:($main/.claude/worktrees/*(N/:t))"
+}
+(( $+functions[compdef] )) && compdef _agent_resume agent_resume && compdef _agent_done agent_done
 
 function setup_claude() {
   mkdir -p ~/.claude

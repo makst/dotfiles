@@ -45,20 +45,48 @@ branch has commits that aren't in the default branch. A commit counts as merged 
 default branch or in origin's, so an agent that pushed its work straight to `origin/main` can be finished
 without pulling first. It works from anywhere in the repo, the worktree itself included. Claude Code locks
 its worktree while it runs, so `agent_done` closes the window first, which ends Claude, and waits a moment
-for the lock to go.
+for the lock to go. Before deleting the branch it saves the agent's last commit in `refs/agents/<name>`, and
+the conversation stays, so [`agent_resume`](#going-back-to-an-agent) can bring the agent back. Tab completes
+the names of the repo's agent worktrees.
 
 Going back to an agent
 ---
 ```sh
-agent_resume                  # list the repo's agent conversations, newest first
+agent_resume                  # pick one of the repo's agent conversations in fzf, newest first
 agent_resume fix-login        # resume fix-login's newest conversation in a new window
 agent_resume 4eb428c6-…       # resume one by its session id, when an agent has several
 ```
-An agent's conversation outlives its worktree, so you can go back to it after `agent_done` (which says so
-when it finishes). The list shows each conversation's agent name, when it was last active, the title Claude
-gave it (or the last prompt) and its session id. `agent_resume <name>` runs `claude -r <id>` in a new tmux
-window named after the agent, like `agent`: in the agent's worktree if it's still there, otherwise in the main
-checkout, so after a merge you continue on whatever branch the main checkout has.
+`agent_done` keeps both the agent's work and its conversation, so `agent_resume` can bring a finished agent
+back where it was: in its own worktree, on a branch `worktree-<name>`, in a new tmux window named after it,
+like `agent`. Tab completes the names, with each conversation's title.
+
+The picker lists each conversation's agent, when it was last active, the title Claude gave it (or the last
+prompt) and its session id; the preview shows how the conversation ends. Its keys are the agents popup's
+(`cmd+shift+j`): it opens in normal mode, like nvim:
+
+| Key | Does |
+|---|---|
+| `j` / `k` | next / previous conversation |
+| `g` / `G` | first / last |
+| `ctrl+d` / `ctrl+u` | half a page down / up |
+| `/` | filter by typing; `Esc` clears the filter and goes back to normal mode |
+| `Enter` | resume it |
+| `q`, or `Esc` in normal mode | quit |
+
+Piped (`agent_resume | …`), it prints the list instead.
+
+When the worktree is gone, `agent_resume` makes it again at the same path, so Claude finds its conversation
+there:
+
+| What `agent_done` left | The new worktree starts from |
+|---|---|
+| the agent's work merged | the default branch, which holds that work |
+| the work dropped with `--force` | the agent's last commit, saved in `refs/agents/<name>` |
+| the branch, because the worktree was removed some other way | that branch |
+
+`refs/agents/<name>` is a hidden ref: it keeps the commits from being cleaned up by git and doesn't show in
+`git branch`. `git for-each-ref refs/agents` lists them, and `git update-ref -d refs/agents/<name>` drops one
+for good.
 
 Claude Code keeps every conversation as a file in `~/.claude/projects/`, one folder per directory. An agent's
 stays in its worktree's folder, or moves to the main checkout's when Claude removed the worktree itself on
