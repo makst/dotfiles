@@ -45,10 +45,18 @@ sock=${TMPDIR:-/tmp}/tmux-agents-$$.sock
     shown=$pane screen=$new
   done
 } &!
+
+# keys as in nvim: it opens with the input hidden, so j/k move, g/G go to the first/last agent, ctrl+d/ctrl+u
+# half a page, q quits. / shows the input to filter, like nvim's search; Esc clears it and hides it again
+# (clear-query only works outside the transform), Esc once more quits.
+normal='j,k,g,G,ctrl-d,ctrl-u,q,/'
 choice=$("$self" --list \
   | fzf --listen="$sock" --track --id-nth 1 --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 \
-    --prompt 'agent> ' \
-    --header 'most urgent first · Enter switches · cmd+j for every window' \
+    --prompt 'agent> ' --no-input \
+    --header 'j/k move · Enter switches · / filters · q quits · cmd+j for every window' \
+    --bind 'j:down,k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort' \
+    --bind "/:show-input+unbind($normal)" \
+    --bind "esc:clear-query+transform:[[ \$FZF_INPUT_STATE == hidden ]] && echo abort || echo 'hide-input+rebind($normal)'" \
     --preview 'tmux capture-pane -ep -t {1}' --preview-window 'nohidden,down,65%,follow' "$@")
 [[ -n $choice ]] && tmux switch-client -t "${choice%%$'\t'*}"
 exit 0

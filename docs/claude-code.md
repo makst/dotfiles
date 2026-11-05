@@ -83,8 +83,10 @@ those started before the hooks, which have no state yet), most urgent first: wai
 rest. Each line has the agent's mark, its window and what it's working on (the title Claude gives the
 conversation); below is a preview of the selected agent's screen. List and preview update within a second, so
 an agent that starts waiting moves up while you look, and the cursor stays on the agent it was on; only what
-changed is redrawn, so nothing flickers. Type to filter, `Enter` jumps there. For every window, agents or not,
-use `cmd+j` (`C-a w`). The script is `config/tmux/agents`.
+changed is redrawn, so nothing flickers. It moves like nvim: `j` / `k` down / up, `g` / `G` the first / last
+agent, `ctrl+d` / `ctrl+u` half a page, `Enter` jumps there, `q` or `Esc` closes it. `/` filters by typing,
+like nvim's search; `Esc` clears the filter and goes back to moving. For every window, agents or not, use
+`cmd+j` (`C-a w`). The script is `config/tmux/agents`.
 
 `cmd+shift+space` (`C-a A`) jumps straight to the next agent that needs you, in any session: the waiting ones
 first, then the done ones (which turn idle as you see them). Press it again for the one after; when none is
