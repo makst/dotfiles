@@ -7,6 +7,10 @@ typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' wor
 # fzf's preview of the screen of the line's tmux target, without the empty lines below the last output: the
 # preview follows the bottom, which would show only those on a screen that isn't full
 typeset -g picker_screen='screen=$(tmux capture-pane -ep -t {1} 2> /dev/null) && printf "%s\n" "$screen"'
+# fzf's preview label for the line's tmux target: which window the preview shows
+typeset -g picker_label='focus:transform-preview-label:tmux display -p -t {1} " #S:#I #W "'
+# every picker's preview: below the list, the same size, so they look alike
+typeset -g picker_preview='nohidden,down,60%'
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
 # "key<tab>what fzf shows", printing the chosen line. The keys are nvim's: in normal mode j/k move, g/G go to

@@ -21,9 +21,10 @@ fi
 
 self=${0:A}
 choice=$("$self" --list | picker session --insert --live "$self --list" --reverse \
-  --header 'sessions, then directories · jj for j/k' \
+  --header 'type to filter, jj for j/k · Enter switches · Esc quits · sessions, then directories' \
   --preview "$picker_screen || eza -1 --color=always --icons=always --group-directories-first {1}" \
-  --preview-window 'nohidden,right,55%' "$@")
+  --preview-window $picker_preview \
+  --bind 'focus:transform-preview-label:case {1} in "\$"*) tmux display -p -t {1} " #S:#I #W " ;; *) printf " %s " {2} ;; esac' "$@")
 [[ -z $choice ]] && exit 0
 choice=${choice%%$'\t'*}
 

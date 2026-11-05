@@ -61,11 +61,12 @@ always goes to tmux, even in nvim: there it no longer opens completion (`Tab` do
 Session picker
 ---
 `cmd+k` (or `tm` in a shell outside tmux) opens fzf with the running sessions first, then every directory
-zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there
-named after it, or switches to it if it exists. Outside tmux, `tm` attaches. It opens in a popup that looks
-like fzf in the shell: the terminal's background, a rounded border, the theme's colours. The preview shows a
-session's screen or a directory's files; the sessions' agent marks and the preview update while it's open.
-It opens ready to type; `jj` switches to moving with `j`/`k` ([picker keys](#picker-keys)).
+zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there named
+after it, or switches to it if it exists. Outside tmux, `tm` attaches. It opens in a popup that looks like fzf
+in the shell: the terminal's background, rounded boxes, the theme's colours. The preview, below the list as in
+the tree and the agents picker, shows a session's screen or a directory's files, and its label which one; the
+sessions' agent marks and the preview update while it's open. It opens ready to type; `jj` switches to moving
+with `j`/`k` ([picker keys](#picker-keys)).
 
 <details>
 <summary><b>Show GIF</b></summary>
@@ -134,7 +135,10 @@ does by default), a zoomed one with a fullscreen icon, and **a window that rang 
 icon** until you visit it. Programs ring the bell when they want attention. A window running Claude Code shows
 its agent's state instead: waiting 󰂞, done but not seen 󰄬, working 󰔟 (see
 [claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many agents are in each state across
-all sessions, a `PREFIX` badge while the prefix is pressed, date, time, battery.
+all sessions, a `PREFIX` badge while the prefix is pressed, date, time, battery. Windows are two spaces apart,
+as the session name and the first window, and the right side ends flush with the edge, as the prompt's time
+below it. Popups open centred on the window below the status line (tmux's own centring is a column and a row
+off).
 
 The tree (`cmd+j`) and the session picker (`cmd+k`) show the same marks: on each pane, window and session,
 the most urgent agent in it. Visiting a window marks its finished agents as seen.

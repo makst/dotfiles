@@ -24,6 +24,6 @@ fi
 self=${0:A}
 choice=$("$self" --list | picker agent --live "$self --list" \
   --header 'j/k move · Enter switches · / filters, jj back · q quits · cmd+j for every window' \
-  --preview "$picker_screen" --preview-window 'nohidden,down,65%,follow' "$@")
+  --preview "$picker_screen" --preview-window "$picker_preview,follow" --bind $picker_label "$@")
 [[ -n $choice ]] && tmux switch-client -t "${choice%%$'\t'*}"
 exit 0

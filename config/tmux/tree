@@ -47,7 +47,6 @@ list=$("$self" --list)
 current=${${(f)list}[(i)$(env -u TMUX_PANE tmux display -p '#{window_id}')[[:blank:]]*]}
 choice=$(print -r -- $list | picker tree --live "$self --list" --reverse --bind "load:pos($current)+unbind(load)" \
   --header 'j/k move · Enter switches · / filters, jj back · q quits · cmd+shift+j for the agents' \
-  --preview "$picker_screen" --preview-window 'nohidden,down,60%,follow' \
-  --bind 'focus:transform-preview-label:tmux display -p -t {1} " #S:#I #W "' "$@")
+  --preview "$picker_screen" --preview-window "$picker_preview,follow" --bind $picker_label "$@")
 [[ -n $choice ]] && tmux switch-client -t "${choice%%$'\t'*}"
 exit 0
