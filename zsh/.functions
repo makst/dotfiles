@@ -347,13 +347,56 @@ function claude_plugins_check() {
 function agent() {
   local name=${1:?usage: agent <name> [claude args...]}
   shift
+  _agent_window $name $PWD claude -w $name "$@"
+}
+
+# _agent_window <name> <dir> <command...>: runs the command in <dir>, inside tmux in a new window named <name>
+# that stays a shell once the command exits, outside tmux right here. Shared by agent and agent_resume.
+function _agent_window() {
+  local name=$1 dir=$2
+  shift 2
   if [[ -z $TMUX ]]; then
-    claude -w "$name" "$@"
+    (cd $dir && "$@")
     return
   fi
   local pane
-  pane=$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$PWD") || return
-  tmux send-keys -t "$pane" "claude -w ${(q)name}${@:+ ${(j: :)${(q)@}}}" Enter
+  pane=$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$dir") || return
+  tmux send-keys -t "$pane" "${(j: :)${(q)@}}" Enter
+}
+
+# agent_resume [name | session id]: go back to an agent's conversation, also after agent_done removed its
+# worktree. Without an argument, lists the repo's agent sessions newest first: name, last active, title,
+# session id. With a name, resumes that agent's newest session (claude -r <id>) in a new window like `agent`:
+# in its worktree if it's still there, else in the main checkout. Claude Code keeps transcripts per directory
+# under ~/.claude/projects: an agent's stay in its worktree's folder, or move to the main checkout's when
+# Claude removes the worktree itself on exit, so both are searched for sessions that ran in a worktree.
+function agent_resume() {
+  local main=${"$(git worktree list --porcelain 2> /dev/null | head -1)"#worktree }
+  [[ -n $main ]] || { print -u2 "not in a git repo"; return 1 }
+  local root=$main/.claude/worktrees
+  local -a files=(${(f)"$(rg -l --sortr modified -F "\"cwd\":\"$root/" -- \
+    ~/.claude/projects/${main//[^A-Za-z0-9]/-}*(N/) 2> /dev/null)"})
+  (( $#files )) || { print -u2 "no agent sessions for $main"; return 1 }
+
+  local f name title id
+  for f in $files; do
+    # the agent's name from the first worktree path it ran in; the title Claude gave it, else the last prompt
+    IFS=$'\t' read -r name title < <(jq -rn --arg root $root/ '[inputs] as $e | [
+      ($e | map(.cwd? // "" | select(startswith($root))) | first | ltrimstr($root) | split("/")[0]),
+      (($e | map(select(.type == "ai-title")) | last.aiTitle)
+        // ($e | map(select(.type == "last-prompt")) | last.lastPrompt) // "" | gsub("\\s+"; " ") | .[0:70])
+    ] | join("\t")' $f)
+    id=${f:t:r}
+    if [[ -z $1 ]]; then
+      print -r -- "${(r:16:)name} $(date -r $f '+%Y-%m-%d %H:%M')  $title  ($id)"
+    elif [[ $1 == ($name|$id) ]]; then
+      local dir=$main
+      [[ -d $root/$name ]] && dir=$root/$name
+      _agent_window $name $dir claude -r $id
+      return
+    fi
+  done
+  [[ -z $1 ]] || { print -u2 "no agent session $1 (agent_resume lists them)"; return 1 }
 }
 
 # agent_done [--force] [name]: finish an agent started with `agent`. Without a name, lists the repo's agent
@@ -433,6 +476,9 @@ function agent_done() {
   [[ $PWD == $wt(|/*) ]] && cd $main
   git -C $main worktree remove $wt || return
   [[ -n $branch ]] && git -C $main branch -D $branch
+  # the transcripts stay in ~/.claude/projects
+  [[ -n ~/.claude/projects/${wt//[^A-Za-z0-9]/-}/*.jsonl(#qN[1]) ]] &&
+    print "$name's conversation is kept: agent_resume $name"
   return 0
 }
 

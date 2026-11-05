@@ -47,6 +47,24 @@ without pulling first. It works from anywhere in the repo, the worktree itself i
 its worktree while it runs, so `agent_done` closes the window first, which ends Claude, and waits a moment
 for the lock to go.
 
+Going back to an agent
+---
+```sh
+agent_resume                  # list the repo's agent conversations, newest first
+agent_resume fix-login        # resume fix-login's newest conversation in a new window
+agent_resume 4eb428c6-…       # resume one by its session id, when an agent has several
+```
+An agent's conversation outlives its worktree, so you can go back to it after `agent_done` (which says so
+when it finishes). The list shows each conversation's agent name, when it was last active, the title Claude
+gave it (or the last prompt) and its session id. `agent_resume <name>` runs `claude -r <id>` in a new tmux
+window named after the agent, like `agent`: in the agent's worktree if it's still there, otherwise in the main
+checkout, so after a merge you continue on whatever branch the main checkout has.
+
+Claude Code keeps every conversation as a file in `~/.claude/projects/`, one folder per directory. An agent's
+stays in its worktree's folder, or moves to the main checkout's when Claude removed the worktree itself on
+exit; `agent_resume` looks in both for conversations that ran in `.claude/worktrees/`. Conversations are kept
+for a year (`cleanupPeriodDays` in `settings.json`; Claude Code's default is 30 days).
+
 Noticing an agent that waits
 ---
 Hooks tell tmux what each agent is doing (see [Config](#config)), and tmux marks it wherever it lists windows
@@ -128,6 +146,8 @@ with nothing about this Mac, its tools or this repo. `setup_claude` links it int
   (hold space), vim keys in the prompt (`editorMode`: `Esc` or `jj` for normal mode, then motions like `w`, `b`, `f`,
   `dd`, `ciw`; `i` back to typing; see [vim-keys](vim-keys.md)).
   Commits made by Claude carry only the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
+  Conversations are kept for a year instead of 30 days (`cleanupPeriodDays`), so `agent_resume` and
+  `claude -r` can still find old ones.
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
   when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
