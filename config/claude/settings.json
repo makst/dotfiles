@@ -138,6 +138,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/tmux-state.sh waiting"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh"
           }
         ]
       }
@@ -152,6 +156,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/tmux-state.sh done"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh"
           }
         ]
       }
@@ -182,6 +190,10 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/tmux-state.sh waiting"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/notify.sh"
           }
         ]
       }

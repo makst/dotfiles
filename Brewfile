@@ -21,6 +21,7 @@ brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"
+brew "terminal-notifier"           # Claude Code notifications you can click, config/claude/hooks/notify.sh
 brew "vhs"                         # records the GIFs in docs/ from docs/tapes, make_gifs
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow

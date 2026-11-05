@@ -68,6 +68,21 @@ The hook also rings the bell when Claude needs input or has finished its turn, w
 setting in `/config` is: if Ghostty is in the background, the Dock icon bounces and the window title shows a
 bell. Any other program that rings the bell turns its window yellow with a bell icon until you visit it.
 
+When you aren't looking at the agent, a macOS notification tells you too: when Claude asks for a permission
+(`wants to use Bash: <what the command does>`), asks you a question, or finishes its turn (the first 200
+characters of its last message). The title is the conversation's title and the agent's `session:window`.
+You're looking at it when its window is the active one of a session that a tmux client shows and that client's
+terminal (Ghostty) is the frontmost app; then nothing is sent. Clicking the notification switches the tmux
+client you used last to the agent's pane and brings Ghostty to the front. A newer notification from the same
+agent replaces the older one.
+
+This needs `terminal-notifier` (Brewfile). Without it, or with its notifications turned off, `osascript`
+shows a plain notification that clicking doesn't jump from. The first notification asks whether
+terminal-notifier may send notifications; if it was declined, turn it on in System Settings → Notifications
+→ terminal-notifier, or run `tccutil reset UserNotification fr.julienxx.oss.terminal-notifier` to be asked
+again. `terminal-notifier -diagnose` says what's wrong when none appear. Outside tmux or off macOS no
+notification is sent.
+
 No hook fires when you answer a permission prompt, only once the tool has finished, so while an agent waits
 the hook watches its pane twice a second: when the prompt goes away and Claude's spinner line
 (`✻ Thinking… (3s`) shows, you approved and it's *working*; without the spinner you declined and it's idle.
@@ -201,9 +216,10 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 | before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to move things to the trash instead |
 | after Claude edits or writes a file | formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style) |
 | Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
+| Claude asks for permission or a question, or has finished | sends a macOS notification unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
 | the session starts, a prompt is sent, a tool has run, Claude asks for permission or a question or has finished, the session ends | records the agent's state (working, waiting, done) in its tmux pane, for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); does nothing outside tmux |
 
-The scripts need zsh and jq; a formatter or tmux that isn't there is skipped.
+The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
 
 `/hooks` lists them; `"disableAllHooks": true` in `settings.json` turns them all off.
 
