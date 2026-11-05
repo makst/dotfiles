@@ -42,6 +42,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker |
 | `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
+| `C-a a` | `cmd+shift+j` | the same tree with only the windows running Claude Code, each with its state and what it's working on; `c` shows everything again |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
 | `C-a H/J/K/L` | | resize pane (repeatable) |
@@ -93,8 +94,13 @@ Status bar
 ---
 At the top. Left: the session name. Then the windows: current one in blue, a zoomed one with a fullscreen icon,
 and **a window that rang the bell in yellow with a bell icon** until you visit it. Programs ring the bell
-when they want attention, Claude Code for example when it waits for input (see
-[claude-code](claude-code.md)). Right: a `PREFIX` badge while the prefix is pressed, date, time, battery.
+when they want attention. A window running Claude Code shows its agent's state instead: waiting 󰂞, done but
+not seen 󰄬, working 󰔟 (see [claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many
+agents are in each state across all sessions, a `PREFIX` badge while the prefix is pressed, date, time,
+battery.
+
+The tree (`cmd+j`) and the session picker (`cmd+k`) show the same marks: on each pane, window and session,
+the most urgent agent in it. Visiting a window marks its finished agents as seen.
 
 It uses only the 16 ANSI colours, so it follows the [theme](theme.md). So do popups, menus, the tree
 (`cmd+j`), search matches and the command prompt: tmux 3.8 colours them from a theme of fixed shades (a grey

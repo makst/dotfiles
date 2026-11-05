@@ -86,6 +86,7 @@ Switching sessions and windows
 | Key | Action |
 |---|---|
 | `cmd+j` | every session and window as a tree with live previews; move with arrows or `j`/`k`, `Enter` switches |
+| `cmd+shift+j` | the same, only the Claude Code agents: their state, what each works on, a preview of its screen |
 | `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
 | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
@@ -100,7 +101,7 @@ A typical day
 2. `cmd+k`, type part of a project name: a tmux session for that directory opens (or is reused).
 3. `vim .` in one window, `cmd+d` for a shell next to it, `C-h`/`C-l` to move between them.
 4. `agent fix-login "the login form rejects valid emails"` starts Claude Code in its own worktree and
-   window; when it needs you, its window turns yellow in the status bar.
+   window; its state shows on the window, the session and the status bar: waiting for you, done, working.
 
 Repository layout
 ---

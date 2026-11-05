@@ -113,6 +113,14 @@
             "timeout": 30
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh working"
+          }
+        ]
       }
     ],
     "Notification": [
@@ -123,6 +131,15 @@
             "command": "~/.claude/hooks/bell.sh"
           }
         ]
+      },
+      {
+        "matcher": "elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh waiting"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -131,6 +148,50 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/bell.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh done"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh working"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh off"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh waiting"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/tmux-state.sh idle"
           }
         ]
       }

@@ -49,15 +49,39 @@ for the lock to go.
 
 Noticing an agent that waits
 ---
-A program that rings the terminal bell marks its tmux window: **the window turns yellow with a bell icon in
-the status bar** until you visit it. If Ghostty is in the background, the Dock icon bounces and the window
-title shows a bell too.
+Hooks tell tmux what each agent is doing (see [Config](#config)), and tmux marks it wherever it lists windows
+or sessions:
 
-A hook rings the bell in Claude's pane whenever it needs input or has finished its turn (see
-[Config](#config)), whatever the notification setting in `/config` is.
+| Mark | State | Set when |
+|---|---|---|
+| yellow bell 󰂞 | **waiting** for you | Claude asks for a permission or asks you a question |
+| green tick 󰄬 | **done**, not seen yet | Claude finishes its turn in a window you're not looking at |
+| cyan hourglass 󰔟 | **working** | you send a prompt or approve a permission, and after each tool it runs |
+| none | idle | Claude has just started, you've looked at the finished agent, or it was on screen when it finished |
 
-`cmd+j` (`C-a w`) shows every session and window with a live preview, the quickest way to look over all
-running agents and jump to one.
+A window shows the mark of its most urgent agent, in that order; a session the most urgent of its windows.
+The marks appear on the windows in the status bar, in the tree (`cmd+j`) next to every session, window and
+pane, and next to the running sessions in the session picker (`cmd+k`). The right of the status bar counts
+the agents in each state across all sessions, e.g. `󰂞 1 󰄬 2 󰔟 3`, so you see them from any session.
+
+The hook also rings the bell when Claude needs input or has finished its turn, whatever the notification
+setting in `/config` is: if Ghostty is in the background, the Dock icon bounces and the window title shows a
+bell. Any other program that rings the bell turns its window yellow with a bell icon until you visit it.
+
+No hook fires when you answer a permission prompt, only once the tool has finished, so while an agent waits
+the hook watches its pane twice a second: when the prompt goes away and Claude's spinner line
+(`✻ Thinking… (3s`) shows, you approved and it's *working*; without the spinner you declined and it's idle.
+This reads Claude Code's screen, like [herdr](https://github.com/herdrdev/herdr) does: if a release changes
+the prompt's `Esc to cancel` or the spinner line, the watcher gives up after 10 s and the window shows
+*working* only once the tool is done.
+
+Inside tmux, Claude Code keeps its terminal title still (`✳`, no spinner) and sends no progress bar, so
+neither can show the state; that's why the hooks are needed.
+
+`cmd+shift+j` (`C-a a`) is the overview of all agents: the tree with only the windows running Claude Code (also
+those started before the hooks, which have no state yet),
+each with its mark and what it's working on (the title Claude gives the conversation), and a live preview of
+the selected one. `Enter` jumps there; `c` clears the filter and shows every window, like `cmd+j` (`C-a w`).
 
 Working alongside agents
 ---
@@ -167,6 +191,7 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 | before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to move things to the trash instead |
 | after Claude edits or writes a file | formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style) |
 | Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
+| the session starts, a prompt is sent, a tool has run, Claude asks for permission or a question or has finished, the session ends | records the agent's state (working, waiting, done) in its tmux pane, for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); does nothing outside tmux |
 
 The scripts need zsh and jq; a formatter or tmux that isn't there is skipped.
 

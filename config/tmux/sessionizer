@@ -2,15 +2,25 @@
 # Pick a tmux session: the running ones first, then directories from zoxide, which get a
 # session of their own named after the directory. Bound to prefix f (config/tmux/tmux.conf)
 # and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux. Arguments go to fzf, e.g.
-# --height=100% to fill the tmux popup.
+# --height=100% to fill the tmux popup. Sessions with Claude Code in them show their most urgent agent's
+# mark, as the tree does (config/tmux/tmux.conf, "Claude Code agents").
 
-sessions=(${(f)"$(tmux list-sessions -F '#S' 2> /dev/null)"})
+# each line is "value<tab>what fzf shows": a session's name plus its agent's mark, in ANSI colours
+typeset -A marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
+sessions=() lines=()
+for line in ${(f)"$(tmux list-sessions -F '#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
+  name=${line%%$'\t'*} state=${line#*$'\t'}
+  sessions+=($name)
+  lines+=("$name"$'\t'"$name${state:+ $marks[$state]}")
+done
 # directories under $HOME are listed as ~/…, shorter to read; the choice is expanded back
 dirs=(${(f)"$(zoxide query --list)"})
-choice=$({ print -rl -- $sessions ${dirs/#$HOME/\~} } \
-  | fzf --reverse --no-sort --prompt 'session> ' --header 'running sessions, then zoxide directories' "$@")
+for dir in ${dirs/#$HOME/\~}; lines+=("$dir"$'\t'"$dir")
+choice=$(print -rl -- $lines \
+  | fzf --reverse --no-sort --ansi --delimiter '\t' --with-nth 2 --prompt 'session> ' \
+    --header 'running sessions, then zoxide directories' "$@")
 [[ -z $choice ]] && exit 0
-choice=${choice/#\~/$HOME}
+choice=${${choice%%$'\t'*}/#\~/$HOME}
 
 if (( ${sessions[(Ie)$choice]} )); then
   target=$choice
