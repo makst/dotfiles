@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+# Usage: fzf-history <filter mode>
+# atuin's history for the fzf history search (ctrl+r, fzf-history-widget in .fzf.zsh): newest first, each
+# command once, as NUL-terminated records "shown<tab>directory<tab>exit<tab>command", so commands spanning
+# lines stay one record. "shown" is what atuin's own search shows before a command: how long it ran (red when
+# it failed) and how long ago, dimmed. The directory is shown as ~/…, the exit code as ? when atuin has none.
+# The filter mode is atuin's: global, host, session, workspace, directory.
+# Sorted by time here (atuin's order puts some old commands first), deduplicated by perl as it streams, so
+# fzf shows the newest at once.
+
+atuin search --filter-mode ${1:-global} --print0 \
+  --format $'{time}\t{duration}\t{relativetime}\t{directory}\t{exit}\t{command}' 2> /dev/null |
+  sort -z -r |
+  perl -0 -ne '
+    chomp;
+    my (undef, $duration, $ago, $directory, $exit, $command) = split /\t/, $_, 6;
+    next if !length $command || $seen{$command}++;
+    $directory =~ s/^\Q$ENV{HOME}\E/~/;
+    printf "\e[%sm%6s\e[90m %7s\e[0m\t%s\t%s\t%s\0", ($exit == 0 || $exit == -1) ? 90 : 31,
+      $duration, "$ago ago", $directory, $exit == -1 ? "?" : $exit, $command;
+  '

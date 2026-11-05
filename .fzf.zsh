@@ -1,6 +1,6 @@
 # Symlinked to ~/.fzf.zsh by fzf_setup (zsh/.functions), sourced after `bindkey -v` (zsh/.zshdefault).
 
-# fzf's own key bindings and completion: CTRL-T files, ALT-C cd, **<TAB> (CTRL-R is atuin's, loaded after this)
+# fzf's own key bindings and completion: CTRL-T files, ALT-C cd, **<TAB> (CTRL-R is fzf-history-widget below)
 cached_eval fzf fzf --zsh
 
 ### fzf configuration
@@ -47,6 +47,31 @@ fif() {
 
   rg --files-with-matches --no-messages "$1" | fzf --preview "rg --ignore-case --pretty --context 10 '$1' {}" --preview-window=right:60%
 }
+
+# fzf-history-widget (ctrl+r, and / in normal mode; bound in zsh/.zshdefault after atuin's own): atuin's history
+# in fzf, so it looks and works like every other fzf. Newest first, each command once, with how long it ran
+# (red when it failed) and how long ago; typing filters the commands only. ctrl+r again cycles atuin's filter
+# modes, shown on the list's border: global, host, session, workspace (the git repo), directory. ? shows the whole command with its
+# directory and exit code. Enter puts the command on the command line to edit, as atuin's enter_accept = false.
+# atuin still records every command; config/atuin/fzf-history lists them.
+typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history
+fzf-history-widget() {
+  local cycle="case \$FZF_LIST_LABEL in
+      ' global ') m=host ;; ' host ') m=session ;; ' session ') m=workspace ;; ' workspace ') m=directory ;;
+      *) m=global ;;
+    esac
+    echo \"change-list-label( \$m )+reload($_fzf_history \$m)\""
+  local choice
+  choice=$($_fzf_history global | fzf --read0 --ansi --no-multi --scheme history --tabstop 1 \
+    --delimiter '\t' --with-nth $'{1}\t{4}' --nth 2 --accept-nth 4 \
+    --prompt 'history> ' --list-label ' global ' --query "$BUFFER" \
+    --header 'ctrl+r cycles global, host, session, workspace, directory · ? shows the whole command' \
+    --bind "ctrl-r:transform:$cycle" \
+    --preview $'printf "\e[90m%s · exit %s\e[0m\n\n%s\n" {2} {3} {4}' --preview-window 'down,40%,wrap')
+  [[ -n $choice ]] && BUFFER=$choice CURSOR=$#choice
+  zle reset-prompt
+}
+zle -N fzf-history-widget
 
 ###### fzf-tab configuration - https://github.com/Aloxaf/fzf-tab#configure
 # disable sort when completing `git checkout`

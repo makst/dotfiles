@@ -103,9 +103,13 @@ add-zle-hook-widget line-finish _vi_cursor_block
 
 # -- widgets and plugins that wrap them ------------------------------------------
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# after fzf, so C-r is atuin's; the up arrow stays the prefix search above, `?` stays a plain character
+# atuin records the history; the up arrow stays the prefix search above, `?` stays a plain character
 cached_eval atuin atuin init zsh --disable-up-arrow --disable-ai
-# fzf also took C-r in normal mode; there it's redo, as in vim (atuin's search is `/`)
+# searching it is fzf's (fzf-history-widget in ~/.fzf.zsh), over atuin's C-r and `/` in normal mode: it looks
+# like every other fzf. fzf also took C-r in normal mode; there it's redo, as in vim.
+bindkey -M emacs '^R' fzf-history-widget
+bindkey -M viins '^R' fzf-history-widget
+bindkey -M vicmd '/' fzf-history-widget
 bindkey -M vicmd '^R' redo
 # atuin makes itself the source of the grey suggestions, which starts atuin on every key press; zsh's own
 # history gives the same prefix match from memory

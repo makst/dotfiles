@@ -71,9 +71,11 @@ block in normal mode.
 |---|---|---|
 | `↑` / `↓` | both | previous / next history entry *starting with what you've typed* |
 | `C-k` / `C-j` | normal | the same, on the home row (outside tmux; inside tmux these keys move between panes) |
-| `C-r` | insert | history search (atuin) |
+| `C-r` | insert | history search (atuin's history in fzf) |
+| `/` | normal | the same |
 
-`bindkey -v` resets the main keymap, so fzf's and atuin's widgets are loaded after it. Put new key
+`bindkey -v` resets the main keymap, so fzf's and atuin's widgets are loaded after it, and the history
+search is bound after atuin's. Put new key
 bindings after it too.
 
 History
@@ -92,14 +94,18 @@ removed (only the latest copy of a repeated command is kept). A command typed wi
 saved.
 
 [atuin](https://atuin.sh) keeps a second copy in SQLite with the directory, exit code and duration of each
-command, and owns `C-r` (`/` in normal mode):
+command. `C-r` (`/` in normal mode) searches it in fzf, so it looks and works like every other fzf picker:
 
-- Type to search; `C-r` again cycles the filter: everywhere, this Mac, this session, this git repo, this
-  directory.
-- `Enter` or `Tab` puts the command on the command line, ready to edit or run.
+- Newest first, each command once, with how long it ran (red when it failed) and how long ago.
+- Type to search the commands; `C-r` again cycles the filter, shown on the list's border: everywhere
+  (`global`), this Mac (`host`), this session, this git repo (`workspace`), this directory.
+- `?` shows the whole command, wrapped, with its directory and exit code.
+- `Enter` puts the command on the command line, ready to edit or run.
 - `atuin stats` shows your most used commands; `atuin search --exit 0 --cwd . <text>` searches from scripts.
 
-Config: `config/atuin/config.toml` (linked to `~/.atuin/config.toml`). History stays on this Mac: sync
+The list comes from `config/atuin/fzf-history`, the widget is `fzf-history-widget` in `.fzf.zsh`;
+`atuin search -i` still opens atuin's own search. Config: `config/atuin/config.toml` (linked to
+`~/.atuin/config.toml`). History stays on this Mac: sync
 needs an account (`atuin register`) and is off, and atuin's AI key (`?`) isn't bound.
 
 Prompt (starship)
