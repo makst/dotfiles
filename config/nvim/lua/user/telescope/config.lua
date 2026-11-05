@@ -16,6 +16,9 @@ local function open_chsh_term(prompt_bufnr)
   chsh_term.open(full_path)
 end
 
+-- telescope's own count, a column in from the border, as fzf's
+local default_status_text = require('telescope.config').values.get_status_text
+
 telescope.setup {
   pickers = {
     find_files = {
@@ -54,6 +57,7 @@ telescope.setup {
     prompt_prefix = ' > ',
     selection_caret = ' ▌ ',
     entry_prefix = '   ',
+    get_status_text = function(self, opts) return default_status_text(self, opts) .. ' ' end,
     cache_picker = {
       num_pickers = 100
     },

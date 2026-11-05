@@ -97,7 +97,7 @@ These override built-in vim keys, which is easy to forget:
 ### Finding things
 
 Telescope pickers (`;` + letter), laid out like fzf: the prompt on top, the matches under it, the preview at
-the bottom:
+the bottom, the markers and the count a column in from the border:
 
 | Key | Picker |
 |---|---|
