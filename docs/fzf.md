@@ -46,7 +46,8 @@ Inside any fzf list
 | `C-j` / `C-k` or arrows | move |
 
 fzf takes 60 % of the screen below the command line instead of going full screen, with its prompt and best
-matches at the top; a bar marks the current line only.
+matches at the top. The prompt, the list and the preview each sit in a rounded box of their own, all the same
+width; a bar marks the current line only.
 Previews show files with bat and directories as an eza tree. Colours are ANSI ones and follow the
 [theme](theme.md).
 

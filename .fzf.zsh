@@ -15,11 +15,14 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 # https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
 # Colours are the terminal's 16 ANSI ones, so they follow the Ghostty theme.
 # --gutter=' ': fzf draws its gutter as ▌ in the text colour on every line; only the current line gets a bar.
+# The input, the list and the preview each in a box of their own: one border around all of them leaves the
+# input and the list a column short of the edge when the preview is below.
 export FZF_DEFAULT_OPTS="
 --multi
 --layout=reverse
 --height=60%
---border=rounded
+--input-border=rounded
+--list-border=rounded
 --info=inline-right
 --gutter=' '
 --preview-window=:hidden
@@ -59,7 +62,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons=alway
 zstyle ':fzf-tab:complete:cd:*' fzf-flags --preview-window=nohidden # FZF_DEFAULT_OPTS hides previews
 # FZF_DEFAULT_OPTS for its look too: the border, colours and layout of every other fzf
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
-# its height is the number of candidates plus fzf-pad: the prompt line, the separator under it and the border
-zstyle ':fzf-tab:*' fzf-pad 4
+# its height is the number of candidates plus fzf-pad: the input's box and the list's border
+zstyle ':fzf-tab:*' fzf-pad 5
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
