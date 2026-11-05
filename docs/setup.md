@@ -113,7 +113,9 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
    often means MDM already installed one of the apps: remove that line on this Mac, or hand the app to
    Homebrew with `brew install --cask --adopt <cask>`.
 3. **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
-   drop-down terminal; AeroSpace, which asks on its first start.
+   drop-down terminal; AeroSpace, which asks on its first start. If 1Password is installed, move its Quick
+   Access shortcut off `cmd+shift+space` (1Password → Settings → General, e.g. to `cmd+shift+\`): Ghostty uses
+   that key for the next agent that needs you ([claude-code](claude-code.md#noticing-an-agent-that-waits)).
 4. **SSH keys**, on every Mac, since Secure Enclave keys can't leave the Mac they were made on. Until then
    commits aren't signed and ssh to GitHub doesn't work. Open Secretive and let it start its agent at login,
    create the keys `push` (Require Authentication on) and `signing` (off), open a new shell (so

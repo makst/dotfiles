@@ -71,11 +71,11 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 
 | Key | nvim splits | tmux panes | tmux windows | AeroSpace |
 |---|---|---|---|---|
-| `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`) | `alt+space` (windows on the workspace) |
+| `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`; agents that need you: `cmd+shift+space`) | `alt+space` (windows on the workspace) |
 | `h/j/k/l`: the one in that direction | `C-h/j/k/l` | `C-h/j/k/l` | – | `alt+h/j/k/l` (windows) |
 | `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: `cmd+shift+[` / `]`) | `alt+[` / `alt+]` (workspaces with windows) |
 | `1`…`9`: by number | a count: `3 Space` | – (`C-h/j/k/l` is enough) | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
-| `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` | `alt+0` (workspace) |
+| `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` (sessions: `cmd+shift+0`) | `alt+0` (workspace) |
 
 `Space` and `Backspace` in nvim do the same in VS Code and Android Studio ([vim keys](docs/vim-keys.md); VS Code
 goes to the previous editor group, as it doesn't track the last one). `C-Space` goes to tmux in every pane,
@@ -87,10 +87,11 @@ Switching sessions and windows
 |---|---|
 | `cmd+j` | every session and window as a tree with live previews; move with arrows or `j`/`k`, `Enter` switches |
 | `cmd+shift+j` | the same, only the Claude Code agents: their state, what each works on, a preview of its screen |
+| `cmd+shift+space` | the next agent that needs you, in any session: waiting ones first, then done ones; again for the one after |
 | `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
 | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
-| `cmd+0` | back to the last window |
+| `cmd+0` / `cmd+shift+0` | back to the last window / session |
 | `cmd+r` / `cmd+shift+r` | rename the window / session |
 
 More in [tmux](docs/tmux.md#keys).

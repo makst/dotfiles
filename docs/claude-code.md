@@ -83,6 +83,11 @@ those started before the hooks, which have no state yet),
 each with its mark and what it's working on (the title Claude gives the conversation), and a live preview of
 the selected one. `Enter` jumps there; `c` clears the filter and shows every window, like `cmd+j` (`C-a w`).
 
+`cmd+shift+space` (`C-a A`) jumps straight to the next agent that needs you, in any session: the waiting ones
+first, then the done ones (which turn idle as you see them). Press it again for the one after; when none is
+left it says so. `cmd+shift+0` takes you back to the session you came from, `cmd+0` to the window. The script
+is `config/tmux/next-agent`.
+
 Working alongside agents
 ---
 - **nvim reloads files changed on disk** when you return to it, so edits made by an agent (or by git) show

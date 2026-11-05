@@ -39,10 +39,12 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a l` | `cmd+0` | back to the last window |
 | `C-a ;` | `ctrl+0` | back to the last pane |
 | `C-a (` / `C-a )` | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
+| `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker |
 | `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
 | `C-a a` | `cmd+shift+j` | the same tree with only the windows running Claude Code, each with its state and what it's working on; `c` shows everything again |
+| `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after, `cmd+shift+0` back |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
 | `C-a H/J/K/L` | | resize pane (repeatable) |

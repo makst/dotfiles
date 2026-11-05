@@ -37,10 +37,12 @@ they behave like native shortcuts but act on tmux:
 | `cmd+0` / `ctrl+0` | `C-a l` / `C-a ;` | back to the last window / pane, see [same key, every layer](../README.md#same-key-every-layer) (`cmd+0` no longer resets the font size) |
 | `cmd+[` / `cmd+]` | `C-a C-h` / `C-a C-l` | previous / next window |
 | `cmd+shift+[` / `cmd+shift+]` | `C-a (` / `C-a )` | previous / next session |
+| `cmd+shift+0` | `C-a S` | back to the last session |
 | `cmd+shift+enter` | `C-a z` | zoom the pane |
 | `cmd+k` | `C-a f` | session picker |
 | `cmd+j` | `C-a w` | tree of all sessions and windows |
 | `cmd+shift+j` | `C-a a` | the same tree, only the windows running Claude Code |
+| `cmd+shift+space` | `C-a A` | the next Claude Code agent that needs you (1Password's Quick Access default: move that, see [setup](setup.md#a-new-mac)) |
 | `cmd+f` | `C-a /` | search the scrollback |
 | `cmd+r` / `cmd+shift+r` | `C-a ,` / `C-a $` | rename the window / session |
 

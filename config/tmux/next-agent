@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+# Usage: next-agent <client> <pane>
+# Jumps the client to the next Claude Code agent that needs you: the waiting ones first, then the done ones, in
+# every session, cycling from the pane you're in. Bound to prefix A (cmd+shift+space, config/tmux/tmux.conf);
+# cmd+shift+0 goes back to the session you came from, cmd+0 to the window. The states come from the hooks
+# (config/claude/hooks/tmux-state.sh).
+
+client=$1 current=$2
+waiting=() done=()
+for line in ${(f)"$(tmux list-panes -a -F '#{pane_id} #{@claude}')"}; do
+  case ${line#* } in
+    waiting) waiting+=(${line%% *}) ;;
+    done) done+=(${line%% *}) ;;
+  esac
+done
+agents=($waiting $done)
+if (( ! $#agents )); then
+  tmux display -c "$client" 'no agent needs you'
+  exit 0
+fi
+# the one after the current pane, or the first when you're on none of them. A done agent turns idle once you've
+# seen it and leaves the list, so when you're still where the last jump landed, the one after it has moved up
+# into its place: @claude-jump remembers that pane and place.
+i=${agents[(Ie)$current]}
+if (( ! i )); then
+  last=$(tmux show -gv @claude-jump 2> /dev/null)
+  [[ ${last% *} == $current ]] && i=$(( ${last#* } - 1 ))
+fi
+i=$(( i % $#agents + 1 ))
+tmux set -g @claude-jump "$agents[i] $i"
+tmux switch-client -c "$client" -t "$agents[i]"
