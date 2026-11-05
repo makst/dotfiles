@@ -46,7 +46,7 @@ Inside any fzf list
 | `C-j` / `C-k` or arrows | move |
 
 fzf takes 60 % of the screen below the command line instead of going full screen, with its prompt and best
-matches at the top.
+matches at the top; a bar marks the current line only.
 Previews show files with bat and directories as an eza tree. Colours are ANSI ones and follow the
 [theme](theme.md).
 
@@ -54,7 +54,8 @@ Search syntax worth remembering: `'exact`, `^prefix`, `suffix$`, `!exclude`, and
 
 Completion (fzf-tab)
 ---
-Every `Tab` completion opens in fzf instead of zsh's menu: type to filter, `Enter` to accept.
+Every `Tab` completion opens in fzf instead of zsh's menu, looking like every other fzf: type to filter,
+`Enter` to accept.
 
 - Completions are grouped (commands, aliases, files, …); `,` and `.` switch groups.
 - `cd <Tab>` previews each directory's contents.

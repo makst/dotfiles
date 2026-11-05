@@ -14,12 +14,14 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 
 # https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
 # Colours are the terminal's 16 ANSI ones, so they follow the Ghostty theme.
+# --gutter=' ': fzf draws its gutter as ▌ in the text colour on every line; only the current line gets a bar.
 export FZF_DEFAULT_OPTS="
 --multi
 --layout=reverse
 --height=60%
 --border=rounded
 --info=inline-right
+--gutter=' '
 --preview-window=:hidden
 --color='fg:-1,bg:-1,hl:green,fg+:bright-white,bg+:bright-black,hl+:bright-green'
 --color='info:yellow,prompt:blue,pointer:magenta,marker:green,spinner:cyan,header:cyan,border:bright-black,gutter:-1'
@@ -54,5 +56,10 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu no
 # preview directory's content with eza when completing cd
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-flags --preview-window=nohidden # FZF_DEFAULT_OPTS hides previews
+# FZF_DEFAULT_OPTS for its look too: the border, colours and layout of every other fzf
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+# its height is the number of candidates plus fzf-pad: the prompt line, the separator under it and the border
+zstyle ':fzf-tab:*' fzf-pad 4
 # switch group using `,` and `.`
 zstyle ':fzf-tab:*' switch-group ',' '.'
