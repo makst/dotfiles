@@ -24,7 +24,6 @@ blink.setup({
     ['<S-Tab>'] = { 'select_prev', 'snippet_backward', 'fallback' },
     -- accepts the first item when none is selected
     ['<CR>'] = { 'select_and_accept', 'fallback' },
-    ['<C-Space>'] = { 'show', 'show_documentation', 'hide_documentation' },
     ['<C-e>'] = { 'hide', 'fallback' },
     ['<C-h>'] = { 'scroll_documentation_up', 'fallback' },
     ['<C-l>'] = { 'scroll_documentation_down', 'fallback' },

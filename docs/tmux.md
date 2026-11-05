@@ -36,7 +36,8 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a x` | `cmd+w` | close pane |
 | `C-a 1`…`9` | `cmd+1`…`9` | go to window |
 | `C-a C-h` / `C-a C-l` | `cmd+[` / `cmd+]` | previous / next window (repeatable) |
-| `C-a l` | | last window |
+| `C-a l` | `cmd+0` | back to the last window |
+| `C-a ;` | `ctrl+0` | back to the last pane |
 | `C-a (` / `C-a )` | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker |
@@ -47,10 +48,12 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a d` | | detach |
 | `C-a r` | | reload the config |
 | `C-h/j/k/l` | | move to the pane left/down/up/right, *including nvim splits* |
+| `C-Space` | | next pane, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
 
 `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether the pane runs nvim and, if so, lets
 nvim move between its own splits first. Inside nvim the same keys cross into tmux panes. The catch: those
-four keys don't reach programs in the shell (`C-l` no longer clears the screen; use `clear`).
+four keys don't reach programs in the shell (`C-l` no longer clears the screen; use `clear`). `C-Space`
+always goes to tmux, even in nvim: there it no longer opens completion (`Tab` does).
 
 Session picker
 ---

@@ -24,6 +24,8 @@ Shared keys
 | `ys` `ds` `cs`, `S` | surround | ✓ | ✓ | ✓ | – |
 | `gc` / `gcc` | comment | ✓ | · | ✓ | – |
 | `C-h/j/k/l` | to the split left/down/up/right | ✓ (and tmux panes) | ✓ | ✓ | – |
+| `Space` | to the next split, cycling | ✓ | ✓ | ✓ | – |
+| `Backspace` | back to the last split | ✓ | ✓ (the previous group) | ✓ | – |
 | `;f` / `;g` | find a file / a file in git | ✓ | ✓ (both: quick open) | ✓ (both: go to file) | – |
 | `;r` / `;s` | grep the project / the word under the cursor | ✓ | ✓ | ✓ | – |
 | `;b` | open files, most recent first | ✓ | ✓ | ✓ | – |

@@ -68,7 +68,8 @@ These override built-in vim keys, which is easy to forget:
 | `x` | delete without yanking | |
 | `m` | flash: jump to any visible position | set a mark (use `:mark`) |
 | `H` `J` `K` `L` | treewalker: move by syntax node | screen top, **join lines**, keyword help, screen bottom |
-| `Space` | next split | |
+| `Space` | next split, cycling: see [same key, every layer](../README.md#same-key-every-layer) | |
+| `Backspace` | back to the last split, as `C-w p` | move left, like `h` |
 | arrow keys | resize the split | move the cursor |
 | `Esc` | also clears search highlights | |
 | `C-h/j/k/l` | move between splits and tmux panes | |
@@ -164,7 +165,7 @@ type a function's arguments. `:BlinkCmp status` checks the setup.
 | `Tab` / `S-Tab` | next / previous item; otherwise expand or jump in a snippet; otherwise open completion |
 | `C-n` / `C-p` | next / previous item |
 | `Enter` | accept |
-| `C-Space` / `C-e` | open / close the menu |
+| `C-e` | close the menu (`Tab` opens it; `C-Space` belongs to tmux) |
 | `C-h` / `C-l` | scroll the documentation window |
 | `C-j` / `C-k` | next / previous snippet placeholder |
 

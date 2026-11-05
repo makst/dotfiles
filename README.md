@@ -64,6 +64,23 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code and Android Studio | |
 | `C-r` / `C-t` | atuin history, fzf files, in zsh | |
 
+Same key, every layer
+---
+A move you know on one layer works on the others: the key stays the same and the modifier picks the layer,
+from nvim splits up to AeroSpace workspaces. A new key joins one of these families where it can.
+
+| Key | nvim splits | tmux panes | tmux windows | AeroSpace |
+|---|---|---|---|---|
+| `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`) | `alt+space` (workspaces with windows) |
+| `h/j/k/l`: the one in that direction | `C-h/j/k/l` | `C-h/j/k/l` | – | `alt+h/j/k/l` (windows) |
+| `[` / `]`: previous / next | – | – | `cmd+[` / `cmd+]` (sessions: `cmd+shift+[` / `]`) | – |
+| `1`…`9`: by number | – | – | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
+| `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` | `alt+0` (workspace) |
+
+`Space` and `Backspace` in nvim do the same in VS Code and Android Studio ([vim keys](docs/vim-keys.md); VS Code
+goes to the previous editor group, as it doesn't track the last one). `C-Space` goes to tmux in every pane,
+nvim's too, so nvim's completion opens with `Tab` instead.
+
 Switching sessions and windows
 ---
 | Key | Action |
@@ -72,7 +89,7 @@ Switching sessions and windows
 | `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
 | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
-| `C-a l` | back to the last window |
+| `cmd+0` | back to the last window |
 | `cmd+r` / `cmd+shift+r` | rename the window / session |
 
 More in [tmux](docs/tmux.md#keys).

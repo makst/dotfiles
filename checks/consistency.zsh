@@ -131,7 +131,8 @@ check_gifs() {
   note="$(count $#tapes tape), $(count $#gifs GIF)"
 }
 
-# keys_index: the keys each editor maps, "<editor> <key>", with , for the leader and <C-x> for control keys:
+# keys_index: the keys each editor maps, "<editor> <key>", with , for the leader, <C-x> for control keys,
+# <Space> and <BS> for the space bar and Backspace:
 # nvim's keymap.set and map() calls (Lua), VS Code's vim.*KeyBindings (JSON), IdeaVim's map commands, plus what
 # their plugins and settings map on their own (vim-tmux-navigator, surround, commentary)
 keys_index() {
@@ -160,7 +161,7 @@ keys_index() {
 }
 
 # key_spans <text>: sets reply to the keys in the text's code spans, the way the configs write them: C-h as
-# <C-h>, C-h/j/k/l as each of the four (in reply rather than printed, so no subshell per call)
+# <C-h>, C-h/j/k/l as each of the four, Space as <Space>, Backspace as <BS> (in reply rather than printed, so no subshell per call)
 key_spans() {
   reply=()
   local span k
@@ -174,6 +175,8 @@ key_spans() {
     case $span in
       (C-?/*) for k in ${(s:/:)${span#C-}}; do reply+="<C-$k>"; done ;;
       (C-?) reply+="<$span>" ;;
+      (Space) reply+='<Space>' ;;
+      (Backspace) reply+='<BS>' ;;
       (*) reply+=$span ;;
     esac
   done
@@ -185,7 +188,7 @@ key_spans() {
 check_keys() {
   local -A mapped documented
   local editor key
-  keys_index | sed -E 's/<[Ll]eader>/,/g' > $tmp/keys.out
+  keys_index | sed -E 's/<[Ll]eader>/,/g; s/<[Ss]pace>/<Space>/g; s/<[Bb][Ss]>/<BS>/g' > $tmp/keys.out
   # keys go into subscripts through a variable: written out, [d or ]d would end the subscript
   local k
   while IFS=$'\t' read -r editor key; do k="$editor $key"; mapped[$k]=1; done < $tmp/keys.out

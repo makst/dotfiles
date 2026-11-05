@@ -37,6 +37,11 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - **Brewfile**: one package per line with a comment saying what uses it (the config file, alias or setup
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.
+- **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
+  family it belongs to, in README "Same key, every layer" and in the existing bindings of every layer, and
+  reuse it: the same key with the layer's modifier, the same verb for the same action (next, previous, last,
+  by number, by direction). Say which family it joins or why none fits, and add it to that table. When a layer
+  is missing a family member it could have, point it out.
 - **Keys**: each layer owns its modifier (README, "How the keyboard is split"). Check for clashes with tmux,
   Ghostty, AeroSpace and nvim before binding anything. nvim's keys are the reference for every editor: a key
   added or changed in nvim also goes into VS Code (`config/vscode/settings.json`) and Android Studio

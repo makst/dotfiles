@@ -46,6 +46,22 @@
   "vim.normalModeKeyBindingsNonRecursive": [
     {
       "before": [
+        "<space>"
+      ],
+      "commands": [
+        "workbench.action.focusNextGroup"
+      ]
+    },
+    {
+      "before": [
+        "<BS>"
+      ],
+      "commands": [
+        "workbench.action.focusPreviousGroup"
+      ]
+    },
+    {
+      "before": [
         "x"
       ],
       "after": [

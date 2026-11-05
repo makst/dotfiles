@@ -86,3 +86,9 @@ keybind = super+digit_8=text:\x018
 keybind = super+8=text:\x018
 keybind = super+digit_9=text:\x019
 keybind = super+9=text:\x019
+# 0: back to the last one, as alt+0 in AeroSpace. cmd+0 the last window (tmux default prefix l, replacing
+# Ghostty's reset_font_size), ctrl+0 the last pane (tmux default prefix ;)
+keybind = super+digit_0=text:\x01l
+keybind = super+0=text:\x01l
+keybind = ctrl+digit_0=text:\x01;
+keybind = ctrl+0=text:\x01;

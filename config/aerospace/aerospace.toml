@@ -92,6 +92,7 @@ alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace-back-and-forth'
+alt-space = 'workspace --wrap-around next'     # cycle the workspaces with windows, as Space cycles nvim's splits
 
 # move the window to that workspace and follow it
 alt-shift-1 = 'move-node-to-workspace --focus-follows-window 1'

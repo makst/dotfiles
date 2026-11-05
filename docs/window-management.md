@@ -49,6 +49,7 @@ nvim or zsh, for instance, are handled by AeroSpace.
 | `shift+alt+0` | make all windows equal size |
 | `alt+1`…`9` | go to workspace 1…9 |
 | `alt+0` | back to the previous workspace |
+| `alt+space` | next workspace with windows on this display, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
 | `shift+alt+1`…`9` | move the window to workspace 1…9 and follow it |
 | `shift+alt+n` / `shift+alt+p` | move the window to the next / previous display and follow it |
 | `shift+alt+tab` | move the whole workspace to the next display |

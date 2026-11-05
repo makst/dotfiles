@@ -30,8 +30,10 @@ keymap.set('n', '<leader>sv', ':vsplit<Return><C-w>w')
 keymap.set('n', '<leader>zi', '<C-w>_|<C-w>|') -- zoom in
 keymap.set('n', '<leader>zo', '<C-w>=') -- zoom out
 
--- Move window
+-- Move window. Space cycles splits, Backspace goes back to the last one; the other layers follow the same
+-- pattern (README, "Same key, every layer").
 keymap.set('n', '<Space>', '<C-w>w')
+keymap.set('n', '<BS>', '<C-w>p')
 keymap.set('', '<leader>sh', '<C-w>h')
 keymap.set('', '<leader>sk', '<C-w>k')
 keymap.set('', '<leader>sj', '<C-w>j')
