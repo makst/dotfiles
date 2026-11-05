@@ -39,6 +39,7 @@ nvim or zsh, for instance, are handled by AeroSpace.
 | Key | Action |
 |---|---|
 | `alt+h/j/k/l` | focus the window left/down/up/right |
+| `alt+space` | focus the next window on this workspace, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
 | `shift+alt+h/j/k/l` | swap with the window in that direction |
 | `ctrl+shift+alt+h/j/k/l` | move the window through the layout in that direction |
 | `alt+e` | switch the split between side by side and stacked |
@@ -49,7 +50,7 @@ nvim or zsh, for instance, are handled by AeroSpace.
 | `shift+alt+0` | make all windows equal size |
 | `alt+1`…`9` | go to workspace 1…9 |
 | `alt+0` | back to the previous workspace |
-| `alt+space` | next workspace with windows on this display, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
+| `alt+[` / `alt+]` | previous / next workspace with windows on this display, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
 | `shift+alt+1`…`9` | move the window to workspace 1…9 and follow it |
 | `shift+alt+n` / `shift+alt+p` | move the window to the next / previous display and follow it |
 | `shift+alt+tab` | move the whole workspace to the next display |

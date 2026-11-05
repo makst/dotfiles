@@ -71,10 +71,10 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 
 | Key | nvim splits | tmux panes | tmux windows | AeroSpace |
 |---|---|---|---|---|
-| `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`) | `alt+space` (workspaces with windows) |
+| `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`) | `alt+space` (windows on the workspace) |
 | `h/j/k/l`: the one in that direction | `C-h/j/k/l` | `C-h/j/k/l` | – | `alt+h/j/k/l` (windows) |
-| `[` / `]`: previous / next | – | – | `cmd+[` / `cmd+]` (sessions: `cmd+shift+[` / `]`) | – |
-| `1`…`9`: by number | – | – | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
+| `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: `cmd+shift+[` / `]`) | `alt+[` / `alt+]` (workspaces with windows) |
+| `1`…`9`: by number | a count: `3 Space` | – (`C-h/j/k/l` is enough) | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
 | `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` | `alt+0` (workspace) |
 
 `Space` and `Backspace` in nvim do the same in VS Code and Android Studio ([vim keys](docs/vim-keys.md); VS Code

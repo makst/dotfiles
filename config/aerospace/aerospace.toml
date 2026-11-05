@@ -61,6 +61,8 @@ alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
+# the next window on this workspace, cycling, as Space cycles nvim's splits and C-Space tmux panes
+alt-space = 'focus dfs-next --wrap-around'
 
 # swap with the window in that direction
 alt-shift-h = 'swap left'
@@ -92,7 +94,9 @@ alt-7 = 'workspace 7'
 alt-8 = 'workspace 8'
 alt-9 = 'workspace 9'
 alt-0 = 'workspace-back-and-forth'
-alt-space = 'workspace --wrap-around next'     # cycle the workspaces with windows, as Space cycles nvim's splits
+# previous / next workspace with windows, as cmd+[ / cmd+] for tmux windows
+alt-leftSquareBracket = 'workspace --wrap-around prev'
+alt-rightSquareBracket = 'workspace --wrap-around next'
 
 # move the window to that workspace and follow it
 alt-shift-1 = 'move-node-to-workspace --focus-follows-window 1'
