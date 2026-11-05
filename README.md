@@ -73,7 +73,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 |---|---|---|---|---|
 | `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`; agents that need you: `cmd+shift+space`) | `alt+space` (windows on the workspace) |
 | `h/j/k/l`: the one in that direction | `C-h/j/k/l` | `C-h/j/k/l` | – | `alt+h/j/k/l` (windows) |
-| `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: `cmd+shift+[` / `]`) | `alt+[` / `alt+]` (workspaces with windows) |
+| `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: none, too easy to mix up with windows) | `alt+[` / `alt+]` (workspaces with windows) |
 | `1`…`9`: by number | a count: `3 Space` | – (`C-h/j/k/l` is enough) | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
 | `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` (sessions: `cmd+shift+0`) | `alt+0` (workspace) |
 
@@ -89,7 +89,6 @@ Switching sessions and windows
 | `cmd+shift+j` | only the Claude Code agents, most urgent first: their state, what each works on, a live preview of its screen |
 | `cmd+shift+space` | the next agent that needs you, in any session: waiting ones first, then done ones; again for the one after |
 | `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
-| `cmd+shift+[` / `cmd+shift+]` | previous / next session |
 | `cmd+[` / `cmd+]`, `cmd+1`…`9` | previous / next window, window by number |
 | `cmd+0` / `cmd+shift+0` | back to the last window / session |
 | `cmd+r` / `cmd+shift+r` | rename the window / session |

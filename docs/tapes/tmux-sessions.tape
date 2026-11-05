@@ -14,6 +14,6 @@ Up Sleep 700ms
 Up Sleep 1s
 Enter Sleep 1.5s
 
-# cmd+shift+]: next session
-Ctrl+a Type ")" Sleep 1.5s
-Ctrl+a Type ")" Sleep 1.5s
+# cmd+shift+0: back to the last session, and again to return
+Ctrl+a Type "S" Sleep 1.5s
+Ctrl+a Type "S" Sleep 1.5s

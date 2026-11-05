@@ -38,7 +38,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a C-h` / `C-a C-l` | `cmd+[` / `cmd+]` | previous / next window (repeatable) |
 | `C-a l` | `cmd+0` | back to the last window |
 | `C-a ;` | `ctrl+0` | back to the last pane |
-| `C-a (` / `C-a )` | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
+| `C-a (` / `C-a )` | – | previous / next session (tmux default; no Cmd key, too close to `cmd+[` / `cmd+]`) |
 | `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | session picker |
@@ -68,9 +68,9 @@ like fzf in the shell: the terminal's background, a rounded border, the theme's 
 <details>
 <summary><b>Show GIF</b></summary>
 
-`cmd+k` opens a project as a session, `cmd+j` shows the tree, `cmd+shift+]` switches sessions.
+`cmd+k` opens a project as a session, `cmd+j` shows the tree, `cmd+shift+0` goes back to the last session.
 
-![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+\] switches sessions](img/tmux-sessions.gif)
+![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+0 goes back to the last session](img/tmux-sessions.gif)
 
 </details>
 
