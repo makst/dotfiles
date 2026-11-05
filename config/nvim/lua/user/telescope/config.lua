@@ -46,7 +46,14 @@ telescope.setup {
     },
   },
   defaults = {
+    -- as the fzf pickers in the shell and tmux: the prompt on top, the list under it, the preview at the bottom
     layout_strategy = 'vertical',
+    layout_config = { vertical = { prompt_position = 'top', mirror = true } },
+    sorting_strategy = 'ascending',
+    -- fzf's markers, a column in from the border as in fzf
+    prompt_prefix = ' > ',
+    selection_caret = ' ▌ ',
+    entry_prefix = '   ',
     cache_picker = {
       num_pickers = 100
     },

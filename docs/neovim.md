@@ -96,7 +96,8 @@ These override built-in vim keys, which is easy to forget:
 
 ### Finding things
 
-Telescope pickers (`;` + letter):
+Telescope pickers (`;` + letter), laid out like fzf: the prompt on top, the matches under it, the preview at
+the bottom:
 
 | Key | Picker |
 |---|---|
@@ -185,8 +186,8 @@ gitsigns marks added, changed and deleted lines in the sign column; its actions 
 
 ### Terminals
 
-`,tt` and `,tm` toggle two floating shells per working directory (e.g. one for tests, one for anything
-else). They keep running while hidden.
+`,tt` and `,tm` toggle two floating shells, with rounded borders like every other float, per working directory
+(e.g. one for tests, one for anything else). They keep running while hidden.
 
 ### Search and replace across files
 
@@ -259,5 +260,5 @@ Integrations
 - **Debugging**: `,vo` opens the current file and line in VS Code, in the project's window, to set
   breakpoints and debug there, see [debugging](debugging.md). Xcode (`,io`) and Android Studio (`,ao`) do the
   same for apps, see [mobile](mobile.md).
-- **Status line** (lualine, one for all splits): mode, git branch and diff counts, path relative to the
-  working directory, diagnostics, active language servers, position.
+- **Status line** (lualine, one for all splits, flat blocks like tmux's): mode, git branch and diff counts,
+  path relative to the working directory, diagnostics, active language servers, position.

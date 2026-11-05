@@ -6,9 +6,13 @@ lualine.setup({
   options = {
     theme = 'auto',
     globalstatus = true,
+    -- flat blocks, as the tmux status line: no powerline arrows
+    section_separators = '',
+    component_separators = '',
   },
   sections = {
-    lualine_a = { 'mode' },
+    -- bold, as the session name in tmux
+    lualine_a = { { 'mode', color = { gui = 'bold' } } },
     lualine_b = { 'branch', 'diff' },
     lualine_c = { { 'filename', path = 1 }, 'diagnostics' },
     lualine_x = { 'lsp_status', 'encoding' },

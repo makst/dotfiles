@@ -19,7 +19,7 @@ function _lazygit_toggle()
       hidden = true,
       direction = 'float',
       float_opts = {
-        border = 'double',
+        border = 'rounded',
       },
     })
   end
@@ -34,7 +34,7 @@ function _testterm_toggle()
       hidden = true,
       direction = 'float',
       float_opts = {
-        border = 'double',
+        border = 'rounded',
       },
     })
   end
@@ -49,7 +49,7 @@ function _miscterm_toggle()
       hidden = true,
       direction = 'float',
       float_opts = {
-        border = 'double',
+        border = 'rounded',
       },
     })
   end
