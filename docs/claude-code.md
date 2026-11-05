@@ -78,10 +78,13 @@ the prompt's `Esc to cancel` or the spinner line, the watcher gives up after 10 
 Inside tmux, Claude Code keeps its terminal title still (`✳`, no spinner) and sends no progress bar, so
 neither can show the state; that's why the hooks are needed.
 
-`cmd+shift+j` (`C-a a`) is the overview of all agents: the tree with only the windows running Claude Code (also
-those started before the hooks, which have no state yet),
-each with its mark and what it's working on (the title Claude gives the conversation), and a live preview of
-the selected one. `Enter` jumps there; `c` clears the filter and shows every window, like `cmd+j` (`C-a w`).
+`cmd+shift+j` (`C-a a`) is the overview of all agents: a popup listing every pane that runs Claude Code (also
+those started before the hooks, which have no state yet), most urgent first: waiting, done, working, then the
+rest. Each line has the agent's mark, its window and what it's working on (the title Claude gives the
+conversation); below is a preview of the selected agent's screen. List and preview update within a second, so
+an agent that starts waiting moves up while you look, and the cursor stays on the agent it was on; only what
+changed is redrawn, so nothing flickers. Type to filter, `Enter` jumps there. For every window, agents or not,
+use `cmd+j` (`C-a w`). The script is `config/tmux/agents`.
 
 `cmd+shift+space` (`C-a A`) jumps straight to the next agent that needs you, in any session: the waiting ones
 first, then the done ones (which turn idle as you see them). Press it again for the one after; when none is

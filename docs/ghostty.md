@@ -41,7 +41,7 @@ they behave like native shortcuts but act on tmux:
 | `cmd+shift+enter` | `C-a z` | zoom the pane |
 | `cmd+k` | `C-a f` | session picker |
 | `cmd+j` | `C-a w` | tree of all sessions and windows |
-| `cmd+shift+j` | `C-a a` | the same tree, only the windows running Claude Code |
+| `cmd+shift+j` | `C-a a` | the Claude Code agents only, most urgent first |
 | `cmd+shift+space` | `C-a A` | the next Claude Code agent that needs you (1Password's Quick Access default: move that, see [setup](setup.md#a-new-mac)) |
 | `cmd+f` | `C-a /` | search the scrollback |
 | `cmd+r` / `cmd+shift+r` | `C-a ,` / `C-a $` | rename the window / session |

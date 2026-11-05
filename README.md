@@ -86,7 +86,7 @@ Switching sessions and windows
 | Key | Action |
 |---|---|
 | `cmd+j` | every session and window as a tree with live previews; move with arrows or `j`/`k`, `Enter` switches |
-| `cmd+shift+j` | the same, only the Claude Code agents: their state, what each works on, a preview of its screen |
+| `cmd+shift+j` | only the Claude Code agents, most urgent first: their state, what each works on, a live preview of its screen |
 | `cmd+shift+space` | the next agent that needs you, in any session: waiting ones first, then done ones; again for the one after |
 | `cmd+k` | fuzzy-find a running session or a project directory, which becomes a session (`tm` outside tmux) |
 | `cmd+shift+[` / `cmd+shift+]` | previous / next session |
