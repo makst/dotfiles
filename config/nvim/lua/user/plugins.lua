@@ -65,6 +65,7 @@ require('lazy').setup({
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
   'nvim-telescope/telescope-ui-select.nvim',
   'towolf/vim-helm',
+  'roeeyn/codetour.nvim', -- code tours: ordered, annotated stops walked with the quickfix list (user/codetour)
 
   -- project management
   'nvim-telescope/telescope-project.nvim',

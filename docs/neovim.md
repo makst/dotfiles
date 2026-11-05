@@ -44,6 +44,9 @@ Behaviour worth knowing
   scrolling, `:s` shows a live preview of the substitution.
 - Diagnostics are shown as icons in the sign column and coloured line numbers, not as text at the end of
   the line. Read them with `]d` / `[d`, `;e` or `,xx`.
+- **Per-folder config**: a `.nvim.lua` (or `.nvimrc`, `.exrc`) in the folder nvim starts in, or in any folder
+  above it, is loaded after this config (`exrc`). A file meant for one folder only checks `vim.fn.getcwd()`. nvim asks once whether to trust each such file and asks again when it changes, so a
+  cloned repo can't run code you haven't seen. `:trust` / `:trust ++deny` change the answer later.
 
 Keys
 ---
@@ -234,6 +237,21 @@ files). Add a language there and restart.
 
 Integrations
 ---
+- **Code tours** ([codetour.nvim](https://github.com/roeeyn/codetour.nvim)): a tour is an ordered list of
+  stops in the code, each with a note shown as a virtual line above it, saved as JSON in `<git root>/.codetour/`.
+  A folder's `.nvim.lua` can point `storage_path` at tours kept elsewhere, e.g. a docs repo that tours code
+  in its sibling repos. Tours don't reopen on start.
+
+  | Command | What |
+  |---|---|
+  | `:CodeTour open` | pick a tour (telescope) and load its stops into the quickfix list |
+  | `:cnext` / `:cprev` | next / previous stop |
+  | `:CodeTour` | all stops with a preview; reorder lines, edit notes, `:w` saves |
+  | `:CodeTour list` | pick a stop |
+  | `:CodeTour toggle-notes` | hide / show the notes |
+  | `:CodeTour close` | end the tour and restore the previous quickfix list |
+  | `:CodeTour create <name>`, `:CodeTour add <note>` | start a tour, add the cursor line as a stop |
+
 - **tmux**: `C-h/j/k/l` cross between nvim splits and tmux panes; true colour and undercurls work inside
   tmux; focus events trigger the reload of changed files.
 - **Theme**: the colour scheme is a base16 one shared with Ghostty, switched with `change_theme`, see
