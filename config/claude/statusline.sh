@@ -58,8 +58,35 @@ if [[ -n $top ]]; then
   local branch=$(git -C $dir branch --show-current 2> /dev/null)
   [[ -z $branch ]] && branch=$(git -C $dir rev-parse --short HEAD 2> /dev/null)
   out+=" $purple$branch$reset"
-  # uncommitted changes; --no-optional-locks so it never blocks git commands running at the same time
-  [[ -n $(git --no-optional-locks -C $dir status --porcelain 2> /dev/null | head -1) ]] && out+="$yellow*$reset"
+  # the state of the work tree with the prompt's marks (starship's git_status): = conflicted, $ stashed,
+  # ✘ deleted, » renamed, ! modified, + staged, ? untracked, then ⇡ ahead / ⇣ behind the upstream.
+  # --no-optional-locks so it never blocks git commands running at the same time
+  local line x y ahead=0 behind=0
+  local -A has
+  for line in ${(f)"$(git --no-optional-locks -C $dir status --porcelain=v2 --branch 2> /dev/null)"}; do
+    case $line in
+      '# branch.ab '*) ahead=${${line#*+}%% *} behind=${line##*-} ;;
+      [12]' '*)
+        x=${line[3]} y=${line[4]}
+        [[ $line == 2* ]] && has[»]=1
+        [[ $x == D || $y == D ]] && has[✘]=1
+        [[ $y == M ]] && has[!]=1
+        [[ $x == [MAT] ]] && has[+]=1 ;;
+      u' '*) has[=]=1 ;;
+      '? '*) has[?]=1 ;;
+    esac
+  done
+  git -C $dir rev-parse -q --verify refs/stash > /dev/null 2>&1 && has[\$]=1
+  local marks= mark
+  for mark in = \$ ✘ » ! + \?; do (( ${+has[$mark]} )) && marks+=$mark; done
+  if (( ahead && behind )); then
+    marks+="⇕⇡$ahead⇣$behind"
+  elif (( ahead )); then
+    marks+="⇡$ahead"
+  elif (( behind )); then
+    marks+="⇣$behind"
+  fi
+  [[ -n $marks ]] && out+=" $yellow$marks$reset"
   # a linked worktree (claude -w) has its own git dir apart from the shared one
   local -a gitdirs=(${(f)"$(git -C $dir rev-parse --path-format=absolute --git-dir --git-common-dir 2> /dev/null)"})
   [[ $gitdirs[1] != $gitdirs[2] ]] && out+=" $cyan(worktree)$reset"
