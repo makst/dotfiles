@@ -16,7 +16,7 @@ Shared keys
 
 | Key | Does | nvim | VS Code | Android Studio | Xcode |
 |---|---|---|---|---|---|
-| `jj` | leave insert mode (zsh and Claude Code too) | ✓ | ✓ | ✓ | – |
+| `jj` | leave insert mode (zsh, Claude Code and the fzf pickers too) | ✓ | ✓ | ✓ | – |
 | `,` | leader | ✓ | ✓ | ✓ | – |
 | `x` | delete a character without yanking it | ✓ | ✓ | ✓ | – |
 | yank / paste | system clipboard | ✓ | ✓ | ✓ | – |
@@ -80,6 +80,8 @@ Each tool
 - **Xcode**: Editor → Vim Mode. Motions, operators, text objects and `:` commands work; Xcode can't take
   mappings, so no leader, `jj` or `;` pickers.
 - **zsh**: vi mode, `jj` leaves insert mode (see [zsh](zsh.md)).
+- **fzf pickers** (`cmd+k`, `cmd+shift+j`, `agent_resume`): a normal mode with `j`/`k`, `g`/`G`, `/` to filter
+  and `jj` back from typing (see [tmux](tmux.md#picker-keys)).
 - **Claude Code**: the prompt is in vim mode (`editorMode` in `config/claude/settings.json`), `jj` leaves
   insert mode (`vimInsertModeRemaps`). Motions, operators and text objects work; no other mappings. In
   normal mode, `j`/`k` at the first or last line go through earlier prompts, and `/` searches them.

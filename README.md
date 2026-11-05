@@ -61,7 +61,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
 | `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code and Android Studio | |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+shift+j`) | |
 | `C-r` / `C-t` | atuin history, fzf files, in zsh | |
 
 Same key, every layer

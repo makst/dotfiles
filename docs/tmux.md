@@ -41,9 +41,9 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a (` / `C-a )` | – | previous / next session (tmux default; no Cmd key, too close to `cmd+[` / `cmd+]`) |
 | `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
-| `C-a f` | `cmd+k` | session picker |
+| `C-a f` | `cmd+k` | session picker, ready to type ([picker keys](#picker-keys)) |
 | `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them |
-| `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. `j`/`k`, `g`/`G`, `ctrl+d`/`ctrl+u` move, `/` filters, `Esc` clears the filter, `q` closes |
+| `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. Opens in normal mode: `j`/`k` move, `/` filters ([picker keys](#picker-keys)) |
 | `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after, `cmd+shift+0` back |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
@@ -63,7 +63,9 @@ Session picker
 `cmd+k` (or `tm` in a shell outside tmux) opens fzf with the running sessions first, then every directory
 zoxide knows, most used first, those in your home as `~/…`. Choosing a directory creates a session there
 named after it, or switches to it if it exists. Outside tmux, `tm` attaches. It opens in a popup that looks
-like fzf in the shell: the terminal's background, a rounded border, the theme's colours.
+like fzf in the shell: the terminal's background, a rounded border, the theme's colours. The preview shows a
+session's screen or a directory's files; the sessions' agent marks and the preview update while it's open.
+It opens ready to type; `jj` switches to moving with `j`/`k` ([picker keys](#picker-keys)).
 
 <details>
 <summary><b>Show GIF</b></summary>
@@ -75,6 +77,28 @@ like fzf in the shell: the terminal's background, a rounded border, the theme's 
 </details>
 
 So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#navigation).
+
+Picker keys
+---
+The fzf pickers, the session picker (`cmd+k`), the agents (`cmd+shift+j`) and `agent_resume`, share their keys
+and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker opens ready
+to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode:
+`session> ` while typing, `session: ` in normal mode.
+
+| Key | Mode | Does |
+|---|---|---|
+| `j` / `k` | normal | next / previous line |
+| `g` / `G` | normal | first / last line |
+| `ctrl+d` / `ctrl+u` | normal | half a page down / up |
+| `/` | normal | type a filter |
+| `jj` | typing | back to normal mode, keeping the filter, so `j`/`k` move through what it matched |
+| `Esc` | both | clear the filter and go back to the mode the picker opened in; there, with no filter, quit |
+| `q` | normal | quit |
+| `Enter` | both | choose the line |
+
+As in nvim, zsh and Claude Code, `jj` leaves insert mode, but fzf has no timeout for the second `j`: `jj` in a
+filter always leaves. The shared part is `config/tmux/picker.zsh`; it also keeps the list and the preview of
+the tmux pickers current, redrawing only what changed.
 
 Copy and paste
 ---

@@ -3,60 +3,27 @@
 # The Claude Code agents in every session, most urgent first: waiting, done, working, then the idle ones and
 # those without a state yet. Each line has the agent's mark, its window and what it's working on (Claude Code's
 # title for the pane, without its leading ✳); the preview shows its screen. List and preview refresh every
-# second, so states and order stay current while it's open; Enter switches there. Bound to prefix a
-# (cmd+shift+j, config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
+# second, so states and order stay current while it's open; Enter switches there. Keys as in every picker
+# (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix a (cmd+shift+j,
+# config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
 # `agents --list` prints the lines alone, for fzf's reload.
+source ${0:A:h}/picker.zsh
 
 # each line is "pane id<tab>what fzf shows"; a sort key in front orders them by state, keeping tmux's order
 # within one state
 if [[ $1 == --list ]]; then
-  typeset -A marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
   typeset -A rank=(waiting 1 done 2 working 3)
   for line in ${(f)"$(tmux list-panes -a -f '#{E:@claude-agent}' \
     -F '#{pane_id}'$'\t''#{@claude}'$'\t''#S:#I #W'$'\t''#{s/^✳ //:pane_title}')"}; do
     fields=("${(@ps:\t:)line}")
-    print -r -- "${rank[$fields[2]]:-4}"$'\t'"$fields[1]"$'\t'"${marks[$fields[2]]:- } $fields[3]  $fields[4]"
+    print -r -- "${rank[$fields[2]]:-4}"$'\t'"$fields[1]"$'\t'"${picker_marks[$fields[2]]:- } $fields[3]  $fields[4]"
   done | sort -s -t $'\t' -k 1,1n | cut -f 2-
   exit 0
 fi
 
-# fzf takes actions over a socket. A loop checks every second, while this script (and so fzf) runs, and sends
-# only what changed: redrawing an unchanged list or preview flickers. reload-sync swaps the list in at once,
-# --track keeps the cursor on the same agent (its pane id) when the order or its line changes. The selected
-# agent comes from fzf itself, so its preview refreshes only when that agent's screen changed.
 self=${0:A}
-sock=${TMPDIR:-/tmp}/tmux-agents-$$.sock
-{
-  list=$("$self" --list) shown= screen=
-  while sleep 1 && kill -0 $$ 2> /dev/null; do
-    new=$("$self" --list)
-    if [[ $new != $list ]]; then
-      list=$new
-      curl -s --unix-socket "$sock" http://localhost -d "reload-sync($self --list)" > /dev/null
-    fi
-    pane=$(curl -s --unix-socket "$sock" http://localhost | jq -r '.current.text // empty')
-    pane=${pane%%$'\t'*}
-    [[ -n $pane ]] || continue
-    new=$(tmux capture-pane -ep -t "$pane" 2> /dev/null)
-    # moving the cursor already redraws the preview: only a new screen on the same agent needs it
-    if [[ $pane == $shown && $new != $screen ]]; then
-      curl -s --unix-socket "$sock" http://localhost -d refresh-preview > /dev/null
-    fi
-    shown=$pane screen=$new
-  done
-} &!
-
-# keys as in nvim: it opens with the input hidden, so j/k move, g/G go to the first/last agent, ctrl+d/ctrl+u
-# half a page, q quits. / shows the input to filter, like nvim's search; Esc clears it and hides it again
-# (clear-query only works outside the transform), Esc once more quits.
-normal='j,k,g,G,ctrl-d,ctrl-u,q,/'
-choice=$("$self" --list \
-  | fzf --listen="$sock" --track --id-nth 1 --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 \
-    --prompt 'agent> ' --no-input \
-    --header 'j/k move · Enter switches · / filters · q quits · cmd+j for every window' \
-    --bind 'j:down,k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort' \
-    --bind "/:show-input+unbind($normal)" \
-    --bind "esc:clear-query+transform:[[ \$FZF_INPUT_STATE == hidden ]] && echo abort || echo 'hide-input+rebind($normal)'" \
-    --preview 'tmux capture-pane -ep -t {1}' --preview-window 'nohidden,down,65%,follow' "$@")
+choice=$("$self" --list | picker agent --live "$self --list" \
+  --header 'j/k move · Enter switches · / filters, jj back · q quits · cmd+j for every window' \
+  --preview "$picker_screen" --preview-window 'nohidden,down,65%,follow' "$@")
 [[ -n $choice ]] && tmux switch-client -t "${choice%%$'\t'*}"
 exit 0

@@ -61,17 +61,9 @@ back where it was: in its own worktree, on a branch `worktree-<name>`, in a new 
 like `agent`. Tab completes the names, with each conversation's title.
 
 The picker lists each conversation's agent, when it was last active, the title Claude gave it (or the last
-prompt) and its session id; the preview shows how the conversation ends. Its keys are the agents popup's
-(`cmd+shift+j`): it opens in normal mode, like nvim:
-
-| Key | Does |
-|---|---|
-| `j` / `k` | next / previous conversation |
-| `g` / `G` | first / last |
-| `ctrl+d` / `ctrl+u` | half a page down / up |
-| `/` | filter by typing; `Esc` clears the filter and goes back to normal mode |
-| `Enter` | resume it |
-| `q`, or `Esc` in normal mode | quit |
+prompt) and its session id; the preview shows how the conversation ends. Its keys are every picker's
+([tmux](tmux.md#picker-keys)): it opens in normal mode, like nvim, `j`/`k` move, `/` filters, `jj` goes back to
+moving through what the filter matched, `Enter` resumes, `q` quits.
 
 Piped (`agent_resume | …`), it prints the list instead.
 
@@ -146,7 +138,8 @@ conversation); below is a preview of the selected agent's screen. List and previ
 an agent that starts waiting moves up while you look, and the cursor stays on the agent it was on; only what
 changed is redrawn, so nothing flickers. It moves like nvim: `j` / `k` down / up, `g` / `G` the first / last
 agent, `ctrl+d` / `ctrl+u` half a page, `Enter` jumps there, `q` or `Esc` closes it. `/` filters by typing,
-like nvim's search; `Esc` clears the filter and goes back to moving. For every window, agents or not, use
+like nvim's search; `jj` goes back to moving through what it matched, `Esc` clears it ([picker
+keys](tmux.md#picker-keys)). For every window, agents or not, use
 `cmd+j` (`C-a w`). The script is `config/tmux/agents`.
 
 `cmd+shift+space` (`C-a A`) jumps straight to the next agent that needs you, in any session: the waiting ones

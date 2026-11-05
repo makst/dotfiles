@@ -417,7 +417,7 @@ function _agent_default() {
 
 # agent_resume [name | session id]: go back to an agent's conversation, also after agent_done removed its
 # worktree. Without an argument, an fzf list of the repo's agent conversations, newest first, with the end of
-# each in the preview; keys as in the cmd+shift+j agents popup (j/k, g/G, ctrl+d/u, / filters, q quits).
+# each in the preview; keys as in the cmd+shift+j agents popup (j/k, g/G, ctrl+d/u, / filters, jj, q quits).
 # With a name, that agent's newest conversation; with a session id, that one. It runs claude -r <id> in the
 # agent's worktree, re-created first if agent_done removed it (_agent_worktree), in a new window like `agent`.
 # Piped, it prints the list instead.
@@ -447,14 +447,10 @@ function agent_resume() {
       | .message.content | if type == "string" then [.] else map(select(.type == "text") | .text) end
       | map(select(startswith("<") | not)) | .[]
       | if $t == "user" then "\u001b[1m❯ " + . + "\u001b[0m" else "⏺ " + . end, ""'
-    # keys as in config/tmux/agents: opens with the input hidden, / shows it, Esc hides it, Esc again quits
-    local normal='j,k,g,G,ctrl-d,ctrl-u,q,/'
-    row=$(print -rl -- $shown | fzf --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 \
-      --prompt 'resume> ' --no-input \
-      --header 'j/k move · Enter resumes · / filters · q quits' \
-      --bind 'j:down,k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort' \
-      --bind "/:show-input+unbind($normal)" \
-      --bind "esc:clear-query+transform:[[ \$FZF_INPUT_STATE == hidden ]] && echo abort || echo 'hide-input+rebind($normal)'" \
+    # keys as in every picker (config/tmux/picker.zsh): opens in normal mode, / filters, jj back to j/k
+    source ~/.config/tmux/picker.zsh
+    row=$(print -rl -- $shown | picker resume \
+      --header 'j/k move · Enter resumes · / filters, jj back · q quits' \
       --preview "jq -r ${(q)preview} {1}" --preview-window 'nohidden,down,60%,wrap,follow') || return 0
     row=${(M)rows:#${(b)row%%$'\t'*}$'\t'*}
   fi

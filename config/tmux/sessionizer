@@ -3,34 +3,40 @@
 # session of their own named after the directory. Bound to prefix f (config/tmux/tmux.conf)
 # and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux. Arguments go to fzf, e.g.
 # --height=100% to fill the tmux popup. Sessions with Claude Code in them show their most urgent agent's
-# mark, as the tree does (config/tmux/tmux.conf, "Claude Code agents").
+# mark, as the tree does (config/tmux/tmux.conf, "Claude Code agents"); the marks and the preview, a session's
+# screen or a directory's files, stay current while it's open. Keys as in every picker (config/tmux/picker.zsh),
+# but it opens ready to type: jj for j/k. `sessionizer --list` prints the lines alone, for fzf's reload.
+source ${0:A:h}/picker.zsh
 
-# each line is "value<tab>what fzf shows": a session's name plus its agent's mark, in ANSI colours
-typeset -A marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
-sessions=() lines=()
-for line in ${(f)"$(tmux list-sessions -F '#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
-  name=${line%%$'\t'*} state=${line#*$'\t'}
-  sessions+=($name)
-  lines+=("$name"$'\t'"$name${state:+ $marks[$state]}")
-done
-# directories under $HOME are listed as ~/…, shorter to read; the choice is expanded back
-dirs=(${(f)"$(zoxide query --list)"})
-for dir in ${dirs/#$HOME/\~}; lines+=("$dir"$'\t'"$dir")
-choice=$(print -rl -- $lines \
-  | fzf --reverse --no-sort --ansi --delimiter '\t' --with-nth 2 --prompt 'session> ' \
-    --header 'running sessions, then zoxide directories' "$@")
+# each line is "key<tab>what fzf shows": a session's id (exact, unlike its name: tmux matches names by prefix)
+# with its name and agent's mark in ANSI colours, or a directory's path, shown as ~/… when under $HOME
+if [[ $1 == --list ]]; then
+  for line in ${(f)"$(tmux list-sessions -F '#{session_id}'$'\t''#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
+    fields=("${(@ps:\t:)line}")
+    print -r -- "$fields[1]"$'\t'"$fields[2]${fields[3]:+ $picker_marks[$fields[3]]}"
+  done
+  for dir in ${(f)"$(zoxide query --list)"}; print -r -- "$dir"$'\t'"${dir/#$HOME/~}"
+  exit 0
+fi
+
+self=${0:A}
+choice=$("$self" --list | picker session --insert --live "$self --list" --reverse \
+  --header 'sessions, then directories · jj for j/k' \
+  --preview "$picker_screen || eza -1 --color=always --icons=always --group-directories-first {1}" \
+  --preview-window 'nohidden,right,55%' "$@")
 [[ -z $choice ]] && exit 0
-choice=${${choice%%$'\t'*}/#\~/$HOME}
+choice=${choice%%$'\t'*}
 
-if (( ${sessions[(Ie)$choice]} )); then
+if [[ $choice == \$* ]]; then
   target=$choice
 else
   target=${${choice:t}//[.:]/_} # tmux turns . and : in session names into _ anyway
   tmux has-session -t "=$target" 2> /dev/null || tmux new-session -d -s "$target" -c "$choice"
+  target="=$target"
 fi
 
 if [[ -n $TMUX ]]; then
-  tmux switch-client -t "=$target"
+  tmux switch-client -t "$target"
 else
-  tmux attach-session -t "=$target"
+  tmux attach-session -t "$target"
 fi
