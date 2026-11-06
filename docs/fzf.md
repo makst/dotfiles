@@ -34,7 +34,7 @@ Shell keys
 
 | Key | Action |
 |---|---|
-| `C-r` | search [atuin's history](zsh.md#history), put the chosen command on the command line |
+| `C-r` | search [atuin's history](zsh.md#searching-history), put the chosen command on the command line |
 | `C-t` | pick files (several with `Tab`) and insert their paths |
 | `Alt+C` | `cd` into a subdirectory |
 | `**<Tab>` | fzf completion after a command, e.g. `vim **<Tab>`, `cd **<Tab>`, `kill **<Tab>` |

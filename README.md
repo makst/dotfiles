@@ -104,6 +104,7 @@ page per tool instead of four folders, so a tool is still one search away.
 | Once per Mac / Once per project | how-to | steps to run, in order, each one a command or a click |
 | A heading per task | how-to | named for the task ("Switching schemes"), short steps, no background |
 | Keys | reference | the key table, nothing but rows; a line above it may say which layer it is |
+| Commands | reference | the same for commands, aliases and functions you type |
 | Config | reference | which files, where they link, what each setting changes |
 | To look out for | how-to | gotchas and their fixes, one bullet each |
 | Decisions | explanation | "X, not Y, because …": what was tried or dropped, so it isn't tried again |

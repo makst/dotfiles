@@ -78,7 +78,7 @@ with `j`/`k` ([picker keys](#picker-keys)).
 
 </details>
 
-So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#navigation).
+So the directories you `z` into in the shell are the projects you can jump to. See [zsh](zsh.md#jumping-to-a-directory).
 
 Tree
 ---
@@ -94,7 +94,7 @@ Picker keys
 ---
 The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), the paste
 buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search (`C-r`,
-[zsh](zsh.md#history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share their keys and work
+[zsh](zsh.md#searching-history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share their keys and work
 like nvim: a normal mode to move and an insert mode to type a filter. The session picker, `change_theme`, the
 history search and nvim's pickers open ready to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode: `session> ` while typing,
 `session: ` in normal mode. A picker appears with its list already in and closes as soon as you leave it.

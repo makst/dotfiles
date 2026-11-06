@@ -18,7 +18,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, lazygit, the session tree |
 | `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
 | `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, back to the last session |
-| `zsh-history` | [zsh](zsh.md#history) | prefix search with the up arrow, grey suggestions, atuin |
+| `zsh-history` | [zsh](zsh.md#searching-history) | prefix search with the up arrow, grey suggestions, atuin |
 | `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
 | `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
 | `git` | [git](git.md#lazygit) | delta, difftastic, staging and committing in lazygit |
