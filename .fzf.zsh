@@ -71,5 +71,5 @@ zstyle ':fzf-tab:complete:cd:*' fzf-flags --preview-window=nohidden # fzfrc hide
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # its height is the number of candidates plus fzf-pad: the input's box and the list's border
 zstyle ':fzf-tab:*' fzf-pad 5
-# switch group using `,` and `.`
-zstyle ':fzf-tab:*' switch-group ',' '.'
+# [ and ] switch to the previous / next group, as [x / ]x do in nvim; not , and ., which are in filenames
+zstyle ':fzf-tab:*' switch-group '[' ']'

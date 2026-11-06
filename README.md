@@ -107,6 +107,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim
 keys](docs/vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
 `C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
+In zsh's completion list (fzf-tab), `[` / `]` go to the previous / next group of completions.
 
 Switching sessions and windows
 ---

@@ -62,7 +62,7 @@ Completion (fzf-tab)
 Every `Tab` completion opens in fzf instead of zsh's menu, looking like every other fzf: type to filter,
 `Enter` to accept.
 
-- Completions are grouped (commands, aliases, files, …); `,` and `.` switch groups.
+- Completions are grouped (commands, aliases, files, …); `[` and `]` switch to the previous / next group.
 - `cd <Tab>` previews each directory's contents.
 - Files are coloured like `ls`.
 - `git checkout <Tab>` keeps git's own order (recent branches first) instead of sorting.
