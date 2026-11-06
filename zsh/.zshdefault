@@ -49,7 +49,7 @@ setopt complete_in_word always_to_end
 
 # -- plugins ---------------------------------------------------------------------
 # fzf-tab replaces the completion menu: it loads after compinit and before the plugins that wrap widgets. The
-# plugins come from the Brewfile; until brew_setup installs them (the first shell on a new Mac), zsh starts
+# plugins come from the Brewfile; until setup_brew installs them (the first shell on a new Mac), zsh starts
 # without them instead of printing errors
 [[ -r $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh ]] && source $HOMEBREW_PREFIX/share/fzf-tab/fzf-tab.zsh
 

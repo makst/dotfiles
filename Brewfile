@@ -1,4 +1,4 @@
-# Installed by `brew_setup` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
+# Installed by `setup_brew` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
 
 # This Mac's kind, home or work (setup_machine asks once). Every Mac gets all packages below; one that only
@@ -28,7 +28,7 @@ brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI
 brew "gnu-sed"
 brew "cmake"
-brew "fzf"                         # fzf_setup
+brew "fzf"                         # setup_fzf
 brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"

@@ -12,7 +12,7 @@ jobs:
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
         run: brew install shellcheck neovim tmux
-      - name: Fix completion dirs, as brew_setup does on a Mac
+      - name: Fix completion dirs, as setup_brew does on a Mac
         shell: zsh {0}
         run: TERM=xterm-256color ZDOTDIR=$PWD zsh -i -c fix_completion_dirs < /dev/null
       - name: check_dotfiles

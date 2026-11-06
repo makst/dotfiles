@@ -25,10 +25,10 @@ Each step is a function you can also run on its own:
 | Function | Does |
 |---|---|
 | `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
-| `brew_setup` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
-| `fzf_setup` | links `~/.fzf.zsh` |
+| `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
+| `setup_fzf` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time |
-| `npm_setup` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
+| `setup_node` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
 | `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore` |
@@ -36,7 +36,7 @@ Each step is a function you can also run on its own:
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json`; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
 | `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
-| `remap_keys` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
+| `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 | `setup_vscode` | links VS Code's `settings.json`, installs the extensions in `config/vscode/extensions.txt` that are missing (see [debugging](debugging.md)) |
 | `setup_ideavim` | links `~/.ideavimrc`, installs the IdeaVim and AceJump plugins into Android Studio when missing (see [vim-keys](vim-keys.md)) |
@@ -99,7 +99,7 @@ The Brewfile
 Grouped by why a package is there: tools these dotfiles depend on (each commented with the file that uses
 it), everyday CLI tools, GUI apps (casks), apps for one kind of Mac only, this Mac's own list from
 `~/.config/dotfiles/Brewfile`, and a commented-out review list of things from an older Mac.
-Add a package by adding a line and rerunning `brew_setup`. `brew bundle check --verbose` shows what is
+Add a package by adding a line and rerunning `setup_brew`. `brew bundle check --verbose` shows what is
 missing; `brew bundle cleanup` shows what is installed but not listed.
 
 A new Mac
@@ -109,7 +109,7 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
 1. **Clone over HTTPS**: `git clone https://github.com/makst/dotfiles.git ~/repos/dotfiles`. SSH needs the
    keys from step 4 first. The first `git` on a new Mac offers to install Apple's command line tools: accept.
 2. **`./prepare-zsh-install.sh`**, then `exec zsh` and **`setup_dotfiles`** (name and kind of the Mac). On a
-   managed work Mac, a step MDM blocks shows up in the list of failed steps at the end. A failed `brew_setup`
+   managed work Mac, a step MDM blocks shows up in the list of failed steps at the end. A failed `setup_brew`
    often means MDM already installed one of the apps: remove that line on this Mac, or hand the app to
    Homebrew with `brew install --cask --adopt <cask>`.
 3. **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
@@ -175,7 +175,7 @@ and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists ever
 shellcheck, Python 3.11 for TOML) is skipped and says why. GitHub runs `checks/check_dotfiles -v` on every
 push and pull request on a macOS runner (`.github/workflows/check.yml`), so the run's log shows each check,
 and a red check there means the same as a red check here. Before the checks, CI runs `fix_completion_dirs`
-as `brew_setup` does on a Mac: the runner's Homebrew leaves group-writable directories, and zsh would stop to
+as `setup_brew` does on a Mac: the runner's Homebrew leaves group-writable directories, and zsh would stop to
 ask about them.
 
 | Group | File | What it checks |

@@ -1,4 +1,4 @@
 # This Mac's own packages. setup_machine copies this file to ~/.config/dotfiles/Brewfile once; the repo's
-# Brewfile reads that copy at its end, so brew_setup, `brew bundle check` and `brew bundle cleanup` include
+# Brewfile reads that copy at its end, so setup_brew, `brew bundle check` and `brew bundle cleanup` include
 # them. The copy isn't in the repo: for packages only this Mac needs, like a company's tools.
 # brew "awscli"

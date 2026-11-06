@@ -33,7 +33,7 @@ function change_theme() {
 # INSTALL / SETUP FUNCTIONS
 # -------------------------
 
-function brew_setup() {
+function setup_brew() {
   echo "=> Installing brew packages from the Brewfile"
   # see the Brewfile for what is installed and why
   brew bundle --file="$real_script_dir/Brewfile"
@@ -109,7 +109,7 @@ function setup_ideavim() {
   studio installPlugins IdeaVIM AceJump 2>&1 | grep 'installed plugin'
 }
 
-function fzf_setup() {
+function setup_fzf() {
   # fzf, eza (improved file/directory listing), bat (cat with syntax highlighting) and
   # lesspipe (display more with less) come from the Brewfile
   ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
@@ -154,7 +154,7 @@ function mds() {
   fi
 }
 
-function npm_setup() {
+function setup_node() {
   # node comes from fnm (Brewfile, zsh/.exports)
   fnm install --lts
   fnm default lts-latest
@@ -162,7 +162,7 @@ function npm_setup() {
     typescript 
 }
 
-function remap_keys() {
+function setup_caps_lock() {
   # https://apple.stackexchange.com/a/283253
   # Caps Lock -> Right Ctrl
   local mapping='{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000e4}]}'
@@ -813,8 +813,8 @@ function setup_dotfiles() {
   setup_machine || return
   local step
   local -a failed
-  for step in brew_setup fzf_setup setup_atuin npm_setup setup_python setup_ssh \
-    setup_git setup_tmux setup_nvim setup_ghostty setup_claude remap_keys setup_macos_defaults \
+  for step in setup_brew setup_fzf setup_atuin setup_node setup_python setup_ssh \
+    setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_caps_lock setup_macos_defaults \
     setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
     $step || failed+=$step
