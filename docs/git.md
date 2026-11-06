@@ -133,6 +133,10 @@ Secretive's agent, which shows a notification each time. The price: no backups, 
 and they are ECDSA P-256 (the only kind the Secure Enclave makes), which GitHub and GitLab accept like
 ed25519.
 
+Secretive has no setting for those notifications, and with signed commits they come often. To quiet them, go
+to System Settings → Notifications → Secret Agent and set the alert style to *None*: each use is still listed
+in Notification Centre, without a banner. Turning *Allow notifications* off hides them completely.
+
 There are two keys:
 
 | Key | Touch ID | Used for |
