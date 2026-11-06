@@ -12,6 +12,17 @@ theme = base16
 font-family = Source Code Pro
 font-size = 18
 adjust-cell-height = 10%
+# Nerd Font icons as tall as capitals and digits: by default they're a fifth taller (31 px against 25 at size
+# 18 on a Retina screen), sticking out above the text and below its baseline, e.g. the agent marks in tmux's
+# status bar. An icon with a space after it, as all of ours have, is sized against the font's full height
+# (about 45 px here) and only shrinks once that's below the icon's own height. Measured: -24% left them at
+# 31 px, -36% at 30, -45% at 26; -48% makes them 24, the digits' height. An icon right before other text
+# would come out smaller.
+adjust-icon-height = -48%
+# Icons are centred on the font's whole box, descender included, which puts them above the middle of the
+# digits and capitals; this moves the text up a pixel (icons stay where they are), so icons start and end
+# where capitals do. 2 pixels put most icons a pixel below the baseline.
+adjust-font-baseline = 1
 
 window-padding-x = 8
 window-padding-y = 6
