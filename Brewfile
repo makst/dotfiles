@@ -1,4 +1,4 @@
-# Installed by `setup_brew` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
+# Installed by `setup_brew` (zsh/functions/setup.zsh) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
 # A comment starting with "TUI:" marks a program with its own full-screen keys: docs/vim-keys.md, "Each tool",
 # says how it gets vim keys (a check, checks/consistency.zsh, holds it to that).
@@ -35,7 +35,7 @@ brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"                         # file previews in fzf, .fzf.zsh
 brew "lesspipe"                    # zsh/.exports
 brew "fd"                          # file lists for fzf (.fzf.zsh), mdv
-brew "glow"                        # TUI: mdv, zsh/.functions: renders markdown in the terminal
+brew "glow"                        # TUI: mdv, zsh/functions/fzf.zsh: renders markdown in the terminal
 brew "ripgrep"                     # rg: fzf-lua grep and grug-far in nvim, fif in .fzf.zsh
 brew "neovim"                      # setup_nvim, config/nvim
 brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua

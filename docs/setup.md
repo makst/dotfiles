@@ -8,7 +8,7 @@ The setup runs in two stages, because the second needs zsh and Homebrew to exist
    `/opt/homebrew` and Homebrew's zsh, and makes Homebrew's zsh your login shell (asks for
    your password once, for `/etc/shells` and `chsh`). An existing real `~/.zshrc` is kept as
    `~/.zshrc.backup`.
-2. **`setup_dotfiles`** (a zsh function from `zsh/.functions`) does the rest. The first time, it asks for
+2. **`setup_dotfiles`** (a zsh function from `zsh/functions/setup.zsh`) does the rest. The first time, it asks for
    the Mac's name and whether it's home-like or work-like, see [Several Macs](#several-macs). Every step is
    idempotent, so rerun it after pulling changes. A step that fails doesn't stop the others; the failed ones
    are listed at the end, to fix and run again on their own.

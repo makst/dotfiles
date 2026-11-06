@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# demo-home <dir> <repo>: build the HOME the GIFs are recorded in (make_gifs, zsh/.functions). It has the
+# demo-home <dir> <repo>: build the HOME the GIFs are recorded in (make_gifs, zsh/functions/gifs.zsh). It has the
 # repo's config linked the way the setup_* functions link it, nvim's installed plugins, and made-up history,
 # zoxide directories and projects, so no real command, path or project of this Mac shows up in a GIF.
 # Nothing from ~/.config/dotfiles is linked: the GIFs show the shared setup.

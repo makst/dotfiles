@@ -14,7 +14,7 @@ How it loads
 | `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`, the Android SDK's tools), fnm, pager and colour settings |
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide |
 | `zsh/.aliases` | aliases |
-| `zsh/.functions` | shell functions, including the whole install (`setup_dotfiles`) |
+| `zsh/functions/<tool>.zsh` | shell functions, one file per tool, named like its `config/<tool>` or `docs/<tool>.md`: `claude.zsh` has the `claude` wrapper and agents, `setup.zsh` the whole install (`setup_dotfiles`) and the checks |
 | `zsh/.private` | gitignored: tokens, if the file exists |
 | `~/.config/dotfiles/zshrc` | outside the repo: what only this Mac needs (see [setup](setup.md#several-macs)) |
 

@@ -225,7 +225,7 @@ they show up in `git diff`; for plugins that's usually not what you want, see [P
 
 ### This machine
 The parts that depend on the Mac live in the dotfiles, not in `config/claude`. The `claude` shell function
-(`zsh/.functions`) starts Claude Code with `--settings` on top of the shared settings:
+(`zsh/functions/claude.zsh`) starts Claude Code with `--settings` on top of the shared settings:
 
 - **Signing in the sandbox**: the socket in `SSH_AUTH_SOCK` (Secretive's, from `zsh/.exports`) is allowed,
   so sandboxed commands can sign commits. Pushing still asks for Touch ID.

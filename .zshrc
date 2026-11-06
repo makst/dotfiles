@@ -19,8 +19,8 @@ cached_eval() {
   source $cache
 }
 
-# Load the shell dotfiles; .exports first, it puts Homebrew on PATH and fpath
-for file in "$real_script_dir"/zsh/.{exports,zshdefault,aliases,functions,private}; do
+# Load the shell dotfiles; .exports first, it puts Homebrew on PATH and fpath; the functions one file per tool
+for file in "$real_script_dir"/zsh/{.exports,.zshdefault,.aliases,functions/*.zsh,.private}(N); do
   # source `file` if it's a `readable file`
   [ -r "$file" ] && [ -f "$file" ] && source "$file";
 done;

@@ -41,7 +41,7 @@ zsh_definitions() {
         if (s ~ /^"/) { sub(/^"[^"]*"[[:space:]]*/, "", s) } else if (s ~ /^\047/) { sub(/^\047[^\047]*\047[[:space:]]*/, "", s) } else { sub(/^[^[:space:]]*[[:space:]]*/, "", s) }
       }
     }
-  ' .zshrc .fzf.zsh zsh/.* config/tmux/sessionizer 2> /dev/null
+  ' .zshrc .fzf.zsh zsh/.* zsh/functions/*.zsh config/tmux/sessionizer 2> /dev/null
 }
 
 # md_index: one pass over the Markdown files: "H file slug" for every heading (GitHub's anchor for it, a
@@ -121,7 +121,7 @@ path_index() {
   ' ${text_files:#checks/mutate}
 }
 
-# links_index: what the setup links, from the `ln -s` lines of zsh/.functions and prepare-zsh-install.sh:
+# links_index: what the setup links, from the `ln -s` lines of zsh/functions/*.zsh and prepare-zsh-install.sh:
 # "~/link source file:line". A loop's variable takes each value of its word list or glob, a local variable its
 # value; a source in the repo starts with ./ (the repo itself is .), anything else is outside it.
 links_index() {
@@ -139,7 +139,7 @@ links_index() {
     [[ -n $loop ]] && w=${${${w//\$\{${loop}:t\}/${v:t}}//\$\{$loop\}/$v}//\$$loop/$v}
     print -r -- $w
   }
-  for file in zsh/.functions prepare-zsh-install.sh; do
+  for file in zsh/functions/*.zsh prepare-zsh-install.sh; do
     n=0
     for line in "${(@f)$(<$file)}"; do
       n+=1

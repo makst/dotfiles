@@ -1,7 +1,7 @@
 #!/bin/zsh
 # Usage: post-merge, post-checkout and post-rewrite, the git hooks that link to this file (setup_git points this
 # repo's core.hooksPath at .githooks). After a pull, rebase or branch switch has changed the files of the checkout
-# the setup links to, reload_dotfiles (zsh/.functions) reloads the running programs for what changed and lists
+# the setup links to, reload_dotfiles (zsh/functions/setup.zsh) reloads the running programs for what changed and lists
 # what's left to do. Other clones and agents' worktrees aren't the live setup, so there it does nothing.
 
 repo=${0:A:h:h}
@@ -23,6 +23,6 @@ esac
 # no commit to compare with (no ORIG_HEAD yet, a new branch): nothing to report, rather than reloading everything
 from=$(git -C $repo rev-parse -q --verify "$from^{commit}") || exit 0
 real_script_dir=$repo
-source $repo/zsh/.functions
+for f in $repo/zsh/functions/*.zsh; do source $f; done
 reload_dotfiles $from || true
 exit 0

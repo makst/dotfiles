@@ -1,5 +1,6 @@
 # Ghostty config: https://ghostty.org/docs/config
-# ~/.config/ghostty/config and ~/.config/ghostty/themes are symlinked here by setup_ghostty (zsh/.functions).
+# ~/.config/ghostty/config and ~/.config/ghostty/themes are symlinked here by setup_ghostty
+# (zsh/functions/ghostty.zsh).
 # Reload with cmd+shift+, ; list options with `ghostty +show-config --default --docs`.
 
 # -- look -----------------------------------------------------------------------

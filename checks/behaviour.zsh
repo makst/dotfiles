@@ -139,7 +139,7 @@ check_statusline() {
   note="3 sessions"
 }
 
-# the git hooks and reload_dotfiles, in a throwaway repo with the hooks and zsh/.functions, two commits and
+# the git hooks and reload_dotfiles, in a throwaway repo with the hooks and zsh/functions, two commits and
 # stand-ins for tmux, Ghostty and AeroSpace that log their calls: zsh functions in its HOME's .zshenv, which the
 # hook's zsh reads too (macOS takes ~150 ms to first run a new executable). A change to tmux.conf and Ghostty's
 # config reloads those two and not AeroSpace, a change to .zshrc and the Brewfile lists what's left, no change
@@ -150,17 +150,17 @@ check_reload() {
   mkdir -p $t/repo/{zsh,config/{tmux,ghostty,aerospace}} $t/home
   print -r -- "for c in tmux pgrep pkill aerospace; functions[\$c]='print -r -- \$0 \$* >> $t/calls'
 ghostty() { print 'Ghostty 1.4.0' }" > $t/home/.zshenv
-  cp -RP .githooks $t/repo/ && cp zsh/.functions $t/repo/zsh/
+  cp -RP .githooks $t/repo/ && cp -R zsh/functions $t/repo/zsh/
   local -a git=(git -C $t/repo -c user.name=t -c user.email=t@t -c commit.gpgsign=false)
   {
     git init -q -b main $t/repo && $git config core.hooksPath .githooks &&
       touch $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config,config/aerospace/aerospace.toml} &&
       $git add -A && $git commit -qm a &&
       print x | tee $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config} > /dev/null &&
-      print "# not a link: ln -sfn" >> $t/repo/zsh/.functions &&
+      print "# not a link: ln -sfn" >> $t/repo/zsh/functions/setup.zsh &&
       $git commit -qam b
   } > /dev/null 2>&1 || { print "couldn't make the test repo"; return }
-  reload() { HOME=$t/home zsh -c "real_script_dir=$t/repo; source $t/repo/zsh/.functions; reload_dotfiles $1" }
+  reload() { HOME=$t/home zsh -c "real_script_dir=$t/repo; for f in $t/repo/zsh/functions/*.zsh; do source \$f; done; reload_dotfiles $1" }
   calls() { [[ -e $t/calls ]] && <$t/calls; rm -f $t/calls }
 
   out=$(reload HEAD~1)
@@ -192,7 +192,7 @@ check_skill_links() {
   mkdir -p $t/repo/config/claude/skills/{new,copied}/ $t/home/.Trash $s/copied
   ln -s $t/repo/config/claude/skills/gone $s/gone
   ln -s $t/home/moved $s/own
-  HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/.functions; link_claude_skills" ||
+  HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/functions/claude.zsh; link_claude_skills" ||
     print "link_claude_skills failed"
   [[ -L $s/new && $s/new -ef $t/repo/config/claude/skills/new ]] || print "a new skill wasn't linked"
   [[ -L $s/copied ]] || print "a real copy in a skill's place wasn't replaced by the link"

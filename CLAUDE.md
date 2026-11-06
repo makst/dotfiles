@@ -13,7 +13,7 @@ difftastic, `shellcheck`, `shfmt`, `ast-grep`, …). SSH keys are in Secretive: 
 `config/claude` becomes `~/.claude` on any machine, so it stays free of anything specific to this Mac, its
 tools or this repo: no machine paths, no fonts, no hard dependency beyond zsh, jq, git and gh (anything else,
 like a formatter or tmux, is used when present and skipped otherwise). Machine-specific Claude settings go
-in the dotfiles (the `claude` wrapper in `zsh/.functions`), repo-specific ones in `.claude/settings.json`
+in the dotfiles (the `claude` wrapper in `zsh/functions/claude.zsh`), repo-specific ones in `.claude/settings.json`
 and this file. It also runs next to work projects' own Claude setups: never write into a project, and
 format only with what the project configures.
 
@@ -34,9 +34,9 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - **Docs move with the config.** Every change updates `docs/<tool>.md` in the same commit: what it does and
   why, keys in tables. A new tool or layer also goes in the README table. `docs/setup.md` lists every setup
   step and symlink.
-- **Setup steps** are idempotent `setup_<tool>` functions in `zsh/.functions` that link from `config/` with
-  `ln -sfn "$real_script_dir/config/…" ~/…`. Add each to `setup_dotfiles` and to the table in
-  `docs/setup.md`. A real file that a link replaces goes to `~/.Trash`, not `rm`.
+- **Setup steps** are idempotent `setup_<tool>` functions in `zsh/functions/<tool>.zsh` (the Mac-wide ones and
+  `setup_dotfiles` in `setup.zsh`) that link from `config/` with `ln -sfn "$real_script_dir/config/…" ~/…`.
+  Add each to `setup_dotfiles` and to the table in `docs/setup.md`. A real file that a link replaces goes to `~/.Trash`, not `rm`.
 - **Brewfile**: one package per line with a comment saying what uses it (the config file, alias or setup
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.

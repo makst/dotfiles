@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # keycast <tmux socket> <ghostty config> <command…>: run the command in a pseudo-terminal and show each key
 # typed into it in the tmux option @keys on that socket, which docs/tapes/demo.tmux.conf draws as a caption
-# under the status bar. make_gifs (zsh/.functions) runs tmux through it, so the GIFs show which keys do what.
+# under the status bar. make_gifs (zsh/functions/gifs.zsh) runs tmux through it, so the GIFs show which keys do what.
 # A prefix chord that a Ghostty keybind sends (keybind = super+d=text:\x01|) shows as that key, cmd+d, since
 # that's the one you'd press.
 # Python because it needs a pty in the middle of the input; zsh's zpty can't pass a terminal through.

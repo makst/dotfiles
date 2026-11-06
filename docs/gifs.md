@@ -28,7 +28,7 @@ How they're made
 ---
 - Each GIF has a [VHS](https://github.com/charmbracelet/vhs) tape in `docs/tapes/<name>.tape`: the keys to
   press and how long to wait, e.g. `Ctrl+a Type "|" Sleep 1.2s`. The GIF goes to `docs/img/<name>.gif`.
-- `make_gifs` (`zsh/.functions`) renders them: all tapes, or the ones named (`make_gifs tmux-panes`). It
+- `make_gifs` (`zsh/functions/gifs.zsh`) renders them: all tapes, or the ones named (`make_gifs tmux-panes`). It
   adds the Ghostty font and colour scheme to each tape, so the GIFs match the terminal and follow
   `change_theme`.
 - Each tape runs in a made-up HOME that `docs/tapes/demo-home` builds: the repo's config linked as the setup

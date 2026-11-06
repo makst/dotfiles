@@ -28,7 +28,7 @@ table_column() {
 # setup steps: what setup_dotfiles runs is defined, docs/setup.md's table of steps lists exactly those (and
 # setup_machine, which runs first), and every other setup_* function is under "Not part of setup_dotfiles"
 check_setup_steps() {
-  local text=$(awk '/for step in/ { on = 1 } on { print } on && /; do/ { exit }' zsh/.functions)
+  local text=$(awk '/for step in/ { on = 1 } on { print } on && /; do/ { exit }' zsh/functions/setup.zsh)
   text=${${${text//\\/ }#*for step in}%%; do*}
   local -a steps=(${=text}) defined=(${(f)"$(zsh_definitions)"})
   local -a table=(${${(f)"$(table_column docs/setup.md 'What `setup_dotfiles` does')"}%% *})
@@ -36,7 +36,7 @@ check_setup_steps() {
     on && /^- `/ { s = $0; sub(/^- `/, "", s); sub(/`.*/, "", s); print s }' docs/setup.md)"}%% *})
   local f
   for f in $steps; do
-    (( $defined[(Ie)$f] )) || print -r -- "zsh/.functions: setup_dotfiles runs $f, which isn't defined"
+    (( $defined[(Ie)$f] )) || print -r -- "zsh/functions/setup.zsh: setup_dotfiles runs $f, which isn't defined"
   done
   for f in $steps setup_machine; do
     (( $table[(Ie)$f] )) || print -r -- "docs/setup.md: $f isn't in the table of what setup_dotfiles does"
@@ -47,7 +47,7 @@ check_setup_steps() {
   done
   for f in ${(M)defined:#(setup_*|*_setup)}; do
     (( $steps[(Ie)$f] || $apart[(Ie)$f] )) || [[ $f == (setup_machine|setup_dotfiles) ]] ||
-      print -r -- "zsh/.functions: $f is neither a step of setup_dotfiles nor under \"Not part of\" in docs/setup.md"
+      print -r -- "zsh/functions: $f is neither a step of setup_dotfiles nor under \"Not part of\" in docs/setup.md"
   done
   note="$(count $#steps step)"
 }

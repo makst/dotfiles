@@ -1,4 +1,4 @@
-# Shared ssh settings. ~/.ssh/config includes this file on its first line (setup_ssh in zsh/.functions);
+# Shared ssh settings. ~/.ssh/config includes this file on its first line (setup_ssh in zsh/functions/ssh.zsh);
 # private or machine-specific hosts stay in ~/.ssh/config itself. The first value set wins, so these apply
 # before anything in there.
 
