@@ -13,12 +13,12 @@ typeset -g picker_label='focus:transform-preview-label:tmux display -p -t {1} " 
 typeset -g picker_preview='nohidden,down,60%'
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
-# "key<tab>what fzf shows", printing the chosen line. The keys are nvim's: in normal mode j/k move, g/G go to
-# the first/last line, ctrl+d/ctrl+u half a page, q quits, / starts typing a filter; while typing, jj goes back
-# to normal mode and keeps the filter, so j/k move through what it matched. Esc clears the filter and goes back
-# to the mode the picker opened in; in that mode with no filter, it quits. It opens in normal mode, with the input
-# hidden until there's a filter, or with --insert ready to type. The prompt says which mode: "<name>> " while
-# typing, "<name>: " in normal mode.
+# "key<tab>what fzf shows", printing the chosen line. The keys are nvim's: in normal mode j/k move, wrapping
+# round at either end, g/G go to the first/last line, ctrl+d/ctrl+u half a page, q quits, / starts typing a
+# filter; while typing, jj goes back to normal mode and keeps the filter, so j/k move through what it matched.
+# Esc clears the filter and goes back to the mode the picker opened in; in that mode with no filter, it quits.
+# It opens in normal mode, with the input hidden until there's a filter, or with --insert ready to type. The
+# prompt says which mode: "<name>> " while typing, "<name>: " in normal mode.
 # --live <command> reprints the list every second, and the key is a tmux target (pane, window or session):
 # while fzf is open, the list follows the command's output and the preview the target's screen.
 function picker() {
@@ -50,7 +50,7 @@ function picker() {
   # in the same step leaves the list unfiltered, so once fzf has filtered.
   local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
   # --sync draws the picker once the list is in, not first an empty frame that fills a moment later
-  local -a opts=(--sync --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1
+  local -a opts=(--sync --cycle --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1
     --bind "j:transform:$j" --bind 'k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort'
     --bind "/:$to_insert" --bind "esc:transform:$esc" --bind "result:transform:$hide")
   if [[ $start == normal ]]; then

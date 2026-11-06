@@ -101,7 +101,7 @@ soon as you leave it.
 
 | Key | Mode | Does |
 |---|---|---|
-| `j` / `k` | normal | next / previous line |
+| `j` / `k` | normal | next / previous line, wrapping round from the last to the first and back |
 | `g` / `G` | normal | first / last line |
 | `ctrl+d` / `ctrl+u` | normal | half a page down / up |
 | `/` | normal | type a filter |
