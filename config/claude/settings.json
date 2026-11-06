@@ -90,7 +90,8 @@
       "Bash(gsutil * iam *)"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
+  "autoCompactWindow": 250000,
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   },
