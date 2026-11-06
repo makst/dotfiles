@@ -22,6 +22,9 @@ cached_eval vivid _ls_colors
 unfunction _ls_colors
 
 export EDITOR=nvim
+# python's REPL from 3.13 on is its own and ignores ~/.editrc; the basic one reads it, so it has vi mode
+# (config/readline/editrc)
+export PYTHON_BASIC_REPL=1
 
 # ssh keys come from Secretive's agent (Secure Enclave keys, see config/ssh/config). git signs commits through
 # SSH_AUTH_SOCK, not the ssh config, so it is set here too. A fixed path, so it doesn't go stale in tmux.

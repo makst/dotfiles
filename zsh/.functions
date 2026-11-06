@@ -215,6 +215,13 @@ function setup_btop() {
   ln -sfn "$real_script_dir/config/btop/btop.conf" ~/.config/btop/btop.conf
 }
 
+# setup_readline: vi mode in the REPLs: links ~/.inputrc for GNU readline (bash, psql) and ~/.editrc for
+# libedit (sqlite3, lldb, python).
+function setup_readline() {
+  ln -sfn "$real_script_dir/config/readline/inputrc" ~/.inputrc
+  ln -sfn "$real_script_dir/config/readline/editrc" ~/.editrc
+}
+
 # setup_python: uv (Brewfile) installs python itself: `python` and `python3` in ~/.local/bin are the latest
 # version. Projects pin theirs with `uv python pin` / .python-version; `uv tool install` puts CLI tools on PATH.
 function setup_python() {
@@ -907,7 +914,7 @@ function setup_dotfiles() {
   setup_machine || return
   local step
   local -a failed
-  for step in setup_brew setup_fzf setup_atuin setup_btop setup_node setup_python setup_ssh \
+  for step in setup_brew setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_caps_lock setup_macos_defaults \
     setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"

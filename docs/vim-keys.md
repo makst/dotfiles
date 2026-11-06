@@ -89,6 +89,11 @@ Each tool
 - **tmux**: copy mode uses vi keys, `v` selects, `y` copies (see [tmux](tmux.md)); `C-h/j/k/l` cross into
   nvim.
 - **AeroSpace**: `alt+h/j/k/l` move between windows (see [window management](window-management.md)).
+- **REPLs**: vi mode in everything that reads a line with GNU readline (bash, psql; `config/readline/inputrc`,
+  with `jj`) or libedit (sqlite3, lldb, python; `config/readline/editrc`, Esc only: libedit can't wait for
+  the second `j`, so a `j` before any other letter would be lost). Python's own REPL from 3.13 on ignores
+  `~/.editrc`, so `PYTHON_BASIC_REPL=1` (`zsh/.exports`) runs the basic one: vi keys, but no colours or
+  multi-line editing. node's REPL has no vi mode.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
 - **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.
