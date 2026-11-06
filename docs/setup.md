@@ -62,6 +62,7 @@ overwrites them:
 | `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
 | `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
 | `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude-code](claude-code.md#this-machine) |
+| `forbidden` | `check_dotfiles` | words that must never reach the repo from this Mac, one per line: the company, the work email's domain, work hosts. The checks fail on any of them, in any case, in the repo's files and in the messages of commits not yet pushed. The words stay on this Mac, so the list itself can't leak |
 
 Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared
 `config/ssh/config`. Rename the Mac or change its kind with `setup_machine <name> <home|work>`.
@@ -128,8 +129,9 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
 5. **What only this Mac needs**, in `~/.config/dotfiles` (see [Several Macs](#several-macs)): on a work Mac
    the work email in `gitconfig` (and add it to your GitHub account under Settings → Emails, so work commits
    count as yours and show as Verified), work plugins in `claude.json`, work hosts in `~/.ssh/config` below
-   the include line.
-6. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once). Secrets in
+   the include line, and the company's name, email domain and hosts in `forbidden`.
+6. **`check_mac`** lists anything still missing, each with the step that makes it.
+7. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once). Secrets in
    `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in `config/nvim/lua/user/hidden/init.lua`;
    none of them is in git, each is loaded if it exists.
    For iOS work, Xcode from the App Store, then `sudo xcode-select -s /Applications/Xcode.app`; for Android
@@ -183,13 +185,41 @@ New Claude Code skills need nothing: the `claude` wrapper links them when it sta
 It prints nothing when nothing it knows about changed, and nothing in other clones or agents' worktrees, which
 aren't the live setup. `reload_dotfiles` on its own reloads all three, whatever changed.
 
+### Is this Mac up to date?
+```sh
+check_mac
+```
+
+`check_dotfiles` checks the repo; `check_mac` checks the Mac it runs on against the repo, after a pull or on
+a Mac that hasn't been used for a while. It changes nothing and prints each problem with the step that fixes
+it:
+
+```text
+check_mac: 2 problems, each with what fixes it:
+  - ~/.config/ghostty/themes isn't a link to config/ghostty/themes: setup_ghostty
+  - nvim plugins not at lazy-lock.json's version (flash.nvim): setup_nvim
+```
+
+| Checks | Fixed by |
+|---|---|
+| every link in [Symlinks](#symlinks) points into this clone | the setup step that makes it |
+| the files in `~/.config/dotfiles` exist, `kind` is `home` or `work`, `claude.json` and `gitconfig` parse | `setup_machine`, or by hand |
+| `brew bundle check`: every Brewfile package is installed | `setup_brew` |
+| nvim's plugins are at the commits in `lazy-lock.json`, tmux's plugins are installed | `setup_nvim`, `setup_tmux` |
+| fnm's default node has typescript, `~/.local/bin/python` exists, VS Code has the extensions | `setup_node`, `setup_python`, `setup_vscode` |
+| the repo's git hooks are on, `~/.ssh/config` includes the shared one, the login shell is Homebrew's zsh | `setup_git`, `setup_ssh`, `prepare-zsh-install.sh` |
+| a new zsh and nvim start without printing errors | the error says |
+| Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
+
+The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
+
 Checks
 ---
 ```sh
 check_dotfiles
 ```
 
-Runs the checks in `checks/` before a commit, in about half a second. Each check prints what it found wrong
+Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong
 and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED` or
 `skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
 shellcheck, Python 3.11 for TOML) is skipped and says why. GitHub runs `checks/check_dotfiles -v` on every
@@ -204,6 +234,7 @@ ask about them.
 | Behaviour | `checks/behaviour.zsh` | zsh starts without errors; Claude Code's hooks (recursive `rm`, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim; each layer keeps to its modifier |
+| Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
 check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after
@@ -231,7 +262,33 @@ changes included; `git add` a new file first. It takes too long for every commit
 `check_dotfiles` or CI: run it after adding or changing a check, and give a new check (or a new rule in one)
 its own break: a line `m '<check label>' '<what breaks>' '<zsh code that breaks it>'` in `checks/mutate`.
 The AeroSpace check has none, since it only validates the live config. The breaks name files and functions
-that don't exist on purpose, so the path and name checks leave `checks/mutate` out.
+that don't exist on purpose, so the path and name checks leave `checks/mutate` out. The portability breaks
+use a list of forbidden words of their own (`DOTFILES_FORBIDDEN`), not this Mac's.
+
+### Rehearsing a new Mac
+```sh
+checks/fresh_mac           # a home-like and a work-like Mac, a few minutes
+checks/fresh_mac work      # one kind
+```
+
+`check_dotfiles` reads the repo, and `check_mac` looks at a Mac that has been set up for a while, where an
+old file or an installed tool can hide what a new Mac would miss. `checks/fresh_mac` sets up a new Mac of
+each kind from nothing: in an empty HOME and a bare environment, as at a first login, it clones the repo as
+it is now (uncommitted changes to tracked files included), runs `prepare-zsh-install.sh`,
+`setup_machine fresh-<kind> <kind>` and `setup_dotfiles`, then `check_mac --scripted` (everything but the
+steps done by hand: Secretive and signing). It prints the failed steps and problems and exits 1 on any,
+keeping that HOME and its `setup.log` to look into; when all pass, the HOME goes to the Trash.
+
+On a Mac in use, what would reach outside that HOME is stood in for, and each stand-in logs its call to the
+HOME's `stood-in.log`: `brew bundle` only loads the Brewfile (so a work Mac's packages don't land on a home
+Mac), and `defaults write`, `killall`, `open`, `hidutil`, `launchctl` and Android Studio's `studio` do
+nothing. nvim, tmux and VS Code plugins, node and python install for real into the HOME, so it needs the
+network. On GitHub (`.github/workflows/fresh-mac.yml`, every Monday and by hand under Actions → fresh-mac →
+Run workflow) nothing is stood in for: each kind gets a fresh macOS runner and `brew bundle` installs every
+package. The runner's own copies of apps the Brewfile installs (Google Chrome) are moved away first, since a
+new Mac doesn't have them.
+
+Run it after changing a setup step or the order of `setup_dotfiles`.
 
 Other helpers
 ---

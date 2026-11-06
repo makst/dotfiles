@@ -13,6 +13,10 @@ wt=$(mktemp -d) && wt=${wt:A}/worktree || exit 1
 git -C $repo worktree add -q --detach $wt ${"$(git -C $repo stash create)":-HEAD} || exit 1
 trap 'git -C $repo worktree remove --force $wt' EXIT
 cd $wt || exit 1
+# what each break starts from: a break may commit
+base=$(git rev-parse HEAD)
+# the portability checks' list of forbidden words, which the breaks fill instead of this Mac's own list
+export DOTFILES_FORBIDDEN=$wt:h/forbidden
 
 typeset -a descs wants cmds
 # m <check label, or a unique part of it> <what breaks> <zsh code that breaks it, run in the worktree>: adds a
@@ -104,13 +108,21 @@ m 'keeps to its modifier' 'an nvim Option key' "print \"vim.keymap.set('n', '<M-
 m 'keeps to its modifier' 'an AeroSpace key without Option' "perl -0pi -e 's/(\\[mode\\.main\\.binding\\]\\n)/\$1cmd-y = \"reload-config\"\\n/' config/aerospace/aerospace.toml"
 m "Cmd keys reach tmux" 'a Ghostty key sends a prefix key tmux does not bind' "print 'keybind = cmd+shift+y=text:\\\\x01Y' >> config/ghostty/config"
 m "Cmd keys reach tmux" 'a Ghostty key sends prefix C-y, unbound' "print 'keybind = cmd+shift+u=text:\\\\x01\\\\x19' >> config/ghostty/config"
+# --- portability (a forbidden word is put together, so that checks/mutate itself doesn't contain it)
+m "paths into one user's home" 'a path in /Users in a doc' "print 'Open /Users/someone/repos/x.' >> docs/zsh.md"
+m "paths into one user's home" 'a path in /home in a script' "print '# cd /home/someone' >> zsh/.aliases"
+m 'names this Mac' "this Mac's hostname in a comment" "print -r -- \"# from \${(L)HOST%%.*}\" >> zsh/.aliases"
+m 'names this Mac' 'a forbidden word in a doc, in capitals' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print \"Ask \${(U)w} first.\" >> docs/zsh.md"
+m 'shared email' 'an unpushed commit with a work email' "print x >> docs/zsh.md; git -c user.email=me@work.example -c commit.gpgsign=false commit -qam x"
+m 'shared email' 'an unpushed commit whose message has a forbidden word' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print x >> docs/zsh.md; git -c commit.gpgsign=false commit -qam \"fix for \$w\""
 
 reset=$'\e[0m' red=$'\e[31m' green=$'\e[32m' dim=$'\e[2m'
 integer caught=0 missed=0 broken=0
 for i in {1..$#cmds}; do
   [[ -n $1 && $descs[i] != *$1* && $wants[i] != *$1* ]] && continue
-  git reset -q --hard && git clean -qfdx
-  if ! eval $cmds[i] 2> $wt:h/err || [[ -z $(git status --porcelain) ]]; then
+  git reset -q --hard $base && git clean -qfdx
+  : > $DOTFILES_FORBIDDEN
+  if ! eval $cmds[i] 2> $wt:h/err || [[ -z $(git status --porcelain) && $(git rev-parse HEAD) == $base ]]; then
     broken+=1
     print -r -- "  ${red}BROKEN${reset}  $descs[i]: the break didn't change anything $(<$wt:h/err)"
     continue

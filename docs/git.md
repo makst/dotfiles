@@ -23,6 +23,8 @@ Identity
 with `[user] email = me@my-company.com` in `gitconfig-work`. `git config user.email` inside a repo shows
 which one applies. Each Mac signs with its own Secretive key, so run `secretive_key signing` on each (see
 [SSH keys](#ssh-keys)); GitHub verifies a work commit when the key is on the account that has the work email.
+Commits to this repo keep the shared email on every Mac: `check_dotfiles` fails while a commit not yet pushed
+has another one, as author or committer (see [setup](setup.md#checks)).
 
 Behaviour
 ---

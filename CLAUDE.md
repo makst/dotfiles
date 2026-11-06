@@ -20,8 +20,10 @@ format only with what the project configures.
 ## Several Macs
 The repo serves any number of Macs, each with a name and a kind (home-like or work-like). Shared config goes
 in the repo and every Mac gets it; what one Mac needs goes in `~/.config/dotfiles` (name, kind, gitconfig,
-zshrc, Brewfile, claude.json), created from `config/machine` by `setup_machine` and loaded when present.
-Nothing in the repo may name a company, work email or work host.
+zshrc, Brewfile, claude.json, forbidden), created from `config/machine` by `setup_machine` and loaded when present.
+Nothing in the repo may name a company, work email or work host, nor any one Mac: the portability checks
+fail on a path into a home, this Mac's name, a word in `~/.config/dotfiles/forbidden` and an unpushed commit
+with another email.
 
 ## This is the live setup
 `~/.zshrc`, `~/.config/nvim`, `~/.config/tmux`, `~/.gitconfig`, `~/.claude/settings.json` and others are
@@ -70,6 +72,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks").
 - A new or changed check gets a break in `checks/mutate`, and `checks/mutate` must report no `MISSED` or
   `BROKEN` (`docs/setup.md`, "Testing the checks").
+- After changing a setup step, `checks/fresh_mac` (a few minutes) sets up a new Mac of each kind in a
+  throwaway HOME; `check_mac` checks the live one (`docs/setup.md`, "Rehearsing a new Mac").
 - `zsh -n <file>` for syntax; `hyperfine -i 'zsh -i -c exit'` for start-up time (~43 ms on an M5,
   ~75 ms on an M1 Max): compare before and after a change on the same Mac; it shouldn't grow.
   `zsh -i -c` prints a harmless fzf "can't change option: zle".

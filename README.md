@@ -17,7 +17,7 @@ lazygit, `cmd+j` shows every session.
 
 | Layer | Tool | Docs |
 |---|---|---|
-| Install and update | Homebrew (`Brewfile`), `setup_dotfiles`, `check_dotfiles` (also CI) | [setup](docs/setup.md) |
+| Install and update | Homebrew (`Brewfile`), `setup_dotfiles`, `check_dotfiles` (also CI), `check_mac` | [setup](docs/setup.md) |
 | Terminal | Ghostty | [ghostty](docs/ghostty.md) |
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
@@ -127,7 +127,8 @@ config/ideavim/           nvim's keys in Android Studio (IdeaVim)
 config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
-checks/                   check_dotfiles: the checks run before a commit and on CI; mutate tests them
+checks/                   check_dotfiles: the checks run before a commit and on CI; mutate tests them;
+                          fresh_mac rehearses a new Mac
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 

@@ -1,9 +1,10 @@
 #!/bin/zsh
-# check_dotfiles [-v]: checks the whole repo in about half a second: every config file parses in the tool that
-# reads it, the Claude Code hooks and status line behave, what the docs and comments point at exists, and the
-# files that describe the same thing agree. Prints each check that fails with its problems and exits 1; -v
-# lists every check with its result and time. A check whose tool isn't installed is skipped and says so. One
-# file per group of checks sits next to this one, lib.zsh has what they share. The groups run at the same time.
+# check_dotfiles [-v]: checks the whole repo in about a second: every config file parses in the tool that
+# reads it, the Claude Code hooks and status line behave, what the docs and comments point at exists, the
+# files that describe the same thing agree, and nothing belongs to one Mac. Prints each check that fails with
+# its problems and exits 1; -v lists every check with its result and time. A check whose tool isn't installed
+# is skipped and says so. One file per group of checks sits next to this one, lib.zsh has what they share. The
+# groups run at the same time.
 
 zmodload zsh/datetime
 setopt extended_glob
@@ -71,7 +72,7 @@ check() {
 build_indexes
 
 # every group in a subshell of its own, all at once; their output is printed in this order
-groups=(syntax behaviour references consistency)
+groups=(syntax behaviour references consistency portability)
 typeset -A pids
 for group_name in $groups; do
   ( source checks/$group_name.zsh ) > $tmp/group.$group_name 2>&1 &

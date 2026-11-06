@@ -969,3 +969,114 @@ function reload_dotfiles() {
 function check_dotfiles() {
   $real_script_dir/checks/check_dotfiles "$@"
 }
+
+# check_mac [--scripted]: whether this Mac is set up as the repo says, after a pull or on a Mac that hasn't
+# been used for a while; check_dotfiles checks the repo, this the Mac it runs on. Checks every link the setup
+# makes, this Mac's files in ~/.config/dotfiles, the Brewfile's packages, nvim's plugins against
+# lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, the repo's git hooks, the ssh include,
+# the login shell, that a new zsh and nvim start without errors, and the steps of "A new Mac" done by hand:
+# the ssh agent and commit signing. --scripted leaves those out, for checks/fresh_mac, which can only run the
+# scripts. Changes nothing: prints each problem with the step that fixes it and returns 1, or one line when
+# all is well. The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
+function check_mac() {
+  setopt local_options extended_glob
+  local repo=$real_script_dir dir=~/.config/dotfiles
+  local -i by_hand=1
+  [[ $1 == --scripted ]] && by_hand=0
+  local -a problems
+  local -A seen
+  local dst src where link target step file name commit key
+
+  # the links, as checks/lib.zsh reads them from the setup's ln lines; each is fixed by the function it's in
+  while IFS=$'\t' read -r dst src where; do
+    (( $+seen[$dst] )) && continue
+    seen[$dst]=1
+    link=${dst/#\~/$HOME}
+    target=${${src/#./$repo}/#$repo\//$repo/}
+    [[ -L $link && -e $link && $link -ef $target ]] && continue
+    step=prepare-zsh-install.sh
+    [[ $where == zsh/.functions:* ]] &&
+      step=$(awk -v n=${where##*:} 'NR > n { exit } /^function / { f = $2 } END { sub(/\(.*/, "", f); print f }' $repo/zsh/.functions)
+    if [[ $target == $repo ]]; then
+      target="this repo"
+    else
+      target=${target#$repo/}
+    fi
+    problems+="$dst isn't a link to $target: $step"
+  done < <(cd $repo && source checks/lib.zsh && links_index)
+
+  # this Mac's files
+  for file in name kind $repo/config/machine/*(N:t); do
+    [[ -r $dir/$file ]] || problems+="~/.config/dotfiles/$file is missing: setup_machine"
+  done
+  [[ ! -r $dir/kind || $(<$dir/kind) == (home|work) ]] ||
+    problems+="~/.config/dotfiles/kind is neither home nor work: setup_machine <name> <home|work>"
+  [[ ! -r $dir/claude.json ]] || jq -e . $dir/claude.json > /dev/null 2>&1 ||
+    problems+="~/.config/dotfiles/claude.json isn't valid JSON: fix it by hand"
+  [[ ! -r $dir/gitconfig ]] || git config --file $dir/gitconfig --list > /dev/null 2>&1 ||
+    problems+="~/.config/dotfiles/gitconfig doesn't parse: fix it by hand"
+
+  # packages and plugins
+  brew bundle check --file=$repo/Brewfile --no-upgrade > /dev/null 2>&1 ||
+    problems+="Brewfile packages are missing (brew bundle check --verbose lists them): setup_brew"
+  local -a stale=()
+  while IFS=$'\t' read -r name commit; do
+    [[ $(git -C ${XDG_DATA_HOME:-~/.local/share}/nvim/lazy/$name rev-parse HEAD 2> /dev/null) == $commit ]] ||
+      stale+=$name
+  done < <(jq -r 'to_entries[] | "\(.key)\t\(.value.commit)"' $repo/config/nvim/lazy-lock.json)
+  (( $#stale )) && problems+="nvim plugins not at lazy-lock.json's version (${(j:, :)stale}): setup_nvim"
+  stale=()
+  for name in ${${(f)"$(sed -nE "s/^set -g @plugin '([^']+)'.*/\1/p" $repo/config/tmux/tmux.conf)"}:t}; do
+    [[ -d ~/.tmux/plugins/$name ]] || stale+=$name
+  done
+  (( $#stale )) && problems+="tmux plugins missing (${(j:, :)stale}): setup_tmux"
+  # fnm's default node, not Homebrew's (a dependency of the language servers)
+  fnm exec --using=default -- tsc --version > /dev/null 2>&1 ||
+    problems+="fnm has no default node with typescript: setup_node"
+  [[ -x ~/.local/bin/python ]] || problems+="no ~/.local/bin/python: setup_python"
+  if (( $+commands[code] )); then
+    local -a installed=(${(Lf)"$(code --list-extensions 2> /dev/null)"})
+    stale=()
+    for name in ${${(f)"$(<$repo/config/vscode/extensions.txt)"}%%[[:space:]]#\#*}; do
+      [[ -n $name ]] && (( ! $installed[(Ie)${(L)name}] )) && stale+=$name
+    done
+    (( $#stale )) && problems+="VS Code extensions missing (${(j:, :)stale}): setup_vscode"
+  fi
+
+  # git, ssh and the shell
+  [[ $(git -C $repo config core.hooksPath) == .githooks ]] ||
+    problems+="the repo's git hooks are off, so a pull doesn't reload anything: setup_git"
+  # the steps done by hand: Secretive's agent, and the signing key secretive_key made
+  if (( by_hand )); then
+    [[ -S $SSH_AUTH_SOCK ]] || problems+="no ssh agent (Secretive's isn't running?): open Secretive"
+    if [[ $(git config --file $dir/gitconfig commit.gpgsign 2> /dev/null) != true ]]; then
+      problems+="commits on this Mac aren't signed: docs/setup.md, \"A new Mac\", step 4"
+    else
+      key=$(git config --file $dir/gitconfig user.signingkey)
+      key=${key/#\~/$HOME}
+      if [[ ! -r $key ]]; then
+        problems+="the signing key ${key/#$HOME/~} is missing: secretive_key signing"
+      else
+        grep -qF -- ${${=$(<$key)}[2]} $repo/config/git/allowed_signers ||
+          problems+="this Mac's signing key isn't in config/git/allowed_signers: secretive_key signing"
+      fi
+    fi
+  fi
+  grep -qxF "Include ~/dotfiles/config/ssh/config" ~/.ssh/config 2> /dev/null ||
+    problems+="~/.ssh/config doesn't include the repo's config/ssh/config: setup_ssh"
+  [[ $SHELL == $HOMEBREW_PREFIX/bin/zsh ]] ||
+    problems+="the login shell is $SHELL, not Homebrew's zsh: prepare-zsh-install.sh"
+  local errors=$(zsh -i -c exit < /dev/null 2>&1 > /dev/null | grep -v "can't change option: zle")
+  [[ -z $errors ]] || problems+="a new zsh prints errors (${(j:; :)${(f)errors}}): run zsh -i to see them"
+  errors=$(nvim --headless +qa 2>&1 > /dev/null)
+  [[ -z $errors ]] || problems+="nvim prints errors on start (${(j:; :)${(f)errors}}): setup_nvim"
+
+  if (( $#problems )); then
+    local s=s
+    (( $#problems == 1 )) && s=
+    print -u2 -P "%F{red}check_mac: $#problems problem$s%f, each with what fixes it:"
+    print -u2 -rl -- "  - "$^problems
+    return 1
+  fi
+  print -P "%F{green}check_mac:%f this Mac is set up as the repo says"
+}

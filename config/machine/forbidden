@@ -1,0 +1,6 @@
+# Words that must never reach the repo from this Mac, one per line: the company's name, the work email's
+# domain, work hosts and projects. check_dotfiles fails on any of them, as a whole word in any case, in the
+# repo's files and in the messages of commits not yet pushed. setup_machine copies this file to
+# ~/.config/dotfiles/forbidden once; that copy is the list, and it never goes into the repo.
+# example-corp
+# example-corp.com

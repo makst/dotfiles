@@ -1,0 +1,96 @@
+#!/bin/zsh
+# fresh_mac [home|work]…: rehearses setting up a new Mac of each kind given (default: both), so that what only
+# works on a Mac that has been set up for a while shows up before a real new Mac meets it. For each kind, in
+# an empty HOME with a bare environment, as at a first login, it runs what docs/setup.md's "A new Mac" runs:
+# a clone of the repo in ~/repos/dotfiles (as it is now, uncommitted changes to tracked files included),
+# prepare-zsh-install.sh, `setup_machine fresh-<kind> <kind>` and setup_dotfiles. Then `check_mac --scripted`
+# says whether that HOME is the setup the repo describes. Prints the failed steps and check_mac's problems,
+# exits 1 on any; the HOME is kept to look into when a kind fails, and goes to the Trash when all pass.
+#
+# On a Mac in use, what would reach outside that HOME is stood in for by zsh functions in its .zshenv that log
+# the call to ~/stood-in.log: brew bundle (only loads the Brewfile, so a work Mac's packages don't land on a
+# home Mac), defaults write, killall, open, hidutil, launchctl and Android Studio's studio. tmux gets its own
+# socket directory. The rest installs for real into the throwaway HOME (nvim, tmux and VS Code plugins, node,
+# python), so it needs the network and takes a few minutes. On CI ($CI set, .github/workflows/fresh-mac.yml),
+# where the runner is a fresh Mac to throw away, nothing is stood in for.
+
+setopt extended_glob
+repo=${0:A:h:h}
+kinds=($@)
+(( $#kinds )) || kinds=(home work)
+for kind in $kinds; do
+  [[ $kind == (home|work) ]] || { print -u2 "usage: checks/fresh_mac [home|work]…"; exit 2 }
+done
+reset=$'\e[0m' bold=$'\e[1m' green=$'\e[32m' red=$'\e[31m'
+tmp=$(mktemp -d) && tmp=${tmp:A} || exit 1
+snapshot=${"$(git -C $repo stash create)":-HEAD}
+
+# the stand-ins, for a Mac in use
+stand_ins='
+_stood_in() { print -r -- "$*" >> ~/stood-in.log }
+brew() {
+  if [[ $1 == bundle ]]; then
+    _stood_in brew "$@"
+    command brew bundle list --all "${(M)@:#--file=*}" > /dev/null
+  else
+    command brew "$@"
+  fi
+}
+defaults() { [[ $1 == write ]] && { _stood_in defaults "$@"; return 0 }; command defaults "$@" }
+killall() { _stood_in killall "$@" }
+open() { _stood_in open "$@" }
+hidutil() { _stood_in hidutil "$@" }
+launchctl() { _stood_in launchctl "$@" }
+# what Android Studio prints for a plugin it installed, which setup_ideavim looks for
+studio() { _stood_in studio "$@"; print "installed plugin (stood in)" }
+'
+
+integer failed=0
+for kind in $kinds; do
+  print -r -- "${bold}A new $kind Mac$reset"
+  home=$tmp/$kind
+  clone=$home/repos/dotfiles
+  mkdir -p $home/repos $tmp/$kind-tmux
+  git clone -q $repo $clone && git -C $clone checkout -q --detach $snapshot || exit 1
+  [[ -n $CI ]] || print -r -- $stand_ins > $home/.zshenv
+  # a first login: nothing from this shell but who the user is; the login shell is taken to be Homebrew's zsh
+  # already, since chsh asks for a password
+  fresh=(env -i HOME=$home USER=$USER LOGNAME=$LOGNAME LANG=en_US.UTF-8 TERM=xterm-256color
+    PATH=/usr/bin:/bin:/usr/sbin:/sbin SHELL=/opt/homebrew/bin/zsh TMUX_TMPDIR=$tmp/$kind-tmux)
+
+  integer ok=1
+  if ! $fresh $clone/prepare-zsh-install.sh > $home/setup.log 2>&1 < /dev/null; then
+    ok=0
+    print -r -- "  ${red}FAILED$reset  prepare-zsh-install.sh:"
+    print -rl -- "          "${^${(f)"$(tail -5 $home/setup.log)"}}
+  fi
+  if (( ok )); then
+    $fresh /opt/homebrew/bin/zsh -i -c "setup_machine fresh-$kind $kind && setup_dotfiles" >> $home/setup.log 2>&1 < /dev/null
+    steps=${${(M)${(f)"$(<$home/setup.log)"}:#*Failed: *}##*Failed: }
+    if [[ -n $steps ]]; then
+      ok=0
+      print -r -- "  ${red}FAILED$reset  setup_dotfiles: ${steps%%.*}"
+    fi
+    out=$($fresh /opt/homebrew/bin/zsh -i -c 'check_mac --scripted' 2>&1 < /dev/null | grep -v "can't change option: zle")
+    if [[ $out == *problem* ]]; then
+      ok=0
+      print -r -- "  ${red}FAILED$reset  check_mac:"
+      print -rl -- "          "${^${${(f)out}:#*check_mac:*}}
+    fi
+  fi
+  if (( ok )); then
+    print -r -- "  ${green}ok$reset      prepare-zsh-install.sh, setup_dotfiles, check_mac"
+  else
+    failed+=1
+    print -r -- "  the HOME, with setup.log: $home"
+    # on CI the HOME goes with the runner, so its log goes in the job's
+    [[ -n $CI ]] && print -r -- "${bold}setup.log$reset" && cat $home/setup.log
+  fi
+done
+
+if (( failed )); then
+  print -u2 -r -- "${red}$failed of $#kinds kinds failed$reset"
+  exit 1
+fi
+(( $+commands[trash] )) && trash $tmp
+print -r -- "${green}A new Mac of each kind ($kinds) sets up as the repo says$reset"

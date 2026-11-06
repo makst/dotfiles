@@ -1,0 +1,30 @@
+# checks/fresh_mac on a fresh GitHub macOS runner, every Monday and by hand (Actions → fresh-mac → Run
+# workflow): the whole setup of a new Mac of each kind with nothing stood in for, so brew bundle installs every
+# package. That takes too long for every push, which check.yml covers.
+name: fresh-mac
+on:
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+jobs:
+  fresh-mac:
+    strategy:
+      fail-fast: false
+      matrix:
+        kind: [home, work]
+    runs-on: macos-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      # the runner comes with some apps the Brewfile installs as casks (Google Chrome); brew refuses to install
+      # over an app it didn't install, and a new Mac doesn't have them
+      - name: Move away the runner's own copies of the Brewfile's apps
+        run: |
+          mkdir -p "$RUNNER_TEMP/preinstalled"
+          brew info --json=v2 --cask $(sed -nE 's/^[[:space:]]*cask "([^"]+)".*/\1/p' Brewfile) |
+            jq -r '.casks[].artifacts[] | objects | .app // empty | .[] | strings' |
+            while read -r app; do
+              if [ -e "/Applications/$app" ]; then sudo mv "/Applications/$app" "$RUNNER_TEMP/preinstalled/"; echo "moved $app"; fi
+            done
+      - name: checks/fresh_mac ${{ matrix.kind }}
+        run: checks/fresh_mac ${{ matrix.kind }}
