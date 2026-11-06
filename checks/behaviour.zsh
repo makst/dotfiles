@@ -139,9 +139,55 @@ check_statusline() {
   note="3 sessions"
 }
 
+# the git hooks and reload_dotfiles, in a throwaway repo with the hooks and zsh/.functions, two commits and
+# stand-ins for tmux, Ghostty and AeroSpace that log their calls: zsh functions in its HOME's .zshenv, which the
+# hook's zsh reads too (macOS takes ~150 ms to first run a new executable). A change to tmux.conf and Ghostty's
+# config reloads those two and not AeroSpace, a change to .zshrc and the Brewfile lists what's left, no change
+# does nothing. The hooks do nothing while the HOME's .zshrc doesn't link into the repo, and reload after a
+# switch and a merge once it does.
+check_reload() {
+  local t=$tmp/reload out
+  mkdir -p $t/repo/{zsh,config/{tmux,ghostty,aerospace}} $t/home
+  print -r -- "for c in tmux pgrep pkill aerospace; functions[\$c]='print -r -- \$0 \$* >> $t/calls'
+ghostty() { print 'Ghostty 1.4.0' }" > $t/home/.zshenv
+  cp -RP .githooks $t/repo/ && cp zsh/.functions $t/repo/zsh/
+  local -a git=(git -C $t/repo -c user.name=t -c user.email=t@t -c commit.gpgsign=false)
+  {
+    git init -q -b main $t/repo && $git config core.hooksPath .githooks &&
+      touch $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config,config/aerospace/aerospace.toml} &&
+      $git add -A && $git commit -qm a &&
+      print x | tee $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config} > /dev/null &&
+      print "# not a link: ln -sfn" >> $t/repo/zsh/.functions &&
+      $git commit -qam b
+  } > /dev/null 2>&1 || { print "couldn't make the test repo"; return }
+  reload() { HOME=$t/home zsh -c "real_script_dir=$t/repo; source $t/repo/zsh/.functions; reload_dotfiles $1" }
+  calls() { [[ -e $t/calls ]] && <$t/calls; rm -f $t/calls }
+
+  out=$(reload HEAD~1)
+  local log=$(calls)
+  [[ $log == *'tmux source-file'* ]] || print "tmux.conf changed, but tmux wasn't reloaded"
+  [[ $log == *'pkill -USR2 -x ghostty'* ]] || print "Ghostty's config changed, but Ghostty wasn't reloaded"
+  [[ $log == *'aerospace reload-config'* ]] && print "AeroSpace was reloaded, but its config didn't change"
+  [[ $out == *'exec zsh'* && $out == *setup_brew* ]] || print -r -- "the list of what's left misses zsh or the Brewfile: $out"
+  [[ $out == *setup_dotfiles* ]] && print -r -- "no setup step links anything new, but it asks for setup_dotfiles: $out"
+  out=$(reload HEAD)
+  [[ -z $out$(calls) ]] || print -r -- "nothing changed, but it did something: $out"
+
+  # the hooks: a switch back to the first commit, outside the live setup, then a switch and a merge inside it
+  HOME=$t/home $git switch -q -c old HEAD~1 > /dev/null 2>&1
+  [[ -z $(calls) ]] || print "the hook acted in a checkout the setup doesn't link to"
+  ln -s $t/repo/.zshrc $t/home/.zshrc
+  HOME=$t/home $git switch -q main > /dev/null 2>&1
+  [[ $(calls) == *'tmux source-file'* ]] || print "a branch switch didn't reload tmux"
+  HOME=$t/home $git switch -q old > /dev/null 2>&1 && calls > /dev/null
+  HOME=$t/home $git merge -q --ff-only main > /dev/null 2>&1
+  [[ $(calls) == *'tmux source-file'* ]] || print "a merge didn't reload tmux"
+}
+
 group "Behaviour: the scripts that run on their own do what they should"
 check "zsh starts without errors" check_zsh_start
 check "no-recursive-rm blocks every recursive rm and nothing else" check_rm_hook
 check "the format hook formats only where the project asks for it" check_format_hook
 check "the bell hook keeps quiet outside tmux" check_bell_hook
 check "the status line shows what the session reports" check_statusline
+check "after a pull, the running programs reload what changed" check_reload

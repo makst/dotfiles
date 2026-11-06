@@ -1,0 +1,28 @@
+#!/bin/zsh
+# Usage: post-merge, post-checkout and post-rewrite, the git hooks that link to this file (setup_git points this
+# repo's core.hooksPath at .githooks). After a pull, rebase or branch switch has changed the files of the checkout
+# the setup links to, reload_dotfiles (zsh/.functions) reloads the running programs for what changed and lists
+# what's left to do. Other clones and agents' worktrees aren't the live setup, so there it does nothing.
+
+repo=${0:A:h:h}
+[[ ~/.zshrc -ef $repo/.zshrc ]] || exit 0
+
+case ${0:t} in
+  # a pull that fast-forwards, rebasing or not, or a merge
+  post-merge) from=ORIG_HEAD ;;
+  # a rebase, a pull with local commits among them; not commit --amend, which changes no files
+  post-rewrite) [[ $1 == rebase ]] || exit 0; from=ORIG_HEAD ;;
+  # a branch switch ($3 = 1, not a file checkout); a rebase checks out too, but post-rewrite reports at its end
+  post-checkout)
+    [[ $3 == 1 && $1 != $2 ]] || exit 0
+    [[ -d $(git rev-parse --git-path rebase-merge) || -d $(git rev-parse --git-path rebase-apply) ]] && exit 0
+    from=$1 ;;
+  *) exit 0 ;;
+esac
+
+# no commit to compare with (no ORIG_HEAD yet, a new branch): nothing to report, rather than reloading everything
+from=$(git -C $repo rev-parse -q --verify "$from^{commit}") || exit 0
+real_script_dir=$repo
+source $repo/zsh/.functions
+reload_dotfiles $from || true
+exit 0

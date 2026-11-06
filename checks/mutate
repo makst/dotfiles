@@ -54,6 +54,11 @@ m 'format hook' 'the format hook prints noise' "perl -0pi -e 's/\\n/\\necho hi\\
 m 'bell hook' 'the bell rings outside tmux' "perl -pi -e 's/^\\[\\[ -n \\\$TMUX_PANE \\]\\] \\|\\| exit 0/printf x/' config/claude/hooks/bell.sh"
 m 'bell hook' 'the bell fails in an unknown pane' "perl -pi -e 's/^exit 0/exit 1/' config/claude/hooks/bell.sh"
 m 'status line' 'ctx turns red at 90 instead of 80' "perl -pi -e 's/level \\\$ctx 50 80/level \\\$ctx 50 90/' config/claude/statusline.sh"
+m 'running programs reload' 'tmux is never reloaded' "perl -pi -e 's/tmux source-file/tmux display -p/' zsh/.functions"
+m 'running programs reload' 'everything reloads, changed or not' "perl -pi -e 's/local -i all=\\\$\\(\\( ! \\\$#files \\)\\)/local -i all=1/' zsh/.functions"
+m 'running programs reload' 'the hook acts in any checkout' "perl -pi -e 's/^\\[\\[ ~\\/\\.zshrc -ef .*/true/' .githooks/reload"
+m 'running programs reload' 'a branch switch reloads nothing' "perl -pi -e 's/^    \\[\\[ \\\$3 == 1 .*/    exit 0/' .githooks/reload"
+m 'running programs reload' 'any mention of ln -sfn asks for setup_dotfiles' "perl -pi -e 's/-G .\\^\\[\\[:space:\\]\\]\\*ln -sfn./-G \"ln -sfn\"/' zsh/.functions"
 m 'status line' 'a cold cache shown as warm' "perl -pi -e 's/cache cold/cache warm/' config/claude/statusline.sh"
 m 'status line' 'the status line needs a tool not on the minimal PATH' "perl -0pi -e 's/\\n/\\nrg --version > \\/dev\\/null || exit 1\\n/' config/claude/statusline.sh"
 # --- references

@@ -31,7 +31,7 @@ Each step is a function you can also run on its own:
 | `setup_node` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
-| `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore` |
+| `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore`, turns on this repo's hooks in `.githooks` (see [Staying up to date](#staying-up-to-date)) |
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json`; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
@@ -69,7 +69,7 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 Symlinks
 ---
 The repo is never copied: everything is linked, so editing a file in the repo takes effect immediately
-(after reloading the tool).
+(after reloading the tool: `reload_dotfiles`, see [Staying up to date](#staying-up-to-date)).
 
 | In `$HOME` | Points to |
 |---|---|
@@ -163,6 +163,24 @@ git pull && setup_dotfiles
 That installs and upgrades brew packages (the zsh plugins are among them), installs newly listed tmux plugins and
 restores nvim plugins to the versions in `lazy-lock.json`. Updating tmux plugins (`C-a U`) and nvim plugins
 are deliberate steps, see [tmux](tmux.md#plugins) and [neovim](neovim.md#plugins).
+
+A pull puts the new config on disk at once, through the links, but the programs already running keep what they
+started with: tmux, Ghostty and AeroSpace their config (a new tmux key does nothing yet), tmux's popups the
+environment of the shell that started the server, open shells and nvim theirs. So after a pull, a rebase or a
+branch switch in this checkout, git's hooks in `.githooks` (turned on by `setup_git`) run `reload_dotfiles`:
+
+```text
+dotfiles: reloaded tmux, Ghostty
+dotfiles: still to do
+  - zsh: `exec zsh` in the shells that are open
+  - Brewfile: `setup_brew` installs what it added
+```
+
+It reloads only what changed and is running: tmux's config, Ghostty's (from Ghostty 1.2; older ones are told
+to reload with `cmd+shift+,`) and AeroSpace's. What it can't do for you it lists: open shells, nvim and its
+plugins (`:Lazy restore`), Android Studio's IdeaVim, new Brewfile packages, and new links (`setup_dotfiles`).
+It prints nothing when nothing it knows about changed, and nothing in other clones or agents' worktrees, which
+aren't the live setup. `reload_dotfiles` on its own reloads all three, whatever changed.
 
 Checks
 ---
