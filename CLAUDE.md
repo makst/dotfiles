@@ -40,10 +40,10 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - **Brewfile**: one package per line with a comment saying what uses it (the config file, alias or setup
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.
-- **Turtles all the way down**: every key follows the design principle in the README, "Turtles all the way
-  down": vim is the grammar, the key names the action and the modifier the layer, nvim is the reference, one
-  picker. A new tool or TUI gets vim keys (by config if its own don't follow) or an entry saying why it can't;
-  a new list to choose from goes through `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
+- **Learn it once**: every key follows the design principle in the README, "Learn it once": vim is the
+  grammar, the key names the action and the modifier the layer, nvim is the reference, one picker. A new tool
+  or TUI gets vim keys (by config if its own don't follow) or an entry saying why it can't; a new list to
+  choose from goes through `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
 - **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
   family it belongs to, in README "Same key, every layer" and in the existing bindings of every layer, and
   reuse it: the same key with the layer's modifier, the same verb for the same action (next, previous, last,

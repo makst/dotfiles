@@ -48,7 +48,7 @@ setup_dotfiles             # asks the Mac's name and kind once, then everything;
 Then follow [A new Mac](docs/setup.md#a-new-mac): Accessibility access, the SSH keys in Secretive and what
 only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step does and every symlink.
 
-Turtles all the way down
+Learn it once
 ---
 The design principle behind every key here: learn a move once and it works on every layer, from a line of
 text up to a macOS workspace.
