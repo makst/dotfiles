@@ -1,0 +1,124 @@
+#!/bin/zsh
+# mutate [pattern]: tests the checks. Breaks one thing at a time in a throwaway worktree and runs check_dotfiles
+# there, which has to fail the check meant to catch that break: a check that stays green on a broken repo is
+# worse than none. Prints "caught" per break (and any other check that failed too), "MISSED" when the check
+# stayed green, "BROKEN" when the break no longer applies (the file it edits changed); exits 1 on either. The
+# worktree has the tracked files as they are now, uncommitted changes included (git add a new file first). A
+# pattern runs only the breaks whose description or check matches. Takes about a minute, so it isn't part of
+# check_dotfiles or CI: run it after adding or changing a check, with a new break for it below.
+
+setopt extended_glob
+repo=${0:A:h:h}
+wt=$(mktemp -d) && wt=${wt:A}/worktree || exit 1
+git -C $repo worktree add -q --detach $wt ${"$(git -C $repo stash create)":-HEAD} || exit 1
+trap 'git -C $repo worktree remove --force $wt' EXIT
+cd $wt || exit 1
+
+typeset -a descs wants cmds
+# m <check label, or a unique part of it> <what breaks> <zsh code that breaks it, run in the worktree>: adds a
+# break. Its code should make the smallest change a real mistake would; perl -pi and -0pi edit files in place.
+m() { wants+=$1 descs+=$2 cmds+=$3 }
+
+# --- syntax
+m 'zsh files parse' 'an unclosed if in .aliases' "print 'if true; then' >> zsh/.aliases"
+m 'shellcheck' 'an unquoted \$1 in the bash script' "print '[ \$1 = x ] && echo y' >> prepare-zsh-install.sh"
+m 'JSON files parse' 'a stray comma in VS Code settings' "perl -0pi -e 's/\\{/{,/' config/vscode/settings.json"
+m 'TOML files parse' 'a key set twice in starship.toml' "print 'zz = 1\nzz = 2' >> config/starship.toml"
+m 'YAML files' 'broken YAML in the CI workflow' "print 'x: [' >> .github/workflows/check.yml"
+m 'YAML files' 'a skill without a description' "perl -ni -e 'print unless /^description:/' config/claude/skills/*/SKILL.md([1])"
+m "Lua files compile" 'a dangling local in keymaps.lua' "print 'local x =' >> config/nvim/lua/user/keymaps.lua"
+m 'tmux.conf runs' 'an unknown option in tmux.conf' "print 'set -g no-such-option on' >> config/tmux/tmux.conf"
+m 'tmux.conf runs' 'an unknown command in demo.tmux.conf' "print 'no-such-command' >> docs/tapes/demo.tmux.conf"
+m 'gitconfig' 'an unclosed section in .gitconfig' "print '[alias' >> config/git/.gitconfig"
+m 'gitconfig' 'a shell alias with broken sh' "print '[alias]\n\tzzbad = \"!f() { echo; \"' >> config/git/.gitconfig"
+m 'gitconfig' 'broken machine template' "print '[user' >> config/machine/gitconfig"
+m 'ssh config' 'an unknown ssh option' "print 'NoSuchOption yes' >> config/ssh/config"
+m 'Brewfile loads' 'a Ruby error in the Brewfile' "print 'brew \"x\" (' >> Brewfile"
+m 'Brewfile loads' 'a Ruby error in the machine Brewfile' "print 'brew \"x\" (' >> config/machine/Brewfile"
+m 'Brewfile package exists' 'a formula that does not exist' "print 'brew \"no-such-formula-zz\"' >> Brewfile"
+m 'Brewfile package exists' 'a cask that does not exist' "print 'cask \"no-such-cask-zz\"' >> Brewfile"
+m 'Brewfile package exists' 'a package listed twice' "l=\$(command grep -m1 '^brew ' Brewfile); print -r -- \$l >> Brewfile"
+m 'Ghostty config' 'an unknown Ghostty key' "print 'no-such-key = 1' >> config/ghostty/config"
+m 'starship config' 'a misspelt top-level starship key' "perl -0pi -e 's/^/add_newlinee = true\n/' config/starship.toml"
+# AeroSpace: skipped in a worktree (it validates only the live config)
+# --- behaviour
+m 'zsh starts' 'a command that fails at start' "print 'no_such_command_zz' >> zsh/.aliases"
+m 'zsh starts' 'an error in .zshdefault' "print 'no_such_command_zz' >> zsh/.zshdefault"
+m 'no-recursive-rm' 'the rm hook allows everything' "perl -0pi -e 's/\\n/\\nexit 0\\n/' config/claude/hooks/no-recursive-rm.sh"
+m 'no-recursive-rm' 'the rm hook prints noise' "perl -0pi -e 's/\\n/\\necho hi\\n/' config/claude/hooks/no-recursive-rm.sh"
+m 'no-recursive-rm' 'the rm hook denies a harmless rm' "print 'block rm foo.txt' >> checks/rm-hook.cases"
+m 'format hook' 'shfmt runs without an .editorconfig' "perl -pi -e 's/up_find \\.editorconfig > \\/dev\\/null && //' config/claude/hooks/format.sh"
+m 'format hook' 'prettier runs without a config' "perl -pi -e 's/^  up_find \\.prettierrc/  true || up_find .prettierrc/; s/\\|\\| bin=\\\$\\(command -v prettier\\) \\|\\| return 0/|| bin=cat/' config/claude/hooks/format.sh"
+m 'format hook' 'the format hook prints noise' "perl -0pi -e 's/\\n/\\necho hi\\n/' config/claude/hooks/format.sh"
+m 'bell hook' 'the bell rings outside tmux' "perl -pi -e 's/^\\[\\[ -n \\\$TMUX_PANE \\]\\] \\|\\| exit 0/printf x/' config/claude/hooks/bell.sh"
+m 'bell hook' 'the bell fails in an unknown pane' "perl -pi -e 's/^exit 0/exit 1/' config/claude/hooks/bell.sh"
+m 'status line' 'ctx turns red at 90 instead of 80' "perl -pi -e 's/level \\\$ctx 50 80/level \\\$ctx 50 90/' config/claude/statusline.sh"
+m 'status line' 'a cold cache shown as warm' "perl -pi -e 's/cache cold/cache warm/' config/claude/statusline.sh"
+m 'status line' 'the status line needs a tool not on the minimal PATH' "perl -0pi -e 's/\\n/\\nrg --version > \\/dev\\/null || exit 1\\n/' config/claude/statusline.sh"
+# --- references
+m 'Markdown links' 'a link to a missing file' "print '[x](docs/nope.md)' >> README.md"
+m 'Markdown links' 'a link to a missing heading' "print '[x](docs/zsh.md#no-such-heading)' >> README.md"
+m 'Markdown links' 'an image that does not exist' "print '<img src=\"docs/img/nope.png\">' >> docs/zsh.md"
+m 'Heading" mentions' 'a mention of a missing heading' "print 'See \`docs/setup.md\`, \"No Such Heading\".' >> CLAUDE.md"
+m 'paths in the repo' 'a repo path that does not exist' "print 'see config/nope/file' >> docs/zsh.md"
+m 'paths in the repo' 'a ~ path into the repo that does not exist' "print '# reads ~/.config/tmux/nope' >> zsh/.aliases"
+m 'paths in the repo' 'a renamed script still named in a comment' "git mv config/tmux/sessionizer config/tmux/sessionizer2"
+m 'setup links from' 'a link from a missing source' "perl -0pi -e 's/^(function setup_tmux\\(\\) \\{\\n)/\$1  ln -sfn \"\\\$real_script_dir\\/config\\/nope\" ~\\/.config\\/tmux\\/nope\\n/m' zsh/.functions"
+m 'functions and settings' 'a doc names a function that does not exist' "print 'Run \`setup_nonexistent\`.' >> docs/zsh.md"
+m 'functions and settings' 'the Brewfile comment names a missing function' "print 'brew \"jq\" # used by zz_nofunc' >> Brewfile"
+m 'functions and settings' 'the machine Brewfile comment names a missing function' "print 'brew \"jq\" # used by zz_nofunc' >> config/machine/Brewfile"
+m 'aliases and functions are defined' 'a documented zsh alias removed' "perl -ni -e 'print unless /^alias lg=/' zsh/.aliases"
+m 'aliases and functions are defined' 'a documented git alias removed' "perl -ni -e 'print unless /^\\tgo = /' config/git/.gitconfig"
+m "requires resolve" 'a require of a missing module' "print \"require('user.nope')\" >> config/nvim/init.lua"
+m "requires resolve" 'a Lua file nothing requires' "print 'return {}' > config/nvim/lua/user/deadfile.lua"
+m 'hooks and status line are executable' 'the status line loses its exec bit' "chmod -x config/claude/statusline.sh"
+m 'hooks and status line are executable' 'a hook points at a missing script' "perl -pi -e 's/no-recursive-rm\\.sh/no-such-hook.sh/' config/claude/settings.json"
+# --- consistency
+m "setup_dotfiles' steps" 'a setup function that is neither a step nor documented' "print 'setup_zz() { :; }' >> zsh/.functions"
+m "setup_dotfiles' steps" 'a step dropped from setup_dotfiles' "perl -pi -e 's/ setup_ideavim; do/; do/' zsh/.functions"
+m "setup_dotfiles' steps" 'setup_dotfiles runs an undefined step' "perl -pi -e 's/ setup_ideavim; do/ setup_ideavim setup_zz; do/' zsh/.functions"
+m 'every symlink' 'a symlink missing from the table' "perl -ni -e 'print unless /^\\| \`~\\/\\.zshrc\`/' docs/setup.md"
+m 'README links every page' 'a doc page the README does not link' "print '# New' > docs/newpage.md"
+m "this Mac's files" 'a machine template nobody reads or documents' "print x > config/machine/newfile"
+m "plugins are pinned" 'a plugin missing from lazy-lock.json' "perl -ni -e 'print unless \$. == 3' config/nvim/lazy-lock.json"
+m "plugins are pinned" 'a plugin spec with a key lazy.nvim ignores' "perl -0pi -e \"s/'christoomey\\/vim-tmux-navigator'/{ 'christoomey\\/vim-tmux-navigator', lazzy = true }/\" config/nvim/lua/user/plugins.lua"
+m 'every GIF' 'a tape without an Output line' "perl -ni -e 'print unless /^Output /' docs/tapes/claude-code.tape"
+m 'every GIF' 'a GIF no tape renders' "cp docs/img/*.gif([1]) docs/img/orphan.gif"
+m 'every GIF' 'a GIF no doc shows' "perl -pi -e 's/claude-code\\.gif/claude-codeX.gif/' docs/*.md(.)"
+m 'vim-keys.md matches' "nvim's leader changed" "perl -pi -e \"s/mapleader = ','/mapleader = ';'/\" config/nvim/lua/user/keymaps.lua"
+m 'vim-keys.md matches' 'an nvim key the table says it maps, removed' "perl -ni -e \"print unless /keymap.set\\('i', 'jj'/\" config/nvim/lua/user/keymaps.lua"
+m 'vim-keys.md matches' 'an undocumented IdeaVim key' "print 'nnoremap ,zz :action Foo<CR>' >> config/ideavim/ideavimrc"
+m 'vim-keys.md matches' 'an undocumented VS Code key' "perl -0pi -e 's/\"vim.insertModeKeyBindings\": \\[/\"vim.insertModeKeyBindings\": [{\"before\": [\"q\",\"q\",\"z\"], \"after\": [\"<Esc>\"]},/' config/vscode/settings.json"
+m 'keeps to its modifier' 'Ghostty binds an Option key' "print 'keybind = alt+y=ignore' >> config/ghostty/config"
+m 'keeps to its modifier' "Ghostty binds tmux's C-a" "print 'keybind = ctrl+a=ignore' >> config/ghostty/config"
+m 'keeps to its modifier' 'a prefix-free Option key in tmux' "print 'bind -n M-y display hi' >> config/tmux/tmux.conf"
+m 'keeps to its modifier' 'an nvim Option key' "print \"vim.keymap.set('n', '<M-y>', 'x')\" >> config/nvim/lua/user/keymaps.lua"
+m 'keeps to its modifier' 'an AeroSpace key without Option' "perl -0pi -e 's/(\\[mode\\.main\\.binding\\]\\n)/\$1cmd-y = \"reload-config\"\\n/' config/aerospace/aerospace.toml"
+m "Cmd keys reach tmux" 'a Ghostty key sends a prefix key tmux does not bind' "print 'keybind = cmd+shift+y=text:\\\\x01Y' >> config/ghostty/config"
+m "Cmd keys reach tmux" 'a Ghostty key sends prefix C-y, unbound' "print 'keybind = cmd+shift+u=text:\\\\x01\\\\x19' >> config/ghostty/config"
+
+reset=$'\e[0m' red=$'\e[31m' green=$'\e[32m' dim=$'\e[2m'
+integer caught=0 missed=0 broken=0
+for i in {1..$#cmds}; do
+  [[ -n $1 && $descs[i] != *$1* && $wants[i] != *$1* ]] && continue
+  git reset -q --hard && git clean -qfdx
+  if ! eval $cmds[i] 2> $wt:h/err || [[ -z $(git status --porcelain) ]]; then
+    broken+=1
+    print -r -- "  ${red}BROKEN${reset}  $descs[i]: the break didn't change anything $(<$wt:h/err)"
+    continue
+  fi
+  out=$(checks/check_dotfiles 2>&1)
+  failed=(${${(M)${(f)out//$'\e'\[[0-9;]#m/}:#  FAILED  *}#  FAILED  })
+  failed=(${failed%% \(*})
+  hit=(${(M)failed:#*$wants[i]*})
+  others=(${failed:#*$wants[i]*})
+  if (( $#hit )); then
+    caught+=1
+    print -r -- "  ${green}caught${reset}  $descs[i]${others:+ $dim(also: ${(j:; :)others})$reset}"
+  else
+    missed+=1
+    print -r -- "  ${red}MISSED${reset}  $descs[i] → wanted '$wants[i]'${failed:+, failed: ${(j:; :)failed}}"
+  fi
+done
+print "caught $caught, missed $missed, broken $broken"
+(( missed + broken == 0 ))

@@ -191,6 +191,29 @@ check stops the rest of its group: that fails as "stopped in" the check, with th
 it in the group don't run. The recursive `rm`
 cases are in `checks/rm-hook.cases`, one per line: `block` or `allow`, then the command.
 
+### Testing the checks
+```sh
+checks/mutate              # every break, about 45 seconds
+checks/mutate starship     # only the breaks whose description or check matches
+```
+
+A check that stays green on a broken repo is worse than none, so `checks/mutate` breaks the repo on purpose,
+one thing at a time (a key set twice, a hook that allows everything, a doc page the README doesn't link), in a
+throwaway git worktree, and runs `check_dotfiles` there. Each break names the check that has to fail:
+
+| Result | Means |
+|---|---|
+| `caught` | that check failed; any other check that failed too is shown dimmed |
+| `MISSED` | that check stayed green: the check has a hole |
+| `BROKEN` | the break changed nothing, because the file it edits has changed: update the break |
+
+It exits 1 on a `MISSED` or `BROKEN`. The worktree has the repo's tracked files as they are now, uncommitted
+changes included; `git add` a new file first. It takes too long for every commit, so it isn't part of
+`check_dotfiles` or CI: run it after adding or changing a check, and give a new check (or a new rule in one)
+its own break: a line `m '<check label>' '<what breaks>' '<zsh code that breaks it>'` in `checks/mutate`.
+The AeroSpace check has none, since it only validates the live config. The breaks name files and functions
+that don't exist on purpose, so the path and name checks leave `checks/mutate` out.
+
 Other helpers
 ---
 - `mac_keys` lists which keys belong to which Mac; `retire_mac <name>` revokes one Mac's keys (see

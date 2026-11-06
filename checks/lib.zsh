@@ -98,7 +98,8 @@ load_slugs() {
 
 # path_index: every path in the repo or in ~ that a text file mentions: "P file line path" for paths from one
 # of the repo's top-level directories (code's "$real_script_dir/…" included; nvim's lua/ and lsp/ count from
-# config/nvim; zsh/ only for its dotfiles, zsh/datetime is a module), "T file line ~/path" for paths in ~
+# config/nvim; zsh/ only for its dotfiles, zsh/datetime is a module), "T file line ~/path" for paths in ~;
+# not checks/mutate, whose breaks name missing files on purpose
 path_index() {
   awk '
     {
@@ -117,7 +118,7 @@ path_index() {
         print "T\t" FILENAME "\t" FNR "\t" substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
       }
     }
-  ' $text_files
+  ' ${text_files:#checks/mutate}
 }
 
 # links_index: what the setup links, from the `ln -s` lines of zsh/.functions and prepare-zsh-install.sh:
@@ -179,10 +180,11 @@ link_map() {
 }
 
 # words_index: every name with an underscore in it (setup_python, used_percentage) in the code, the comments
-# and the configs, one per line; not the Brewfiles' own, which check_names checks against these
+# and the configs, one per line; not the Brewfiles' own, which check_names checks against these, nor
+# checks/mutate's, whose breaks name missing functions on purpose
 words_index() {
   awk '{ while (match($0, /[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]+/)) { print substr($0, RSTART, RLENGTH); $0 = substr($0, RSTART + RLENGTH) } }' \
-    ${${text_files:#*.md}:#(|*/)Brewfile} | sort -u
+    ${${text_files:#*.md}:#((|*/)Brewfile|checks/mutate)} | sort -u
 }
 
 # nvim_index: checks/nvim.lua in a headless nvim without any config (Lua syntax, nvim's requires, plugins and

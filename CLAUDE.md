@@ -68,6 +68,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 
 ## Testing
 - `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks").
+- A new or changed check gets a break in `checks/mutate`, and `checks/mutate` must report no `MISSED` or
+  `BROKEN` (`docs/setup.md`, "Testing the checks").
 - `zsh -n <file>` for syntax; `hyperfine -i 'zsh -i -c exit'` for start-up time (~43 ms on an M5,
   ~75 ms on an M1 Max): compare before and after a change on the same Mac; it shouldn't grow.
   `zsh -i -c` prints a harmless fzf "can't change option: zle".
