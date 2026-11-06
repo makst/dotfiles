@@ -25,7 +25,8 @@ alias la='eza -la --git --group-directories-first --icons=auto'
 alias l='la'
 alias lt='eza --tree --level=2 --git-ignore --icons=auto'
 
-# kubectl; completion works through the aliases
+# kubectl; completion works through the aliases. klo, kex, kctx and kns pick a pod, context or namespace:
+# zsh/functions/kubectl.zsh
 alias k='kubectl'
 alias kg='kubectl get'
 alias kd='kubectl describe'
@@ -34,6 +35,4 @@ alias krm='kubectl delete'
 alias kgpo='kubectl get pods'
 alias kdpo='kubectl describe pods'
 alias kgns='kubectl get namespaces'
-alias klo='kubectl logs -f'
-alias kex='kubectl exec -it'
 alias kpf='kubectl port-forward'

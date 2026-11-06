@@ -36,7 +36,7 @@ brew "bat"                         # file previews in fzf, .fzf.zsh
 brew "lesspipe"                    # zsh/.exports
 brew "fd"                          # file lists for fzf (.fzf.zsh), mdv
 brew "glow"                        # TUI: mdv, zsh/functions/fzf.zsh: renders markdown in the terminal
-brew "ripgrep"                     # rg: fzf-lua grep and grug-far in nvim, fif in .fzf.zsh
+brew "ripgrep"                     # rg: fzf-lua grep and grug-far in nvim, fif and ;r in .fzf.zsh
 brew "neovim"                      # setup_nvim, config/nvim
 brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua
 brew "typescript-language-server"  # TypeScript/JavaScript language server in nvim, lsp/lspconfig/ts_ls.lua
@@ -61,7 +61,7 @@ brew "ast-grep"                    # search and rewrite code by syntax, not text
 brew "just"                        # project task runner: `just <recipe>` from a justfile
 brew "xh"                          # HTTP requests, httpie-compatible syntax
 brew "btop"                        # TUI: processes, CPU, memory, network; config/btop, setup_btop
-brew "yazi"                        # TUI: file manager with previews
+brew "yazi"                        # TUI: file manager with previews; ,e in zsh's normal mode (.fzf.zsh)
 brew "chafa"                       # images and GIFs in the terminal, `img`
 brew "tlrc"                        # `tldr <cmd>`: short examples
 brew "dust"                        # what takes the disk space

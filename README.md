@@ -102,9 +102,9 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
 | `Option` (Alt) | AeroSpace, globally | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
-| `,` | nvim leader | `,e` file tree, `,lg` lazygit |
-| `;` | nvim pickers (fzf-lua, harpoon) | `;f` files, `;r` grep |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, nvim's `;` pickers) | |
+| `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,lg` lazygit |
+| `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;p` projects |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `gsw`, `gfix`, the kubectl ones) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 
 Same key, every layer

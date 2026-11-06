@@ -62,6 +62,8 @@ Aliases
 | Alias | Does |
 |---|---|
 | `git go <branch>` | switch to the branch, creating it if needed |
+| `gsw [branch]` | the same with a name; without one, pick a branch (local or remote, newest first) in fzf, its log as the preview (`zsh/functions/git.zsh`) |
+| `gfix` | commit what's staged as `--fixup` of a commit picked from the branch's own, `git show` as the preview; `git rebase -i --autosquash` folds it in |
 | `git dft`, `git dlog`, `git dshow` | `diff`, `log -p`, `show` through difftastic |
 | `git get <branch>` | check out `origin/<branch>` as a tracking branch |
 | `git lca` | log with hash, date, committer and author on one line each |

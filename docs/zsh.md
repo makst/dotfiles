@@ -73,6 +73,14 @@ block in normal mode.
 | `C-k` / `C-j` | normal | the same, on the home row (outside tmux; inside tmux these keys move between panes) |
 | `C-r` | insert | history search (atuin's history in fzf) |
 | `/` | normal | the same |
+| `;f` / `;a` / `;g` | normal | open a file in nvim: any but ignored ones / all / in git (`find_file` in `.fzf.zsh`) |
+| `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
+| `;p` | normal | projects: the sessionizer (`tm`) |
+| `,lg` / `,e` | normal | lazygit / yazi |
+
+The `;` and `,` keys are nvim's (its pickers and leader), so a key learnt in one works in the other. Each
+one puts the command it runs on the command line, so it lands in the history, and what you had typed comes
+back afterwards. A lone `;` or `,` still repeats the last `f`/`t`, once 0.2 s pass without a second key.
 
 `bindkey -v` resets the main keymap, so fzf's and atuin's widgets are loaded after it, and the history
 search is bound after atuin's. Put new key
@@ -160,7 +168,9 @@ Aliases and functions worth knowing
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
 | `docker` | podman (Docker Desktop isn't installed) |
-| `k`, `kg`, `kd`, `kgpo`, `klo`, `kex`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
+| `k`, `kg`, `kd`, `kgpo`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
+| `kctx`, `kns` | kubectl: switch the context / the namespace, given or picked in fzf (`zsh/functions/kubectl.zsh`) |
+| `klo`, `kex` | kubectl: follow a pod's logs / a shell in it (bash, else sh), the pod given or picked in fzf |
 | `copy_last_cmd` | copy the previous command to the clipboard |
 | `sn` / `sp` | Spotify next / previous track |
 | `timezsh` | benchmark shell start-up (hyperfine) |

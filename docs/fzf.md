@@ -10,7 +10,7 @@ completions, tmux sessions, colour schemes. A few small tools feed it or show it
 | [fd](https://github.com/sharkdp/fd) | lists files and directories for fzf: fast, respects `.gitignore`, includes dotfiles |
 | [bat](https://github.com/sharkdp/bat) | file previews with syntax highlighting |
 | [eza](https://github.com/eza-community/eza) | directory previews as a tree |
-| [ripgrep](https://github.com/BurntSushi/ripgrep) | content search (`fif`, nvim) |
+| [ripgrep](https://github.com/BurntSushi/ripgrep) | content search (`fif`, `;r`, nvim) |
 | [glow](https://github.com/charmbracelet/glow) | renders markdown in the terminal for `mdv` |
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 
@@ -38,6 +38,7 @@ Shell keys
 | `C-t` | pick files (several with `Tab`) and insert their paths |
 | `Alt+C` | `cd` into a subdirectory |
 | `**<Tab>` | fzf completion after a command, e.g. `vim **<Tab>`, `cd **<Tab>`, `kill **<Tab>` |
+| `;f` / `;a` / `;g`, `;r`, `;p` | in normal mode: nvim's pickers in the shell, files, grep, projects ([zsh](zsh.md#vi-mode)) |
 
 Inside any fzf list
 ---
@@ -85,5 +86,6 @@ own `mkdocs.yml` is served with that. `C-c` stops it.
 
 Find in files
 ---
-`fif <text>` lists the files containing the text; the preview shows the matches with context. For the
-same in nvim, use `;r` (live grep), see [neovim](neovim.md#finding-things).
+`fif [text]` (`;r` in normal mode) greps the project with rg as you type, starting from the text; the
+preview shows the match in its file, and Enter opens it in nvim at that line. In nvim it's the same key,
+`;r` (live grep), see [neovim](neovim.md#finding-things).

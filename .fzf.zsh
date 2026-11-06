@@ -16,15 +16,65 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 export FZF_DEFAULT_OPTS_FILE=${${(%):-%x}:A:h}/config/fzf/fzfrc
 unset FZF_DEFAULT_OPTS
 
-# find-in-file - usage: fif <SEARCH_TERM>
-fif() {
-  if [ ! "$#" -gt 0 ]; then
-    print -u2 "Need a string to search for!"
-    return 1;
-  fi
+typeset -g _fzf_picker=${${(%):-%x}:A:h}/config/tmux/picker.zsh
 
-  rg --files-with-matches --no-messages "$1" | fzf --preview "rg --ignore-case --pretty --context 10 '$1' {}" --preview-window=right:60%
+# find_file [command…]: pick a file from what the command lists (default: fd, every file but ignored ones),
+# with a preview, and print its path. The pickers of ;f, ;a and ;g below.
+find_file() {
+  source $_fzf_picker
+  (( $# )) || set -- fd --type f --type l --hidden --exclude .git --color never
+  local file
+  file=$("$@" | awk '{ print $0 "\t" $0 }' |
+    picker files --insert --header 'type to filter, jj for j/k · Enter opens · Esc quits' \
+      --preview 'bat --color=always --style=numbers {1}' --preview-window $picker_preview) || return
+  print -r -- ${file%%$'\t'*}
 }
+
+# fif [text]: grep the project with rg as you type (starting from the text), with the match in its file as
+# the preview, and open the one picked in nvim at its line. The picker of ;r below.
+fif() {
+  source $_fzf_picker
+  local rg="rg --line-number --no-heading --color=never --smart-case --field-match-separator='\t' -- {q} || true"
+  local -a match
+  # fields: file, line, text; fzf doesn't filter (--disabled), rg does on every change of the query. The empty
+  # stdin keeps fzf from listing FZF_DEFAULT_COMMAND's files first.
+  match=("${(@ps:\t:)$(: | picker grep --insert --disabled --query "$1" --no-track \
+    --bind "start:reload:$rg" --bind "change:reload:$rg" --with-nth '{1}:{2}: {3..}' \
+    --header 'type to grep, jj for j/k · Enter opens at the line · Esc quits' \
+    --preview 'bat --color=always --style=numbers --highlight-line {2} --line-range $(( {2} > 10 ? {2} - 10 : 1 )): {1}' \
+    --preview-window $picker_preview)}")
+  (( $#match >= 2 )) || return 1
+  nvim +$match[2] -- $match[1]
+}
+
+# The find keys in normal mode (bound in zsh/.zshdefault), nvim's in the shell: ;f files, ;a all files
+# (ignored ones too), ;g files in git, ;r grep, ;p projects, and ,lg lazygit, ,e yazi. Each puts the command
+# it runs on the command line and runs it, so it lands in the history; what was typed comes back afterwards.
+_find_run() {
+  zle push-line
+  BUFFER=$1
+  zle accept-line
+}
+_find_open() {
+  local file
+  file=$(find_file "$@")
+  zle reset-prompt
+  [[ -n $file ]] && _find_run "nvim -- ${(q)file}"
+}
+find-files-widget() { _find_open }
+find-all-files-widget() { _find_open fd --type f --type l --hidden --no-ignore --exclude .git --color never }
+find-git-files-widget() { _find_open git ls-files --cached --others --exclude-standard }
+find-grep-widget() { _find_run fif }
+find-projects-widget() { _find_run tm }
+lazygit-widget() { _find_run lazygit }
+yazi-widget() { _find_run yazi }
+zle -N find-files-widget
+zle -N find-all-files-widget
+zle -N find-git-files-widget
+zle -N find-grep-widget
+zle -N find-projects-widget
+zle -N lazygit-widget
+zle -N yazi-widget
 
 # fzf-history-widget (ctrl+r, and / in normal mode; bound in zsh/.zshdefault after atuin's own): atuin's history
 # in fzf, so it looks and works like every other fzf. Newest first, each command once, with how long it ran
@@ -33,7 +83,7 @@ fif() {
 # on the list's border: global, host, session, workspace (the git repo), directory. ? shows the whole command
 # with its directory and exit code. Enter puts the command on the command line to edit, as atuin's
 # enter_accept = false. atuin still records every command; config/atuin/fzf-history lists them.
-typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history _fzf_picker=${${(%):-%x}:A:h}/config/tmux/picker.zsh
+typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history
 fzf-history-widget() {
   source $_fzf_picker
   local cycle="case \$FZF_LIST_LABEL in
