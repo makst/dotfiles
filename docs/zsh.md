@@ -120,6 +120,9 @@ gcloud project inside git repos (in red with `PROD` when its name contains "prod
 version in projects of that language, how long the last command took (over 2 s) and background jobs. At the
 right end, the time the prompt appeared, so scrolling back shows when each command finished.
 
+Each part has its Nerd Font icon (branch, cloud, clock, …). They're written as `\u…` escapes in the config:
+pasted as characters, the ones in U+E000–U+F8FF went missing and left a space.
+
 All colours are ANSI names, so the prompt follows the [theme](theme.md).
 
 Navigation

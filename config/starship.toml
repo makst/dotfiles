@@ -32,7 +32,7 @@ read_only = " 󰌾"
 
 [git_branch]
 format = "[$symbol$branch(:$remote_branch)]($style) "
-symbol = " "
+symbol = "\uf418 "
 style = "purple"
 
 [git_status]
@@ -63,28 +63,28 @@ style = "bold red"
 
 [nodejs]
 format = "[$symbol($version)]($style) "
-symbol = " "
+symbol = "\ue718 "
 style = "green"
 # only in node projects, not for every directory with a .js file
 detect_extensions = []
 
 [python]
 format = "[$symbol$pyenv_prefix($version)(\\($virtualenv\\))]($style) "
-symbol = " "
+symbol = "\ue235 "
 style = "yellow"
 
 [golang]
 format = "[$symbol($version)]($style) "
-symbol = " "
+symbol = "\ue627 "
 style = "cyan"
 
 [cmd_duration]
 min_time = 2_000
-format = "[ $duration]($style) "
+format = "[\uf017 $duration]($style) "
 style = "bright-black"
 
 [jobs]
-symbol = " "
+symbol = "\uf013 "
 style = "bright-black"
 
 # the time the prompt appeared, at the right end of the first line: when the command above finished
