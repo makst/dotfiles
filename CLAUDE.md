@@ -32,8 +32,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 
 ## When changing something
 - **Docs move with the config.** Every change updates `docs/<tool>.md` in the same commit: what it does and
-  why, keys in tables. A new tool or layer also goes in the README table. `docs/setup.md` lists every setup
-  step and symlink.
+  why, keys in tables, in the section the README's "Same shape, every page" gives it (a new page follows that
+  order). A new tool or layer also goes in the README table. `docs/setup.md` lists every setup step and symlink.
 - **Setup steps** are idempotent `setup_<tool>` functions in `zsh/functions/<tool>.zsh` (the Mac-wide ones and
   `setup_dotfiles` in `setup.zsh`) that link from `config/` with `ln -sfn "$real_script_dir/config/…" ~/…`.
   Add each to `setup_dotfiles` and to the table in `docs/setup.md`. A real file that a link replaces goes to `~/.Trash`, not `rm`.

@@ -91,6 +91,32 @@ picker, not by remembering where it is, and anything running is looked at in a l
 5. **Exceptions say why.** A file that holds several kinds, or a list without a picker, says why in its top
    comment or its doc.
 
+Same shape, every page
+---
+The design principle behind the docs: every `docs/<tool>.md` has the same sections in the same order, so you
+know where to look before you open the page. The sections follow [Diátaxis](https://diataxis.fr), which sorts
+writing by what the reader is doing (understanding, doing a task, looking something up), but they stay on one
+page per tool instead of four folders, so a tool is still one search away.
+
+| Section | Kind | What goes in it |
+|---|---|---|
+| What it is | explanation | the model and why it is set up this way: what loads what, what nests in what |
+| Once per Mac / Once per project | how-to | steps to run, in order, each one a command or a click |
+| A heading per task | how-to | named for the task ("Switching schemes"), short steps, no background |
+| Keys | reference | the key table, nothing but rows; a line above it may say which layer it is |
+| Config | reference | which files, where they link, what each setting changes |
+| To look out for | how-to | gotchas and their fixes, one bullet each |
+| Decisions | explanation | "X, not Y, because …": what was tried or dropped, so it isn't tried again |
+
+1. **Leave out, don't reorder.** A page skips the sections it doesn't need; the ones it has come in this
+   order. A big page (neovim) repeats the task, Keys and Config sections per area, in the same order.
+2. **One kind per section.** Explanation doesn't go into a key table and steps don't go into "What it is";
+   a sentence that would belong elsewhere moves there and is linked.
+3. **The README is the only tutorial.** "Install from scratch" and "A typical day" walk through the whole
+   setup once; everything else assumes you have it.
+4. **Exceptions say why.** A page that can't follow the shape (`docs/vim-keys.md` is a single cross-tool
+   table) says so in its first paragraph.
+
 How the keyboard is split
 ---
 Every tool owns its own modifier, so the layers don't fight over keys:
