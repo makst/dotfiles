@@ -44,6 +44,11 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   grammar, the key names the action and the modifier the layer, nvim is the reference, one picker. A new tool
   or TUI gets vim keys (by config if its own don't follow) or an entry saying why it can't; a new list to
   choose from goes through `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
+- **One search away**: every file and list follows the README's "One search away": a thing of one kind goes
+  in the file named for that kind (nvim: `lua/user/<plugin>/keymaps.lua` for keys, `config.lua` for setup),
+  each tool's parts are named for the tool (`config/<tool>/`, `docs/<tool>.md`, `setup_<tool>`), each thing is
+  defined once and referred to by file and section, a file's top comment names who uses it, and state worth
+  checking opens in the picker with a preview. Say where a change breaks this and why.
 - **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
   family it belongs to, in README "Same key, every layer" and in the existing bindings of every layer, and
   reuse it: the same key with the layer's modifier, the same verb for the same action (next, previous, last,

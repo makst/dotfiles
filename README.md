@@ -72,6 +72,25 @@ text up to a macOS workspace.
 6. **Exceptions say why.** When a key can't follow, because macOS, another layer or the tool itself has it,
    the table shows what is used instead and why, so the gap is a decision and not an accident.
 
+One search away
+---
+The design principle behind how files and lists are laid out: anything here is found with one search in a
+picker, not by remembering where it is, and anything running is looked at in a list, not recalled as a command.
+
+1. **The file name says the kind, the folder says the tool.** Things of one kind have the same name
+   everywhere: each nvim plugin is `lua/user/<plugin>/` with a `config.lua` and a `keymaps.lua`; each tool has
+   `config/<tool>/`, `docs/<tool>.md` and `setup_<tool>`. Search for the kind (`;f keymaps`, `setup_<Tab>`)
+   and you get all of them; search for the tool (`;f tmux`) and you get every part of it.
+2. **One place per thing.** A key, a setting or a setup step is defined once, in the file its name points to.
+   Everywhere else refers to it by file and section (README, "Same key, every layer"), so one grep finds the
+   definition and everything that relies on it.
+3. **Files say who uses them.** The comment at the top of a file says what links it, loads it or calls it
+   (`config/tmux/picker.zsh` lists every picker built on it), so a thing can be followed in both directions.
+4. **Look, don't recall.** Something you check often (sessions, windows, agents, paste buffers, the docs,
+   history) opens in the picker with a live preview, so you see the state and go to it in one step.
+5. **Exceptions say why.** A file that holds several kinds, or a list without a picker, says why in its top
+   comment or its doc.
+
 How the keyboard is split
 ---
 Every tool owns its own modifier, so the layers don't fight over keys:
