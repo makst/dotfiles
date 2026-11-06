@@ -108,6 +108,7 @@ m 'vim-keys.md matches' 'an undocumented VS Code key' "perl -0pi -e 's/\"vim.ins
 m 'keeps to its modifier' 'Ghostty binds an Option key' "print 'keybind = alt+y=ignore' >> config/ghostty/config"
 m 'keeps to its modifier' "Ghostty binds tmux's C-a" "print 'keybind = ctrl+a=ignore' >> config/ghostty/config"
 m 'keeps to its modifier' 'a prefix-free Option key in tmux' "print 'bind -n M-y display hi' >> config/tmux/tmux.conf"
+m 'in a keymaps.lua' 'an nvim key bound in a config.lua' "print \"vim.keymap.set('n', '<leader>zz', 'x', { desc = 'x' })\" >> config/nvim/lua/user/nvim-tree/config.lua"
 m 'keeps to its modifier' 'an nvim Option key' "print \"vim.keymap.set('n', '<M-y>', 'x')\" >> config/nvim/lua/user/keymaps.lua"
 m 'keeps to its modifier' 'an AeroSpace key without Option' "perl -0pi -e 's/(\\[mode\\.main\\.binding\\]\\n)/\$1cmd-y = \"reload-config\"\\n/' config/aerospace/aerospace.toml"
 m "Cmd keys reach tmux" 'a Ghostty key sends a prefix key tmux does not bind' "print 'keybind = cmd+shift+y=text:\\\\x01Y' >> config/ghostty/config"

@@ -117,7 +117,7 @@ shows the app's logcat and `,ao` opens the current line in Android Studio.
 - **Format on save**: only when the project sets up ktlint in its `.editorconfig` (e.g.
   `ktlint_code_style = android_studio`), nothing otherwise. kotlin-lsp's own formatting is never used.
 - **Build, run, test**: the project's own `./gradlew` and `adb`, in a terminal split at the project root
-  (the directory with `gradlew`), one per project. Config in `config/nvim/lua/user/android.lua`.
+  (the directory with `gradlew`), one per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
 
 ### Keys
 All under `,a` (for Android), in normal mode. They build the debug variant; anything else (another

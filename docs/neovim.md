@@ -11,8 +11,12 @@ Layout of the config
 ---
 - `init.lua` loads everything in order: options, keymaps, then one module per plugin.
 - `lua/user/base.lua` options, `lua/user/keymaps.lua` general keys, `lua/user/plugins.lua` the plugin list.
-- `lua/user/<plugin>/` per plugin: `config.lua` (setup) and `keymaps.lua`. To find where a key is defined,
-  look in the `keymaps.lua` of the plugin it belongs to.
+- `lua/user/<plugin>/` per plugin: `config.lua` (setup) and `keymaps.lua`; the same for nvim's own tools
+  (`android/`, `vscode/`). Every key is bound in a `keymaps.lua` (a check fails on one bound anywhere else),
+  so to find a key, look in the `keymaps.lua` of the plugin it belongs to. That includes keys a plugin only
+  takes from its setup, like nvim-tree's buffer keys: `keymaps.lua` exports them and `config.lua` passes
+  them on. The one exception is a telescope picker's own actions (codetour's `dd`, `r`), which telescope
+  takes inside the picker's definition (`codetour/telescope.lua`).
 - Every key has a `desc` that starts with its area (`Git: blame for this file`, `Split: zoom, and back`), so
   `;?` finds it by what it does. A key a plugin binds itself gets one with `lua/user/describe.lua`, which
   adds the desc and leaves the mapping as it is (vim-tmux-navigator, vim-abolish).

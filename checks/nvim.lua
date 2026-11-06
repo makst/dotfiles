@@ -5,6 +5,7 @@
 --   plugins:  lua/user/plugins.lua and lazy-lock.json list the same plugins, and the specs use only keys
 --             lazy.nvim knows; it ignores the others silently, so `dependecies = …` would do nothing
 --   descs:    every key the config binds has a desc, so the keys picker (;?) shows it
+--   keymaps:  every key the config binds is bound in a keymaps.lua, so looking there finds it
 local repo = arg[1]
 local files = { unpack(arg, 2) }
 local config = repo .. '/config/nvim'
@@ -152,12 +153,16 @@ for _, file in ipairs(files) do
     for _, pattern in ipairs({ 'keymap%.set%s*()%(', 'nvim_set_keymap%s*()%(', 'nvim_buf_set_keymap%s*()%(' }) do
       for open in text:gmatch(pattern) do
         keys = keys + 1
+        local line = select(2, text:sub(1, open):gsub('\n', '')) + 1
         if not call_at(text, open):match('desc%s*=') then
-          local line = select(2, text:sub(1, open):gsub('\n', '')) + 1
           problem('descs', ('%s:%d: a key without a desc, so ;? doesn\'t show it'):format(file, line))
+        end
+        if not file:match('/keymaps%.lua$') then
+          problem('keymaps', ('%s:%d: a key outside keymaps.lua: bind it in its keymaps.lua'):format(file, line))
         end
       end
     end
   end
 end
 count('descs', keys)
+count('keymaps', keys)

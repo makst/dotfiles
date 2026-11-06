@@ -237,7 +237,7 @@ ask about them.
 | Syntax | `checks/syntax.zsh` | every zsh, bash, JSON, TOML, YAML and Lua file parses; tmux.conf, gitconfig, ssh config, Brewfile, Ghostty, starship and AeroSpace configs load in their own tool |
 | Behaviour | `checks/behaviour.zsh` | zsh starts without errors; Claude Code's hooks (recursive `rm`, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
-| Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
+| Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a

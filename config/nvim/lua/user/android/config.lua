@@ -3,9 +3,11 @@
 -- adb in a terminal split at the project root (the directory with gradlew), one per project, so its output
 -- stays readable and `,ax` can stop it. The app module is the one whose build file applies the Android
 -- application plugin; its package name is read from the APK it built, so applicationIdSuffix works too.
--- Only the debug variant has keys: other variants and tasks go through `,aa`.
+-- Only the debug variant has keys (keymaps.lua): other variants and tasks go through `,aa`.
 local status_ok, _ = pcall(require, 'toggleterm')
-if not status_ok then return end
+if not status_ok then return {} end
+
+local M = {}
 
 local Terminal = require('toggleterm.terminal').Terminal
 
@@ -26,7 +28,7 @@ local function terminal(root, name)
 end
 
 -- runs `cmd` in the project's terminal `name` ('gradle' or 'logcat') and keeps the cursor where it was
-local function run(name, cmd)
+function M.run(name, cmd)
   local root = project_root()
   if not root then return end
   local term = terminal(root, name)
@@ -68,7 +70,7 @@ local function logcat(root)
   return ('adb logcat -v color --pid="$(adb shell pidof -s %s)"'):format(package_name(app_module(root)))
 end
 
-local function start_emulator()
+function M.start_emulator()
   local avds = vim.fn.systemlist({ 'emulator', '-list-avds' })
   if vim.v.shell_error ~= 0 or #avds == 0 then
     vim.notify('no emulators: create one in Android Studio, Device Manager', vim.log.levels.WARN)
@@ -79,38 +81,40 @@ local function start_emulator()
   end)
 end
 
-local map = function(lhs, rhs, desc)
-  vim.keymap.set('n', lhs, rhs, { desc = desc })
+-- tasks(): asks for Gradle tasks and runs them
+function M.tasks()
+  vim.ui.input({ prompt = './gradlew ' }, function(tasks)
+    if tasks and tasks ~= '' then M.run('gradle', './gradlew ' .. tasks) end
+  end)
 end
 
-map('<leader>aa', function()
-  vim.ui.input({ prompt = './gradlew ' }, function(tasks)
-    if tasks and tasks ~= '' then run('gradle', './gradlew ' .. tasks) end
-  end)
-end, 'Android: run Gradle tasks')
-map('<leader>ab', function() run('gradle', function(root) return ('./gradlew :%s:assembleDebug'):format(app_module(root)) end) end,
-  'Android: build')
-map('<leader>ar', function() run('gradle', install_and_launch) end, 'Android: build, install and launch')
-map('<leader>at', function() run('gradle', './gradlew testDebugUnitTest') end, 'Android: run the unit tests')
-map('<leader>ai', function() run('gradle', './gradlew connectedDebugAndroidTest') end,
-  'Android: run the instrumented tests on the device')
-map('<leader>ax', function()
+function M.build()
+  M.run('gradle', function(root) return ('./gradlew :%s:assembleDebug'):format(app_module(root)) end)
+end
+
+function M.install_and_launch() M.run('gradle', install_and_launch) end
+function M.logcat() M.run('logcat', logcat) end
+
+-- stop(): Ctrl-C to the project's Gradle terminal
+function M.stop()
   local root = project_root()
   local term = root and terminals[root .. 'gradle']
   if term and term.job_id then vim.fn.chansend(term.job_id, '\x03') end
-end, 'Android: stop the running Gradle task')
-map('<leader>ag', function()
+end
+
+function M.toggle_gradle()
   local root = project_root()
   if root then terminal(root, 'gradle'):toggle() end
-end, 'Android: show / hide the Gradle terminal')
-map('<leader>al', function() run('logcat', logcat) end, "Android: the app's logcat")
-map('<leader>ae', start_emulator, 'Android: start an emulator')
+end
 
--- The same file and line in Android Studio, which opens it in the window that already has the project.
-map('<leader>ao', function()
+-- open_in_studio(): the same file and line in Android Studio, which opens it in the window that already has
+-- the project
+function M.open_in_studio()
   if vim.fn.executable('studio') == 0 then
     vim.notify('studio not found: needs Android Studio', vim.log.levels.WARN)
     return
   end
   vim.fn.jobstart({ 'studio', '--line', tostring(vim.fn.line('.')), vim.api.nvim_buf_get_name(0) }, { detach = true })
-end, 'Android: open this file at this line in Android Studio')
+end
+
+return M
