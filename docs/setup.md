@@ -28,6 +28,7 @@ Each step is a function you can also run on its own:
 | `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
 | `setup_fzf` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
+| `setup_btop` | links `~/.config/btop/btop.conf` |
 | `setup_node` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` into it |
 | `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
 | `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
@@ -78,6 +79,7 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.zshrc` | `.zshrc` |
 | `~/.fzf.zsh` | `.fzf.zsh` |
 | `~/.atuin/config.toml` | `config/atuin/config.toml` |
+| `~/.config/btop/btop.conf` | `config/btop/btop.conf` |
 | `~/.gitconfig` | `config/git/.gitconfig` |
 | `~/.config/git/ignore` | `config/git/ignore` |
 | `~/.config/tmux/` | `config/tmux/` |

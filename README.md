@@ -138,6 +138,7 @@ prepare-zsh-install.sh    first-run bootstrap (bash, before zsh exists)
 .zshrc                    sources zsh/*; everything else is linked from config/
 zsh/                      shell config, aliases, functions (setup_dotfiles lives in .functions)
 config/atuin/             shell history search
+config/btop/              btop: vim keys, the terminal's colours
 .fzf.zsh                  fzf and fzf-tab configuration
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the session picker

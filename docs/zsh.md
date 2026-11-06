@@ -175,7 +175,7 @@ From the Brewfile, worth knowing about:
 |---|---|
 | `gh` | GitHub from the terminal: `gh pr create`, `gh pr checks`, `gh run watch`, `gh pr checkout <n>` |
 | `xh` | HTTP requests with httpie's syntax: `xh POST api.example.com name=x`, `xh -d <url>` downloads |
-| `btop` | processes, CPU, memory, disks and network |
+| `btop` | processes, CPU, memory, disks and network; vim keys (`j`/`k`, `g`/`G`; help and kill on `H`/`K`), the terminal's colours. Settings go in `config/btop/btop.conf`: btop's menu changes them only until it quits |
 | `yazi` | file manager with previews; `q` quits, `?` lists keys |
 | `img <file>` | chafa: shows a photo or plays a GIF in the terminal, sized to the pane; `ctrl-c` stops a GIF |
 | `tldr <cmd>` | short, practical examples instead of the man page |

@@ -89,4 +89,6 @@ Each tool
 - **tmux**: copy mode uses vi keys, `v` selects, `y` copies (see [tmux](tmux.md)); `C-h/j/k/l` cross into
   nvim.
 - **AeroSpace**: `alt+h/j/k/l` move between windows (see [window management](window-management.md)).
+- **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
+  `H` and `K`.
 - **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.
