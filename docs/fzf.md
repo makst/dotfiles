@@ -42,7 +42,7 @@ Inside any fzf list
 ---
 | Key | Action |
 |---|---|
-| `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, `mdv`: they take one line) |
+| `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, `mdv`, `change_theme`: they take one line) |
 | `C-a` | mark all |
 | `?` | show / hide the preview (hidden by default, shown from the start in the pickers) |
 | `C-n` / `C-p` | scroll the preview a line; `C-Alt+n` / `C-Alt+p` half a page |
@@ -69,9 +69,10 @@ Every `Tab` completion opens in fzf instead of zsh's menu, looking like every ot
 
 Markdown (mdv)
 ---
-`mdv [dir]` picks a markdown file under `dir` (default: the current directory) with fzf and opens it rendered
-in glow's pager. The preview pane shows the rendered file as you move through the list, wrapped to the pane's
-width. Only one file can be picked, and `q` leaves the pager. `mdv <file>` skips the list and opens that file.
+`mdv [dir]` picks a markdown file under `dir` (default: the current directory) in the picker and opens it
+rendered in glow's pager. The picker opens in normal mode: `j`/`k` go through the files while the preview
+below shows each one rendered, wrapped to the pane's width; `/` filters, `jj` goes back
+([picker keys](tmux.md#picker-keys)). Only one file can be picked, and `q` leaves the pager. `mdv <file>` skips the list and opens that file.
 glow renders with `config/glow/ansi.json`, a style in the terminal's 16 colours, so it follows the
 [theme](theme.md): headings blue, inline code red, links cyan, quotes grey. Code blocks are plain: glow's
 highlighter only takes fixed colours.

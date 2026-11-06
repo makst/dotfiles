@@ -1,5 +1,5 @@
 # The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j),
-# agent_resume (zsh/.functions) and the history search (C-r, fzf-history-widget in .fzf.zsh): the agent marks,
+# agent_resume, mdv and change_theme (zsh/.functions) and the history search (C-r, fzf-history-widget in .fzf.zsh): the agent marks,
 # nvim's keys, and a list and preview that stay current while fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")

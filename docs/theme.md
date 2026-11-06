@@ -20,7 +20,8 @@ Switching schemes
 change_theme
 ```
 
-Pick a scheme in fzf (every base16 scheme tinted-vim ships, a few hundred). It writes the nvim colour scheme
+Pick a scheme in the picker (every base16 scheme tinted-vim ships, a few hundred): it opens ready to type,
+best match first; `jj` for `j`/`k` ([picker keys](tmux.md#picker-keys)). It writes the nvim colour scheme
 file and regenerates Ghostty's theme from the same colours, using the standard base16 → ANSI mapping.
 Then reload Ghostty (`cmd+shift+,`) and restart nvim. Both files are in the repo, so commit them to keep the
 scheme.

@@ -7,11 +7,16 @@ timezsh() {
 }
 
 # change_theme: pick a base16 scheme for nvim and Ghostty (config/ghostty/themes/base16) together.
-# tmux, fzf, bat and starship use the terminal's 16 colours, so they follow Ghostty.
+# tmux, fzf, bat and starship use the terminal's 16 colours, so they follow Ghostty. The list is the
+# picker's (config/tmux/picker.zsh), ready to type in: there are a few hundred schemes.
 function change_theme() {
   local colors=~/.local/share/nvim/lazy/tinted-vim/colors
   local scheme
-  scheme=$(find "$colors" -name 'base16-*.vim' -exec basename {} .vim \; | sort | fzf --prompt 'base16 scheme> ') || return
+  source ~/.config/tmux/picker.zsh
+  # the best match first, as it's a name you type; the list shows it without the base16- in front
+  scheme=$(print -rl -- $colors/base16-*.vim(N:t:r) | awk '{ print $0 "\t" substr($0, 8) }' |
+    picker scheme --insert --sort --header 'type to filter, jj for j/k · Enter picks · Esc quits') || return
+  scheme=${scheme%%$'\t'*}
 
   print -r "vim.cmd [[colorscheme $scheme]]" >"$real_script_dir/config/nvim/lua/user/base16-vim.lua"
 
@@ -119,9 +124,8 @@ function setup_fzf() {
 }
 
 # mdv [dir|file]: pick a markdown file under dir (default: here) and read it rendered in glow's pager; a file
-# opens straight away. The preview pane shows the rendered file while you move through the list (nohidden:
-# the fzf defaults hide the preview until `?`), wrapped to the pane's width. Single pick only, so a stray Tab
-# can't pass several files to glow. The style (config/glow/ansi.json) uses the terminal's 16 colours, so it
+# opens straight away. The list is the picker's (config/tmux/picker.zsh), in normal mode: j/k go through the
+# files while the preview below shows each one rendered, wrapped to the pane's width. The style (config/glow/ansi.json) uses the terminal's 16 colours, so it
 # follows the theme; glow's own are fixed ones.
 #   mdv
 #   mdv docs
@@ -130,10 +134,11 @@ function mdv() {
   local style=$real_script_dir/config/glow/ansi.json
   [[ -f $1 ]] && { glow -p -s "$style" "$1"; return }
   local file
-  file=$(fd --extension md . "${1:-.}" |
-    fzf --no-multi --preview-window=nohidden --preview "glow -s ${(q)style} -w \$FZF_PREVIEW_COLUMNS {}") ||
-    return
-  glow -p -s "$style" "$file"
+  source ~/.config/tmux/picker.zsh
+  file=$(fd --extension md . "${1:-.}" | awk '{ print $0 "\t" $0 }' |
+    picker markdown --header 'j/k move · Enter reads · / filters, jj back · q quits' \
+      --preview "glow -s ${(q)style} -w \$FZF_PREVIEW_COLUMNS {1}" --preview-window $picker_preview) || return
+  glow -p -s "$style" "${file%%$'\t'*}"
 }
 
 # mds [dir]: browse the markdown files under dir (default: here) as a local site in the browser: a sidebar
