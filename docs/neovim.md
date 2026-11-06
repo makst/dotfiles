@@ -1,7 +1,7 @@
 Neovim
 ===
 
-Neovim from Homebrew, configured in Lua, with LSP, treesitter, telescope and a set of plugins for moving
+Neovim from Homebrew, configured in Lua, with LSP, treesitter, fzf-lua and a set of plugins for moving
 around quickly. `vim` runs nvim everywhere (a link in `~/bin`), including as git's editor.
 
 Config: `config/nvim/` (linked to `~/.config/nvim`). Reload most of it in place with `,re`; plugin changes
@@ -15,8 +15,7 @@ Layout of the config
   (`android/`, `vscode/`). Every key is bound in a `keymaps.lua` (a check fails on one bound anywhere else),
   so to find a key, look in the `keymaps.lua` of the plugin it belongs to. That includes keys a plugin only
   takes from its setup, like nvim-tree's buffer keys: `keymaps.lua` exports them and `config.lua` passes
-  them on. The one exception is a telescope picker's own actions (codetour's `dd`, `r`), which telescope
-  takes inside the picker's definition (`codetour/telescope.lua`).
+  them on, and the keys inside the pickers (`fzf-lua/keymaps.lua`, `codetour/keymaps.lua`).
 - Every key has a `desc` that starts with its area (`Git: blame for this file`, `Split: zoom, and back`), so
   `;?` finds it by what it does. A key a plugin binds itself gets one with `lua/user/describe.lua`, which
   adds the desc and leaves the mapping as it is (vim-tmux-navigator, vim-abolish).
@@ -107,8 +106,11 @@ These override built-in vim keys, which is easy to forget:
 
 ### Finding things
 
-Telescope pickers (`;` + letter), laid out like fzf: the prompt on top, the matches under it, the preview at
-the bottom, the markers and the count a column in from the border:
+Pickers (`;` + letter), from fzf-lua. They run the real fzf, so they look and work like the shell's and the
+tmux pickers: the boxes, colours and keys of `config/fzf/fzfrc` ([fzf](fzf.md)), the preview at the bottom,
+and the [picker keys](tmux.md#picker-keys). They open ready to type; `jj` goes to normal mode (`j`/`k`,
+`g`/`G`, `q`, `/` to type again), `Esc` clears the filter, then quits. Lists from `vim.ui.select` (xcodebuild's,
+`,ae`'s emulators, LSP code actions) are the same pickers.
 
 | Key | Picker |
 |---|---|
@@ -122,13 +124,23 @@ the bottom, the markers and the count a column in from the border:
 | `;e` | diagnostics |
 | `;q` | quickfix list |
 | `;o` / `;l` | code tours / the stops of the open tour, see [Integrations](#integrations) |
-| `;p` | projects: switches the working directory (and nvim-tree) to the project and finds files in it |
+| `;p` | projects: the directories zoxide knows, as `cmd+k` in tmux; switches the working directory (and nvim-tree) there and finds files in it |
 | `;t` | help tags |
 | `;?` | the keys: every key with a description, found by key or by what it does (`git`, `split`); nvim's own keys too |
-| `;;` or `;c` | reopen the last picker with its query and results (the last 100 are kept) |
+| `;;` or `;c` | reopen the last picker with its query |
 
-In a picker: `C-s` sends the marked entries to the quickfix list and opens it, `q` closes it in normal
-mode. In `;f` and `;g`, `t` in normal mode shows the file read-only in a side terminal.
+In a picker:
+
+| Key | Action |
+|---|---|
+| `Tab` | mark the entry (several files, matches, stops) |
+| `C-s` | send the marked entries (or the current one) to the quickfix list and open it |
+| `C-x` / `C-v` / `C-t` | open in a split / vertical split / tab |
+| `?` | show / hide the preview |
+| `C-n` / `C-p`, `C-M-n` / `C-M-p` | scroll the preview a line / half a page |
+| `M-d`, or `d` in normal mode | `;b`: close the buffer |
+
+fzf has no two-key sequences, so it's `d`, not `dd`.
 
 Other ways around:
 
@@ -272,12 +284,12 @@ Integrations
   | `:CodeTour close` | end the tour and restore the previous quickfix list |
   | `:CodeTour create <name>`, `:CodeTour add <note>` | start a tour, add the cursor line as a stop |
 
-  In the pickers, as `dd` in telescope's buffer list:
+  In the pickers, as `M-d` / `d` in `;b`:
 
   | Key | `;o` tours | `;l` stops |
   |---|---|---|
   | `Enter` | open the tour | jump to the stop |
-  | `M-d`, or `dd` in normal mode | delete the tour (asks first) | remove the stop |
+  | `M-d`, or `d` in normal mode | delete the tour (asks first) | remove the stop |
   | `M-r`, or `r` in normal mode | – | reword the stop's note |
   | `C-s` | – | send the stops to the quickfix list |
 

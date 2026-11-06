@@ -7,9 +7,9 @@ if (not status) then return end
 require('user.codetour.notes').setup()
 codetour.setup({ auto_open_last_tour = false })
 
--- :CodeTour open (with no name and none to reopen) and :CodeTour list use the telescope pickers
--- (user/codetour/telescope)
-local pickers = require('user.codetour.telescope')
+-- :CodeTour open (with no name and none to reopen) and :CodeTour list use the fzf-lua pickers
+-- (user/codetour/picker)
+local pickers = require('user.codetour.picker')
 if pickers.tours then
   local plugin_pickers = require('codetour.picker')
   plugin_pickers.tours = pickers.tours

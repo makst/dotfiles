@@ -1,7 +1,7 @@
 # The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j),
 # buffers (C-a P), agent_resume, mdv and change_theme (zsh/.functions) and the history search (C-r,
-# fzf-history-widget in .fzf.zsh): the agent marks, nvim's keys, and a list and preview that stay current
-# while fzf is open.
+# fzf-history-widget in .fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys: the agent marks, nvim's
+# keys, and a list and preview that stay current while fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")
 typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
@@ -14,12 +14,8 @@ typeset -g picker_label='focus:transform-preview-label:tmux display -p -t {1} " 
 typeset -g picker_preview='nohidden,down,60%'
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
-# "key<tab>what fzf shows", printing the chosen line. The keys are nvim's: in normal mode j/k move, wrapping
-# round at either end, g/G go to the first/last line, ctrl+d/ctrl+u half a page, q quits, / starts typing a
-# filter; while typing, jj goes back to normal mode and keeps the filter, so j/k move through what it matched.
-# Esc clears the filter and goes back to the mode the picker opened in; in that mode with no filter, it quits.
-# It opens in normal mode, with the input hidden until there's a filter, or with --insert ready to type. The
-# prompt says which mode: "<name>> " while typing, "<name>: " in normal mode.
+# "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below), j/k wrapping
+# round at either end. It opens in normal mode, or with --insert ready to type.
 # --live <command> reprints the list every second, and the key is a tmux target (pane, window or session):
 # while fzf is open, the list follows the command's output and the preview the target's screen.
 function picker() {
@@ -31,34 +27,10 @@ function picker() {
       --live) live=$2; shift 2 ;;
     esac
   done
-  local typing="$name> " normal="$name: " keys='k,g,G,ctrl-d,ctrl-u,q,/'
-  local to_normal="change-prompt($normal)+rebind($keys)" to_insert="change-prompt($typing)+show-input+unbind($keys)"
-  # j can't be unbound while typing, as the first j of jj has to be told apart from a j in the filter, so
-  # it asks fzf which mode it's in. fzf has no timeout for the second j, unlike nvim: jj always leaves.
-  local j="case \$FZF_PROMPT in
-    '$normal') echo down ;;
-    *) case \$FZF_QUERY in
-         *j) echo 'backward-delete-char+$to_normal' ;;
-         *) echo 'put(j)' ;;
-       esac ;;
-  esac"
-  # back to the mode it opened in
-  local home=$typing back=$to_insert
-  [[ $start == normal ]] && home=$normal back=$to_normal
-  local esc="if [ -n \"\$FZF_QUERY\" ]; then echo 'change-query()+$back'
-    elif [ \"\$FZF_PROMPT\" != '$home' ]; then echo '${${start:#insert}:+hide-input+}$back'; else echo abort; fi"
-  # normal mode hides the input while there's no filter. Not with the query change itself: hiding the input
-  # in the same step leaves the list unfiltered, so once fzf has filtered.
-  local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
+  local -a reply
+  picker_modes $name $start
   # --sync draws the picker once the list is in, not first an empty frame that fills a moment later
-  local -a opts=(--sync --cycle --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1
-    --bind "j:transform:$j" --bind 'k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort'
-    --bind "/:$to_insert" --bind "esc:transform:$esc" --bind "result:transform:$hide")
-  if [[ $start == normal ]]; then
-    opts+=(--prompt $normal --no-input)
-  else
-    opts+=(--prompt $typing --bind "start:unbind($keys)")
-  fi
+  local -a opts=(--sync --cycle --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1 $reply)
 
   if [[ -z $live ]]; then
     fzf $opts "$@"
@@ -96,4 +68,50 @@ function picker() {
   kill $loop 2> /dev/null
   [[ -n $choice ]] && print -r -- $choice
   return $rc
+}
+
+# picker_modes <name> <normal|insert> [key:presses,…] [quit]: fzf's options for the pickers' two modes, in
+# $reply, opening in the one given. Used by picker and by nvim's pickers (config/nvim/lua/user/fzf-lua/config.lua),
+# which pass their own normal-mode keys, each with the key it presses there (d:alt-d: d in normal mode does
+# what alt-d does, and types a d while filtering), and the fzf action that quits (default abort; fzf-lua's
+# keeps the query for ;; to reopen). The keys
+# are nvim's: in normal mode j/k move, g/G go to the first/last line, ctrl+d/ctrl+u half a page, q quits, /
+# starts typing a filter; while typing, jj goes back to normal mode and keeps the filter, so j/k move through
+# what it matched. Esc clears the filter and goes back to the mode the picker opened in; in that mode with no
+# filter, it quits. Normal mode hides the input until there's a filter. The prompt says which mode:
+# "<name>> " while typing, "<name>: " in normal mode. Events get their actions with :+, after any the caller
+# binds (fzf-lua binds start and result too).
+function picker_modes() {
+  local name=$1 start=$2 quit=${4:-abort}
+  local typing="$name> " normal="$name: " keys="k,g,G,ctrl-d,ctrl-u,q,/"
+  local to_normal="change-prompt($normal)+rebind($keys)" to_insert="change-prompt($typing)+show-input+unbind($keys)"
+  # j can't be unbound while typing, as the first j of jj has to be told apart from a j in the filter, so
+  # it asks fzf which mode it's in. fzf has no timeout for the second j, unlike nvim: jj always leaves.
+  local j="case \$FZF_PROMPT in
+    '$normal') echo down ;;
+    *) case \$FZF_QUERY in
+         *j) echo 'backward-delete-char+$to_normal' ;;
+         *) echo 'put(j)' ;;
+       esac ;;
+  esac"
+  # back to the mode it opened in
+  local home=$typing back=$to_insert
+  [[ $start == normal ]] && home=$normal back=$to_normal
+  local esc="if [ -n \"\$FZF_QUERY\" ]; then echo 'change-query()+$back'
+    elif [ \"\$FZF_PROMPT\" != '$home' ]; then echo '${${start:#insert}:+hide-input+}$back'; else echo '$quit'; fi"
+  # normal mode hides the input while there's no filter. Not with the query change itself: hiding the input
+  # in the same step leaves the list unfiltered, so once fzf has filtered.
+  local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
+  reply=(--bind "j:transform:$j" --bind "k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:$quit"
+    --bind "/:$to_insert" --bind "esc:transform:$esc" --bind "result:+transform:$hide")
+  # asking fzf the mode, not unbinding: fzf-lua binds the keys of actions that reload again after each reload
+  local pair
+  for pair in ${(s:,:)3}; do
+    reply+=(--bind "${pair%%:*}:transform:[ \"\$FZF_PROMPT\" = '$normal' ] && echo 'trigger(${pair#*:})' || echo 'put(${pair%%:*})'")
+  done
+  if [[ $start == normal ]]; then
+    reply+=(--prompt $normal --no-input)
+  else
+    reply+=(--prompt $typing --bind "start:+unbind($keys)")
+  fi
 }

@@ -35,15 +35,8 @@ require('lazy').setup({
   'windwp/nvim-ts-autotag',
   'hashivim/vim-terraform',
 
-  {
-    -- 0.2.x: 0.1.x calls nvim-treesitter APIs removed in its rewrite (ft_to_lang) and deprecated vim.lsp APIs
-    'nvim-telescope/telescope.nvim', version = '0.2.*',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-  },
-  {
-    'nvim-telescope/telescope-fzf-native.nvim',
-    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
-  },
+  -- every picker (;f, ;r, …, vim.ui.select): runs the real fzf, with config/fzf/fzfrc's look (user/fzf-lua)
+  'ibhagwan/fzf-lua',
   'nvim-tree/nvim-web-devicons', -- File icons
 
   {
@@ -63,18 +56,14 @@ require('lazy').setup({
   'christoomey/vim-tmux-navigator', -- CTRL-H/J/K/L move across nvim splits and tmux panes
   { 'ThePrimeagen/harpoon', branch = 'harpoon2', dependencies = { 'nvim-lua/plenary.nvim' } },
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },
-  'nvim-telescope/telescope-ui-select.nvim',
   'towolf/vim-helm',
   'roeeyn/codetour.nvim', -- code tours: ordered, annotated stops walked with the quickfix list (user/codetour)
-
-  -- project management
-  'nvim-telescope/telescope-project.nvim',
 
   'kylechui/nvim-surround',
   'tpope/vim-abolish',
 
   -- iOS: build, run and test Xcode projects (user/xcodebuild)
-  { 'wojciech-kulik/xcodebuild.nvim', dependencies = { 'MunifTanjim/nui.nvim', 'nvim-telescope/telescope.nvim' } },
+  { 'wojciech-kulik/xcodebuild.nvim', dependencies = { 'MunifTanjim/nui.nvim', 'ibhagwan/fzf-lua' } },
 }, {
   lockfile = vim.fn.stdpath('config') .. '/lazy-lock.json',
   change_detection = { notify = false },

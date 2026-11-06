@@ -36,7 +36,7 @@ nnoremap <C-l> <C-w>l
 nnoremap <Space> <C-w>w
 nnoremap <BS> <C-w>p
 
-" ; pickers (telescope in nvim)
+" ; pickers (fzf-lua in nvim)
 nmap ;f <Action>(GotoFile)
 nmap ;g <Action>(GotoFile)
 nmap ;r <Action>(FindInPath)

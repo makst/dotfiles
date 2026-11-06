@@ -689,7 +689,7 @@ function setup_nvim() {
   ln -sfn /opt/homebrew/bin/nvim "$HOME/bin/vim"
 
   # plugins: lazy.nvim bootstraps itself on first start; install the versions pinned in
-  # config/nvim/lazy-lock.json (needs network, cmake for telescope-fzf-native)
+  # config/nvim/lazy-lock.json (needs network)
   command -v nvim > /dev/null || return 1
   # config/nvim/lua/user/treesitter.lua starts downloading the parsers on every start until they're there;
   # this run waits for them, so that the next one starts with everything installed

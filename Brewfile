@@ -29,7 +29,6 @@ brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI
 brew "gnu-sed"                     # gsed, GNU sed for scripts written for Linux; nothing in the repo calls it
-brew "cmake"                       # builds telescope-fzf-native in nvim, config/nvim/lua/user/plugins.lua
 brew "fzf"                         # setup_fzf
 brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
@@ -37,7 +36,7 @@ brew "bat"                         # file previews in fzf, .fzf.zsh
 brew "lesspipe"                    # zsh/.exports
 brew "fd"                          # file lists for fzf (.fzf.zsh), mdv
 brew "glow"                        # TUI: mdv, zsh/.functions: renders markdown in the terminal
-brew "ripgrep"                     # rg: telescope grep and grug-far in nvim, fif in .fzf.zsh
+brew "ripgrep"                     # rg: fzf-lua grep and grug-far in nvim, fif in .fzf.zsh
 brew "neovim"                      # setup_nvim, config/nvim
 brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua
 brew "typescript-language-server"  # TypeScript/JavaScript language server in nvim, lsp/lspconfig/ts_ls.lua
@@ -130,3 +129,4 @@ instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(mach
 # cask "qownnotes"
 # cask "gifcapture"
 # brew "navi"            # cheatsheets on C-g; atuin, tldr and Claude Code cover it
+# brew "cmake"           # built telescope-fzf-native; fzf-lua, which replaced telescope, runs fzf itself

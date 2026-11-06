@@ -93,10 +93,10 @@ the text of each line, so a window matches by its own name, not its session's.
 Picker keys
 ---
 The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), the paste
-buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme` and the shell's history search (`C-r`,
-[zsh](zsh.md#history)), share their keys and work like nvim: a normal mode to move and an insert mode to type
-a filter. The session picker, `change_theme` and the history search open ready to type, the others in normal
-mode, with the filter hidden until there is one. The prompt shows the mode: `session> ` while typing,
+buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search (`C-r`,
+[zsh](zsh.md#history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share their keys and work
+like nvim: a normal mode to move and an insert mode to type a filter. The session picker, `change_theme`, the
+history search and nvim's pickers open ready to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode: `session> ` while typing,
 `session: ` in normal mode. A picker appears with its list already in and closes as soon as you leave it.
 
 | Key | Mode | Does |
@@ -112,8 +112,9 @@ mode, with the filter hidden until there is one. The prompt shows the mode: `ses
 | `?` | both | show / hide the preview (every fzf list, see [fzf](fzf.md#inside-any-fzf-list)) |
 
 As in nvim, zsh and Claude Code, `jj` leaves insert mode, but fzf has no timeout for the second `j`: `jj` in a
-filter always leaves. The shared part is `config/tmux/picker.zsh`; it also keeps the list and the preview of
-the tmux pickers current, redrawing only what changed.
+filter always leaves. The shared part is `config/tmux/picker.zsh` (`picker_modes`, which nvim's pickers ask
+for their modes too); it also keeps the list and the preview of the tmux pickers current, redrawing only what
+changed.
 
 Copy and paste
 ---

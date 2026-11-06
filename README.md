@@ -22,7 +22,7 @@ lazygit, `cmd+j` shows every session.
 | Sessions, windows, panes | tmux + session picker | [tmux](docs/tmux.md) |
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza | [fzf](docs/fzf.md) |
-| Editor | Neovim (lazy.nvim, LSP, treesitter, telescope) | [neovim](docs/neovim.md) |
+| Editor | Neovim (lazy.nvim, LSP, treesitter, fzf-lua) | [neovim](docs/neovim.md) |
 | Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
@@ -103,8 +103,8 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Option` (Alt) | AeroSpace, globally | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader | `,e` file tree, `,lg` lazygit |
-| `;` | nvim pickers (telescope, harpoon) | `;f` files, `;r` grep |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`) | |
+| `;` | nvim pickers (fzf-lua, harpoon) | `;f` files, `;r` grep |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, nvim's `;` pickers) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 
 Same key, every layer
@@ -127,8 +127,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 keys](docs/vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
 `C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
 In zsh's completion list (fzf-tab), `[` / `]` go to the previous / next group of completions.
-`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit
-and in telescope's normal mode.
+`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit.
 
 Switching sessions and windows
 ---

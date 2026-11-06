@@ -1,4 +1,4 @@
--- A stop's note as a block above its line, on the page and in the telescope preview: a bar down the left,
+-- A stop's note as a block above its line, on the page and in the picker's preview: a bar down the left,
 -- "stop 4 of 10 · tour" on top, then the whole note wrapped, on a shaded background. The plugin draws one
 -- long line that runs off the window and reads like a diagnostic.
 local M = {}
