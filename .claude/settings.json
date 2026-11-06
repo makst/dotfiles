@@ -4,5 +4,17 @@
       "Read(/zsh/.private)",
       "Read(/config/nvim/lua/user/hidden/**)"
     ]
+  },
+  "sandbox": {
+    "excludedCommands": [
+      "check_dotfiles",
+      "check_dotfiles *",
+      "check_mac",
+      "check_mac *",
+      "checks/*",
+      "/bin/zsh -i -c 'check_dotfiles*",
+      "/bin/zsh -i -c 'check_mac*",
+      "/bin/zsh -i -c 'checks/*"
+    ]
   }
 }

@@ -3,6 +3,7 @@ require('user.base')
 require('user.keymaps')
 pcall(require, 'user.hidden') -- private (secrets), gitignored: lua/user/hidden/init.lua
 require('user.plugins')
+require('user.fzf-lua.server') -- before anything loads fzf-lua
 require('user.autopairs')
 require('user.base16-vim')
 require('user.git')

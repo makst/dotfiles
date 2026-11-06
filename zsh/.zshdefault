@@ -10,6 +10,9 @@ setopt auto_cd                 # a directory name alone cds into it
 setopt auto_pushd pushd_ignore_dups pushd_minus  # cd keeps a stack: `cd -<Tab>` picks from it
 setopt interactive_comments    # `# ...` on the command line is a comment
 setopt long_list_jobs
+# Claude Code's sandbox can't lower a process's priority, so zsh would print "nice(5) failed" for every job
+# started with & (atuin's, at start-up)
+[[ -n $CLAUDECODE ]] && unsetopt bg_nice
 
 # -- history ---------------------------------------------------------------------
 # atuin (started below) keeps its own searchable copy; this file stays the shell's history

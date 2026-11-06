@@ -10,3 +10,6 @@
 # xcodebuild.nvim (docs/mobile.md): your scheme and device choices, and paths on this Mac for sourcekit-lsp
 .nvim/xcodebuild/
 buildServer.json
+
+# Claude Code's sandbox: the files it tracks writes in (added by Claude Code)
+**/.claude/.cc-writes/

@@ -227,6 +227,40 @@ they show up in `git diff`; for plugins that's usually not what you want, see [P
   blocked. The global `CLAUDE.md` still says to commit only when asked; push, force push and the deny list
   above hold in auto mode too.
 
+### Sandbox
+Every command Claude runs in Bash runs in Claude Code's sandbox (macOS Seatbelt), set in `settings.json`
+under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandboxed`), because they can only:
+
+- **write** in the project, the temp directory, `~/.cache` and `~/.local/state` (shell and nvim state). Not
+  even there: Claude Code's own settings, hooks and `CLAUDE.md`, so Claude edits those with its Edit tool,
+  which asks.
+- **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, this repo's secrets).
+- **reach** GitHub, Homebrew's API, npm and PyPI without asking, any port on localhost (dev servers), and
+  Secretive's socket (see [This machine](#this-machine)); a host not listed asks.
+
+| Runs outside the sandbox | Why |
+|---|---|
+| `trash`, `gio trash` | moves to the Trash, outside the project: the way `CLAUDE.md` says to delete |
+| `git push / pull / fetch` | SSH to GitHub can't go through the sandbox's proxy |
+| `gh`, `gcloud`, `bq`, `gsutil`, `kubectl` | Go programs whose TLS checks fail under Seatbelt |
+| `brew` | writes to `/opt/homebrew` |
+| `tmux` | needs its socket: `tmux -L probe` and the hooks' window state |
+| `check_dotfiles`, `check_mac`, `checks/*` | in this repo only (`.claude/settings.json`): the tmux checks need a socket |
+
+These still go through the permission rules. A command the sandbox stops fails with "Operation not
+permitted"; Claude may then run it again outside, which asks first (in auto mode the classifier decides).
+`/sandbox` shows the settings in effect.
+
+To look out for:
+- Only a whole command line is excluded: `tmux …; checks/check_dotfiles` runs sandboxed, so run excluded
+  commands on their own.
+- No unix socket can be made inside: zsh skips lowering background jobs' priority when `$CLAUDECODE` is set
+  (`bg_nice`, `zsh/.zshdefault`), git's fsmonitor is off for Claude's commands (`env` in `settings.json`),
+  and nvim's fzf-lua falls back to a localhost port (`user/fzf-lua/server.lua`).
+- `open`, `osascript` and `pbcopy` don't work inside; Claude gives you the command, or `/copy` for text.
+- A change to the sandbox settings applies to the next command, a new exclusion in a project's
+  `.claude/settings.json` only after a restart.
+
 ### This machine
 The parts that depend on the Mac live in the dotfiles, not in `config/claude`. The `claude` shell function
 (`zsh/functions/claude.zsh`) starts Claude Code with `--settings` on top of the shared settings:

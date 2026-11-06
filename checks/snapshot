@@ -1,0 +1,10 @@
+#!/bin/zsh
+# checks/snapshot: prints a commit of the repo's working tree as it is now: uncommitted changes and new files
+# not yet added (ignored ones left out), on top of HEAD. checks/mutate and checks/fresh_mac test that commit,
+# so a new file counts before it's added; git stash create would leave new files out. Changes nothing: the
+# commit is made with an index of its own, and no branch points at it.
+repo=${0:A:h:h}
+index=$(mktemp ${TMPDIR:-/tmp}/snapshot-index.XXXXXX) || exit 1
+trap 'command rm -f $index' EXIT
+export GIT_INDEX_FILE=$index
+cd $repo && git read-tree HEAD && git add -A && git commit-tree --no-gpg-sign -p HEAD -m snapshot $(git write-tree)

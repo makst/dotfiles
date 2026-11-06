@@ -3,14 +3,15 @@
 # there, which has to fail the check meant to catch that break: a check that stays green on a broken repo is
 # worse than none. Prints "caught" per break (and any other check that failed too), "MISSED" when the check
 # stayed green, "BROKEN" when the break no longer applies (the file it edits changed); exits 1 on either. The
-# worktree has the tracked files as they are now, uncommitted changes included (git add a new file first). A
+# worktree has the repo as it is now, uncommitted changes and new files included (checks/snapshot). A
 # pattern runs only the breaks whose description or check matches. Takes about a minute, so it isn't part of
 # check_dotfiles or CI: run it after adding or changing a check, with a new break for it below.
 
 setopt extended_glob
+unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
 repo=${0:A:h:h}
-wt=$(mktemp -d) && wt=${wt:A}/worktree || exit 1
-git -C $repo worktree add -q --detach $wt ${"$(git -C $repo stash create)":-HEAD} || exit 1
+wt=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles.XXXXXX) && wt=${wt:A}/worktree || exit 1
+git -C $repo worktree add -q --detach $wt $($repo/checks/snapshot) || exit 1
 trap 'git -C $repo worktree remove --force $wt' EXIT
 cd $wt || exit 1
 # what each break starts from: a break may commit

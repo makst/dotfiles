@@ -226,7 +226,8 @@ check_dotfiles
 Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong
 and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED` or
 `skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
-shellcheck, Python 3.11 for TOML) is skipped and says why. GitHub runs `checks/check_dotfiles -v` on every
+shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them outside its sandbox (this
+repo's `.claude/settings.json`), since the tmux checks need a socket. GitHub runs `checks/check_dotfiles -v` on every
 push and pull request on a macOS runner (`.github/workflows/check.yml`), so the run's log shows each check,
 and a red check there means the same as a red check here. Before the checks, CI runs `fix_completion_dirs`
 as `setup_brew` does on a Mac: the runner's Homebrew leaves group-writable directories, and zsh would stop to
@@ -261,8 +262,8 @@ throwaway git worktree, and runs `check_dotfiles` there. Each break names the ch
 | `MISSED` | that check stayed green: the check has a hole |
 | `BROKEN` | the break changed nothing, because the file it edits has changed: update the break |
 
-It exits 1 on a `MISSED` or `BROKEN`. The worktree has the repo's tracked files as they are now, uncommitted
-changes included; `git add` a new file first. It takes too long for every commit, so it isn't part of
+It exits 1 on a `MISSED` or `BROKEN`. The worktree has the repo as it is now, uncommitted changes and new
+files included (`checks/snapshot`). It takes too long for every commit, so it isn't part of
 `check_dotfiles` or CI: run it after adding or changing a check, and give a new check (or a new rule in one)
 its own break: a line `m '<check label>' '<what breaks>' '<zsh code that breaks it>'` in `checks/mutate`.
 The AeroSpace check has none, since it only validates the live config. The breaks name files and functions
@@ -278,7 +279,7 @@ checks/fresh_mac work      # one kind
 `check_dotfiles` reads the repo, and `check_mac` looks at a Mac that has been set up for a while, where an
 old file or an installed tool can hide what a new Mac would miss. `checks/fresh_mac` sets up a new Mac of
 each kind from nothing: in an empty HOME and a bare environment, as at a first login, it clones the repo as
-it is now (uncommitted changes to tracked files included), runs `prepare-zsh-install.sh`,
+it is now (uncommitted changes and new files included), runs `prepare-zsh-install.sh`,
 `setup_machine fresh-<kind> <kind>` and `setup_dotfiles`, then `check_mac --scripted` (everything but the
 steps done by hand: Secretive and signing). It prints the failed steps and problems and exits 1 on any,
 keeping that HOME and its `setup.log` to look into; when all pass, the HOME goes to the Trash.

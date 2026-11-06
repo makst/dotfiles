@@ -8,6 +8,7 @@
 
 zmodload zsh/datetime
 setopt extended_glob
+unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
 start=$EPOCHREALTIME
 repo=${0:A:h:h}
 cd $repo || exit 1
@@ -15,7 +16,7 @@ verbose=0
 [[ $1 == -v ]] && verbose=1
 
 reset=$'\e[0m' bold=$'\e[1m' green=$'\e[32m' red=$'\e[31m' yellow=$'\e[33m'
-tmp=$(mktemp -d) && tmp=${tmp:A} || exit 1
+tmp=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles.XXXXXX) && tmp=${tmp:A} || exit 1
 
 # every file of the repo: the tracked ones and new ones not yet added, never ignored ones; text_files without
 # the GIFs, md_files the Markdown ones, shebangs[file] each text file's #! line

@@ -91,4 +91,7 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - Headless nvim: `/bin/zsh -i -c 'nvim --headless …'`. `Lazy! install` / `Lazy! clean` change the live
   plugins and `lazy-lock.json`.
 - Git helpers: try them in a throwaway clone in the scratchpad, never on this repo's branches.
+- Claude Code's sandbox is on (`docs/claude-code.md`, "Sandbox"): Bash can't write `config/claude/settings.json`,
+  `config/claude/hooks/`, `config/claude/CLAUDE.md` or `.claude/settings.json` (use Edit), and run
+  `check_dotfiles` or `checks/…` on its own line, not after `cd …;`, so it runs outside the sandbox.
 - `~/.Trash` can't be read from Claude Code's shell (macOS privacy), so moves there can't be checked.

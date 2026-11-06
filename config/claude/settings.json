@@ -93,7 +93,10 @@
   "model": "opus",
   "autoCompactWindow": 250000,
   "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.fsmonitor",
+    "GIT_CONFIG_VALUE_0": "false"
   },
   "cleanupPeriodDays": 365,
   "hooks": {
@@ -240,5 +243,42 @@
     "jj": "<Esc>"
   },
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": [
+      "trash *",
+      "gio trash *",
+      "git push *",
+      "git pull *",
+      "git fetch *",
+      "gh *",
+      "brew *",
+      "tmux *",
+      "gcloud *",
+      "bq *",
+      "gsutil *",
+      "kubectl *"
+    ],
+    "filesystem": {
+      "allowWrite": [
+        "~/.cache",
+        "~/.local/state"
+      ]
+    },
+    "network": {
+      "allowLocalBinding": true,
+      "allowedDomains": [
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "ghcr.io",
+        "formulae.brew.sh",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org"
+      ]
+    }
+  }
 }

@@ -2,8 +2,8 @@
 # fresh_mac [home|work]…: rehearses setting up a new Mac of each kind given (default: both), so that what only
 # works on a Mac that has been set up for a while shows up before a real new Mac meets it. For each kind, in
 # an empty HOME with a bare environment, as at a first login, it runs what docs/setup.md's "A new Mac" runs:
-# a clone of the repo in ~/repos/dotfiles (as it is now, uncommitted changes to tracked files included),
-# prepare-zsh-install.sh, `setup_machine fresh-<kind> <kind>` and setup_dotfiles. Then `check_mac --scripted`
+# a clone of the repo in ~/repos/dotfiles (as it is now, uncommitted changes and new files included:
+# checks/snapshot), prepare-zsh-install.sh, `setup_machine fresh-<kind> <kind>` and setup_dotfiles. Then `check_mac --scripted`
 # says whether that HOME is the setup the repo describes. Prints the failed steps and check_mac's problems,
 # exits 1 on any; the HOME is kept to look into when a kind fails, and goes to the Trash when all pass.
 #
@@ -15,6 +15,7 @@
 # where the runner is a fresh Mac to throw away, nothing is stood in for.
 
 setopt extended_glob
+unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
 repo=${0:A:h:h}
 kinds=($@)
 (( $#kinds )) || kinds=(home work)
@@ -22,8 +23,8 @@ for kind in $kinds; do
   [[ $kind == (home|work) ]] || { print -u2 "usage: checks/fresh_mac [home|work]…"; exit 2 }
 done
 reset=$'\e[0m' bold=$'\e[1m' green=$'\e[32m' red=$'\e[31m'
-tmp=$(mktemp -d) && tmp=${tmp:A} || exit 1
-snapshot=${"$(git -C $repo stash create)":-HEAD}
+tmp=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles.XXXXXX) && tmp=${tmp:A} || exit 1
+snapshot=$($repo/checks/snapshot) || exit 1
 
 # the stand-ins, for a Mac in use
 stand_ins='
