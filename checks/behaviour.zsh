@@ -61,7 +61,7 @@ check_rm_hook() {
 }
 
 # format: without a formatter on PATH, or in a project that doesn't configure one, the file stays as it is and
-# the hook says nothing; with shfmt, a project's .editorconfig gets its shell scripts formatted
+# the hook says nothing; with shfmt, a project's .editorconfig gets its shell scripts formatted, and only then
 check_format_hook() {
   local project=$tmp/project file out
   local messy=$'if true; then\necho hi\nfi' json='{"a":1}'
@@ -79,6 +79,10 @@ check_format_hook() {
   [[ -z $out && $(<$project/x.json) == $json ]] || print "x.json changed in a project without a prettier config"
   note="without formatters"
   (( $+commands[shfmt] )) || return 0
+  mkdir -p $tmp/bare
+  print -r -- $messy > $tmp/bare/x.sh
+  jq -n --arg f $tmp/bare/x.sh '{tool_response: {filePath: $f}}' | config/claude/hooks/format.sh
+  [[ $(<$tmp/bare/x.sh) == $messy ]] || print "shfmt formatted x.sh in a project without an .editorconfig"
   jq -n --arg f $project/x.sh '{tool_response: {filePath: $f}}' | config/claude/hooks/format.sh
   [[ $(<$project/x.sh) == $'if true; then\n  echo hi\nfi' ]] ||
     print "shfmt didn't format x.sh in a project with an .editorconfig"

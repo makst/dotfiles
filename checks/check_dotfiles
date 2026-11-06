@@ -46,6 +46,8 @@ group() {
 check() {
   local label=$1 note= rc out took
   shift
+  # for the report if the check stops the group (a zsh error kills the group's subshell); emptied at the end
+  print -r -- $label > $tmp/running.$group_name
   local started=$EPOCHREALTIME
   "$@" > $tmp/out.$group_name 2>&1
   rc=$?
@@ -62,6 +64,7 @@ check() {
     print -r -- "  ${red}FAILED$reset  $label${note:+ ($note)}"
     [[ -n $out ]] && print -rl -- ${${(f)out}/#/          }
   fi
+  : > $tmp/running.$group_name
   return 0
 }
 
@@ -82,8 +85,15 @@ for group_name in $groups; do
   rc=$?
   out=$(<$tmp/group.$group_name)
   [[ -n $out ]] && print -r -- $out
-  # a group that stops halfway (a zsh error in its file) fails, with what it printed
-  (( rc )) && print -r -- "failed"$'\t'"checks/$group_name.zsh runs to its end" >> $tmp/results.$group_name
+  # a group that stops halfway (a zsh error in its file) fails, with what it printed and the error of the check
+  # it stopped in; the checks after that one never ran
+  if (( rc )); then
+    print -r -- "failed"$'\t'"checks/$group_name.zsh runs to its end" >> $tmp/results.$group_name
+    if [[ -s $tmp/running.$group_name ]]; then
+      print -r -- "  ${red}FAILED$reset  checks/$group_name.zsh stopped in \"$(<$tmp/running.$group_name)\":"
+      [[ -s $tmp/out.$group_name ]] && print -rl -- ${${(f)"$(<$tmp/out.$group_name)"}/#/          }
+    fi
+  fi
   [[ -r $tmp/results.$group_name ]] || continue
   while IFS=$'\t' read -r result label; do
     case $result in

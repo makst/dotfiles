@@ -94,7 +94,7 @@ check_link_sources() {
   note=$(count $n link)
 }
 
-# names: a function or setting the docs name in code (`setup_python`), or the Brewfile names in a comment,
+# names: a function or setting the docs name in code (`setup_python`), or a Brewfile names in a comment,
 # still exists in the code, so a rename can't leave the docs behind
 check_names() {
   local -A words
@@ -116,9 +116,10 @@ check_names() {
       }
     }
   ' $md_files > $tmp/names.out
-  # the Brewfile names its users in plain comments
+  # the Brewfiles name their users in plain comments
   awk -F'#' 'NF > 1 { s = $2; while (match(s, /[a-z][a-z0-9]*_[a-z0-9_]*[a-z0-9]/)) {
-    print FILENAME "\t" FNR "\t" substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH) } }' Brewfile >> $tmp/names.out
+    print FILENAME "\t" FNR "\t" substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH) } }' \
+    Brewfile config/machine/Brewfile >> $tmp/names.out
   while IFS=$'\t' read -r file line name; do
     n+=1
     (( $+words[$name] )) || print -r -- "$file:$line: $name isn't in the code any more"

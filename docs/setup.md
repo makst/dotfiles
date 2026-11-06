@@ -186,7 +186,9 @@ ask about them.
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim; each layer keeps to its modifier |
 
-`checks/lib.zsh` builds what the groups share; the groups then run at the same time. The recursive `rm`
+`checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
+check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after
+it in the group don't run. The recursive `rm`
 cases are in `checks/rm-hook.cases`, one per line: `block` or `allow`, then the command.
 
 Other helpers

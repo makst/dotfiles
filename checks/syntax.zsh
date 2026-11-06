@@ -132,13 +132,15 @@ check_brew_names() {
   formula=(${names:^^one})
   names=(${(f)"$(<$api/cask_names.txt)"})
   cask=(${names:^^one})
-  local file kind type name tap key taps=${HOMEBREW_REPOSITORY:-/opt/homebrew}/Library/Taps
+  local file kind type name tap key package taps=${HOMEBREW_REPOSITORY:-/opt/homebrew}/Library/Taps
   local -i checked=0
   while read -r file kind type name; do
     key="$file $kind $type $name"
-    if (( $+seen[$key] )) && ! (( $+reported[$file $type $name] )); then
+    # the subscript through a variable: written out, its spaces split the assignment into words
+    package="$file $type $name"
+    if (( $+seen[$key] )) && ! (( $+reported[$package] )); then
       print -r -- "$file: $type \"$name\" is listed twice for a $kind Mac"
-      reported[$file $type $name]=1
+      reported[$package]=1
     fi
     seen[$key]=1
     [[ $type == (brew|cask) ]] || continue
@@ -171,11 +173,13 @@ check_ghostty() {
   XDG_CONFIG_HOME=$tmp/xdg $ghostty +validate-config --config-file=config/ghostty/config
 }
 
-# starship: it warns about keys it doesn't know (a misspelt option is otherwise ignored), when installed
+# starship: it warns about keys it doesn't know (a misspelt option is otherwise ignored), when installed. Its
+# cache is a fresh one: starship logs each warning once per session there and stays quiet about it after that.
 check_starship() {
   note="config/starship.toml"
   (( $+commands[starship] )) || { print "starship not installed"; return 2 }
-  STARSHIP_CONFIG=$repo/config/starship.toml STARSHIP_LOG=warn starship print-config > /dev/null 2> $err
+  STARSHIP_CACHE=$tmp/starship STARSHIP_CONFIG=$repo/config/starship.toml STARSHIP_LOG=warn \
+    starship print-config > /dev/null 2> $err
   print -r -- ${"$(<$err)"//$'\e'\[[0-9;]#m/}
 }
 

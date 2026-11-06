@@ -179,10 +179,10 @@ link_map() {
 }
 
 # words_index: every name with an underscore in it (setup_python, used_percentage) in the code, the comments
-# and the configs, one per line
+# and the configs, one per line; not the Brewfiles' own, which check_names checks against these
 words_index() {
   awk '{ while (match($0, /[A-Za-z_][A-Za-z0-9_]*_[A-Za-z0-9_]+/)) { print substr($0, RSTART, RLENGTH); $0 = substr($0, RSTART + RLENGTH) } }' \
-    ${text_files:#*.md} | sort -u
+    ${${text_files:#*.md}:#(|*/)Brewfile} | sort -u
 }
 
 # nvim_index: checks/nvim.lua in a headless nvim without any config (Lua syntax, nvim's requires, plugins and
