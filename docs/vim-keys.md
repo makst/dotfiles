@@ -94,6 +94,9 @@ Each tool
   the second `j`, so a `j` before any other letter would be lost). Python's own REPL from 3.13 on ignores
   `~/.editrc`, so `PYTHON_BASIC_REPL=1` (`zsh/.exports`) runs the basic one: vi keys, but no colours or
   multi-line editing. node's REPL has no vi mode.
+- **atuin** (`atuin search -i`; `C-r` is a picker): `keymap_mode = "auto"` in `config/atuin/config.toml`,
+  vi keys starting in the mode the shell is in.
+- **glow** (`mdv`): its pager is `less` (`PAGER`), so `j`/`k`, `/` and `q`.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
 - **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.

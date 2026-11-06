@@ -1,5 +1,7 @@
 # Installed by `setup_brew` (zsh/.functions) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
+# A comment starting with "TUI:" marks a program with its own full-screen keys: docs/vim-keys.md, "Each tool",
+# says how it gets vim keys (a check, checks/consistency.zsh, holds it to that).
 
 # This Mac's kind, home or work (setup_machine asks once). Every Mac gets all packages below; one that only
 # one kind needs goes in a block like `if kind == "work"` … `end`
@@ -16,7 +18,7 @@ brew "zsh-completions"             # extra completions, zsh/.zshdefault
 brew "fzf-tab"                     # zsh plugins, sourced in zsh/.zshdefault
 brew "zsh-autosuggestions"         # zsh plugin, zsh/.zshdefault
 brew "zsh-fast-syntax-highlighting" # zsh plugin, zsh/.zshdefault
-brew "atuin"                       # C-r history search, config/atuin
+brew "atuin"                       # TUI: C-r history search, config/atuin
 brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
@@ -34,7 +36,7 @@ brew "zoxide"                      # z / zi, zsh/.zshdefault
 brew "bat"                         # file previews in fzf, .fzf.zsh
 brew "lesspipe"                    # zsh/.exports
 brew "fd"                          # file lists for fzf (.fzf.zsh), mdv
-brew "glow"                        # mdv, zsh/.functions: renders markdown in the terminal
+brew "glow"                        # TUI: mdv, zsh/.functions: renders markdown in the terminal
 brew "ripgrep"                     # rg: telescope grep and grug-far in nvim, fif in .fzf.zsh
 brew "neovim"                      # setup_nvim, config/nvim
 brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua
@@ -44,7 +46,7 @@ brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig
 brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
 brew "tree-sitter"                 # parser library for nvim treesitter
 brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
-brew "lazygit"                     # `lg` alias
+brew "lazygit"                     # TUI: `lg` alias
 brew "podman"                      # `docker` alias
 brew "docker-compose"              # compose files with podman
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
@@ -59,8 +61,8 @@ brew "shellcheck"                  # finds bugs in shell scripts
 brew "ast-grep"                    # search and rewrite code by syntax, not text
 brew "just"                        # project task runner: `just <recipe>` from a justfile
 brew "xh"                          # HTTP requests, httpie-compatible syntax
-brew "btop"                        # processes, CPU, memory, network; config/btop, setup_btop
-brew "yazi"                        # file manager with previews
+brew "btop"                        # TUI: processes, CPU, memory, network; config/btop, setup_btop
+brew "yazi"                        # TUI: file manager with previews
 brew "chafa"                       # images and GIFs in the terminal, `img`
 brew "tlrc"                        # `tldr <cmd>`: short examples
 brew "dust"                        # what takes the disk space

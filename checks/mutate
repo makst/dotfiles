@@ -92,6 +92,8 @@ m "setup_dotfiles' steps" 'setup_dotfiles runs an undefined step' "perl -pi -e '
 m 'every symlink' 'a symlink missing from the table' "perl -ni -e 'print unless /^\\| \`~\\/\\.zshrc\`/' docs/setup.md"
 m 'README links every page' 'a doc page the README does not link' "print '# New' > docs/newpage.md"
 m "this Mac's files" 'a machine template nobody reads or documents' "print x > config/machine/newfile"
+m 'every TUI' 'a TUI dropped from vim-keys.md' "perl -ni -e 'print unless /^- \\*\\*btop\\*\\*/' docs/vim-keys.md"
+m 'every TUI' 'a new TUI in the Brewfile without an entry' "print 'brew \"k9s\"                         # TUI: kubernetes' >> Brewfile"
 m "plugins are pinned" 'a plugin missing from lazy-lock.json' "perl -ni -e 'print unless \$. == 3' config/nvim/lazy-lock.json"
 m "plugins are pinned" 'a plugin spec with a key lazy.nvim ignores' "perl -0pi -e \"s/'christoomey\\/vim-tmux-navigator'/{ 'christoomey\\/vim-tmux-navigator', lazzy = true }/\" config/nvim/lua/user/plugins.lua"
 m 'every GIF' 'a tape without an Output line' "perl -ni -e 'print unless /^Output /' docs/tapes/claude-code.tape"

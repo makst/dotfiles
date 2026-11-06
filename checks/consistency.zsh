@@ -101,6 +101,19 @@ check_machine_files() {
   note=$(count $#templates template)
 }
 
+# full-screen programs: each one the Brewfile marks "TUI:" is named in bold in docs/vim-keys.md, "Each tool",
+# so every new TUI says how it gets vim keys or why it can't
+check_tui_keys() {
+  local -a tuis=(${${(f)"$(awk -F'"' '/^(brew|cask) "[^"]+" *# TUI:/ { print $2 }' Brewfile)"}##*/})
+  local -a named=(${=${(L)"$(awk '/^(---|===)$/ { section = prev } { prev = $0 }
+    section == "Each tool" && /^- \*\*/ { s = $0; sub(/^- \*\*/, "", s); sub(/\*\*.*/, "", s); print s }' docs/vim-keys.md)"//,/ }})
+  local t
+  for t in $tuis; do
+    (( $named[(Ie)$t] )) || print -r -- "Brewfile: $t is a TUI, but docs/vim-keys.md (\"Each tool\") doesn't say how it gets vim keys"
+  done
+  note=$(count $#tuis TUI)
+}
+
 # nvim's plugins: lua/user/plugins.lua and lazy-lock.json list the same ones, with keys lazy.nvim knows
 check_plugins() {
   nvim_results plugins || return
@@ -306,6 +319,7 @@ check "every symlink is in docs/setup.md, and only those" check_symlinks
 check "the README links every page in docs/" check_readme
 check "this Mac's files are documented and read" check_machine_files
 check "nvim's plugins are pinned in lazy-lock.json" check_plugins
+check "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
 check "every GIF has its tape and its doc" check_gifs
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
 check "each layer keeps to its modifier" check_keyboard
