@@ -297,9 +297,8 @@
     },
     {
       "before": [
-        "<leader>",
-        "b",
-        "n"
+        "]",
+        "b"
       ],
       "commands": [
         "workbench.action.nextEditor"
@@ -307,9 +306,8 @@
     },
     {
       "before": [
-        "<leader>",
-        "b",
-        "p"
+        "[",
+        "b"
       ],
       "commands": [
         "workbench.action.previousEditor"

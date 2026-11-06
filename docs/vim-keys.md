@@ -39,7 +39,8 @@ Shared keys
 | `,hd` / `,hs` | hover docs / signature | ✓ | ✓ | ✓ | – |
 | `,e` / `,f` | file tree / this file in it | ✓ | ✓ | ✓ | – |
 | `,w` / `,q` | save / close | ✓ | ✓ | ✓ | – |
-| `,bd` `,bn` `,bp` | close buffer, next, previous | ✓ | ✓ | ✓ | – |
+| `,bd` | close buffer | ✓ | ✓ | ✓ | – |
+| `]b` / `[b` | next / previous buffer | ✓ | ✓ | ✓ | – |
 | `,bb` | the previous buffer | ✓ | ✓ | – | – |
 | `,sv` / `,ss` | split side by side / stacked | ✓ | ✓ | ✓ | – |
 | `,zi` / `,zo` | zoom the split in / out | ✓ | ✓ | ✓ (toggle) | – |

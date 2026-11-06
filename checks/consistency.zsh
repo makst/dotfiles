@@ -153,7 +153,7 @@ keys_index() {
   # what plugins and settings map without a line in the config
   grep -q "'christoomey/vim-tmux-navigator'" config/nvim/lua/user/plugins.lua && print -l "nvim\t<C-"{h,j,k,l}">"
   grep -q "'kylechui/nvim-surround'" config/nvim/lua/user/plugins.lua && print -l "nvim\t"{ys,ds,cs,S}
-  print -l "nvim\t"{gc,gcc} # built into nvim
+  print -l "nvim\t"{gc,gcc,"]b","[b"} # built into nvim
   [[ $(jq -r '.["vim.surround"]' config/vscode/settings.json) == true ]] && print -l "vscode\t"{ys,ds,cs,S}
   grep -q '^set surround' config/ideavim/ideavimrc && print -l "ideavim\t"{ys,ds,cs,S}
   grep -q '^set commentary' config/ideavim/ideavimrc && print -l "ideavim\t"{gc,gcc}

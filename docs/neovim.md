@@ -87,7 +87,7 @@ These override built-in vim keys, which is easy to forget:
 | Key | Action |
 |---|---|
 | `,w` / `,q` | save / **quit without saving** |
-| `,bn` `,bp` | next / previous buffer |
+| `]b` / `[b` | next / previous buffer (nvim's own keys) |
 | `,bb` | alternate buffer |
 | `,bd` / `,bdr` | close buffer / close all other buffers |
 | `,bls` | list buffers |

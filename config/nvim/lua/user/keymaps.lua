@@ -11,8 +11,6 @@ keymap.set('n', '<leader>q', ':q!<Return>')
 keymap.set('n', '<leader>w', ':w!<Return>')
 
 -- Buffers
-keymap.set('n', '<leader>bn', ':bn<Return>')
-keymap.set('n', '<leader>bp', ':bp<Return>')
 keymap.set('n', '<leader>bb', ':b#<Return>')
 keymap.set('n', '<leader>bd', ':bd<Return>')
 keymap.set('n', '<leader>bls', ':ls<Return>')
