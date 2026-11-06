@@ -128,7 +128,8 @@ Copy mode uses vi keys and copies to the macOS clipboard:
 | `Esc` | leave |
 | `C-a p` / `C-a P` / `C-a b` | paste the last buffer / choose a buffer / list buffers |
 
-Mouse selections are copied as well. Copies also travel over ssh: tmux sends them to Ghostty as OSC 52,
+The command prompt (`C-a :`, renaming, `/` search) uses vi keys as well (`status-keys vi`): it opens in
+insert mode, `Esc` goes to normal mode with vi's motions. Mouse selections are copied as well. Copies also travel over ssh: tmux sends them to Ghostty as OSC 52,
 so text copied in a remote tmux lands in the local clipboard.
 
 Status bar
