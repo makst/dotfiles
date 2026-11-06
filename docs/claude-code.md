@@ -221,7 +221,11 @@ they show up in `git diff`; for plugins that's usually not what you want, see [P
   (`.claude/settings.json`, this repo's own project settings).
 - **Google Cloud is read-only**: `gcloud`, `bq` and `gsutil` commands that create, change or delete
   resources or access, and `gcloud config set`, are denied (see [gcloud](gcloud.md#what-claude-code-can-do)).
-- Everything else asks as usual, including `git commit` and `git push`.
+- Everything else asks as usual, including `git commit` and `git push`, outside auto mode.
+- **In auto mode** (`shift+tab`) Claude doesn't ask before a command its classifier judges safe for the task,
+  and that includes `git commit`: a commit on a branch is easy to undo (`git reset HEAD~`), so it isn't
+  blocked. The global `CLAUDE.md` still says to commit only when asked; push, force push and the deny list
+  above hold in auto mode too.
 
 ### This machine
 The parts that depend on the Mac live in the dotfiles, not in `config/claude`. The `claude` shell function
