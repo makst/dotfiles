@@ -91,6 +91,9 @@
     ]
   },
   "model": "opus[1m]",
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
+  },
   "cleanupPeriodDays": 365,
   "hooks": {
     "PreToolUse": [

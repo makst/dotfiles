@@ -192,8 +192,14 @@ with nothing about this Mac, its tools or this repo. `setup_claude` links it int
   `b`, `f`, `dd`, `ciw`; `i` back to typing; see [vim-keys](vim-keys.md)). Commits made by Claude carry only
   the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`). Conversations are kept for a year
   instead of 30 days (`cleanupPeriodDays`), so `agent_resume` and `claude -r` can still find old ones.
+  Subagents run on Haiku (`CLAUDE_CODE_SUBAGENT_MODEL`) unless Claude gives one a model when it starts it:
+  in `/usage`, subagents on the main model were 40% of the usage. `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is left
+  off, so Claude can still choose.
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
-  when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
+  when asked; before you `/clear`, list what would be lost with the context and where it gets saved; pick a
+  model per subagent (Haiku for searching and reading, Sonnet or Opus for judgment) and suggest another model
+  for the conversation when one fits better. A cleared conversation is still on disk: `/resume` brings it
+  back. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
 - **`hooks/`**: the scripts the hooks below run.
 - **`skills/`**: the [skills](#skills) every project gets.
