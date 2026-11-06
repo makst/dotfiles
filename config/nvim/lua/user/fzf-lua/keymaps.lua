@@ -10,16 +10,25 @@ local M = {}
 local function picker(...) return require('user.fzf-lua.config').picker(...) end
 
 -- inside a picker. `true` keeps fzf-lua's other keys. The preview keys are fzfrc's, here because nvim draws
--- the preview, not fzf: ? shows / hides it, C-n / C-p scroll a line, C-M-n / C-M-p half a page.
+-- the preview, not fzf: C-/ shows / hides it, C-n / C-p scroll a line, C-M-n / C-M-p half a page. C-/ is
+-- <C-_> inside tmux (no extended keys there), <C-/> outside it.
 M.picker_keys = {
   builtin = {
     true,
-    ['?'] = 'toggle-preview',
+    ['<C-/>'] = 'toggle-preview',
+    ['<C-_>'] = 'toggle-preview',
     ['<C-n>'] = 'preview-down',
     ['<C-p>'] = 'preview-up',
     ['<C-M-n>'] = 'preview-half-page-down',
     ['<C-M-p>'] = 'preview-half-page-up',
   },
+}
+
+-- ? in normal mode lists the keys (picker_modes in config/tmux/picker.zsh presses f1 for it, see
+-- user/fzf-lua/config): fzf-lua's list, as its F1, which has the picker's own keys. fzf itself presses f1, so
+-- it's an fzf action that calls nvim: F1's is nvim's, which fzf never sees.
+M.help_actions = {
+  ['f1'] = { fn = function() require('fzf-lua.win').toggle_help() end, exec_silent = true, desc = 'toggle-help' },
 }
 
 -- what a picked file (or grep match, symbol, buffer) opens in: C-s sends the marked ones (or the current one)

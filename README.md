@@ -127,7 +127,8 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 keys](docs/vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
 `C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
 In zsh's completion list (fzf-tab), `[` / `]` go to the previous / next group of completions.
-`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit.
+`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit,
+and `?` in normal mode in every picker; `ctrl+/` shows / hides a picker's preview.
 
 Switching sessions and windows
 ---

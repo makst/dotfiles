@@ -12,6 +12,12 @@ typeset -g picker_screen='screen=$(tmux capture-pane -ep -t {1} 2> /dev/null) &&
 typeset -g picker_label='focus:transform-preview-label:tmux display -p -t {1} " #S:#I #W "'
 # every picker's preview: below the list, the same size, so they look alike
 typeset -g picker_preview='nohidden,down,60%'
+# the keys ? lists in a picker: picker_modes' (below) and fzfrc's (config/fzf/fzfrc). No ) or ' in it: it goes
+# into an fzf action in quotes.
+typeset -g picker_help='normal   j/k down/up · g/G first/last · ctrl+d/u half a page · / filter · q quit
+typing   jj back to normal mode, keeping the filter
+both     Enter pick · Esc clear the filter, then quit
+         ctrl+/ preview · ctrl+n/p scroll it · ctrl+y copy'
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
 # "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below), j/k wrapping
@@ -81,10 +87,16 @@ function picker() {
 # filter, it quits. Normal mode hides the input until there's a filter. The prompt says which mode:
 # "<name>> " while typing, "<name>: " in normal mode. Events get their actions with :+, after any the caller
 # binds (fzf-lua binds start and result too).
+# ? in normal mode lists the keys, as ? does in nvim (;?), tmux and lazygit: by default it shows / hides
+# picker_help below the list, and the list's label " ? keys " says so; [help] is another fzf action for it
+# (nvim's pickers open fzf-lua's list, which has their own keys too). While typing, ? is a character.
 function picker_modes() {
   local name=$1 start=$2 quit=${4:-abort}
-  local typing="$name> " normal="$name: " keys="k,g,G,ctrl-d,ctrl-u,q,/"
-  local to_normal="change-prompt($normal)+rebind($keys)" to_insert="change-prompt($typing)+show-input+unbind($keys)"
+  local typing="$name> " normal="$name: " keys="k,g,G,ctrl-d,ctrl-u,q,/,?"
+  local help=${5:-"transform:[ \"\$FZF_LIST_LABEL\" = ' ? keys ' ] &&
+    echo 'change-footer($picker_help)+change-list-label( ? hide keys )' || echo 'change-footer()+change-list-label( ? keys )'"}
+  local to_normal="change-prompt($normal)+change-list-label( ? keys )+rebind($keys)"
+  local to_insert="change-prompt($typing)+change-footer()+change-list-label()+show-input+unbind($keys)"
   # j can't be unbound while typing, as the first j of jj has to be told apart from a j in the filter, so
   # it asks fzf which mode it's in. fzf has no timeout for the second j, unlike nvim: jj always leaves.
   local j="case \$FZF_PROMPT in
@@ -103,14 +115,15 @@ function picker_modes() {
   # in the same step leaves the list unfiltered, so once fzf has filtered.
   local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
   reply=(--bind "j:transform:$j" --bind "k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:$quit"
-    --bind "/:$to_insert" --bind "esc:transform:$esc" --bind "result:+transform:$hide")
+    --bind "/:$to_insert" --bind "?:$help" --bind "esc:transform:$esc" --bind "result:+transform:$hide"
+    --list-label-pos=-3:bottom --footer-border=rounded)
   # asking fzf the mode, not unbinding: fzf-lua binds the keys of actions that reload again after each reload
   local pair
   for pair in ${(s:,:)3}; do
     reply+=(--bind "${pair%%:*}:transform:[ \"\$FZF_PROMPT\" = '$normal' ] && echo 'trigger(${pair#*:})' || echo 'put(${pair%%:*})'")
   done
   if [[ $start == normal ]]; then
-    reply+=(--prompt $normal --no-input)
+    reply+=(--prompt $normal --no-input --list-label ' ? keys ')
   else
     reply+=(--prompt $typing --bind "start:+unbind($keys)")
   fi

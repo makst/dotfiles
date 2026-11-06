@@ -45,7 +45,7 @@ Inside any fzf list
 |---|---|
 | `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, `mdv`, `change_theme`: they take one line) |
 | `C-a` | mark all |
-| `?` | show / hide the preview (hidden by default, shown from the start in the pickers) |
+| `C-/` | show / hide the preview (hidden by default, shown from the start in the pickers); `?` is a character to type, in the pickers' normal mode it lists the keys |
 | `C-n` / `C-p` | scroll the preview a line; `C-Alt+n` / `C-Alt+p` half a page |
 | `C-y` | copy the marked entries to the clipboard |
 | `C-j` / `C-k` or arrows | move |

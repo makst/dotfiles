@@ -6,6 +6,9 @@ lualine.setup({
   options = {
     theme = 'auto',
     globalstatus = true,
+    -- an open picker (fzf-lua's terminal) keeps the line of the file it came from, not the terminal's name,
+    -- a term:// path with the whole working directory
+    ignore_focus = { 'fzf' },
     -- flat blocks, as the tmux status line: no powerline arrows
     section_separators = '',
     component_separators = '',

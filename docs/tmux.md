@@ -109,7 +109,8 @@ history search and nvim's pickers open ready to type, the others in normal mode,
 | `Esc` | both | clear the filter and go back to the mode the picker opened in; there, with no filter, quit |
 | `q` | normal | quit |
 | `Enter` | both | choose the line |
-| `?` | both | show / hide the preview (every fzf list, see [fzf](fzf.md#inside-any-fzf-list)) |
+| `?` | normal | list the keys below the list (the list's label, `? keys`, says so); `?` again hides them |
+| `ctrl+/` | both | show / hide the preview (every fzf list, see [fzf](fzf.md#inside-any-fzf-list)) |
 
 As in nvim, zsh and Claude Code, `jj` leaves insert mode, but fzf has no timeout for the second `j`: `jj` in a
 filter always leaves. The shared part is `config/tmux/picker.zsh` (`picker_modes`, which nvim's pickers ask

@@ -136,7 +136,8 @@ In a picker:
 | `Tab` | mark the entry (several files, matches, stops) |
 | `C-s` | send the marked entries (or the current one) to the quickfix list and open it |
 | `C-x` / `C-v` / `C-t` | open in a split / vertical split / tab |
-| `?` | show / hide the preview |
+| `?` (normal mode) | list the keys: fzf-lua's list, with the picker's own keys, as `F1`; `?` again closes it |
+| `C-/` | show / hide the preview |
 | `C-n` / `C-p`, `C-M-n` / `C-M-p` | scroll the preview a line / half a page |
 | `M-d`, or `d` in normal mode | `;b`: close the buffer |
 

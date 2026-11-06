@@ -16,13 +16,13 @@ local modes_cache = {}
 -- modes(name, keys) -> fzf_args
 -- fzf's options for the picker's two modes, opening ready to type, with the prompt "<name>> ". keys are the
 -- picker's own normal-mode keys, each with the key it presses (e.g. 'd:alt-d'). Quitting goes through fzf-lua's
--- esc action, which keeps the query for ;; (resume). Asked from zsh once per name and kept: picker_modes is
+-- esc action, which keeps the query for ;; (resume); ? in normal mode presses f1 (keymaps.help_actions). Asked from zsh once per name and kept: picker_modes is
 -- the one definition of these keys.
 local function modes(name, keys)
   local id = name .. '\0' .. (keys or '')
   if modes_cache[id] == nil then
     local out = vim.fn.filereadable(picker_zsh) == 1 and vim.system({ 'zsh', '-fc',
-      'source "$1" && picker_modes "$2" insert "$3" "print(esc)+accept" && print -rNn -- $reply', 'zsh', picker_zsh, name, keys or '',
+      'source "$1" && picker_modes "$2" insert "$3" "print(esc)+accept" "trigger(f1)" && print -rNn -- $reply', 'zsh', picker_zsh, name, keys or '',
     }):wait() or { code = 1 }
     local args = {}
     if out.code == 0 then
@@ -102,7 +102,7 @@ fzf.setup {
   buffers = { actions = keymaps.buffer_actions },
   grep = { rg_opts = rg_opts },
   -- vim.ui.select's own prompt names it, e.g. "Start emulator"
-  defaults = M.picker('pick'),
+  defaults = vim.tbl_extend('force', M.picker('pick'), { actions = keymaps.help_actions }),
 }
 
 fzf.register_ui_select(function(ui_opts)
