@@ -49,7 +49,8 @@ function picker() {
   # normal mode hides the input while there's no filter. Not with the query change itself: hiding the input
   # in the same step leaves the list unfiltered, so once fzf has filtered.
   local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
-  local -a opts=(--no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1
+  # --sync draws the picker once the list is in, not first an empty frame that fills a moment later
+  local -a opts=(--sync --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1
     --bind "j:transform:$j" --bind 'k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:abort'
     --bind "/:$to_insert" --bind "esc:transform:$esc" --bind "result:transform:$hide")
   if [[ $start == normal ]]; then
@@ -65,7 +66,9 @@ function picker() {
   # fzf takes actions over a socket. A loop checks every second, while fzf runs, and sends only what changed:
   # redrawing an unchanged list or preview flickers. reload-sync swaps the list in at once, --track keeps the
   # cursor on the same key when the order or its line changes. The selected key comes from fzf itself, so its
-  # preview refreshes only when that target's screen changed.
+  # preview refreshes only when that target's screen changed. The loop's output goes nowhere: pickers run
+  # inside $(…), which waits for every holder of its pipe, so a loop still in its sleep held fzf's exit up
+  # to a second.
   local sock=${TMPDIR:-/tmp}/tmux-picker-$$.sock
   {
     local list=$(eval $live) new shown= screen= target
@@ -85,7 +88,7 @@ function picker() {
       fi
       shown=$target screen=$new
     done
-  } &!
+  } > /dev/null &!
   local loop=$! choice
   choice=$(fzf --listen="$sock" $opts "$@")
   local rc=$?
