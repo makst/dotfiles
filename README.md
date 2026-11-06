@@ -48,6 +48,30 @@ setup_dotfiles             # asks the Mac's name and kind once, then everything;
 Then follow [A new Mac](docs/setup.md#a-new-mac): Accessibility access, the SSH keys in Secretive and what
 only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step does and every symlink.
 
+Turtles all the way down
+---
+The design principle behind every key here: learn a move once and it works on every layer, from a line of
+text up to a macOS workspace.
+
+1. **Vim is the grammar.** Anything that takes keys moves like vim: `h/j/k/l`, `g`/`G` for the ends,
+   `ctrl+d`/`ctrl+u` for half a page, `/` to search and `n`/`N` for the next match, `v` to select and `y` to
+   copy, `q` to quit. Where a tool lets you type, typing and moving are separate modes and `jj` leaves typing.
+2. **The key names the action, the modifier names the layer.** Splits, panes, windows, sessions and workspaces
+   nest, and the same key does the same thing at each level: `h/j/k/l` goes that way, `Space` to the next one,
+   `0` back to the last. nvim has no modifier or `ctrl`, tmux `ctrl`, `C-a` or `cmd`, AeroSpace `alt`
+   ([Same key, every layer](#same-key-every-layer)).
+3. **nvim is the reference.** `,` starts an action and `;` opens a picker. Another tool with a leader or a
+   normal mode borrows nvim's key for the same action ([vim keys](docs/vim-keys.md)).
+4. **Set it, don't hope for it.** A tool whose own keys already follow is left alone and noted as such; one
+   that can follow with some config gets that config here; one that can't (Xcode) is written down as an
+   exception.
+5. **One picker.** Choosing from a list (a session, a window, an agent, a conversation, a command from
+   history) happens in the same fzf picker, `config/tmux/picker.zsh`: the same look, the same normal mode
+   with `j`/`k` and `/`, `jj` back from typing. A tool with a list of its own gets its output wrapped in the
+   picker rather than learnt on its own, wherever it can be ([picker keys](docs/tmux.md#picker-keys)).
+6. **Exceptions say why.** When a key can't follow, because macOS, another layer or the tool itself has it,
+   the table shows what is used instead and why, so the gap is a decision and not an accident.
+
 How the keyboard is split
 ---
 Every tool owns its own modifier, so the layers don't fight over keys:
