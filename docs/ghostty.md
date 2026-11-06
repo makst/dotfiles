@@ -35,7 +35,7 @@ they behave like native shortcuts but act on tmux:
 | `cmd+w` | `C-a x` | close pane (asks first) |
 | `cmd+1`…`9` | `C-a 1`…`9` | go to window |
 | `cmd+0` / `ctrl+0` | `C-a l` / `C-a ;` | back to the last window / pane, see [same key, every layer](../README.md#same-key-every-layer) (`cmd+0` no longer resets the font size) |
-| `cmd+[` / `cmd+]` | `C-a C-h` / `C-a C-l` | previous / next window |
+| `cmd+[` / `cmd+]` | `C-a [` / `C-a ]` | previous / next window |
 | `cmd+shift+[` / `cmd+shift+]` | – | nothing: previous / next session was too easy to mix up with previous / next window |
 | `cmd+shift+0` | `C-a S` | back to the last session |
 | `cmd+shift+enter` | `C-a z` | zoom the pane |

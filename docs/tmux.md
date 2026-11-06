@@ -35,7 +35,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a \|` / `C-a -` | `cmd+d` / `cmd+shift+d` | split right / down |
 | `C-a x` | `cmd+w` | close pane |
 | `C-a 1`…`9` | `cmd+1`…`9` | go to window |
-| `C-a C-h` / `C-a C-l` | `cmd+[` / `cmd+]` | previous / next window (repeatable) |
+| `C-a [` / `C-a ]` | `cmd+[` / `cmd+]` | previous / next window (copy mode and paste, tmux's own `[` / `]`, are on `C-a Enter` and `C-a p`) |
 | `C-a l` | `cmd+0` | back to the last window |
 | `C-a ;` | `ctrl+0` | back to the last pane |
 | `C-a (` / `C-a )` | – | previous / next session (tmux default; no Cmd key, too close to `cmd+[` / `cmd+]`) |
@@ -55,7 +55,7 @@ Splitting, moving between and zooming panes, then a new window.
 
 `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether the pane runs nvim and, if so, lets
 nvim move between its own splits first. Inside nvim the same keys cross into tmux panes. The catch: those
-four keys don't reach programs in the shell (`C-l` no longer clears the screen; use `clear`). `C-Space`
+four keys don't reach programs in the shell (`C-l` no longer clears the screen: `C-a C-l` does). `C-Space`
 always goes to tmux, even in nvim: there it no longer opens completion (`Tab` does).
 
 Session picker

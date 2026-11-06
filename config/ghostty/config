@@ -67,8 +67,8 @@ keybind = super+t=text:\x01c
 keybind = super+d=text:\x01|
 keybind = super+shift+d=text:\x01-
 keybind = super+w=text:\x01x
-keybind = super+[=text:\x01\x08
-keybind = super+]=text:\x01\x0c
+keybind = super+[=text:\x01[
+keybind = super+]=text:\x01]
 # no previous / next session: one shift away from previous / next window, the two got mixed up. Sessions are
 # cmd+k, cmd+j and cmd+shift+0. Unbound so Ghostty's tab switching doesn't take the keys either.
 keybind = super+shift+[=unbind
