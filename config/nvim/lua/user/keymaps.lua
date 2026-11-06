@@ -22,11 +22,18 @@ keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>')
 -- Split window
 keymap.set('n', '<leader>ss', ':split<Return><C-w>w')
 keymap.set('n', '<leader>sv', ':vsplit<Return><C-w>w')
--- CTRL-W + | Set current window width to N (default: widest possible)
--- CTRL-W + _ Set current window height to N (default: highest possible)
--- CTRL-W + = Make all windows (almost) equally high and wide
-keymap.set('n', '<leader>zi', '<C-w>_|<C-w>|') -- zoom in
-keymap.set('n', '<leader>zo', '<C-w>=') -- zoom out
+-- Zoom and equal sizes, as the other layers (README, "Same key, every layer"): ,z makes the split as big as
+-- it gets (CTRL-W _ and |) and, again, puts the layout back as it was; ,= makes all splits equal (CTRL-W =)
+keymap.set('n', '<leader>z', function()
+  if vim.t.zoom_restore then
+    vim.cmd(vim.t.zoom_restore)
+    vim.t.zoom_restore = nil
+  else
+    vim.t.zoom_restore = vim.fn.winrestcmd()
+    vim.cmd('wincmd _ | wincmd |')
+  end
+end)
+keymap.set('n', '<leader>=', '<C-w>=')
 
 -- Move window. Space cycles splits, Backspace goes back to the last one; the other layers follow the same
 -- pattern (README, "Same key, every layer").
@@ -37,11 +44,12 @@ keymap.set('', '<leader>sk', '<C-w>k')
 keymap.set('', '<leader>sj', '<C-w>j')
 keymap.set('', '<leader>sl', '<C-w>l')
 
--- Resize window
+-- Resize window: the arrows as h/j/k/l, as Shift+h/j/k/l on the other layers (H J K L are treewalker's here):
+-- left / right narrower / wider, up / down shorter / taller
 keymap.set('n', '<left>', '<C-w><')
 keymap.set('n', '<right>', '<C-w>>')
-keymap.set('n', '<up>', '<C-w>+')
-keymap.set('n', '<down>', '<C-w>-')
+keymap.set('n', '<up>', '<C-w>-')
+keymap.set('n', '<down>', '<C-w>+')
 
 -- clear search highlights (CTRL-L moves to the right nvim/tmux pane, see vim-tmux-navigator)
 keymap.set('n', '<Esc>', '<cmd>:noh<cr>')

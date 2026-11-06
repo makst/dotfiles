@@ -47,7 +47,8 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after; `cmd+0` back, or `cmd+shift+0` from another session |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
-| `C-a H/J/K/L` | | resize pane (repeatable) |
+| `C-a H/J/K/L` | | resize pane (repeatable), as `alt+shift+h/j/k/l` in AeroSpace |
+| `C-a =` | | make all panes equal (`C-a P` chooses a paste buffer, tmux's own `=`) |
 | `C-a d` | | detach |
 | `C-a r` | | reload the config |
 | `C-h/j/k/l` | | move to the pane left/down/up/right, *including nvim splits* |

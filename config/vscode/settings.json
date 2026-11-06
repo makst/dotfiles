@@ -346,8 +346,7 @@
     {
       "before": [
         "<leader>",
-        "z",
-        "i"
+        "z"
       ],
       "commands": [
         "workbench.action.toggleMaximizeEditorGroup"
@@ -356,8 +355,7 @@
     {
       "before": [
         "<leader>",
-        "z",
-        "o"
+        "="
       ],
       "commands": [
         "workbench.action.evenEditorWidths"

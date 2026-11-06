@@ -76,10 +76,13 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 | `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: none, too easy to mix up with windows) | `alt+[` / `alt+]` (workspaces with windows) |
 | `1`…`9`: by number | a count: `3 Space` | – (`C-h/j/k/l` is enough) | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
 | `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` (sessions: `cmd+shift+0`) | `alt+0` (workspace) |
+| `z`: zoom, and back | `,z` | `C-a z` (`cmd+shift+enter`: `cmd+z` is undo) | – | `alt+z` (fills the workspace) |
+| `Shift+h/j/k/l`: resize | arrow keys (`H J K L` walk the syntax tree) | `C-a H/J/K/L` | – | `alt+shift+h/j/k/l` |
+| `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
 
-`Space` and `Backspace` in nvim do the same in VS Code and Android Studio ([vim keys](docs/vim-keys.md); VS Code
-goes to the previous editor group, as it doesn't track the last one). `C-Space` goes to tmux in every pane,
-nvim's too, so nvim's completion opens with `Tab` instead.
+`Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim
+keys](docs/vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
+`C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
 
 Switching sessions and windows
 ---

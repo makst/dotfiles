@@ -64,11 +64,11 @@ alt-l = 'focus right'
 # the next window on this workspace, cycling, as Space cycles nvim's splits and C-Space tmux panes
 alt-space = 'focus dfs-next --wrap-around'
 
-# swap with the window in that direction
-alt-shift-h = 'swap left'
-alt-shift-j = 'swap down'
-alt-shift-k = 'swap up'
-alt-shift-l = 'swap right'
+# resize: Shift+h/j/k/l, as prefix H/J/K/L in tmux (arrows in nvim): narrower, taller, shorter, wider
+alt-shift-h = 'resize width -50'
+alt-shift-j = 'resize height +50'
+alt-shift-k = 'resize height -50'
+alt-shift-l = 'resize width +50'
 
 # move the window through the layout (into the neighbouring container, then out to the edge)
 alt-ctrl-shift-h = 'move left'
@@ -79,10 +79,8 @@ alt-ctrl-shift-l = 'move right'
 alt-e = 'layout tiles horizontal vertical'      # split side by side / stacked
 alt-s = 'layout accordion tiles'                # windows on top of each other, the focused one in front (toggle)
 alt-t = 'layout floating tiling'                # float / tile
-alt-f = 'fullscreen'                            # fill the workspace (not macOS full screen)
-alt-minus = 'resize smart -50'
-alt-equal = 'resize smart +50'
-alt-shift-0 = 'balance-sizes'
+alt-z = 'fullscreen'                            # fill the workspace (not macOS full screen)
+alt-equal = 'balance-sizes'
 
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'

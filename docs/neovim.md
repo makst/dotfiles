@@ -74,7 +74,7 @@ These override built-in vim keys, which is easy to forget:
 | `H` `J` `K` `L` | treewalker: move by syntax node | screen top, **join lines**, keyword help, screen bottom |
 | `Space` | next split, cycling: see [same key, every layer](../README.md#same-key-every-layer) | |
 | `Backspace` | back to the last split, as `C-w p` | move left, like `h` |
-| arrow keys | resize the split | move the cursor |
+| arrow keys | resize the split: narrower, taller, shorter, wider, as `Shift+h/j/k/l` on the other layers | move the cursor |
 | `Esc` | also clears search highlights | |
 | `C-h/j/k/l` | move between splits and tmux panes | |
 | `gd`, `gr` | definitions / references in Trouble | |
@@ -93,7 +93,7 @@ These override built-in vim keys, which is easy to forget:
 | `,bls` | list buffers |
 | `,ss` / `,sv` | split horizontally / vertically and go to the new split |
 | `,sh` `,sj` `,sk` `,sl` | go to the split left/down/up/right (same as `C-h/j/k/l`, but nvim only) |
-| `,zi` / `,zo` | maximise the split / equalise all splits |
+| `,z` / `,=` | zoom the split (again: the layout as it was) / make all splits equal |
 | `,dt` / `,do` | diff the visible splits / stop diffing |
 | `,re` | reload the config |
 

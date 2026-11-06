@@ -43,7 +43,8 @@ Shared keys
 | `]b` / `[b` | next / previous buffer | ✓ | ✓ | ✓ | – |
 | `,bb` | the previous buffer | ✓ | ✓ | – | – |
 | `,sv` / `,ss` | split side by side / stacked | ✓ | ✓ | ✓ | – |
-| `,zi` / `,zo` | zoom the split in / out | ✓ | ✓ | ✓ (toggle) | – |
+| `,z` | zoom the split, and back | ✓ | ✓ | ✓ | – |
+| `,=` | make all splits equal | ✓ | ✓ | – | – |
 | `,so` | outline | ✓ | ✓ | ✓ | – |
 | `,sr` | search and replace in the project | ✓ | ✓ | ✓ | – |
 | `,xx` | all diagnostics | ✓ | ✓ | ✓ | – |
