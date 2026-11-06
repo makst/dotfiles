@@ -57,7 +57,7 @@ keymap.set('n', '<leader>dt', '<cmd>:windo diffthis<cr>')
 keymap.set('n', '<leader>do', '<cmd>:windo diffoff<cr>')
 
 -- nvim's default LSP maps (gra, gri, grn, grr, grt, grx) make `gr` (Trouble references) wait for a
--- third key; code action and rename are on gc / gre already
+-- third key; code action and rename are on ga / ,rn already
 for _, lhs in ipairs({ 'gra', 'gri', 'grn', 'grr', 'grt', 'grx' }) do
   pcall(vim.keymap.del, 'n', lhs)
 end

@@ -79,6 +79,8 @@ These override built-in vim keys, which is easy to forget:
 | `C-h/j/k/l` | move between splits and tmux panes | |
 | `gd`, `gr` | definitions / references in Trouble | |
 | `gra`, `gri`, `grn`, `grr`, `grt`, `grx` | removed, so `gr` doesn't wait for a third key | nvim's LSP defaults |
+| `ga` | code actions, where a language server runs | show the character's code |
+| `,` / `;` | the leader / the picker prefix | repeat the last `f` `t` `F` `T` backwards / forwards |
 
 ### Files, buffers, windows
 
@@ -138,8 +140,8 @@ The file tree follows the current file and the working directory.
 |---|---|
 | `gd` | definitions (Trouble list) |
 | `gr` | references (Trouble list) |
-| `gc` | code actions (only where a language server runs; `gcc` and `gc` in visual mode still comment) |
-| `gre` | rename |
+| `ga` | code actions (only where a language server runs) |
+| `,rn` | rename |
 | `,hd` | hover documentation |
 | `,hs` / `C-s` in insert mode | signature help |
 | `]d` / `[d` | next / previous diagnostic, with the message in a float |

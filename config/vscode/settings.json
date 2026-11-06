@@ -194,12 +194,21 @@
     },
     {
       "before": [
-        "g",
+        "<leader>",
         "r",
-        "e"
+        "n"
       ],
       "commands": [
         "editor.action.rename"
+      ]
+    },
+    {
+      "before": [
+        "g",
+        "a"
+      ],
+      "commands": [
+        "editor.action.quickFix"
       ]
     },
     {

@@ -33,7 +33,8 @@ Shared keys
 | `;e` | diagnostics | ✓ | ✓ (Problems) | ✓ (Problems) | – |
 | `;p` | projects | ✓ | ✓ (recent) | ✓ (recent) | – |
 | `gd` / `gr` | definition / references | ✓ | · / ✓ | ✓ | – |
-| `gre` | rename | ✓ | ✓ | ✓ | – |
+| `ga` | code actions / quick fix | ✓ | ✓ | ✓ | – |
+| `,rn` | rename | ✓ | ✓ | ✓ | – |
 | `]d` / `[d` | next / previous diagnostic | ✓ | ✓ | ✓ | – |
 | `,hd` / `,hs` | hover docs / signature | ✓ | ✓ | ✓ | – |
 | `,e` / `,f` | file tree / this file in it | ✓ | ✓ | ✓ | – |
@@ -63,11 +64,8 @@ And in Android Studio, `,ar` runs the app and `,ax` stops it, like nvim's `,a` k
 Not shared:
 - **`H` `J` `K` `L`** walk the syntax tree in nvim (treewalker); the IDEs keep vim's meaning (top of screen,
   join lines, …).
-- **`gc` in nvim** is the LSP code action in buffers with a language server (`gcc` still comments); the IDEs
-  keep `gc` for comments and use their own key for quick fixes (`cmd+.` in VS Code, `alt+enter` in Android
-  Studio).
-- **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`), git (`,g…`), terminals (`,lg`, `,tt`) and
-  the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
+- **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`), git (`,g…`), terminals (`,lg`, `,tt`, `,tm`)
+  and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
 
 Each tool
 ---
