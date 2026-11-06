@@ -5,7 +5,7 @@ if (not status) then return end
 local function on_attach(bufnr)
   local api = require('nvim-tree.api')
   api.config.mappings.default_on_attach(bufnr)
-  vim.keymap.set('n', 'l', api.node.open.edit, { buffer = bufnr, nowait = true, desc = 'nvim-tree: open' })
+  vim.keymap.set('n', 'l', api.node.open.edit, { buffer = bufnr, nowait = true, desc = 'File tree: open' })
 end
 
 nvim_tree.setup {

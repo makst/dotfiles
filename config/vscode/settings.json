@@ -185,6 +185,15 @@
     },
     {
       "before": [
+        ";",
+        "?"
+      ],
+      "commands": [
+        "workbench.action.openGlobalKeybindings"
+      ]
+    },
+    {
+      "before": [
         "g",
         "r"
       ],

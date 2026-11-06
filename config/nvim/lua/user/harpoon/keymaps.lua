@@ -3,16 +3,16 @@ if (not status_ok) then return end
 
 vim.keymap.set('n', ';m', function()
   harpoon.ui:toggle_quick_menu(harpoon:list())
-end)
+end, { desc = 'Harpoon: the marked files' })
 
 vim.keymap.set('n', ';j', function()
   harpoon:list():next()
-end)
+end, { desc = 'Harpoon: the next marked file' })
 
 vim.keymap.set('n', ';k', function()
   harpoon:list():prev()
-end)
+end, { desc = 'Harpoon: the previous marked file' })
 
 vim.keymap.set('n', '<leader>m', function()
   harpoon:list():add()
-end)
+end, { desc = 'Harpoon: mark this file' })

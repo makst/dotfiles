@@ -13,12 +13,16 @@ Layout of the config
 - `lua/user/base.lua` options, `lua/user/keymaps.lua` general keys, `lua/user/plugins.lua` the plugin list.
 - `lua/user/<plugin>/` per plugin: `config.lua` (setup) and `keymaps.lua`. To find where a key is defined,
   look in the `keymaps.lua` of the plugin it belongs to.
+- Every key has a `desc` that starts with its area (`Git: blame for this file`, `Split: zoom, and back`), so
+  `;?` finds it by what it does. A key a plugin binds itself gets one with `lua/user/describe.lua`, which
+  adds the desc and leaves the mapping as it is (vim-tmux-navigator, vim-abolish).
 - These keys are also the reference for VS Code and Android Studio, which get the same ones as far as they
   can: see [vim-keys](vim-keys.md).
 - `lua/user/hidden/init.lua` is gitignored and loaded if present, for private settings.
 
-**Adding a plugin:** add it to `plugins.lua`, create `lua/user/<name>/` with its config and keymaps,
-require it from `init.lua`, restart nvim, then commit the updated `lazy-lock.json`.
+**Adding a plugin:** add it to `plugins.lua`, create `lua/user/<name>/` with its config and keymaps (each
+key with a `desc`, which `check_dotfiles` checks), require it from `init.lua`, restart nvim, then commit the
+updated `lazy-lock.json`.
 
 Plugins
 ---
@@ -116,6 +120,7 @@ the bottom, the markers and the count a column in from the border:
 | `;o` / `;l` | code tours / the stops of the open tour, see [Integrations](#integrations) |
 | `;p` | projects: switches the working directory (and nvim-tree) to the project and finds files in it |
 | `;t` | help tags |
+| `;?` | the keys: every key with a description, found by key or by what it does (`git`, `split`); nvim's own keys too |
 | `;;` or `;c` | reopen the last picker with its query and results (the last 100 are kept) |
 
 In a picker: `C-s` sends the marked entries to the quickfix list and opens it, `q` closes it in normal
@@ -183,7 +188,10 @@ type a function's arguments. `:BlinkCmp status` checks the setup.
 |---|---|
 | `,lg` | lazygit in a floating window, one per working directory; same key hides it again |
 | `,gb` | blame for the file in a side window |
-| `,go` | open the file in the browser on the git host (GitHub) |
+| `,go` | open the file in the browser on the git host (GitHub); in visual mode, the selected lines |
+| `,gp` / `,gn` | open this branch's pull request / create one |
+| `,gd` / `,gD` | diff this file against HEAD / close the diff |
+| `,gr` / `,gR` | pick a commit to revert / a commit of this file |
 
 gitsigns marks added, changed and deleted lines in the sign column; its actions are available as
 `:Gitsigns <Tab>` (stage hunk, preview, blame line, …), with no keys bound.

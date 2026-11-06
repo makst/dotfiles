@@ -46,6 +46,8 @@ nmap ;d <Action>(FileStructurePopup)
 nmap ;w <Action>(GotoSymbol)
 nmap ;e <Action>(ActivateProblemsViewToolWindow)
 nmap ;p <Action>(ManageRecentProjects)
+" the keys: IdeaVim's own list of the mappings in this file (the IDE's shortcuts are in Find Action, cmd+shift+a)
+nnoremap ;? :map<CR>
 
 " code, as the LSP keys in nvim
 nmap gd <Action>(GotoDeclaration)

@@ -14,9 +14,9 @@ local Terminal = require('toggleterm.terminal').Terminal
 -- other terminals (Gradle, logcat) don't hold every `,` waiting for a second key
 local function map_toggles(term)
   local opts = { buffer = term.bufnr, silent = true }
-  vim.keymap.set('t', '<leader>lg', _lazygit_toggle, opts)
-  vim.keymap.set('t', '<leader>tt', _testterm_toggle, opts)
-  vim.keymap.set('t', '<leader>tm', _miscterm_toggle, opts)
+  vim.keymap.set('t', '<leader>lg', _lazygit_toggle, vim.tbl_extend('force', opts, { desc = 'Terminal: hide lazygit' }))
+  vim.keymap.set('t', '<leader>tt', _testterm_toggle, vim.tbl_extend('force', opts, { desc = 'Terminal: hide the test one' }))
+  vim.keymap.set('t', '<leader>tm', _miscterm_toggle, vim.tbl_extend('force', opts, { desc = 'Terminal: hide the spare one' }))
 end
 
 function _lazygit_toggle()

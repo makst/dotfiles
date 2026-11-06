@@ -31,6 +31,8 @@ m 'TOML files parse' 'a key set twice in starship.toml' "print 'zz = 1\nzz = 2' 
 m 'YAML files' 'broken YAML in the CI workflow' "print 'x: [' >> .github/workflows/check.yml"
 m 'YAML files' 'a skill without a description' "perl -ni -e 'print unless /^description:/' config/claude/skills/*/SKILL.md([1])"
 m "Lua files compile" 'a dangling local in keymaps.lua' "print 'local x =' >> config/nvim/lua/user/keymaps.lua"
+m 'nvim key has a desc' 'a key without a desc' "print \"vim.keymap.set('n', '<leader>zz', function() print(')') end)\" >> config/nvim/lua/user/keymaps.lua"
+m 'nvim key has a desc' 'a buffer key without a desc' "perl -pi -e 's/, desc = .LSP: rename.//' config/nvim/lua/user/lsp/lspconfig/keymaps.lua"
 m 'tmux.conf runs' 'an unknown option in tmux.conf' "print 'set -g no-such-option on' >> config/tmux/tmux.conf"
 m 'tmux.conf runs' 'an unknown command in demo.tmux.conf' "print 'no-such-command' >> docs/tapes/demo.tmux.conf"
 m 'gitconfig' 'an unclosed section in .gitconfig' "print '[alias' >> config/git/.gitconfig"

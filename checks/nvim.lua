@@ -4,6 +4,7 @@
 --   requires: every require('user.…') has its file, and every file is required from init.lua (none is dead)
 --   plugins:  lua/user/plugins.lua and lazy-lock.json list the same plugins, and the specs use only keys
 --             lazy.nvim knows; it ignores the others silently, so `dependecies = …` would do nothing
+--   descs:    every key the config binds has a desc, so the keys picker (;?) shows it
 local repo = arg[1]
 local files = { unpack(arg, 2) }
 local config = repo .. '/config/nvim'
@@ -122,3 +123,41 @@ for name, entry in pairs(lock) do
   end
 end
 count('plugins', n)
+
+-- descs: every key the config binds (keymap.set, nvim_set_keymap, nvim_buf_set_keymap) has a desc in that call,
+-- so the keys picker (;?) shows it. A local map(lhs, rhs, desc) wrapper passes as its own call has desc = desc.
+-- call_at(text, open): the text of the call whose ( is at open, up to its matching ), skipping strings
+local function call_at(text, open)
+  local depth, i = 0, open
+  while i <= #text do
+    local c = text:sub(i, i)
+    if c == "'" or c == '"' then
+      local close = i
+      repeat close = text:find(c, close + 1, true) until not close or text:sub(close - 1, close - 1) ~= '\\'
+      i = close or #text
+    elseif c == '(' then
+      depth = depth + 1
+    elseif c == ')' then
+      depth = depth - 1
+      if depth == 0 then return text:sub(open, i) end
+    end
+    i = i + 1
+  end
+  return text:sub(open)
+end
+local keys = 0
+for _, file in ipairs(files) do
+  if file:match('^config/nvim/') and not file:match('/user/hidden/') then
+    local text = read(repo .. '/' .. file) or ''
+    for _, pattern in ipairs({ 'keymap%.set%s*()%(', 'nvim_set_keymap%s*()%(', 'nvim_buf_set_keymap%s*()%(' }) do
+      for open in text:gmatch(pattern) do
+        keys = keys + 1
+        if not call_at(text, open):match('desc%s*=') then
+          local line = select(2, text:sub(1, open):gsub('\n', '')) + 1
+          problem('descs', ('%s:%d: a key without a desc, so ;? doesn\'t show it'):format(file, line))
+        end
+      end
+    end
+  end
+end
+count('descs', keys)

@@ -10,7 +10,7 @@ local M = {}
 -- Open a terminal
 local function default_on_open(term)
   vim.cmd 'stopinsert'
-  vim.api.nvim_buf_set_keymap(term.bufnr, 'n', 'q', '<cmd>close<CR>', { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(term.bufnr, 'n', 'q', '<cmd>close<CR>', { noremap = true, silent = true, desc = 'Terminal: close' })
 end
 
 local function open_term(cmd, opts)
@@ -34,7 +34,7 @@ end
 local function cht_on_open(term)
   local lang = ''
   vim.cmd 'stopinsert'
-  vim.api.nvim_buf_set_keymap(term.bufnr, 'n', 'q', '<cmd>close<CR>', { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(term.bufnr, 'n', 'q', '<cmd>close<CR>', { noremap = true, silent = true, desc = 'Terminal: close' })
   vim.api.nvim_buf_set_name(term.bufnr, 'cheatsheet-' .. term.bufnr)
   vim.api.nvim_buf_set_option(term.bufnr, 'filetype', 'cheat')
   vim.api.nvim_buf_set_option(term.bufnr, 'syntax', lang)

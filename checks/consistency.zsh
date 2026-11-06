@@ -120,6 +120,12 @@ check_plugins() {
   note+=" plugins"
 }
 
+# descs: every key nvim's config binds has a desc, which the keys picker (;?) shows and searches
+check_descs() {
+  nvim_results descs || return
+  note+=" keys"
+}
+
 # GIFs: each tape renders a GIF that's in docs/img, each GIF there comes from a tape and is shown in a doc
 check_gifs() {
   local tape out gif kind file line target
@@ -319,6 +325,7 @@ check "every symlink is in docs/setup.md, and only those" check_symlinks
 check "the README links every page in docs/" check_readme
 check "this Mac's files are documented and read" check_machine_files
 check "nvim's plugins are pinned in lazy-lock.json" check_plugins
+check "every nvim key has a desc, for ;?" check_descs
 check "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
 check "every GIF has its tape and its doc" check_gifs
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
