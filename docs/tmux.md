@@ -136,9 +136,9 @@ icon** until you visit it. Programs ring the bell when they want attention. A wi
 its agent's state instead: waiting 󰂞, done but not seen 󰄬, working 󰔟 (see
 [claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many agents are in each state across
 all sessions, a `PREFIX` badge while the prefix is pressed, date, time, battery. Windows are two spaces apart,
-as the session name and the first window, and the right side ends flush with the edge, as the prompt's time
-below it. Popups open centred on the window below the status line (tmux's own centring is a column and a row
-off).
+as the session name and the first window, and so are the groups on the right; the date, time and battery are
+grey, as the prompt's time below, and end flush with the edge. Popups open centred on the window below the
+status line (tmux's own centring is a column and a row off).
 
 The tree (`cmd+j`) and the session picker (`cmd+k`) show the same marks: on each pane, window and session,
 the most urgent agent in it. Visiting a window marks its finished agents as seen.
