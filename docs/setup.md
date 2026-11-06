@@ -241,6 +241,7 @@ group-writable directories, and zsh would stop to ask about them.
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
+| Style | `checks/style.zsh` | the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, and no zsh file runs `fzf` itself instead of `picker` |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
 check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after

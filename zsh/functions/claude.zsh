@@ -296,7 +296,8 @@ function agent_done() {
   return 0
 }
 
-# completion: agent_resume offers the agents with a conversation (with its title), agent_done the worktrees
+# _agent_resume: completion; agent_resume offers the agents with a conversation (with its title), agent_done
+# the worktrees
 function _agent_resume() {
   local main=$(_agent_main 2> /dev/null) row name
   [[ -n $main ]] || return 1

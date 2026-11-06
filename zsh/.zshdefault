@@ -98,7 +98,9 @@ bindkey -M vicmd vv edit-command-line
 
 # cursor: a bar in insert mode, a block in normal mode and while a command runs
 autoload -Uz add-zle-hook-widget
+# _vi_cursor: a block in normal mode, a bar otherwise; on each mode change and at each new prompt
 _vi_cursor() { [[ $KEYMAP == vicmd ]] && print -n '\e[2 q' || print -n '\e[6 q' }
+# _vi_cursor_block: a block while a command runs
 _vi_cursor_block() { print -n '\e[2 q' }
 add-zle-hook-widget keymap-select _vi_cursor
 add-zle-hook-widget line-init _vi_cursor

@@ -125,6 +125,15 @@ m 'names this Mac' "this Mac's hostname in a comment" "print -r -- \"# from \${(
 m 'names this Mac' 'a forbidden word in a doc, in capitals' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print \"Ask \${(U)w} first.\" >> docs/zsh.md"
 m 'shared email' 'an unpushed commit with a work email' "print x >> docs/zsh.md; git -c user.email=me@work.example -c commit.gpgsign=false commit -qam x"
 m 'shared email' 'an unpushed commit whose message has a forbidden word' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print x >> docs/zsh.md; git -c commit.gpgsign=false commit -qam \"fix for \$w\""
+# --- style
+m 'Brewfile package says' 'a package without its comment' "perl -pi -e 's/\\s+#.*// if /^brew / && !\$d++' Brewfile"
+m 'ANSI names' 'a hex colour in a zsh file' "print \"export ZZ_COLOR='#ff0000'\" >> zsh/.exports"
+m 'Show GIF toggle' 'a GIF toggle open by default' "perl -pi -e 's/^<details>\$/<details open>/' README.md"
+m 'Show GIF toggle' 'a GIF toggle with another title' "perl -pi -e 's/<b>Show GIF<\\/b>/Show GIF/' docs/git.md"
+m 'Show GIF toggle' 'a GIF without its caption' "perl -0pi -e 's/(<summary><b>Show GIF<\\/b><\\/summary>\\n)\\n[^<]*?\\n\\n(!\\[)/\$1\\n\$2/' docs/zsh.md"
+m 'Show GIF toggle' 'a GIF toggle not closed after it' "perl -0pi -e 's/(\\.gif\\)\\n\\n)<\\/details>\\n/\$1/' docs/git.md"
+m 'zsh function has a comment' 'a function without a comment' "print '\nzz_helper() { print hi }' >> zsh/.aliases"
+m 'not a bare fzf' 'a function running fzf itself' "print '\n# zz_pick: picks a file\nzz_pick() { ls | fzf }' >> zsh/.aliases"
 
 reset=$'\e[0m' red=$'\e[31m' green=$'\e[32m' dim=$'\e[2m'
 integer caught=0 missed=0 broken=0
