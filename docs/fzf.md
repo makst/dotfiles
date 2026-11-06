@@ -32,16 +32,16 @@ Shell keys
 |---|---|
 | `C-r` | search [atuin's history](zsh.md#history), put the chosen command on the command line |
 | `C-t` | pick files (several with `Tab`) and insert their paths |
-| `Alt+C` (also `Option+C` → `ç`) | `cd` into a subdirectory |
+| `Alt+C` | `cd` into a subdirectory |
 | `**<Tab>` | fzf completion after a command, e.g. `vim **<Tab>`, `cd **<Tab>`, `kill **<Tab>` |
 
 Inside any fzf list
 ---
 | Key | Action |
 |---|---|
-| `Tab` / `Shift+Tab` | mark / unmark (multi-select is on everywhere) |
+| `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, `mdv`: they take one line) |
 | `C-a` | mark all |
-| `?` | show / hide the preview (hidden by default) |
+| `?` | show / hide the preview (hidden by default, shown from the start in the pickers) |
 | `C-n` / `C-p` | scroll the preview a line; `C-Alt+n` / `C-Alt+p` half a page |
 | `C-y` | copy the marked entries to the clipboard |
 | `C-j` / `C-k` or arrows | move |

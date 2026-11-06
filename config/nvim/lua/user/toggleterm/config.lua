@@ -10,6 +10,15 @@ local misc_terminal_map = {}
 
 local Terminal = require('toggleterm.terminal').Terminal
 
+-- the toggle keys also work inside these floats, so the same key hides them again; local to their buffers, so
+-- other terminals (Gradle, logcat) don't hold every `,` waiting for a second key
+local function map_toggles(term)
+  local opts = { buffer = term.bufnr, silent = true }
+  vim.keymap.set('t', '<leader>lg', _lazygit_toggle, opts)
+  vim.keymap.set('t', '<leader>tt', _testterm_toggle, opts)
+  vim.keymap.set('t', '<leader>tm', _miscterm_toggle, opts)
+end
+
 function _lazygit_toggle()
   local cwd = vim.fn.getcwd()
   if (lg_terminal_map[cwd] == nil) then
@@ -21,6 +30,7 @@ function _lazygit_toggle()
       float_opts = {
         border = 'rounded',
       },
+      on_open = map_toggles,
     })
   end
 
@@ -36,6 +46,7 @@ function _testterm_toggle()
       float_opts = {
         border = 'rounded',
       },
+      on_open = map_toggles,
     })
   end
 
@@ -51,6 +62,7 @@ function _miscterm_toggle()
       float_opts = {
         border = 'rounded',
       },
+      on_open = map_toggles,
     })
   end
 

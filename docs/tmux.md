@@ -44,7 +44,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a f` | `cmd+k` | session picker, ready to type ([picker keys](#picker-keys)) |
 | `C-a w` | `cmd+j` | tree of sessions and windows, with previews: the quickest way to switch to any of them ([tree](#tree)) |
 | `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. Opens in normal mode: `j`/`k` move, `/` filters ([picker keys](#picker-keys)) |
-| `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after, `cmd+shift+0` back |
+| `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after; `cmd+0` back, or `cmd+shift+0` from another session |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
 | `C-a H/J/K/L` | | resize pane (repeatable) |
@@ -108,6 +108,7 @@ soon as you leave it.
 | `Esc` | both | clear the filter and go back to the mode the picker opened in; there, with no filter, quit |
 | `q` | normal | quit |
 | `Enter` | both | choose the line |
+| `?` | both | show / hide the preview (every fzf list, see [fzf](fzf.md#inside-any-fzf-list)) |
 
 As in nvim, zsh and Claude Code, `jj` leaves insert mode, but fzf has no timeout for the second `j`: `jj` in a
 filter always leaves. The shared part is `config/tmux/picker.zsh`; it also keeps the list and the preview of

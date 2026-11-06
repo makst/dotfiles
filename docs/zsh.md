@@ -83,7 +83,7 @@ History
 <details>
 <summary><b>Show GIF</b></summary>
 
-The up arrow searches by prefix, grey suggestions come from history, `C-r` opens atuin.
+The up arrow searches by prefix, grey suggestions come from history, `C-r` searches atuin's history in fzf.
 
 ![The up arrow searches by prefix, grey suggestions come from history, C-r opens atuin](img/zsh-history.gif)
 

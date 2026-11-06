@@ -4,9 +4,6 @@
 cached_eval fzf fzf --zsh
 
 ### fzf configuration
-# ALT-C as typed with Option on a Mac keyboard when Option is not Alt
-bindkey "ç" fzf-cd-widget
-
 # list files with fd: fast, respects .gitignore, shows hidden files
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
