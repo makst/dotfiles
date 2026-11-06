@@ -227,16 +227,17 @@ Runs the checks in `checks/` before a commit, in about a second. Each check prin
 and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED` or
 `skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
 shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them outside its sandbox (this
-repo's `.claude/settings.json`), since the tmux checks need a socket. GitHub runs `checks/check_dotfiles -v` on every
-push and pull request on a macOS runner (`.github/workflows/check.yml`), so the run's log shows each check,
-and a red check there means the same as a red check here. Before the checks, CI runs `fix_completion_dirs`
-as `setup_brew` does on a Mac: the runner's Homebrew leaves group-writable directories, and zsh would stop to
-ask about them.
+repo's `.claude/settings.json`), since the tmux checks need a socket; a command line with anything else on
+it, such as `checks/check_dotfiles | tail`, stays in the sandbox, where those two are skipped. GitHub runs
+`checks/check_dotfiles -v` on every push and pull request on a macOS runner (`.github/workflows/check.yml`),
+so the run's log shows each check, and a red check there means the same as a red check here. Before the
+checks, CI runs `fix_completion_dirs` as `setup_brew` does on a Mac: the runner's Homebrew leaves
+group-writable directories, and zsh would stop to ask about them.
 
 | Group | File | What it checks |
 |---|---|---|
 | Syntax | `checks/syntax.zsh` | every zsh, bash, JSON, TOML, YAML and Lua file parses; tmux.conf, gitconfig, ssh config, Brewfile, Ghostty, starship and AeroSpace configs load in their own tool |
-| Behaviour | `checks/behaviour.zsh` | zsh starts without errors; Claude Code's hooks (deletes that can't be undone, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
+| Behaviour | `checks/behaviour.zsh` | zsh starts without errors, and its functions find the repo in a shell that hasn't read `.zshrc` (Claude Code's); Claude Code's hooks (deletes that can't be undone, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |

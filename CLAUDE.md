@@ -93,5 +93,6 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - Git helpers: try them in a throwaway clone in the scratchpad, never on this repo's branches.
 - Claude Code's sandbox is on (`docs/claude-code.md`, "Sandbox"): Bash can't write `config/claude/settings.json`,
   `config/claude/hooks/`, `config/claude/CLAUDE.md` or `.claude/settings.json` (use Edit), and run
-  `check_dotfiles` or `checks/…` on its own line, not after `cd …;`, so it runs outside the sandbox.
+  `check_dotfiles` or `checks/…` on its own line, not after `cd …;` or piped, so it runs outside the sandbox
+  (inside, the tmux checks are skipped).
 - `~/.Trash` can't be read from Claude Code's shell (macOS privacy), so moves there can't be checked.

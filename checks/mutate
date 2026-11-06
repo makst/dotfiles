@@ -52,6 +52,7 @@ m 'starship config' 'a misspelt top-level starship key' "perl -0pi -e 's/^/add_n
 # --- behaviour
 m 'zsh starts' 'a command that fails at start' "print 'no_such_command_zz' >> zsh/.aliases"
 m 'zsh starts' 'an error in .zshdefault' "print 'no_such_command_zz' >> zsh/.zshdefault"
+m "find the repo in Claude" 'real_script_dir not exported' "perl -pi -e 's/^export real_script_dir=/real_script_dir=/' .zshrc"
 m 'no-recursive-rm' 'the rm hook allows everything' "perl -0pi -e 's/\\n/\\nexit 0\\n/' config/claude/hooks/no-recursive-rm.sh"
 m 'no-recursive-rm' 'the rm hook prints noise' "perl -0pi -e 's/\\n/\\necho hi\\n/' config/claude/hooks/no-recursive-rm.sh"
 m 'no-recursive-rm' 'the rm hook denies a harmless rm' "print 'block rm foo.txt' >> checks/rm-hook.cases"

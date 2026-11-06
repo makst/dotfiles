@@ -304,6 +304,7 @@ check_keyboard() {
 # has, its own or one from tmux.conf
 check_ghostty_tmux() {
   (( $+commands[tmux] )) || { print "tmux not installed"; return 2 }
+  grep -q '^S$' $tmp/tmux.out && { print "Claude Code's sandbox doesn't let tmux start: run it outside"; return 2 }
   local -A prefix
   local kind table key line text code
   local -i n=0

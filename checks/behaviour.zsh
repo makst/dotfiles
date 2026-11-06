@@ -18,6 +18,15 @@ check_zsh_start() {
   return 0
 }
 
+# zsh's functions find the repo in a shell that has them without having read .zshrc: Claude Code's shell, a
+# snapshot of the interactive one, keeps only exported variables. The child zsh stands in for it.
+check_zsh_exports() {
+  local got=$(TERM=xterm-256color ZDOTDIR=$repo zsh -i -c 'zsh -fc "print -r -- \$real_script_dir"' \
+    < /dev/null 2> /dev/null)
+  [[ $got == $repo ]] || print -r -- "a child shell doesn't get real_script_dir (got '$got'): export it in .zshrc"
+  return 0
+}
+
 # no-recursive-rm: every case in checks/rm-hook.cases, run in parallel through the hook as Claude Code calls it
 check_rm_hook() {
   local line i
@@ -204,6 +213,7 @@ check_skill_links() {
 
 group "Behaviour: the scripts that run on their own do what they should"
 check "zsh starts without errors" check_zsh_start
+check "zsh's functions find the repo in Claude Code's shell" check_zsh_exports
 check "no-recursive-rm blocks every recursive rm and nothing else" check_rm_hook
 check "the format hook formats only where the project asks for it" check_format_hook
 check "the bell hook keeps quiet outside tmux" check_bell_hook

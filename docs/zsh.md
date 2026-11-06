@@ -7,7 +7,9 @@ ready in about 45 ms on an M5 and about 75 ms on an M1 Max (220 ms with Oh My Zs
 
 How it loads
 ---
-`~/.zshrc` is a link into the repo. It finds the repo through that link and sources, in order:
+`~/.zshrc` is a link into the repo. It finds the repo through that link, exports it as `real_script_dir` for
+the functions (also in a shell that has them without reading `.zshrc`, such as Claude Code's), and sources,
+in order:
 
 | File | Contains |
 |---|---|

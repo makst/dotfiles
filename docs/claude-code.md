@@ -252,8 +252,11 @@ permitted"; Claude may then run it again outside, which asks first (in auto mode
 `/sandbox` shows the settings in effect.
 
 To look out for:
-- Only a whole command line is excluded: `tmux …; checks/check_dotfiles` runs sandboxed, so run excluded
-  commands on their own.
+- Only a whole command line is excluded: `tmux …; checks/check_dotfiles` or `checks/check_dotfiles | tail`
+  runs sandboxed, so run excluded commands on their own. Run that way, the two tmux checks are skipped and
+  say why, instead of failing.
+- Claude's shell is a snapshot of an interactive zsh, which keeps the functions but only exported variables;
+  so `.zshrc` exports `real_script_dir` (the repo), which the functions use.
 - No unix socket can be made inside: zsh skips lowering background jobs' priority when `$CLAUDECODE` is set
   (`bg_nice`, `zsh/.zshdefault`), git's fsmonitor is off for Claude's commands (`env` in `settings.json`),
   and nvim's fzf-lua falls back to a localhost port (`user/fzf-lua/server.lua`).

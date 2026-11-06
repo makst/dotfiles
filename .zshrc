@@ -1,5 +1,7 @@
-# the repo, found through the ~/.zshrc symlink (%x is this file, :A resolves the link)
-real_script_dir=${${(%):-%x}:A:h}
+# the repo, found through the ~/.zshrc symlink (%x is this file, :A resolves the link). Exported: the functions
+# use it, and a shell that has them without having read this file (Claude Code's, a snapshot of this one that
+# keeps only exported variables) would otherwise run them against /
+export real_script_dir=${${(%):-%x}:A:h}
 
 ZSH_CACHE_DIR=${XDG_CACHE_HOME:-$HOME/.cache}/zsh
 [[ -d $ZSH_CACHE_DIR ]] || mkdir -p $ZSH_CACHE_DIR

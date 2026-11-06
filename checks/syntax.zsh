@@ -87,6 +87,7 @@ check_lua() {
 check_tmux() {
   note="tmux.conf, demo.tmux.conf"
   (( $+commands[tmux] )) || { print "tmux not installed"; return 2 }
+  grep -q '^S$' $tmp/tmux.out && { print "Claude Code's sandbox doesn't let tmux start: run it outside"; return 2 }
   grep '^E' $tmp/tmux.out | cut -f2-
   return 0
 }
