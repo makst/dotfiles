@@ -46,6 +46,10 @@ Behaviour
 - **Rebases** stash and restore uncommitted changes and move stacked branches along (`updateRefs`).
 - **`git status` stays fast** in big repos: git's file-system monitor runs per repo, untracked files are
   cached.
+- **No empty GitHub logins in the keychain**: tpm and lazy.nvim clone plugins as the user `git` with no
+  password, so they never prompt; git would save that login in the macOS keychain after each clone, or show
+  "A keychain cannot be found to store git" where there's no keychain. The credential helper is off for
+  `https://git@github.com` only.
 - **`git branch`** lists recently used branches first. New repos start on `main`.
 - **Ignored in every repo** (`config/git/ignore`, linked to `~/.config/git/ignore`): `.DS_Store`, Claude
   Code's agent worktrees (`.claude/worktrees/`) and personal `.claude/settings.local.json`, and the files

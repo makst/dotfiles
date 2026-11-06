@@ -128,6 +128,13 @@
 [init]
 	defaultBranch = main
 
+# no credential helper for the user "git" on GitHub: tpm (and lazy.nvim) clone from https://git::@github.com/…
+# so they never ask for a password, and git would save that empty login in the keychain after every clone
+# (Homebrew git's osxkeychain helper), or ask macOS for a keychain where there is none. An empty helper
+# clears the list; a real https login to GitHub, under another user, still goes to the keychain.
+[credential "https://git@github.com"]
+	helper =
+
 # this Mac's own settings, e.g. the work email for work repos (setup_machine, config/machine/gitconfig).
 # Last, so they win; git skips the file if it doesn't exist
 [include]
