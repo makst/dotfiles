@@ -42,7 +42,7 @@ Inside any fzf list
 ---
 | Key | Action |
 |---|---|
-| `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, `mdv`, `change_theme`: they take one line) |
+| `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, `mdv`, `change_theme`: they take one line) |
 | `C-a` | mark all |
 | `?` | show / hide the preview (hidden by default, shown from the start in the pickers) |
 | `C-n` / `C-p` | scroll the preview a line; `C-Alt+n` / `C-Alt+p` half a page |

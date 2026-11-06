@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+# Usage: buffers [fzf options]
+# tmux's paste buffers, newest first, each with the start of its text; the preview shows the whole buffer.
+# Enter pastes the chosen one into the current pane: a popup isn't a pane, so that's the one it opened over.
+# Keys as in every picker (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to
+# prefix P (config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
+source ${0:A:h}/picker.zsh
+
+# each line is "buffer name<tab>what fzf shows"
+list=$(tmux list-buffers -F '#{buffer_name}'$'\t''#{buffer_sample}')
+if [[ -z $list ]]; then
+  tmux display-message 'no paste buffers yet: copy something in copy mode (C-a Enter)'
+  exit 0
+fi
+choice=$(print -r -- $list | picker buffer \
+  --header 'j/k move · Enter pastes · / filters, jj back · q quits' \
+  --preview 'tmux show-buffer -b {1}' --preview-window "$picker_preview,wrap" "$@")
+[[ -n $choice ]] && tmux paste-buffer -b "${choice%%$'\t'*}"
+exit 0

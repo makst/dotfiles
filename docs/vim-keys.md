@@ -80,7 +80,7 @@ Each tool
 - **Xcode**: Editor → Vim Mode. Motions, operators, text objects and `:` commands work; Xcode can't take
   mappings, so no leader, `jj` or `;` pickers.
 - **zsh**: vi mode, `jj` leaves insert mode (see [zsh](zsh.md)).
-- **fzf pickers** (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, `mdv`, `change_theme`): a normal mode with `j`/`k`,
+- **fzf pickers** (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, `mdv`, `change_theme`): a normal mode with `j`/`k`,
   `g`/`G`, `/` to filter and `jj` back from typing (see [tmux](tmux.md#picker-keys)).
 - **Claude Code**: the prompt is in vim mode (`editorMode` in `config/claude/settings.json`), `jj` leaves
   insert mode (`vimInsertModeRemaps`). Motions, operators and text objects work; no other mappings. In

@@ -92,12 +92,12 @@ the text of each line, so a window matches by its own name, not its session's.
 
 Picker keys
 ---
-The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`),
-`agent_resume`, `mdv`, `change_theme` and the shell's history search (`C-r`, [zsh](zsh.md#history)), share
-their keys and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
-`change_theme` and the history search open ready to type, the others in normal mode, with the filter hidden until there is one. The prompt shows the mode:
-`session> ` while typing, `session: ` in normal mode. A picker appears with its list already in and closes as
-soon as you leave it.
+The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), the paste
+buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme` and the shell's history search (`C-r`,
+[zsh](zsh.md#history)), share their keys and work like nvim: a normal mode to move and an insert mode to type
+a filter. The session picker, `change_theme` and the history search open ready to type, the others in normal
+mode, with the filter hidden until there is one. The prompt shows the mode: `session> ` while typing,
+`session: ` in normal mode. A picker appears with its list already in and closes as soon as you leave it.
 
 | Key | Mode | Does |
 |---|---|---|
@@ -126,7 +126,8 @@ Copy mode uses vi keys and copies to the macOS clipboard:
 | `y` | copy and leave |
 | `H` / `L` | start / end of line |
 | `Esc` | leave |
-| `C-a p` / `C-a P` / `C-a b` | paste the last buffer / choose a buffer / list buffers |
+| `C-a p` | paste the last buffer |
+| `C-a P` | the paste buffers in a picker, newest first, the whole text in the preview; `Enter` pastes the chosen one ([picker keys](#picker-keys)) |
 
 The command prompt (`C-a :`, renaming, `/` search) uses vi keys as well (`status-keys vi`): it opens in
 insert mode, `Esc` goes to normal mode with vi's motions. Mouse selections are copied as well. Copies also travel over ssh: tmux sends them to Ghostty as OSC 52,

@@ -143,7 +143,7 @@ config/btop/              btop: vim keys, the terminal's colours
 config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for libedit)
 .fzf.zsh                  fzf and fzf-tab configuration
 config/ghostty/           Ghostty config and the generated base16 theme
-config/tmux/              tmux.conf and the session picker
+config/tmux/              tmux.conf and the pickers (sessions, windows, agents, paste buffers)
 config/nvim/              Neovim: one directory per plugin under lua/user/
 config/starship.toml      prompt
 config/git/.gitconfig     git
