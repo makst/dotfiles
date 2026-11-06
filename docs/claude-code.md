@@ -303,6 +303,7 @@ real directory because the skills claude.ai syncs live there too.
 | Command | Does |
 |---|---|
 | `/ship [pr] [about]` | finishes the work in this checkout: moves to a branch if on the default one, checks the diff against the project's `CLAUDE.md` (docs, lock files, tests that should come with it), runs the project's checks, commits in the project's style. With `pr` it also pushes and opens a pull request. Only you can start it; Claude doesn't run it by itself |
+| `/handoff [focus]` | gets a conversation ready for `/clear`: saves what only it knows (open items, the next step, ideas not taken, options you declined, gotchas, the state of the branch) into Claude's memory, updating the file that already covers a topic, lists each item with the file it went into so you can check it, and ends with one line to paste after `/clear` to carry on. It writes memory only, never commits. Only you can start it |
 
 In an agent's window, `/ship` then `agent_done <name>` after merging is the whole finish.
 
