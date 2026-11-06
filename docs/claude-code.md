@@ -287,7 +287,7 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 ### Hooks
 | When | Does |
 |---|---|
-| before a shell command | refuses `rm -r` / `rm -rf` and tells Claude to move things to the trash instead |
+| before a shell command | refuses deletes that can't be undone (`rm -r` / `rm -rf`, `find … -delete`, `git clean -f`) and tells Claude to move things to the trash instead (`git stash -u` for untracked files) |
 | after Claude edits or writes a file | formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style) |
 | Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
 | Claude asks for permission or a question, or has finished | sends a macOS notification unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |

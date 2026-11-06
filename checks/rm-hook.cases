@@ -43,6 +43,14 @@ block sh -c 'rm -rf x'
 block bash -lc "rm -r x"
 block eval 'rm -rf x'
 block cat > f <<'EOF'\ntext\nEOF\nrm -rf x
+block find . -name '*.log' -delete
+block find . -delete
+block git clean -fdx
+block git clean -f
+block git clean --force -d
+block git -C repo clean -fd
+block ls && git clean -fX
+block sh -c 'git clean -fd'
 allow rm file.txt
 allow rm -f file.txt
 allow rm -i a b c
@@ -60,3 +68,10 @@ allow ls # rm -rf x
 allow cat > f <<'EOF'\nrm -rf build\nEOF
 allow cat > f <<-EOF\n\trm -rf build\n\tEOF\nls
 allow find . -name '*.log' -print
+allow git clean -n
+allow git clean -nfd
+allow git clean --dry-run -fd
+allow git clean
+allow git -C repo status
+allow git commit -m "git clean -fdx"
+allow echo find . -delete
