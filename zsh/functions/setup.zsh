@@ -202,7 +202,8 @@ function check_dotfiles() {
 # makes, this Mac's files in ~/.config/dotfiles, the Brewfile's packages, nvim's plugins against
 # lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, the repo's git hooks, the ssh include,
 # the login shell, that a new zsh and nvim start without errors, and the steps of "A new Mac" done by hand:
-# the ssh agent and commit signing. --scripted leaves those out, for checks/fresh_mac, which can only run the
+# the ssh agent, commit signing and, on a work Mac signed in to gcloud, Claude's Viewer service account
+# (docs/gcloud.md). --scripted leaves those out, for checks/fresh_mac, which can only run the
 # scripts. Changes nothing: prints each problem with the step that fixes it and returns 1, or one line when
 # all is well. The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
 function check_mac() {
@@ -288,6 +289,10 @@ function check_mac() {
           problems+="this Mac's signing key isn't in config/git/allowed_signers: secretive_key signing"
       fi
     fi
+    # a work Mac signed in to gcloud: Claude should act as the Viewer service account, not as you
+    [[ -r $dir/kind && $(<$dir/kind) == work && -s ${CLOUDSDK_CONFIG:-~/.config/gcloud}/credentials.db ]] &&
+      ! jq -e '.env.CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT' $dir/claude.json > /dev/null 2>&1 &&
+      problems+="Claude Code uses your own gcloud login: docs/gcloud.md, \"Read-only for real\""
   fi
   grep -qxF "Include ~/dotfiles/config/ssh/config" ~/.ssh/config 2> /dev/null ||
     problems+="~/.ssh/config doesn't include the repo's config/ssh/config: setup_ssh"

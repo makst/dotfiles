@@ -51,6 +51,39 @@ that one yourself with `!`. `bq query` isn't denied and could run SQL that chang
 `UPDATE`); Claude asks before anything like that like any other command. When you want Claude to make a
 change, run the command it suggests yourself.
 
+### Read-only for real: a Viewer service account
+The deny rules are a list of words, and a list can miss one: `gcloud compute ssh`, a verb nobody listed, a raw
+API call with `curl` and your token. To make the read-only rule hold whatever Claude types, its shell can act
+as a service account that only has Viewer access, while your own terminals keep your login. The deny rules
+stay as a second layer. Once per work Mac (an admin may have to run the role bindings):
+
+```zsh
+sa=claude-viewer@<project>.iam.gserviceaccount.com
+gcloud iam service-accounts create claude-viewer --project <project> --display-name "Claude Code, read-only"
+gcloud organizations add-iam-policy-binding <org-id> --member serviceAccount:$sa --role roles/viewer
+gcloud iam service-accounts add-iam-policy-binding $sa --project <project> \
+  --member user:<you> --role roles/iam.serviceAccountTokenCreator   # lets you act as it
+```
+
+Then add it to this Mac's Claude settings, `~/.config/dotfiles/claude.json`, which the `claude` wrapper merges
+in ([Claude Code](claude-code.md#this-machine)):
+
+```json
+{ "env": { "CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT": "claude-viewer@<project>.iam.gserviceaccount.com" } }
+```
+
+Without org-wide access, bind `roles/viewer` per project or folder instead. `roles/viewer` doesn't read
+BigQuery table data or private logs; add `roles/bigquery.dataViewer` or `roles/logging.privateLogViewer` if
+Claude should. `check_mac` reminds you on a work Mac that is signed in to gcloud without this.
+
+To look out for:
+- Each command Claude runs prints `WARNING: This command is using service account impersonation`: that's
+  the sign it works. A command that doesn't print it (check `bq` once) runs with your login, and only the
+  deny rules hold it back.
+- Application default credentials (client libraries, a local server Claude starts) still use your login.
+- Claude Code started from the desktop app or an IDE skips the wrapper and so the setting: start it from a
+  terminal for cloud work.
+
 ## Getting to know a project
 Read-only commands that show what's there; Claude runs the same when asked to map a project.
 
