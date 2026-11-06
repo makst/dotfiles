@@ -9,31 +9,12 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 
-# https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
-# Colours are the terminal's 16 ANSI ones, so they follow the Ghostty theme.
-# --gutter=' ': fzf draws its gutter as ▌ in the text colour on every line; only the current line gets a bar.
-# The input, the list and the preview each in a box of their own: one border around all of them leaves the
-# input and the list a column short of the edge when the preview is below.
-export FZF_DEFAULT_OPTS="
---multi
---layout=reverse
---height=60%
---input-border=rounded
---list-border=rounded
---info=inline-right
---gutter=' '
---preview-window=:hidden
---color='fg:-1,bg:-1,hl:green,fg+:bright-white,bg+:bright-black,hl+:bright-green'
---color='info:yellow,prompt:blue,pointer:magenta,marker:green,spinner:cyan,header:cyan,border:bright-black,gutter:-1'
---preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && eza --tree --level=2 --color=always --icons=always {}) || echo {} 2> /dev/null | head -200'
---bind '?:toggle-preview'
---bind 'ctrl-a:select-all'
---bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
---bind 'ctrl-n:preview-down'
---bind 'ctrl-p:preview-up'
---bind 'ctrl-alt-n:preview-half-page-down'
---bind 'ctrl-alt-p:preview-half-page-up'
-"
+# The look and keys of every fzf are in config/fzf/fzfrc, which fzf reads each time it starts. tmux.conf points
+# its server at the same file, so the pickers in tmux popups match. It's this checkout's file, not a link setup
+# makes: fzf fails when the file is missing, so it works as soon as a pull brings it. A FZF_DEFAULT_OPTS left
+# over from before would be added on top of the file, so it goes.
+export FZF_DEFAULT_OPTS_FILE=${${(%):-%x}:A:h}/config/fzf/fzfrc
+unset FZF_DEFAULT_OPTS
 
 # find-in-file - usage: fif <SEARCH_TERM>
 fif() {
@@ -84,8 +65,9 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' menu no
 # preview directory's content with eza when completing cd
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons=always $realpath'
-zstyle ':fzf-tab:complete:cd:*' fzf-flags --preview-window=nohidden # FZF_DEFAULT_OPTS hides previews
-# FZF_DEFAULT_OPTS for its look too: the border, colours and layout of every other fzf
+zstyle ':fzf-tab:complete:cd:*' fzf-flags --preview-window=nohidden # fzfrc hides previews
+# fzf's defaults for its look too: the border, colours and layout of every other fzf. fzf reads fzfrc whatever
+# this says (fzf-tab only blanks FZF_DEFAULT_OPTS); it keeps a FZF_DEFAULT_OPTS set by hand from being dropped.
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
 # its height is the number of candidates plus fzf-pad: the input's box and the list's border
 zstyle ':fzf-tab:*' fzf-pad 5

@@ -38,6 +38,7 @@ m 'Brewfile loads' 'a Ruby error in the machine Brewfile' "print 'brew \"x\" (' 
 m 'Brewfile package exists' 'a formula that does not exist' "print 'brew \"no-such-formula-zz\"' >> Brewfile"
 m 'Brewfile package exists' 'a cask that does not exist' "print 'cask \"no-such-cask-zz\"' >> Brewfile"
 m 'Brewfile package exists' 'a package listed twice' "l=\$(command grep -m1 '^brew ' Brewfile); print -r -- \$l >> Brewfile"
+m 'fzfrc' 'an unknown fzf option' "print -- '--no-such-option' >> config/fzf/fzfrc"
 m 'Ghostty config' 'an unknown Ghostty key' "print 'no-such-key = 1' >> config/ghostty/config"
 m 'starship config' 'a misspelt top-level starship key' "perl -0pi -e 's/^/add_newlinee = true\n/' config/starship.toml"
 # AeroSpace: skipped in a worktree (it validates only the live config)

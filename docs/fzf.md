@@ -15,7 +15,10 @@ completions, tmux sessions, colour schemes. A few small tools feed it or show it
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 
 Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, which would otherwise reset its
-key bindings.
+key bindings. The look and keys of every fzf, below, are in `config/fzf/fzfrc`. fzf
+reads it each time it opens, through `FZF_DEFAULT_OPTS_FILE`, set by `.fzf.zsh` for the shell and by `tmux.conf`
+for the pickers in tmux popups. So an edit shows in the next fzf, without a new shell or restarting tmux: the
+tmux server keeps the environment it started with, and the options used to live there.
 
 Shell keys
 ---

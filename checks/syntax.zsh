@@ -183,6 +183,14 @@ check_starship() {
   print -r -- ${"$(<$err)"//$'\e'\[[0-9;]#m/}
 }
 
+# fzf: fzfrc parses and has only options this fzf knows, when fzf is installed (--filter: no terminal needed)
+check_fzf() {
+  note="config/fzf/fzfrc"
+  (( $+commands[fzf] )) || { print "fzf not installed"; return 2 }
+  FZF_DEFAULT_OPTS= FZF_DEFAULT_OPTS_FILE=config/fzf/fzfrc fzf --filter x < /dev/null 2>&1 > /dev/null
+  (( $? != 2 ))
+}
+
 # AeroSpace: the running AeroSpace validates its config, when it's running and its config is this checkout's
 check_aerospace() {
   note="config/aerospace/aerospace.toml"
@@ -206,4 +214,5 @@ check "Brewfile loads for every kind of Mac" check_brewfile
 check "every Brewfile package exists in Homebrew" check_brew_names
 check "Ghostty config is valid" check_ghostty
 check "starship config has only known keys" check_starship
+check "fzfrc has only options fzf knows" check_fzf
 check "AeroSpace config is valid" check_aerospace

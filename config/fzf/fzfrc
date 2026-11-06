@@ -1,0 +1,28 @@
+# fzf's default options, for every fzf: the shell's, fzf-tab's, the tmux pickers' and the ones in nvim's
+# terminal. .fzf.zsh and tmux.conf point FZF_DEFAULT_OPTS_FILE at it, in this checkout.
+# fzf reads this file each time it starts, so an edit shows in the next fzf, with no new shell or tmux server.
+# One or more options per line, quoted as in the shell; lines starting with # are comments.
+# https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d
+
+--multi
+--layout=reverse
+--height=60%
+# The input, the list and the preview each in a box of their own: one border around all of them leaves the
+# input and the list a column short of the edge when the preview is below.
+--input-border=rounded
+--list-border=rounded
+--info=inline-right
+# fzf draws its gutter as ▌ in the text colour on every line; only the current line gets a bar.
+--gutter=' '
+--preview-window=:hidden
+# Colours are the terminal's 16 ANSI ones, so they follow the Ghostty theme.
+--color='fg:-1,bg:-1,hl:green,fg+:bright-white,bg+:bright-black,hl+:bright-green'
+--color='info:yellow,prompt:blue,pointer:magenta,marker:green,spinner:cyan,header:cyan,border:bright-black,gutter:-1'
+--preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && eza --tree --level=2 --color=always --icons=always {}) || echo {} 2> /dev/null | head -200'
+--bind '?:toggle-preview'
+--bind 'ctrl-a:select-all'
+--bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
+--bind 'ctrl-n:preview-down'
+--bind 'ctrl-p:preview-up'
+--bind 'ctrl-alt-n:preview-half-page-down'
+--bind 'ctrl-alt-p:preview-half-page-up'
