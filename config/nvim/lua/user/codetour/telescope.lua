@@ -31,23 +31,23 @@ end
 local function stops_finder()
   -- the stops follow edits through extmarks; read where they are now, not where they were saved
   require('codetour.decoration').sync_positions(state.stops())
-  local results, width = {}, 0
-  for idx, stop in ipairs(state.stops()) do
-    local path = string.format('%s:%d', vim.fn.fnamemodify(stop.file, ':~:.'), stop.lnum or 1)
-    width = math.max(width, vim.fn.strdisplaywidth(path))
-    table.insert(results, { idx = idx, stop = stop, path = path })
-  end
+  local stops = state.stops()
   local displayer = entry_display.create {
     separator = '  ',
-    items = { { width = #tostring(#results) }, { width = width }, { remaining = true } },
+    items = { { width = #tostring(#stops) }, { remaining = true } },
   }
+  local results = {}
+  for idx, stop in ipairs(stops) do
+    table.insert(results, { idx = idx, stop = stop, path = string.format('%s:%d', vim.fn.fnamemodify(stop.file, ':~:.'), stop.lnum or 1) })
+  end
   return finders.new_table {
     results = results,
     entry_maker = function(item)
       local stop = item.stop
       return {
         value = item,
-        ordinal = item.path .. ' ' .. stop.note,
+        -- the note is the overview; the path stays searchable and shows above the preview
+        ordinal = stop.note .. ' ' .. item.path,
         filename = stop.file,
         text = stop.note,
         lnum = stop.lnum or 1,
@@ -55,7 +55,6 @@ local function stops_finder()
         display = function()
           return displayer {
             { tostring(item.idx), 'TelescopeResultsNumber' },
-            { item.path, 'TelescopeResultsIdentifier' },
             stop.note ~= '' and stop.note or { '(no note)', 'Comment' },
           }
         end,
@@ -63,6 +62,41 @@ local function stops_finder()
     end,
   }
 end
+
+local preview_namespace = vim.api.nvim_create_namespace('user_codetour_preview')
+
+-- The stop's file at its line, its note drawn above it as on the page, its path as the title.
+local stop_previewer = previewers.new_buffer_previewer {
+  title = 'Stop',
+  define_preview = function(self, entry)
+    local item, winid = entry.value, self.state.winid
+    conf.buffer_previewer_maker(item.stop.file, self.state.bufnr, {
+      bufname = self.state.bufname,
+      winid = winid,
+      callback = function(bufnr)
+        if not vim.api.nvim_win_is_valid(winid) then return end
+        local row = math.min(entry.lnum, vim.api.nvim_buf_line_count(bufnr)) - 1
+        local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ''
+        vim.api.nvim_buf_clear_namespace(bufnr, preview_namespace, 0, -1)
+        vim.api.nvim_buf_set_extmark(bufnr, preview_namespace, row, 0, {
+          line_hl_group = 'TelescopePreviewLine',
+          virt_lines = item.stop.note ~= '' and require('user.codetour.notes').virt_lines(
+            item.stop.note, item.idx, #state.stops(), nil, line:match('^%s*'), vim.api.nvim_win_get_width(winid) - 2
+          ) or nil,
+          virt_lines_above = row > 0,
+        })
+        -- a few lines before the stop on top, then its note, then the code it explains
+        vim.wo[winid].scrolloff = 0
+        vim.api.nvim_win_call(winid, function()
+          vim.fn.winrestview({ lnum = row + 1, col = 0, topline = math.max(row - 2, 1) })
+        end)
+      end,
+    })
+  end,
+}
+
+-- the path as the preview's title; telescope only does that for every picker at once (dynamic_preview_title)
+function stop_previewer:title(entry) return entry and entry.value.path or 'Stop' end
 
 -- with_stops(prompt_bufnr, change)
 -- Gives change(stops, idx) a copy of the open tour's stops and the selected index, saves the copy back
@@ -110,7 +144,7 @@ function M.stops(opts)
     prompt_title = string.format('Tour: %s', tour.name),
     finder = stops_finder(),
     sorter = conf.generic_sorter(opts),
-    previewer = conf.qflist_previewer(opts),
+    previewer = stop_previewer,
     attach_mappings = function(_, map)
       map({ 'i', 'n' }, '<M-d>', remove_stop)
       map('n', 'dd', remove_stop)

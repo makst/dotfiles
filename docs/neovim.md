@@ -240,7 +240,9 @@ files). Add a language there and restart.
 Integrations
 ---
 - **Code tours** ([codetour.nvim](https://github.com/roeeyn/codetour.nvim)): a tour is an ordered list of
-  stops in the code, each with a note shown as a virtual line above it, saved as JSON in `<git root>/.codetour/`.
+  stops in the code, each with a note, saved as JSON in `<git root>/.codetour/`. The note shows above its line
+  as a shaded block with a bar down the left: "stop 4 of 10 · tour" on top, then the whole note, wrapped at
+  100 columns (the plugin's own is one line that runs off the window).
   A folder's `.nvim.lua` can point `storage_path` at tours kept elsewhere, e.g. a docs repo that tours code
   in its sibling repos. Tours don't reopen on start.
 
@@ -248,7 +250,7 @@ Integrations
   |---|---|
   | `;o` | pick a tour, its stops in the preview, and open it: notes on, stops in the quickfix list |
   | `:CodeTour open` | reopen the last tour, or pick one as `;o` |
-  | `;l` (`:CodeTour list`) | pick a stop of the open tour, the code around it in the preview |
+  | `;l` (`:CodeTour list`) | the open tour's stops by note, in order; the preview shows the whole note above its code, the path on top |
   | `]q` / `[q`, `[Q` / `]Q` | next / previous stop, first / last (nvim's quickfix keys; a count skips ahead) |
   | `:CodeTour` | all stops with a preview; reorder lines, edit notes, `:w` saves |
   | `:CodeTour toggle-notes` | hide / show the notes |
