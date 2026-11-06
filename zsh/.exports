@@ -15,7 +15,8 @@ cached_eval lesspipe.sh lesspipe.sh
 export LESS=' -R '
 # bat: the base16 theme uses the terminal's 16 colours, i.e. the Ghostty theme
 export BAT_THEME=base16
-# file colours for eza, fzf-tab and zsh completion; the ansi theme uses the terminal's 16 colours, so it follows the Ghostty theme
+# file colours for eza, fzf-tab and zsh completion; the ansi theme uses the terminal's 16 colours, so it
+# follows the Ghostty theme
 _ls_colors() { print -r -- "export LS_COLORS=${(q)$(vivid generate ansi)}" }
 cached_eval vivid _ls_colors
 unfunction _ls_colors

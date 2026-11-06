@@ -1,5 +1,5 @@
-# atuin: shell history in SQLite, searched with C-r. ~/.atuin/config.toml links here (setup_atuin in zsh/.functions).
-# Every option with its default: https://docs.atuin.sh/configuration/config/
+# atuin: shell history in SQLite, searched with C-r. ~/.atuin/config.toml links here (setup_atuin in
+# zsh/.functions). Every option with its default: https://docs.atuin.sh/configuration/config/
 
 # history stays on this Mac: no sync (`atuin register` / `atuin login` would turn it on), no update checks
 auto_sync = false

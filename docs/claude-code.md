@@ -8,7 +8,8 @@ hooks are in `config/claude`, see [Config](#config).
 <details>
 <summary><b>Show GIF</b></summary>
 
-`agent` starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, `cmd+j` jumps there, then merge and `agent_done`.
+`agent` starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, `cmd+j`
+jumps there, then merge and `agent_done`.
 
 ![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/claude-code.gif)
 
@@ -25,9 +26,9 @@ agent fix-login "the login form rejects valid emails"
 ```
 
 `agent <name> [prompt]` runs `claude -w <name>`: Claude Code in a **git worktree** of its own, on a branch
-`worktree-<name>`, so agents never edit the same checkout as you or each other. Inside tmux it opens in a **new window named
-`<name>`**, in the current directory; outside tmux it runs right there. Arguments after the name are passed
-on to `claude`.
+`worktree-<name>`, so agents never edit the same checkout as you or each other. Inside tmux it opens in a
+**new window named `<name>`**, in the current directory; outside tmux it runs right there. Arguments after the
+name are passed on to `claude`.
 
 When Claude exits, the window stays open as a shell in the worktree. The worktrees live in
 `.claude/worktrees/`, which the global gitignore hides from `git status` in every repo.
@@ -97,10 +98,11 @@ or sessions:
 | cyan hourglass 󰔟 | **working** | you send a prompt or approve a permission, and after each tool it runs |
 | none | idle | Claude has just started, you've looked at the finished agent, or it was on screen when it finished |
 
-A window shows the mark of its most urgent agent, in that order; a session the most urgent of its windows.
-The marks appear on the windows in the status bar, in the tree (`cmd+j`) next to every session, window and
-pane with more than one in its window, and next to the running sessions in the session picker (`cmd+k`). The right of the status bar counts
-the agents in each state across all sessions, e.g. `󰂞 1 󰄬 2 󰔟 3`, so you see them from any session.
+A window shows the mark of its most urgent agent, in that order; a session the most urgent of its windows. The
+marks appear on the windows in the status bar, in the tree (`cmd+j`) next to every session, window and pane
+with more than one in its window, and next to the running sessions in the session picker (`cmd+k`). The right
+of the status bar counts the agents in each state across all sessions, e.g. `󰂞 1 󰄬 2 󰔟 3`, so you see them
+from any session.
 
 The hook also rings the bell when Claude needs input or has finished its turn, whatever the notification
 setting in `/config` is: if Ghostty is in the background, the Dock icon bounces and the window title shows a
@@ -186,11 +188,10 @@ Config
 with nothing about this Mac, its tools or this repo. `setup_claude` links it into `~/.claude`:
 
 - **`settings.json`**: model (Opus, 1M-token context) and effort, permissions, sandbox, hooks, voice dictation
-  (hold space), vim keys in the prompt (`editorMode`: `Esc` or `jj` for normal mode, then motions like `w`, `b`, `f`,
-  `dd`, `ciw`; `i` back to typing; see [vim-keys](vim-keys.md)).
-  Commits made by Claude carry only the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`).
-  Conversations are kept for a year instead of 30 days (`cleanupPeriodDays`), so `agent_resume` and
-  `claude -r` can still find old ones.
+  (hold space), vim keys in the prompt (`editorMode`: `Esc` or `jj` for normal mode, then motions like `w`,
+  `b`, `f`, `dd`, `ciw`; `i` back to typing; see [vim-keys](vim-keys.md)). Commits made by Claude carry only
+  the `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`). Conversations are kept for a year
+  instead of 30 days (`cleanupPeriodDays`), so `agent_resume` and `claude -r` can still find old ones.
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
   when asked. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
   Mac it sets up).
@@ -302,12 +303,12 @@ In an agent's window, `/ship` then `agent_done <name>` after merging is the whol
 dotfiles/docs feat/claude-config !+ (worktree)  Opus 5.5 medium  ctx 18% 184k  cache 42m  5h 12% 3h  7d 34% 4d
 ```
 The directory from the repo root, the branch and its state with the prompt's marks (`!` modified, `+` staged,
-`?` untracked, `✘` deleted, `»` renamed, `=` conflicted, `$` stashed, `⇡`/`⇣` ahead / behind), `worktree` in an
-agent's own worktree, the model and effort, and how full the context window is, in percent and tokens: green,
-yellow from 50%, red from 80%, when it's time to `/compact` or `/clear`. Then how much of the plan's 5-hour
-session and 7-day weekly limits is used, in the same colours, each followed by the time until it resets:
-hours, or minutes in the last hour, for the session; days, or hours in the last day, for the week. They appear
-after the first reply in a session, and not at all when signed in with an API key.
+`?` untracked, `✘` deleted, `»` renamed, `=` conflicted, `$` stashed, `⇡`/`⇣` ahead / behind), `worktree` in
+an agent's own worktree, the model and effort, and how full the context window is, in percent and tokens:
+green, yellow from 50%, red from 80%, when it's time to `/compact` or `/clear`. Then how much of the plan's
+5-hour session and 7-day weekly limits is used, in the same colours, each followed by the time until it
+resets: hours, or minutes in the last hour, for the session; days, or hours in the last day, for the week.
+They appear after the first reply in a session, and not at all when signed in with an API key.
 
 Between the context and the limits, how long the prompt cache stays warm: `cache 42m` in green, yellow in its
 last 10 minutes, and `cache cold` in red once it has expired: the next message then reads the whole context

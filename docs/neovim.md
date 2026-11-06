@@ -45,8 +45,9 @@ Behaviour worth knowing
 - Diagnostics are shown as icons in the sign column and coloured line numbers, not as text at the end of
   the line. Read them with `]d` / `[d`, `;e` or `,xx`.
 - **Per-folder config**: a `.nvim.lua` (or `.nvimrc`, `.exrc`) in the folder nvim starts in, or in any folder
-  above it, is loaded after this config (`exrc`). A file meant for one folder only checks `vim.fn.getcwd()`. nvim asks once whether to trust each such file and asks again when it changes, so a
-  cloned repo can't run code you haven't seen. `:trust` / `:trust ++deny` change the answer later.
+  above it, is loaded after this config (`exrc`). A file meant for one folder only checks `vim.fn.getcwd()`.
+  nvim asks once whether to trust each such file and asks again when it changes, so a cloned repo can't run
+  code you haven't seen. `:trust` / `:trust ++deny` change the answer later.
 
 Keys
 ---

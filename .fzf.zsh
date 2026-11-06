@@ -41,7 +41,7 @@ export FZF_DEFAULT_OPTS="
 # find-in-file - usage: fif <SEARCH_TERM>
 fif() {
   if [ ! "$#" -gt 0 ]; then
-    echo "Need a string to search for!";
+    print -u2 "Need a string to search for!"
     return 1;
   fi
 

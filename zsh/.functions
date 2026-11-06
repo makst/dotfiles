@@ -1,18 +1,19 @@
 #!/usr/bin/env zsh
 
-# shell start-up time; zsh-bench (https://github.com/romkatv/zsh-bench) measures input lag too
+# timezsh [shell]: shell start-up time (default: $SHELL), measured with hyperfine; zsh-bench
+# (https://github.com/romkatv/zsh-bench) measures input lag too
 timezsh() {
   hyperfine --warmup 3 --shell=none "${1-$SHELL} -i -c exit"
 }
 
-# pick a base16 scheme for nvim and Ghostty (config/ghostty/themes/base16) together.
+# change_theme: pick a base16 scheme for nvim and Ghostty (config/ghostty/themes/base16) together.
 # tmux, fzf, bat and starship use the terminal's 16 colours, so they follow Ghostty.
 function change_theme() {
   local colors=~/.local/share/nvim/lazy/tinted-vim/colors
   local scheme
   scheme=$(find "$colors" -name 'base16-*.vim' -exec basename {} .vim \; | sort | fzf --prompt 'base16 scheme> ') || return
 
-  echo "vim.cmd [[colorscheme $scheme]]" > "$real_script_dir/config/nvim/lua/user/base16-vim.lua"
+  print -r "vim.cmd [[colorscheme $scheme]]" >"$real_script_dir/config/nvim/lua/user/base16-vim.lua"
 
   # base16 -> ANSI the way tinted-terminal maps it
   awk -F"'" -v scheme="$scheme" '
@@ -26,16 +27,17 @@ function change_theme() {
       for (i = 1; i <= 16; i++) print "palette = " i - 1 "=" c[ansi[i]]
     }' "$colors/$scheme.vim" > "$real_script_dir/config/ghostty/themes/base16"
 
-  echo "=> $scheme: reload Ghostty with cmd+shift+, and restart nvim"
+  print -r "=> $scheme: reload Ghostty with cmd+shift+, and restart nvim"
 }
 
 # -------------------------
 # INSTALL / SETUP FUNCTIONS
 # -------------------------
 
+# setup_brew: installs the Brewfile's packages (see the Brewfile for what and why) with `brew bundle`, then
+# fix_completion_dirs, since an install can leave a completion directory zsh calls insecure.
 function setup_brew() {
-  echo "=> Installing brew packages from the Brewfile"
-  # see the Brewfile for what is installed and why
+  print "=> Installing brew packages from the Brewfile"
   brew bundle --file="$real_script_dir/Brewfile"
   local bundle=$?
   # also after a failed bundle: the packages it did install may have changed permissions
@@ -60,9 +62,10 @@ function fix_completion_dirs() {
   return 0
 }
 
+# setup_window_management: links AeroSpace's config (AeroSpace comes from the Brewfile), sets the Dock and
+# window defaults it works best with and starts it. Its first start asks for Accessibility access (System
+# Settings > Privacy & Security > Accessibility); from then on it starts at login (start-at-login in the config).
 function setup_window_management() {
-  # AeroSpace comes from the Brewfile. Its first start asks for Accessibility access (System Settings >
-  # Privacy & Security > Accessibility); from then on it starts at login (start-at-login in the config).
   mkdir -p "$HOME/.config/aerospace"
   ln -sfn "$real_script_dir/config/aerospace/aerospace.toml" "$HOME/.config/aerospace/aerospace.toml"
   # Mission Control shows the windows of other workspaces too small without this
@@ -109,9 +112,9 @@ function setup_ideavim() {
   studio installPlugins IdeaVIM AceJump 2>&1 | grep 'installed plugin'
 }
 
+# setup_fzf: links ~/.fzf.zsh, which zsh sources. fzf, eza (improved file/directory listing), bat (cat with
+# syntax highlighting) and lesspipe (display more with less) come from the Brewfile.
 function setup_fzf() {
-  # fzf, eza (improved file/directory listing), bat (cat with syntax highlighting) and
-  # lesspipe (display more with less) come from the Brewfile
   ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
 }
 
@@ -154,17 +157,18 @@ function mds() {
   fi
 }
 
+# setup_node: installs the latest node LTS with fnm (Brewfile, zsh/.exports), makes it the default and
+# installs the global npm packages.
 function setup_node() {
-  # node comes from fnm (Brewfile, zsh/.exports)
   fnm install --lts
   fnm default lts-latest
   npm install -g \
     typescript 
 }
 
+# setup_caps_lock: Caps Lock becomes (right) Ctrl, now with hidutil and at every login with a LaunchAgent,
+# since hidutil's mappings don't survive a reboot (https://apple.stackexchange.com/a/283253).
 function setup_caps_lock() {
-  # https://apple.stackexchange.com/a/283253
-  # Caps Lock -> Right Ctrl
   local mapping='{"UserKeyMapping":[{"HIDKeyboardModifierMappingSrc":0x700000039,"HIDKeyboardModifierMappingDst":0x7000000e4}]}'
   hidutil property --set "$mapping"
 
@@ -195,20 +199,22 @@ PLIST
   launchctl bootstrap "gui/$(id -u)" "$plist"
 }
 
+# setup_atuin: links atuin's config into ~/.atuin, where it keeps its data and config, and imports the zsh
+# history once.
 function setup_atuin() {
-  # atuin keeps its data and config in ~/.atuin
   mkdir -p ~/.atuin
   ln -sfn "$real_script_dir/config/atuin/config.toml" ~/.atuin/config.toml
   # once: copy the zsh history in, so C-r finds what was typed before atuin
   [[ -f ~/.atuin/data/history.db ]] || atuin import zsh
 }
 
+# setup_python: uv (Brewfile) installs python itself: `python` and `python3` in ~/.local/bin are the latest
+# version. Projects pin theirs with `uv python pin` / .python-version; `uv tool install` puts CLI tools on PATH.
 function setup_python() {
-  # uv (Brewfile) installs python itself: `python` and `python3` in ~/.local/bin are the latest version.
-  # Projects pin theirs with `uv python pin` / .python-version; `uv tool install` puts CLI tools on PATH.
   uv python install --default
 }
 
+# setup_macos_defaults: the macOS settings these dotfiles rely on, for keys held down in vim.
 function setup_macos_defaults() {
   # fast key repeat (the fastest System Settings offers), for held vim motions; applies after logging out and in
   defaults write -g KeyRepeat -int 2
@@ -217,14 +223,15 @@ function setup_macos_defaults() {
   defaults write com.mitchellh.ghostty ApplePressAndHoldEnabled -bool false
 }
 
-# Touch ID for sudo, also inside tmux (pam-reattach from the Brewfile). Uses sudo itself, so it isn't part of
-# setup_dotfiles. /etc/pam.d/sudo_local survives macOS updates, unlike /etc/pam.d/sudo.
+# setup_touch_id_sudo: Touch ID for sudo, also inside tmux (pam-reattach from the Brewfile). Uses sudo itself,
+# so it isn't part of setup_dotfiles. /etc/pam.d/sudo_local survives macOS updates, unlike /etc/pam.d/sudo.
 function setup_touch_id_sudo() {
   printf '%s\n' \
     "auth       optional       $HOMEBREW_PREFIX/lib/pam/pam_reattach.so ignore_ssh" \
     "auth       sufficient     pam_tid.so" | sudo tee /etc/pam.d/sudo_local > /dev/null
 }
 
+# setup_tmux: links ~/.config/tmux and installs tpm and the plugins tmux.conf lists.
 function setup_tmux() {
   mkdir -p "$HOME/.config"
   ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux"
@@ -297,8 +304,8 @@ function make_gifs() {
   trash $tmp
 }
 
-# Claude Code with this Mac's settings on top of the shared config/claude/settings.json, passed with --settings
-# so they never land in the repo:
+# claude [args…]: Claude Code with this Mac's settings on top of the shared config/claude/settings.json,
+# passed with --settings so they never land in the repo:
 # - this shell's SSH agent socket is allowed in the sandbox, so commits get signed there (git signs through
 #   SSH_AUTH_SOCK, which zsh/.exports points at Secretive; the path differs per machine)
 # - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
@@ -340,8 +347,8 @@ function claude_plugins_check() {
   return 1
 }
 
-# Claude Code in its own git worktree (claude -w) and, inside
-# tmux, in a new window named after the task. The window stays a shell once Claude exits.
+# agent <name> [prompt]: Claude Code in its own git worktree (claude -w) and, inside tmux, in a new window
+# named after the task. The window stays a shell once Claude exits.
 #   agent fix-login
 #   agent fix-login "the login form rejects valid emails"
 function agent() {
@@ -555,6 +562,8 @@ function _agent_resume() {
   done
   _describe agent entries
 }
+
+# _agent_done: completion for agent_done, the agents' worktrees and --force
 function _agent_done() {
   local main=$(_agent_main 2> /dev/null)
   [[ -n $main ]] || return 1
@@ -562,6 +571,8 @@ function _agent_done() {
 }
 (( $+functions[compdef] )) && compdef _agent_resume agent_resume && compdef _agent_done agent_done
 
+# setup_claude: links config/claude's settings, CLAUDE.md, hooks, status line and skills into ~/.claude; a real
+# file Claude Code made in their place goes to the Trash first.
 function setup_claude() {
   mkdir -p ~/.claude
   local item
@@ -579,12 +590,15 @@ function setup_claude() {
   done
 }
 
+# setup_ghostty: links Ghostty's config and the base16 theme change_theme writes.
 function setup_ghostty() {
   mkdir -p "$HOME/.config/ghostty"
   ln -sfn "$real_script_dir/config/ghostty/config" "$HOME/.config/ghostty/config"
   ln -sfn "$real_script_dir/config/ghostty/themes" "$HOME/.config/ghostty/themes"
 }
 
+# setup_nvim: links ~/.config/nvim, makes `vim` run nvim and installs the plugin versions in lazy-lock.json;
+# fails when nvim's start prints an error.
 function setup_nvim() {
   ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim"
   mkdir -p "$HOME/bin"
@@ -601,12 +615,15 @@ function setup_nvim() {
   [[ -z $errors ]] || { print -u2 -r -- $errors; return 1 }
 }
 
+# setup_git: links ~/.gitconfig and the global gitignore.
 function setup_git() {
   ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
   mkdir -p "$HOME/.config/git"
   ln -sfn "$real_script_dir/config/git/ignore" "$HOME/.config/git/ignore"
 }
 
+# setup_ssh: includes the repo's config/ssh/config at the top of ~/.ssh/config (the rest of that file stays
+# this Mac's own) and removes what the old ssh-ident and keychain setups left behind.
 function setup_ssh() {
   mkdir -p ~/.ssh && chmod 700 ~/.ssh
   touch ~/.ssh/config

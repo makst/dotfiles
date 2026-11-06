@@ -1,10 +1,10 @@
 #!/bin/zsh
-# PreToolUse on Bash: refuse a recursive rm and point Claude to the Trash instead, so whatever an agent deletes
-# can be put back. The command is split into words by zsh's own parser, so rm is found as any command of a list,
-# pipeline or later line, after its other options (rm -f -r), behind a path (/bin/rm, \rm) or a wrapper (sudo,
-# env, xargs, nice, time, command, find -exec), and inside $(…), `…`, sh -c '…' and eval. Text that only mentions
-# it passes: echo "rm -rf", a comment, a here-document, git rm -r. The cases it must get right are in the
-# dotfiles' checks/rm-hook.cases.
+# PreToolUse on Bash: refuse a recursive rm and point Claude to the Trash instead, so whatever an agent
+# deletes can be put back. The command is split into words by zsh's own parser, so rm is found as any command
+# of a list, pipeline or later line, after its other options (rm -f -r), behind a path (/bin/rm, \rm) or a
+# wrapper (sudo, env, xargs, nice, time, command, find -exec), and inside $(…), `…`, sh -c '…' and eval. Text
+# that only mentions it passes: echo "rm -rf", a comment, a here-document, git rm -r. The cases it must get
+# right are in the dotfiles' checks/rm-hook.cases.
 
 setopt extended_glob
 

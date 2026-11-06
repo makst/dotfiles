@@ -18,7 +18,8 @@ alias tm='~/.config/tmux/sessionizer'
 
 alias docker="podman"
 
-# eza instead of ls for the long listings: colours (LS_COLORS), git status, icons (Ghostty bundles the Nerd Font symbols)
+# eza instead of ls for the long listings: colours (LS_COLORS), git status, icons (Ghostty bundles the Nerd
+# Font symbols)
 alias ll='eza -l --git --group-directories-first --icons=auto'
 alias la='eza -la --git --group-directories-first --icons=auto'
 alias l='la'

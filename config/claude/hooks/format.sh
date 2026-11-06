@@ -18,6 +18,8 @@ up_find() {
   return 1
 }
 
+# prettier_file: formats the file with prettier, but only in a project with a prettier config; the project's own
+# prettier first, then one on PATH
 prettier_file() {
   up_find .prettierrc .prettierrc.json .prettierrc.yaml .prettierrc.yml .prettierrc.json5 .prettierrc.js \
     .prettierrc.cjs .prettierrc.mjs .prettierrc.toml prettier.config.js prettier.config.cjs prettier.config.mjs \

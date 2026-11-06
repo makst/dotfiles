@@ -49,9 +49,10 @@ Not part of `setup_dotfiles`:
 
 Several Macs
 ---
-The repo holds what every Mac shares, and every Mac gets all of it. What only one Mac needs lives in `~/.config/dotfiles`, outside the
-repo, so a work email, work plugins or a company's tools never end up in it. `setup_machine` creates these
-files from the templates in `config/machine` when they are missing and never overwrites them:
+The repo holds what every Mac shares, and every Mac gets all of it. What only one Mac needs lives in
+`~/.config/dotfiles`, outside the repo, so a work email, work plugins or a company's tools never end up in it.
+`setup_machine` creates these files from the templates in `config/machine` when they are missing and never
+overwrites them:
 
 | File | Used by | For |
 |---|---|---|

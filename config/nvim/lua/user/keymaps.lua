@@ -17,8 +17,8 @@ keymap.set('n', '<leader>bb', ':b#<Return>')
 keymap.set('n', '<leader>bd', ':bd<Return>')
 keymap.set('n', '<leader>bls', ':ls<Return>')
 -- https://stackoverflow.com/a/42071865
--- %bd = delete all buffers, e# = open the last buffer for editing, bd# to delete the [No Name] buffer that gets created.
--- The pipe in between does one command after another.
+-- %bd = delete all buffers, e# = open the last buffer for editing, bd# to delete the [No Name] buffer that
+-- gets created. The pipe in between does one command after another.
 keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>')
 
 -- Split window

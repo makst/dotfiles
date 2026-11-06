@@ -26,10 +26,11 @@ which one applies. Each Mac signs with its own Secretive key, so run `secretive_
 
 Behaviour
 ---
-- **Diffs, logs and `git add -p`** go through [delta](https://github.com/dandavison/delta): syntax
-  context lines syntax-highlighted, removed lines red and added ones green, the changed words within them on a
-  red / green background, line numbers, moved lines in their own colour. All in the terminal's 16 colours, so
-  diffs follow the [theme](theme.md) (delta's own red and green backgrounds are fixed shades). `n` / `N` jump between files.
+- **Diffs, logs and `git add -p`** go through [delta](https://github.com/dandavison/delta): syntax context
+  lines syntax-highlighted, removed lines red and added ones green, the changed words within them on a red /
+  green background, line numbers, moved lines in their own colour. All in the terminal's 16 colours, so diffs
+  follow the [theme](theme.md) (delta's own red and green backgrounds are fixed shades). `n` / `N` jump
+  between files.
 - **Structural diffs** with [difftastic](https://difftastic.wilfred.me.uk): `git dft`, `git dlog`,
   `git dshow` compare syntax trees, so reformatting and re-wrapping don't show up as changes.
 - **Better hunks and conflicts**: the histogram diff algorithm; conflict markers show the common ancestor
@@ -155,8 +156,9 @@ still sign while you're logged in, but can't push without your finger.
   one named `signing` with it off. Then `secretive_key push` and `secretive_key signing`: each copies the
   public key to `~/.ssh/identities/secretive/<role>.pub` (which the ssh and git config point to) and adds it
   to GitHub under the Mac's name from `setup_machine`, the push key for ssh and the signing key for signing
-  (and to `config/git/allowed_signers`, with the Mac's name: commit that). For GitLab, `secretive_key push` copies the public key
-  and opens the page to paste it. Named them differently? `secretive_key push "GitHub push"`.
+  (and to `config/git/allowed_signers`, with the Mac's name: commit that). For GitLab, `secretive_key push`
+  copies the public key and opens the page to paste it. Named them differently?
+  `secretive_key push "GitHub push"`.
 - `ssh-add -l` lists the keys Secretive offers; `ssh -T git@github.com` checks the push key.
 
 `setup_ssh` adds the include line, removes the `com.makst.ssh-add` login item (which loaded keychain keys

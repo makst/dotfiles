@@ -8,52 +8,52 @@ kind = File.read(File.expand_path("~/.config/dotfiles/kind")).strip rescue ""
 tap "nikitabobko/tap"              # aerospace
 
 # --- Used by these dotfiles
-brew "git"
-brew "wget"
+brew "git"                         # newer than Apple's, config/git/.gitconfig
+brew "wget"                        # downloads; nothing in the repo calls it
 brew "uv"                          # python versions, venvs, tools; setup_python, mds
-brew "zsh"
-brew "zsh-completions"
+brew "zsh"                         # the login shell, prepare-zsh-install.sh
+brew "zsh-completions"             # extra completions, zsh/.zshdefault
 brew "fzf-tab"                     # zsh plugins, sourced in zsh/.zshdefault
-brew "zsh-autosuggestions"
-brew "zsh-fast-syntax-highlighting"
+brew "zsh-autosuggestions"         # zsh plugin, zsh/.zshdefault
+brew "zsh-fast-syntax-highlighting" # zsh plugin, zsh/.zshdefault
 brew "atuin"                       # C-r history search, config/atuin
 brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
-brew "tmux"
+brew "tmux"                        # config/tmux, setup_tmux
 brew "terminal-notifier"           # Claude Code notifications you can click, config/claude/hooks/notify.sh
 brew "vhs"                         # records the GIFs in docs/ from docs/tapes, make_gifs
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI
-brew "gnu-sed"
-brew "cmake"
+brew "gnu-sed"                     # gsed, GNU sed for scripts written for Linux; nothing in the repo calls it
+brew "cmake"                       # builds telescope-fzf-native in nvim, config/nvim/lua/user/plugins.lua
 brew "fzf"                         # setup_fzf
 brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
-brew "bat"
+brew "bat"                         # file previews in fzf, .fzf.zsh
 brew "lesspipe"                    # zsh/.exports
-brew "fd"
+brew "fd"                          # file lists for fzf (.fzf.zsh), mdv
 brew "glow"                        # mdv, zsh/.functions: renders markdown in the terminal
-brew "ripgrep"
+brew "ripgrep"                     # rg: telescope grep and grug-far in nvim, fif in .fzf.zsh
 brew "neovim"                      # setup_nvim, config/nvim
 brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/lua_ls.lua
 brew "typescript-language-server"  # TypeScript/JavaScript language server in nvim, lsp/lspconfig/ts_ls.lua
 brew "vscode-langservers-extracted" # ESLint language server in nvim, lsp/lspconfig/eslint.lua
 brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig/yamlls.lua
 brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
-brew "tree-sitter"
-brew "tree-sitter-cli"            # compiles the nvim treesitter parsers
+brew "tree-sitter"                 # parser library for nvim treesitter
+brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
 brew "lazygit"                     # `lg` alias
 brew "podman"                      # `docker` alias
-brew "docker-compose"
+brew "docker-compose"              # compose files with podman
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
 
 # --- Everyday tools
-brew "jq"
+brew "jq"                          # JSON in scripts: Claude Code hooks, status line, mds
 brew "yq"                          # jq for YAML (and TOML, XML)
 brew "shellcheck"                  # finds bugs in shell scripts
 brew "ast-grep"                    # search and rewrite code by syntax, not text
@@ -64,11 +64,11 @@ brew "yazi"                        # file manager with previews
 brew "chafa"                       # images and GIFs in the terminal, `img`
 brew "tlrc"                        # `tldr <cmd>`: short examples
 brew "dust"                        # what takes the disk space
-brew "exiftool"
-brew "imagemagick"
-brew "graphviz"
-brew "dockutil"
-brew "go"
+brew "exiftool"                    # reads and strips image metadata
+brew "imagemagick"                 # converts and resizes images (magick)
+brew "graphviz"                    # dot: renders graphs to images
+brew "dockutil"                    # edits the Dock from the command line
+brew "go"                          # Go toolchain, for gopls and delve
 
 # --- Debugging, docs/debugging.md
 cask "visual-studio-code"          # the visual debugger for backends and the web, setup_vscode, `,vo` in nvim
@@ -83,16 +83,16 @@ cask "kotlin-lsp"                  # Kotlin language server (JetBrains) in nvim,
 brew "ktlint"                      # formats Kotlin where a project's .editorconfig sets up ktlint, conform in nvim
 
 # --- Apps
-cask "ghostty"
+cask "ghostty"                     # the terminal, config/ghostty, setup_ghostty
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
 cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key
-cask "font-source-code-pro"
+cask "font-source-code-pro"        # the font in Ghostty, config/ghostty/config
 cask "font-symbols-only-nerd-font" # Nerd Font icons in the GIFs, make_gifs
-cask "google-chrome"
-cask "firefox@developer-edition"
-cask "cyberduck"
-cask "signal"
-cask "spotify"
+cask "google-chrome"               # browser
+cask "firefox@developer-edition"   # browser with dev tools
+cask "cyberduck"                   # SFTP, S3 and cloud storage browser
+cask "signal"                      # messenger
+cask "spotify"                     # music; shpotify below controls it
 brew "shpotify"                    # provides `spotify` for the aliases in zsh/.aliases
 
 # --- Home-like Macs only

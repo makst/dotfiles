@@ -25,6 +25,7 @@ app_of() {
   return 1
 }
 
+# notify: sends the notification, unless the agent's window is on screen in the frontmost app
 notify() {
   local front pane_info client app line newest=0
   front=$(lsappinfo info -only pid "$(lsappinfo front)") && front=${front##*=}

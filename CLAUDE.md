@@ -20,7 +20,8 @@ format only with what the project configures.
 ## Several Macs
 The repo serves any number of Macs, each with a name and a kind (home-like or work-like). Shared config goes
 in the repo and every Mac gets it; what one Mac needs goes in `~/.config/dotfiles` (name, kind, gitconfig,
-zshrc, Brewfile, claude.json), created from `config/machine` by `setup_machine` and loaded when present. Nothing in the repo may name a company, work email or work host.
+zshrc, Brewfile, claude.json), created from `config/machine` by `setup_machine` and loaded when present.
+Nothing in the repo may name a company, work email or work host.
 
 ## This is the live setup
 `~/.zshrc`, `~/.config/nvim`, `~/.config/tmux`, `~/.gitconfig`, `~/.claude/settings.json` and others are
@@ -62,8 +63,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 - A comment above each function: usage line, then what it does and why. Comments and prose in docs wrap at
   about 110 columns; tables may run longer.
 - Docs: plain, direct English; say what a thing does for the user, not how clever it is.
-- Commits: `type(scope): summary` (feat, fix, docs, chore; scope = the tool, e.g. `nvim`, `git`, `claude`),
-  a body with what and why.
+- Commits: `type(scope): summary` (feat, fix, refactor, docs, chore; scope = the tool, e.g. `nvim`, `git`,
+  `claude`), a body with what and why.
 
 ## Testing
 - `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks").

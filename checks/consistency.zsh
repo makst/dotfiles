@@ -161,7 +161,8 @@ keys_index() {
 }
 
 # key_spans <text>: sets reply to the keys in the text's code spans, the way the configs write them: C-h as
-# <C-h>, C-h/j/k/l as each of the four, Space as <Space>, Backspace as <BS> (in reply rather than printed, so no subshell per call)
+# <C-h>, C-h/j/k/l as each of the four, Space as <Space>, Backspace as <BS> (in reply rather than printed, so
+# no subshell per call)
 key_spans() {
   reply=()
   local span k

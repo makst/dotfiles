@@ -14,7 +14,8 @@ completions, tmux sessions, colour schemes. A few small tools feed it or show it
 | [glow](https://github.com/charmbracelet/glow) | renders markdown in the terminal for `mdv` |
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 
-Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
+Config: `.fzf.zsh` (linked to `~/.fzf.zsh`), loaded by zsh after `bindkey -v`, which would otherwise reset its
+key bindings.
 
 Shell keys
 ---
