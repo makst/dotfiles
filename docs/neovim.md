@@ -110,6 +110,7 @@ the bottom, the markers and the count a column in from the border:
 | `;d` / `;w` | symbols in this file / in the workspace (LSP) |
 | `;e` | diagnostics |
 | `;q` | quickfix list |
+| `;o` / `;l` | code tours / the stops of the open tour, see [Integrations](#integrations) |
 | `;p` | projects: switches the working directory (and nvim-tree) to the project and finds files in it |
 | `;t` | help tags |
 | `;;` or `;c` | reopen the last picker with its query and results (the last 100 are kept) |
@@ -243,15 +244,25 @@ Integrations
   A folder's `.nvim.lua` can point `storage_path` at tours kept elsewhere, e.g. a docs repo that tours code
   in its sibling repos. Tours don't reopen on start.
 
-  | Command | What |
+  | Key / command | What |
   |---|---|
-  | `:CodeTour open` | pick a tour (telescope) and load its stops into the quickfix list |
-  | `:cnext` / `:cprev` | next / previous stop |
+  | `;o` | pick a tour, its stops in the preview, and open it: notes on, stops in the quickfix list |
+  | `:CodeTour open` | reopen the last tour, or pick one as `;o` |
+  | `;l` (`:CodeTour list`) | pick a stop of the open tour, the code around it in the preview |
+  | `]q` / `[q`, `[Q` / `]Q` | next / previous stop, first / last (nvim's quickfix keys; a count skips ahead) |
   | `:CodeTour` | all stops with a preview; reorder lines, edit notes, `:w` saves |
-  | `:CodeTour list` | pick a stop |
   | `:CodeTour toggle-notes` | hide / show the notes |
   | `:CodeTour close` | end the tour and restore the previous quickfix list |
   | `:CodeTour create <name>`, `:CodeTour add <note>` | start a tour, add the cursor line as a stop |
+
+  In the pickers, as `dd` in telescope's buffer list:
+
+  | Key | `;o` tours | `;l` stops |
+  |---|---|---|
+  | `Enter` | open the tour | jump to the stop |
+  | `M-d`, or `dd` in normal mode | delete the tour (asks first) | remove the stop |
+  | `M-r`, or `r` in normal mode | – | reword the stop's note |
+  | `C-s` | – | send the stops to the quickfix list |
 
 - **tmux**: `C-h/j/k/l` cross between nvim splits and tmux panes; true colour and undercurls work inside
   tmux; focus events trigger the reload of changed files.
