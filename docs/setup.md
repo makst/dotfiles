@@ -84,7 +84,7 @@ The repo is never copied: everything is linked, so editing a file in the repo ta
 | `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
 | `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/hooks/`, `~/.claude/statusline.sh` | `config/claude/…` |
-| `~/.claude/skills/<name>/` | each skill in `config/claude/skills/`; `~/.claude/skills` itself stays a real directory |
+| `~/.claude/skills/<name>/` | each skill in `config/claude/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory |
 | `~/.ideavimrc` | `config/ideavim/ideavimrc` |
 | `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
@@ -179,6 +179,7 @@ dotfiles: still to do
 It reloads only what changed and is running: tmux's config, Ghostty's (from Ghostty 1.2; older ones are told
 to reload with `cmd+shift+,`) and AeroSpace's. What it can't do for you it lists: open shells, nvim and its
 plugins (`:Lazy restore`), Android Studio's IdeaVim, new Brewfile packages, and new links (`setup_dotfiles`).
+New Claude Code skills need nothing: the `claude` wrapper links them when it starts.
 It prints nothing when nothing it knows about changed, and nothing in other clones or agents' worktrees, which
 aren't the live setup. `reload_dotfiles` on its own reloads all three, whatever changed.
 

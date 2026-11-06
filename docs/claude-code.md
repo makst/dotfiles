@@ -235,8 +235,10 @@ The parts that depend on the Mac live in the dotfiles, not in `config/claude`. T
 - **The project's plugin choices**: `enabledPlugins` from the project's `.claude/settings.local.json`, put on
   top. Settings passed with `--settings` outrank that file, so without this a project couldn't switch off a
   plugin that `claude.json` turns on.
+- **New skills**: before it starts, it links any skill added to `config/claude/skills` and drops the links of
+  deleted ones (see [Skills](#skills)).
 
-Claude Code started some other way, from the desktop app or an IDE, gets neither.
+Claude Code started some other way, from the desktop app or an IDE, gets none of these.
 
 ### Plugins
 Where a plugin is turned on decides who gets it:
@@ -298,7 +300,9 @@ The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't t
 ### Skills
 A skill is a set of instructions Claude follows when you type its name as a slash command. They live in
 `config/claude/skills/<name>/SKILL.md`; `setup_claude` links each one into `~/.claude/skills`, which stays a
-real directory because the skills claude.ai syncs live there too.
+real directory because the skills claude.ai syncs live there too. The `claude` wrapper does the same each time it
+starts, so a new skill, pulled or written here and not yet committed, is there from the next `claude` on (a
+session that is already running may need a restart), and a deleted one goes away.
 
 | Command | Does |
 |---|---|

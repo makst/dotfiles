@@ -311,9 +311,11 @@ function make_gifs() {
 # - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
 # - the project's .claude/settings.local.json enabledPlugins on top, because --settings outranks that file:
 #   without this a project couldn't switch off a plugin that claude.json turns on
+# Before it starts, link_claude_skills links any skill added to config/claude/skills since the last start.
 # Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
 # for the user does.
 function claude() {
+  link_claude_skills
   local machine=~/.config/dotfiles/claude.json settings='{}' merged
   local root=${"$(git rev-parse --show-toplevel 2> /dev/null)":-$PWD}
   local project=$root/.claude/settings.local.json
@@ -628,13 +630,28 @@ function setup_claude() {
     [[ -e ~/.claude/$item && ! -L ~/.claude/$item ]] && mv ~/.claude/$item ~/.Trash/claude-$item-$(date +%s)
     ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item
   done
-  # skills one by one: ~/.claude/skills also holds the skills claude.ai syncs, so it stays a real directory
-  mkdir -p ~/.claude/skills
-  for item in $real_script_dir/config/claude/skills/*(N/); do
-    [[ -e ~/.claude/skills/${item:t} && ! -L ~/.claude/skills/${item:t} ]] &&
-      mv ~/.claude/skills/${item:t} ~/.Trash/claude-skill-${item:t}-$(date +%s)
-    ln -sfn $item ~/.claude/skills/${item:t}
+  link_claude_skills
+}
+
+# link_claude_skills: links each skill in config/claude/skills into ~/.claude/skills, where Claude Code looks,
+# and removes the links of skills the repo no longer has. ~/.claude/skills also holds the skills claude.ai
+# syncs, so it stays a real directory and the skills are linked one by one; a real copy in a skill's place
+# goes to the Trash. The claude wrapper runs it on every start, so a skill added here, pulled or not yet
+# committed, is there without a setup step; with nothing to do it starts no process.
+function link_claude_skills() {
+  local skill link
+  [[ -d ~/.claude/skills ]] || mkdir -p ~/.claude/skills
+  for skill in $real_script_dir/config/claude/skills/*(N/); do
+    link=~/.claude/skills/${skill:t}
+    [[ -L $link && $link -ef $skill ]] && continue
+    [[ -e $link && ! -L $link ]] && mv $link ~/.Trash/claude-skill-${skill:t}-$(date +%s)
+    ln -sfn $skill ~/.claude/skills/${skill:t}
   done
+  # (-@): links whose target is gone; only the ones into this repo, the rest aren't ours to remove
+  for link in ~/.claude/skills/*(N-@); do
+    [[ $(readlink $link) == $real_script_dir/config/claude/skills/* ]] && rm $link
+  done
+  return 0
 }
 
 # setup_ghostty: links Ghostty's config and the base16 theme change_theme writes.
@@ -900,11 +917,10 @@ function setup_dotfiles() {
 # Android Studio, setup steps. Prints nothing when nothing it knows about changed.
 function reload_dotfiles() {
   setopt local_options extended_glob
-  local -a files added reloaded todo
+  local -a files reloaded todo
   if [[ -n $1 ]]; then
     files=(${(f)"$(git -C $real_script_dir diff --name-only $1 HEAD --)"})
     (( $#files )) || return 0
-    added=(${(f)"$(git -C $real_script_dir diff --name-only --diff-filter=A $1 HEAD --)"})
   fi
   local -i all=$(( ! $#files ))
 
@@ -933,10 +949,9 @@ function reload_dotfiles() {
     (( $files[(I)(Brewfile|config/machine/Brewfile)] )) && todo+='Brewfile: `setup_brew` installs what it added'
     (( $files[(I)config/ideavim/*] )) && todo+='Android Studio: `:source ~/.ideavimrc`'
     # a link added or changed in a setup step (a line that starts with it: this one only mentions it)
-    if [[ -n $(git -C $real_script_dir diff $1 HEAD -G '^[[:space:]]*ln -sfn' --name-only -- zsh/.functions) ]] ||
-      (( $added[(I)config/claude/skills/*] )); then
+    # (skills aren't on the list: the claude wrapper links new ones when it starts)
+    [[ -n $(git -C $real_script_dir diff $1 HEAD -G '^[[:space:]]*ln -sfn' --name-only -- zsh/.functions) ]] &&
       todo+='links: `setup_dotfiles` makes the new ones'
-    fi
   fi
 
   (( $#reloaded )) && print -P "%F{blue}dotfiles:%f reloaded ${(j:, :)reloaded}"
