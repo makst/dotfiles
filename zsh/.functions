@@ -347,6 +347,53 @@ function claude_plugins_check() {
   return 1
 }
 
+# claude_tokens [days]: what Claude Code used in the last <days> days (default 7), read from the conversations
+# in ~/.claude/projects, subagents included: per model, per project and the costliest sessions, in tokens and
+# in dollars at API prices. On a plan nothing is billed, but the dollars put every model, cache read and write
+# on one scale, so they show where the usage goes and whether a change cut it. Each request is logged once per
+# content block with the same usage, so it is counted once per requestId. Requests Claude Code makes outside
+# the conversation (titles, summaries) aren't logged and so aren't counted.
+function claude_tokens() {
+  local days=${1:-7}
+  [[ $days == <-> ]] || { print -u2 "usage: claude_tokens [days]"; return 1 }
+  local -a files=(~/.claude/projects/*/*.jsonl(N.m-$days) ~/.claude/projects/*/*/subagents/*.jsonl(N.m-$days))
+  (( $#files )) || { print "No conversations in the last $days days"; return 0 }
+  # $ per million tokens: input, output, cache read; a cache write is 1.25× input for 5 minutes, 2× for an hour
+  # (API prices of 2026-10, claude-api skill)
+  local prices='{"claude-opus-5-5": [4, 20, 0.2], "claude-sonnet-5-5": [2, 10, 0.2],
+    "claude-haiku-5-5": [0.1, 0.5, 0.01], "claude-fable-5-1": [10, 50, 0.25]}'
+  local since=$(( EPOCHSECONDS - days * 86400 ))
+  jq -c --argjson since $since 'select(.type == "assistant" and .message.usage and .requestId
+      and (.timestamp | sub("\\.[0-9]+"; "") | fromdateiso8601) >= $since)
+    | .message.usage as $u
+    | {r: .requestId, t: .timestamp, m: .message.model, s: .sessionId,
+       p: (.cwd | sub("/\\.claude/worktrees/.*"; "")),
+       in: ($u.input_tokens // 0), out: ($u.output_tokens // 0), read: ($u.cache_read_input_tokens // 0),
+       w5: ($u.cache_creation.ephemeral_5m_input_tokens // 0),
+       w1: ($u.cache_creation.ephemeral_1h_input_tokens // ($u.cache_creation_input_tokens // 0))}' \
+    $files 2> /dev/null | jq -rs --argjson prices $prices --arg home $HOME '
+    def tokens: if . < 1000 then tostring elif . < 999500 then "\(. / 1000 | round)k"
+      else "\(. / 100000 | round / 10)M" end;
+    # the cost of a group, with a + when some of its requests are on a model without a price, ? when all are
+    def dollars: if .unpriced and .cost == 0 then "?"
+      else "$\(.cost * 100 | round / 100)\(if .unpriced then "+" else "" end)" end;
+    def cost: $prices[.m] as $p | if $p == null then null else
+      (.in * $p[0] + .out * $p[1] + .read * $p[2] + .w5 * $p[0] * 1.25 + .w1 * $p[0] * 2) / 1e6 end;
+    def total: {n: length, in: (map(.in) | add), w: (map(.w5 + .w1) | add), read: (map(.read) | add),
+      out: (map(.out) | add), cost: (map(.cost // 0) | add), unpriced: any(.cost == null)};
+    def row($name): [$name, (.n | tostring), (.in | tokens), (.w | tokens), (.read | tokens), (.out | tokens),
+      dollars] | @tsv;
+    def table($title; key; $limit):
+      "\n\($title)\trequests\tinput\tcache write\tcache read\toutput\tcost",
+      (group_by(key) | map({k: (.[0] | key), t: total}) | sort_by(-.t.cost) | .[:$limit][]
+        | . as $g | $g.t | row($g.k // "?"));
+    # a session belongs to the directory it started in, though Claude may cd elsewhere in it
+    unique_by(.r) | map(. + {cost: cost}) | group_by(.s)
+    | map((min_by(.t).p | sub("^" + $home; "~")) as $start | map(.p = $start)[])
+    | (table("model"; .m; 20), table("project"; .p; 10), table("session"; "\(.s) \(.p)"; 5),
+       "\n" + (total | row("all")))' | column -t -s $'\t'
+}
+
 # agent <name> [prompt]: Claude Code in its own git worktree (claude -w) and, inside tmux, in a new window
 # named after the task. The window stays a shell once Claude exits.
 #   agent fix-login

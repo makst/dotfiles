@@ -308,7 +308,7 @@ In an agent's window, `/ship` then `agent_done <name>` after merging is the whol
 
 ### Status line
 ```
-dotfiles/docs feat/claude-config !+ (worktree)  Opus 5.5 medium  ctx 18% 184k  cache 42m  5h 12% 3h  7d 34% 4d
+dotfiles/docs feat/claude-config !+ (worktree)  Opus 5.5 medium  ctx 18% 184k  cache 42m  $3.20  5h 12% 3h  7d 34% 4d
 ```
 The directory from the repo root, the branch and its state with the prompt's marks (`!` modified, `+` staged,
 `?` untracked, `✘` deleted, `»` renamed, `=` conflicted, `$` stashed, `⇡`/`⇣` ahead / behind), `worktree` in
@@ -325,4 +325,21 @@ carrying on. The cache lasts a set time after the last request (`prompt_cache.tt
 this setup). The status line redraws every 60 seconds (`refreshInterval` in `settings.json`), so this shows
 while the session sits idle too.
 
+After the cache, what the session would cost at API prices (`cost.total_cost_usd` in the input), in grey:
+dollars and cents, whole dollars from $10. On a plan nothing is billed, but the figure grows with the usage
+of the limits, so a session that gets expensive shows while it runs, not a day later in `/usage`.
+
 ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).
+
+### Token usage
+`claude_tokens [days]` shows what Claude Code used in the last few days (default 7), from the conversations in
+`~/.claude/projects`, subagents included: per model, per project (the directory the session started in) and
+the five costliest sessions, each with its requests, fresh input, cache writes, cache reads, output and the
+cost at API prices. The dollars put every model and cache read on one scale, so they answer where the usage
+goes and whether a change (Haiku subagents, auto-compact at 250k) cut it, which `/usage` only shows as
+shares. A `+` after a cost means some requests were on a model the function has no price for (an older one);
+`?`, that all were. A session id goes straight into `claude -r <id>`.
+
+The prices are in the function (from the `claude-api` skill, 2026-10); they matched Claude Code's own cost
+for a session to the cent. Requests Claude Code makes outside the conversation, like titles, aren't in the
+files and aren't counted. It reads a week (~3,000 requests) in under a second.
