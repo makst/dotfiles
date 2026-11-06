@@ -1,10 +1,13 @@
+-- Returns wait(), which waits for the parsers still downloading; setup_nvim calls it, since a headless nvim
+-- would otherwise quit before they're installed, and every start would download them again.
+local M = { wait = function() end }
 local status, ts = pcall(require, 'nvim-treesitter')
-if (not status) then return end
+if (not status) then return M end
 
 -- nvim-treesitter `main` (the rewrite): no more `nvim-treesitter.configs`.
 -- Parsers are installed (async, skipped when present) and compiled with the `tree-sitter` CLI.
 ts.setup {}
-ts.install {
+local installing = ts.install {
   'tsx',
   'typescript',
   'javascript',
@@ -27,6 +30,7 @@ ts.install {
   'groovy',
   'xml',
 }
+M.wait = function() installing:wait(300000) end
 
 vim.treesitter.language.register('tsx', 'typescript.tsx')
 
@@ -38,3 +42,5 @@ vim.api.nvim_create_autocmd('FileType', {
     end
   end,
 })
+
+return M

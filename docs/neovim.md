@@ -236,7 +236,7 @@ existing ones, and require it in that directory's `init.lua`.
 Servers aren't enabled automatically, so the last step matters.
 
 **Treesitter parsers** (highlighting, indentation, treewalker) are listed in `lua/user/treesitter.lua` and
-compiled on first start with the `tree-sitter` CLI: TypeScript/TSX/JavaScript, Go (with mod/sum/work files),
+compiled with the `tree-sitter` CLI (`setup_nvim` waits for them; otherwise the first start downloads them): TypeScript/TSX/JavaScript, Go (with mod/sum/work files),
 Lua, Bash, JSON, YAML, TOML, Markdown, HCL/Terraform, Helm, Swift, Kotlin, Groovy and XML (Gradle and Android
 files). Add a language there and restart.
 
