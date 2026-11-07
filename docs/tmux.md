@@ -12,6 +12,9 @@ What it is
   `cmd+1`…`9`, and renumbered when one closes.
 - **Panes** for things you want side by side. Splits and new windows start in the current pane's directory.
 - Closing the last window of a session switches to another session instead of closing the terminal.
+- **Shells that wait**: `,tt` and `,tm` (nvim, and zsh's normal mode) show a shell in a pane below, one each per
+  directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists.
+  It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)).
 - **Moving between panes and nvim**: `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether
   the pane runs nvim and, if so, lets nvim move between its own splits first. Inside nvim the same keys cross
   into tmux panes.
@@ -162,6 +165,7 @@ Config
 | File | Contains |
 |---|---|
 | `config/tmux/tmux.conf` (linked to `~/.config/tmux/`) | everything; reload with `C-a r` |
+| `config/tmux/scratch` | the `,tt` / `,tm` shells: shows, hides and finds each one by its name and directory |
 | `config/tmux/picker.zsh` | the shared part of every picker: `picker_modes`, which nvim's pickers ask for their modes too; it also keeps the list and the preview of the tmux pickers current, redrawing only what changed |
 | `~/.tmux/plugins` | the plugins, installed by tpm, outside the repo |
 
@@ -180,6 +184,7 @@ To look out for
 - fzf has no timeout for the second `j`: `jj` in a filter always leaves typing.
 - The tree can't collapse sessions, kill (`x`) or tag as `choose-tree` does, and a filter matches the text of
   each line, so a window matches by its own name, not its session's.
+- `C-a (` / `C-a )` (previous / next session) also stop at `_scratch`, the hidden shells' session.
 - Remote hosts often lack the `tmux-256color` terminfo, so inside tmux the `ssh` alias connects with
   `TERM=xterm-256color`.
 
@@ -189,6 +194,8 @@ Decisions
 - **No Cmd key for previous / next session**: too close to `cmd+[` / `cmd+]`, previous / next window.
 - **`C-a S` for the last session**: tmux's own `C-a L` resizes panes here, as `H/J/K/L` on the other layers.
 - **The current window in bold, not underlined** as tmux 3.8 does by default.
+- **The `,tt` / `,tm` shells in a pane, not a popup**: a popup that keeps its shell running while hidden needs
+  a tmux client nested inside it, and that holds every `Esc` for half a second.
 - **Popups centred by the config**: tmux's own centring is a column and a row off.
 - **tmux 3.8's fixed shades mapped onto the ANSI colours**: it colours popups, menus and the prompt from a
   theme of fixed shades (a grey popup background, `skyblue3`, …), which wouldn't follow the theme.

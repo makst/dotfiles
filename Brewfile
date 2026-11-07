@@ -45,7 +45,7 @@ brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig
 brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
 brew "tree-sitter"                 # parser library for nvim treesitter
 brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
-brew "lazygit"                     # TUI: `lg` alias
+brew "lazygit"                     # TUI: `lg` alias, `,lg` in nvim (config/lazygit/nvim.yml)
 brew "podman"                      # `docker` alias
 brew "docker-compose"              # compose files with podman
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases

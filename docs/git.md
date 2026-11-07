@@ -42,7 +42,7 @@ the key is on the account that has the work email.
 
 ### lazygit
 
-`lg` in a shell, `,lg` inside nvim (a floating window that remembers its state per project). The quickest
+`lg` in a shell, `,lg` inside nvim (a tmux popup over it; `e` on a file opens it in that nvim and closes the popup). The quickest
 way to stage hunks or single lines, write commits, rebase interactively, and browse branches and history.
 `?` shows the keys for the current panel.
 
@@ -185,8 +185,7 @@ Config
 | `config/git/ignore` (linked to `~/.config/git/ignore`) | ignored in every repo |
 | `config/git/allowed_signers` | every Mac's signing key, for `git log --show-signature` |
 | `config/ssh/config` | included at the top of `~/.ssh/config`: Secretive's agent, the push key for GitHub and GitLab |
-
-lazygit uses its default config; nothing is customised here.
+| `config/lazygit/nvim.yml` | lazygit's settings when nvim's `,lg` starts it (through `LG_CONFIG_FILE`): `e` opens the file in that nvim; `lg` in a shell uses the defaults |
 
 To look out for
 ---

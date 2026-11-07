@@ -108,6 +108,7 @@ Normal mode has vim's motions and operators: `dw`, `cb`, `yy`, `p`, `.` repeats,
 | `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
 | `;p` | normal | projects: the sessionizer (`tm`) |
 | `,lg` / `,e` | normal | lazygit / yazi |
+| `,tt` / `,tm` | normal | show or hide nvim's two shells for this directory, in a tmux pane below; inside one, hide it |
 | `Tab` | insert | completion through fzf, see [fzf](fzf.md#completing-with-tab-fzf-tab) |
 
 Commands

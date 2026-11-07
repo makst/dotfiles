@@ -52,7 +52,7 @@ require('lazy').setup({
 
   'lukas-reineke/indent-blankline.nvim',
   'hedyhli/outline.nvim', -- maintained fork: simrat39/symbols-outline.nvim is archived
-  'akinsho/toggleterm.nvim',
+  'akinsho/toggleterm.nvim', -- the Gradle and logcat terminals (user/android); other shells are tmux popups (user/tmux)
   'christoomey/vim-tmux-navigator', -- CTRL-H/J/K/L move across nvim splits and tmux panes
   { 'ThePrimeagen/harpoon', branch = 'harpoon2', dependencies = { 'nvim-lua/plenary.nvim' } },
   { 'folke/trouble.nvim', dependencies = { 'nvim-tree/nvim-web-devicons' } },

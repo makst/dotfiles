@@ -4,8 +4,9 @@
 -- stays readable and `,ax` can stop it. The app module is the one whose build file applies the Android
 -- application plugin; its package name is read from the APK it built, so applicationIdSuffix works too.
 -- Only the debug variant has keys (keymaps.lua): other variants and tasks go through `,aa`.
-local status_ok, _ = pcall(require, 'toggleterm')
+local status_ok, toggleterm = pcall(require, 'toggleterm')
 if not status_ok then return {} end
+toggleterm.setup {} -- the only user of toggleterm; other shells are tmux popups (user/tmux)
 
 local M = {}
 

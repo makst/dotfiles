@@ -11,7 +11,7 @@ source ${0:A:h}/picker.zsh
 # each line is "key<tab>what fzf shows": a session's id (exact, unlike its name: tmux matches names by prefix)
 # with its name and agent's mark in ANSI colours, or a directory's path, shown as ~/… when under $HOME
 if [[ $1 == --list ]]; then
-  for line in ${(f)"$(tmux list-sessions -F '#{session_id}'$'\t''#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
+  for line in ${(f)"$(tmux list-sessions -f '#{E:@listed}' -F '#{session_id}'$'\t''#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
     fields=("${(@ps:\t:)line}")
     print -r -- "$fields[1]"$'\t'"$fields[2]${fields[3]:+ $picker_marks[$fields[3]]}"
   done

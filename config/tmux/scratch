@@ -1,0 +1,37 @@
+#!/usr/bin/env zsh
+# Usage: scratch <name> [dir]
+# A shell in a tmux pane below the current one that keeps running while hidden, one per name and directory
+# (default: here). Run it again and the window's <name> pane leaves, still running; the next time it comes back
+# as you left it. Called by nvim's ,tt / ,tm (config/nvim/lua/user/tmux/keymaps.lua) and the same keys in zsh's
+# normal mode (.fzf.zsh), so the key that opens it hides it from inside too. A real pane, not a popup: C-h/j/k/l,
+# zoom and cmd+w work on it, and Escape has no lag (a popup that keeps a shell needs a nested tmux client, which
+# holds every Escape for half a second).
+# While shown, the pane's @scratch says <name>:<dir>; while hidden, it is a window of that name in the session
+# _scratch, which the pickers and the agent keys leave out (@listed in config/tmux/tmux.conf). tmux-resurrect
+# keeps window names, not pane options, so hidden shells are found again after a restore.
+(( $+TMUX )) || { print -u2 'scratch: needs tmux'; exit 1 }
+name=$1 dir=${${2:-$PWD}:A} here=${TMUX_PANE:-$(tmux display -p '#{pane_id}')}
+id="$name:$dir"
+
+# shown in this window (whatever its directory): hide it
+shown=$(tmux list-panes -t "$here" -f "#{m:$name:*,#{@scratch}}" -F '#{pane_id} #{@scratch}')
+if [[ -n $shown ]]; then
+  shown=${shown%%$'\n'*} pane=${shown%% *}
+  if ! tmux has-session -t '=_scratch' 2> /dev/null; then
+    # a session needs a window to start with; the placeholder goes once the pane is in
+    placeholder=$(tmux new-session -d -s _scratch -P -F '#{window_id}')
+  fi
+  tmux break-pane -d -s "$pane" -t '=_scratch:' -n "${shown#* }"
+  [[ -n $placeholder ]] && tmux kill-window -t "$placeholder"
+  exit
+fi
+
+hidden=$(tmux list-windows -t '=_scratch' -F '#{window_id} #{window_name}' 2> /dev/null |
+  awk -v id="$id" 'substr($0, index($0, " ") + 1) == id { print $1; exit }')
+if [[ -n $hidden ]]; then
+  pane=$(tmux list-panes -t "$hidden" -F '#{pane_id}')
+  tmux join-pane -v -l 30% -s "$pane" -t "$here"
+else
+  pane=$(tmux split-window -v -l 30% -c "$dir" -t "$here" -P -F '#{pane_id}')
+fi
+tmux set -p -t "$pane" @scratch "$id"

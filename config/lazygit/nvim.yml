@@ -1,0 +1,7 @@
+# lazygit's settings when nvim starts it (,lg: config/nvim/lua/user/tmux/config.lua sets LG_CONFIG_FILE to this
+# file), on top of its defaults. `e` on a file opens it in that nvim, through the server NVIM names, and closes the
+# popup, so you land in the file instead of in a second nvim inside lazygit. `lg` in a shell doesn't read it.
+os:
+  edit: 'nvim --server "$NVIM" --remote {{filename}} && tmux display-popup -C'
+  editAtLine: 'nvim --server "$NVIM" --remote {{filename}} && nvim --server "$NVIM" --remote-send ":{{line}}<CR>" && tmux display-popup -C'
+  editInTerminal: false

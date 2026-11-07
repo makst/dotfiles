@@ -35,9 +35,10 @@ What it is
   own `vim.snippet`; TypeScript also gets the JavaScript ones) and words in the buffer. The first match shows
   as grey ghost text, the documentation of the selected item next to the menu, and the signature help while
   you type a function's arguments. `:BlinkCmp status` checks the setup.
-- **Git**: gitsigns marks added, changed and deleted lines in the sign column; lazygit opens in a float.
-- **Terminals**: two floating shells per working directory (e.g. one for tests, one for anything else), with
-  rounded borders like every other float. They keep running while hidden.
+- **Git**: gitsigns marks added, changed and deleted lines in the sign column; lazygit opens in a tmux popup
+  over nvim, and a file you open in it (`e`) opens in this nvim, closing the popup.
+- **Terminals** are tmux panes: two shells per working directory (e.g. one for tests, one for anything else)
+  come up in a pane below nvim and keep running while hidden ([tmux](tmux.md#what-it-is)).
 - **File tree** (nvim-tree) on the right, following the current file and the working directory.
 - **Code tours** ([codetour.nvim](https://github.com/roeeyn/codetour.nvim)): a tour is an ordered list of
   stops in the code, each with a note, saved as JSON in `<git root>/.codetour/`. The note shows above its line
@@ -135,7 +136,7 @@ These override built-in vim keys, which is easy to forget:
 | `,sh` `,sj` `,sk` `,sl` | go to the split left/down/up/right (same as `C-h/j/k/l`, but nvim only) |
 | `,z` / `,=` | zoom the split (again: the layout as it was) / make all splits equal |
 | `,dt` / `,do` | diff the visible splits / stop diffing |
-| `,tt` / `,tm` | toggle the two floating shells |
+| `,tt` / `,tm` | show or hide the two shells, in a tmux pane below; the same keys in zsh's normal mode hide them from inside |
 | `,re` | reload the config |
 
 ### Finding things
@@ -234,7 +235,7 @@ In normal and visual mode, so `vJJ` selects across nodes.
 
 | Key | Action |
 |---|---|
-| `,lg` | lazygit in a floating window, one per working directory; same key hides it again |
+| `,lg` | lazygit in a tmux popup at the working directory; `e` on a file opens it here, `q` closes it |
 | `,gb` | blame for the file in a side window |
 | `,go` | open the file in the browser on the git host (GitHub); in visual mode, the selected lines |
 | `,gp` / `,gn` | open this branch's pull request / create one |
@@ -330,4 +331,7 @@ Decisions
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
   (`docs/design.md`, "Learn it once").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.
+- **Shells and lazygit in tmux, not in toggleterm's floats**: tmux owns terminals (`docs/design.md`, "One tool
+  per job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. toggleterm stays
+  for the Gradle and logcat terminals ([mobile](mobile.md)), which nvim sends commands to.
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.
