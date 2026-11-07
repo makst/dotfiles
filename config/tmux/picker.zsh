@@ -18,7 +18,7 @@ typeset -g picker_preview='nohidden,down,60%'
 typeset -g picker_help='normal   j/k down/up · g/G first/last · ctrl+d/u half a page · / filter · q quit
 typing   jj back to normal mode, keeping the filter
 both     Enter pick · Esc clear the filter, then quit
-         ctrl+/ preview · ctrl+n/p scroll it · ctrl+y copy'
+         ctrl+n/p down/up · ctrl+/ preview · ctrl+alt+n/p scroll it · ctrl+y copy'
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
 # "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below), j/k wrapping

@@ -22,12 +22,14 @@
 --color='fg:-1,bg:-1,hl:green,fg+:bright-white,bg+:bright-black,hl+:bright-green'
 --color='info:yellow,prompt:blue,pointer:magenta,marker:green,spinner:cyan,header:cyan,border:bright-black,gutter:-1'
 --preview '([[ -f {} ]] && (bat --style=numbers --color=always {} || cat {})) || ([[ -d {} ]] && eza --tree --level=2 --color=always --icons=always {}) || echo {} 2> /dev/null | head -200'
-# ctrl-/ for the preview, with ctrl-n/p that scroll it: ? is a character to type here, and in the pickers'
-# normal mode it lists the keys, as ? does everywhere else (picker_modes, config/tmux/picker.zsh)
+# ctrl-/ for the preview, with ctrl-alt-n/p that scroll it half a page: ? is a character to type here, and in
+# the pickers' normal mode it lists the keys, as ? does everywhere else (picker_modes, config/tmux/picker.zsh)
 --bind 'ctrl-/:toggle-preview'
 --bind 'ctrl-a:select-all'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
---bind 'ctrl-n:preview-down'
---bind 'ctrl-p:preview-up'
+# ctrl-n/p: the next / previous line, as in nvim's completion and command line (docs/design.md, "Learn it once"),
+# while typing too; fzf's own default, set here so it stays
+--bind 'ctrl-n:down'
+--bind 'ctrl-p:up'
 --bind 'ctrl-alt-n:preview-half-page-down'
 --bind 'ctrl-alt-p:preview-half-page-up'

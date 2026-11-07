@@ -10,15 +10,14 @@ local M = {}
 local function picker(...) return require('user.fzf-lua.config').picker(...) end
 
 -- inside a picker. `true` keeps fzf-lua's other keys. The preview keys are fzfrc's, here because nvim draws
--- the preview, not fzf: C-/ shows / hides it, C-n / C-p scroll a line, C-M-n / C-M-p half a page. C-/ is
--- <C-_> inside tmux (no extended keys there), <C-/> outside it.
+-- the preview, not fzf: C-/ shows / hides it, C-M-n / C-M-p scroll it half a page. C-n / C-p are left to fzf,
+-- which moves to the next / previous line with them (fzfrc). C-/ is <C-_> inside tmux (no extended keys
+-- there), <C-/> outside it.
 M.picker_keys = {
   builtin = {
     true,
     ['<C-/>'] = 'toggle-preview',
     ['<C-_>'] = 'toggle-preview',
-    ['<C-n>'] = 'preview-down',
-    ['<C-p>'] = 'preview-up',
     ['<C-M-n>'] = 'preview-half-page-down',
     ['<C-M-p>'] = 'preview-half-page-up',
   },

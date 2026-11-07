@@ -82,9 +82,9 @@ Keys
 | `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, `mdv`, `change_theme`: they take one line) |
 | `C-a` | mark all |
 | `C-/` | show / hide the preview (hidden by default, shown from the start in the pickers); `?` is a character to type, in the pickers' normal mode it lists the keys |
-| `C-n` / `C-p` | scroll the preview a line; `C-Alt+n` / `C-Alt+p` half a page |
+| `C-Alt+n` / `C-Alt+p` | scroll the preview half a page |
 | `C-y` | copy the marked entries to the clipboard |
-| `C-j` / `C-k` or arrows | move |
+| `C-n` / `C-p`, `C-j` / `C-k` or arrows | move, while typing too (`C-n` / `C-p` as in nvim's completion) |
 
 Config
 ---
@@ -104,6 +104,9 @@ To look out for
 
 Decisions
 ---
+- **`C-n` / `C-p` move through the list, not the preview**: they are next / previous in nvim's completion and
+  command line and in zsh's menu, so they mean the same in a picker, while typing too. The preview scrolls only
+  half a page at a time (`C-Alt+n` / `C-Alt+p`), which is enough for a glance.
 - **fzf's options in a file, not in the environment**: an edit to `fzfrc` shows in the next fzf, without a new
   shell or restarting tmux. The tmux server keeps the environment it started with, and the options used to
   live there.

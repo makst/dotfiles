@@ -168,7 +168,8 @@ These override built-in vim keys, which is easy to forget:
 | `C-x` / `C-v` / `C-t` | open in a split / vertical split / tab |
 | `?` (normal mode) | list the keys: fzf-lua's list, with the picker's own keys, as `F1`; `?` again closes it |
 | `C-/` | show / hide the preview |
-| `C-n` / `C-p`, `C-M-n` / `C-M-p` | scroll the preview a line / half a page |
+| `C-n` / `C-p` | next / previous entry, while typing too, as in completion |
+| `C-M-n` / `C-M-p` | scroll the preview half a page |
 | `M-d`, or `d` in normal mode | `;b`: close the buffer |
 
 ### Moving around
