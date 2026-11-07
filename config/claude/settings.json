@@ -1,5 +1,12 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "cleanupPeriodDays": 365,
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
+    "GIT_CONFIG_COUNT": "1",
+    "GIT_CONFIG_KEY_0": "core.fsmonitor",
+    "GIT_CONFIG_VALUE_0": "false"
+  },
   "attribution": {
     "sessionUrl": false
   },
@@ -91,13 +98,6 @@
     ]
   },
   "model": "opus",
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
-    "GIT_CONFIG_COUNT": "1",
-    "GIT_CONFIG_KEY_0": "core.fsmonitor",
-    "GIT_CONFIG_VALUE_0": "false"
-  },
-  "cleanupPeriodDays": 365,
   "hooks": {
     "PreToolUse": [
       {
@@ -223,6 +223,43 @@
     "refreshInterval": 60
   },
   "enabledPlugins": {},
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "ghcr.io",
+        "formulae.brew.sh",
+        "registry.npmjs.org",
+        "pypi.org",
+        "files.pythonhosted.org"
+      ],
+      "allowLocalBinding": true
+    },
+    "filesystem": {
+      "allowWrite": [
+        "~/.cache",
+        "~/.local/state"
+      ]
+    },
+    "excludedCommands": [
+      "trash *",
+      "gio trash *",
+      "git push *",
+      "git pull *",
+      "git fetch *",
+      "gh *",
+      "brew *",
+      "tmux *",
+      "gcloud *",
+      "bq *",
+      "gsutil *",
+      "kubectl *"
+    ]
+  },
   "modelSettings": {
     "claude-sonnet-5-5": {
       "effortLevel": "medium"
@@ -242,42 +279,5 @@
     "jj": "<Esc>"
   },
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
-  "sandbox": {
-    "enabled": true,
-    "autoAllowBashIfSandboxed": true,
-    "excludedCommands": [
-      "trash *",
-      "gio trash *",
-      "git push *",
-      "git pull *",
-      "git fetch *",
-      "gh *",
-      "brew *",
-      "tmux *",
-      "gcloud *",
-      "bq *",
-      "gsutil *",
-      "kubectl *"
-    ],
-    "filesystem": {
-      "allowWrite": [
-        "~/.cache",
-        "~/.local/state"
-      ]
-    },
-    "network": {
-      "allowLocalBinding": true,
-      "allowedDomains": [
-        "github.com",
-        "*.github.com",
-        "*.githubusercontent.com",
-        "ghcr.io",
-        "formulae.brew.sh",
-        "registry.npmjs.org",
-        "pypi.org",
-        "files.pythonhosted.org"
-      ]
-    }
-  }
+  "voiceEnabled": true
 }
