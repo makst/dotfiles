@@ -207,7 +207,7 @@ Checking token usage
 `~/.claude/projects`, subagents included: per model, per project (the directory the session started in) and
 the five costliest sessions, each with its requests, fresh input, cache writes, cache reads, output and the
 cost at API prices. The dollars put every model and cache read on one scale, so they answer where the usage
-goes and whether a change (Haiku subagents, auto-compact at 250k) cut it, which `/usage` only shows as
+goes and whether a change (Haiku subagents) cut it, which `/usage` only shows as
 shares. A `+` after a cost means some requests were on a model the function has no price for (an older one);
 `?`, that all were. A session id goes straight into `claude -r <id>`. It reads a week (~3,000 requests) in
 under a second.
@@ -252,8 +252,7 @@ Config
   vim keys in the prompt (`editorMode`, `vimInsertModeRemaps`). Commits made by Claude carry only the
   `Co-Authored-By` trailer, no session link (`attribution.sessionUrl`). Conversations are kept for a year
   (`cleanupPeriodDays`). Subagents run on Haiku (`CLAUDE_CODE_SUBAGENT_MODEL`) unless Claude gives one a model
-  when it starts it; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is left off. Auto-compact starts at 250k tokens
-  (`autoCompactWindow`). The status line redraws every 60 seconds (`refreshInterval`).
+  when it starts it; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is left off. The status line redraws every 60 seconds (`refreshInterval`).
 - **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
   when asked; before you `/clear`, list what would be lost with the context and where it gets saved; pick a
   model per subagent (Haiku for searching and reading, Sonnet or Opus for judgment) and suggest another model
@@ -391,8 +390,6 @@ Decisions
 - **Opus without `[1m]`**: it has a 1M-token context of its own.
 - **Subagents on Haiku**: in `/usage`, subagents on the main model were 40% of the usage.
   `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` stays off, so Claude can still choose a bigger one.
-- **Auto-compact at 250k, not near 1M**: every turn re-reads the whole conversation, so a session left to
-  grow to 500k+ costs far more per turn, even from the cache.
 - **Conversations kept a year, not 30 days**, so `agent_resume` and `claude -r` can still find old ones.
 - **`git commit` isn't blocked in auto mode**: a commit on a branch is easy to undo (`git reset HEAD~`).
 - **Hooks for the agents' state**: inside tmux, Claude Code keeps its terminal title still (`✳`, no spinner)

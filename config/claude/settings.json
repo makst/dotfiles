@@ -91,7 +91,6 @@
     ]
   },
   "model": "opus",
-  "autoCompactWindow": 250000,
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "haiku",
     "GIT_CONFIG_COUNT": "1",
