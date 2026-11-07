@@ -28,7 +28,10 @@ text up to a macOS workspace.
 5. **One picker.** Choosing from a list (a session, a window, an agent, a conversation, a command from
    history) happens in the same fzf picker, `config/tmux/picker.zsh`: the same look, the same normal mode
    with `j`/`k` and `/`, `jj` back from typing. A tool with a list of its own gets its output wrapped in the
-   picker rather than learnt on its own, wherever it can be ([picker keys](tmux.md#picker-keys)).
+   picker rather than learnt on its own, wherever it can be ([picker keys](tmux.md#picker-keys)). Plain fzf
+   is the exception: `C-t` and `Alt+C` pick several paths with `Tab` and put them on the command line, and
+   fzf-tab completes inside it, which the picker (one line, its own window) can't do; they have no normal
+   mode, so there `jj` and `j`/`k` don't apply ([fzf](fzf.md#shell-keys)).
 6. **Exceptions say why.** When a key can't follow, because macOS, another layer or the tool itself has it,
    the table shows what is used instead and why, so the gap is a decision and not an accident.
 
@@ -48,7 +51,10 @@ picker, not by remembering where it is, and anything running is looked at in a l
 4. **Look, don't recall.** Something you check often (sessions, windows, agents, paste buffers, the docs,
    history) opens in the picker with a live preview, so you see the state and go to it in one step.
 5. **Exceptions say why.** A file that holds several kinds, or a list without a picker, says why in its top
-   comment or its doc.
+   comment or its doc. Two are fixed by their tools and need no comment: nvim's `init.lua` in a plugin's folder
+   holds only the `require` lines for its `config.lua` and `keymaps.lua` (that is how nvim loads a folder), and
+   JSON files can't hold comments (their doc says who uses them). `check_dotfiles` warns about any other file
+   without a top comment.
 
 ### Same shape, every page
 The design principle behind the docs: every `docs/<tool>.md` has the same sections in the same order, so you
@@ -110,9 +116,16 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 | `z`: zoom, and back | `,z` | `C-a z` (`cmd+shift+enter`: `cmd+z` is undo) | – | `alt+z` (fills the workspace) |
 | `Shift+h/j/k/l`: resize | arrow keys (`H J K L` walk the syntax tree) | `C-a H/J/K/L` | – | `alt+shift+h/j/k/l` |
 | `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
+| `Shift+Ctrl+h/j/k/l`: move it that way | `C-w H/J/K/L` (nvim's own) | – (not bound; tmux's own `C-a {` / `}` swap panes) | – (not bound) | `alt+ctrl+shift+h/j/k/l` (the window, through the layout) |
+| split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | – (windows tile themselves) |
+| close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own) | – (the app closes it: `cmd+w`) |
 
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim
 keys](vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
+A "–" cell means the layer has no such key. Where the reason isn't in the cell: tmux windows sit in a row, so
+`[` / `]` and the numbers are their directions; a window is always full size (no zoom, resize or `=`); and
+splitting and closing differ in letter from layer to layer (`,sv` / `cmd+d`, `,q` / `cmd+w`) because
+`cmd+d` and `cmd+w` are the Mac's own keys for them, which Ghostty hands to tmux.
 `C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
 In zsh's completion list (fzf-tab), `[` / `]` go to the previous / next group of completions.
 `?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit,

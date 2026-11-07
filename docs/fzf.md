@@ -97,6 +97,9 @@ Config
 To look out for
 ---
 - `.fzf.zsh` is loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
+- `C-t`, `Alt+C` and fzf-tab are plain fzf, not the [picker](tmux.md#picker-keys): no normal mode, so `jj` and
+  `j`/`k` don't work there (type to filter, the arrow keys move). They stay because `C-t` takes several paths with
+  `Tab` and fzf-tab works inside the command line ([design](design.md#learn-it-once), "One picker").
 - In `mdv`, code blocks are plain: glow's highlighter only takes fixed colours.
 
 Decisions

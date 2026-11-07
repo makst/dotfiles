@@ -1,3 +1,4 @@
+-- The TypeScript / JavaScript language server. Loaded by lspconfig/init.lua.
 local base = require('user.lsp.lspconfig.base')
 
 vim.lsp.config('ts_ls', {

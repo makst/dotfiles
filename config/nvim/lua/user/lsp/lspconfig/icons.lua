@@ -1,3 +1,4 @@
+-- The diagnostic signs' glyphs. Loaded by lspconfig/config.lua.
 local M = {}
 
 -- this is for diagnositcs signs on the line number column

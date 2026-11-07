@@ -1,3 +1,4 @@
+-- git.nvim's setup. Loaded by user/git/init.lua.
 local status, git = pcall(require, 'git')
 if (not status) then return end
 

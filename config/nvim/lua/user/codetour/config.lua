@@ -1,3 +1,4 @@
+-- codetour.nvim's setup, with its notes and pickers swapped for ours. Loaded by user/codetour/init.lua.
 local status, codetour = pcall(require, 'codetour')
 if (not status) then return end
 

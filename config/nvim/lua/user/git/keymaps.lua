@@ -1,3 +1,4 @@
+-- git.nvim's keys (,g…): blame, browse, diff, revert. Loaded by user/git/init.lua.
 local status, _ = pcall(require, 'git')
 if (not status) then return end
 

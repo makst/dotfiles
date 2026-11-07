@@ -1,3 +1,4 @@
+-- grug-far.nvim's key (,sr). Loaded by user/grug-far/init.lua.
 local status, grug_far = pcall(require, 'grug-far')
 if (not status) then return end
 

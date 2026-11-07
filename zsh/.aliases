@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+# Aliases, loaded by .zshrc with the other files in zsh/. The functions are in zsh/functions/<tool>.zsh.
 
 alias sn="spotify next"
 alias sp="spotify prev"

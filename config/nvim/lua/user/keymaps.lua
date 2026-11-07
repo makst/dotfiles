@@ -1,3 +1,5 @@
+-- The keys that belong to no plugin: editing, splits, quit. Loaded by config/nvim/init.lua; a plugin's keys
+-- are in user/<plugin>/keymaps.lua.
 vim.g.mapleader = ','
 local keymap = vim.keymap
 

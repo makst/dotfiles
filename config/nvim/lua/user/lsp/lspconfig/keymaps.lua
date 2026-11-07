@@ -1,3 +1,4 @@
+-- The LSP keys, bound in each buffer a server attaches to. Loaded by lspconfig/base.lua (on_attach).
 local M = {}
 
 M.setup_keymaps = function(bufnr)

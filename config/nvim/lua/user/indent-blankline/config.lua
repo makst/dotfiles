@@ -1,3 +1,4 @@
+-- indent-blankline's setup (indent guides, the current scope). Loaded by user/indent-blankline/init.lua.
 local status, ibl = pcall(require, 'ibl')
 if (not status) then return end
 

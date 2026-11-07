@@ -1,3 +1,4 @@
+-- flash.nvim's setup. Loaded by user/flash/init.lua.
 local status, flash = pcall(require, 'flash')
 if (not status) then return end
 

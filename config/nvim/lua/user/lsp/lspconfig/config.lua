@@ -1,3 +1,4 @@
+-- How diagnostics look: signs, no virtual text, rounded floats. Loaded by lspconfig/init.lua.
 local icons_module = require('user.lsp.lspconfig.icons')
 
 -- signs in the number column; the icons are nerd font glyphs, see icons.lua

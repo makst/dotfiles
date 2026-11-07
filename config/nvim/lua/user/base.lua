@@ -1,3 +1,4 @@
+-- nvim's own options, before any plugin: encoding, leader, clipboard, indent. Loaded by config/nvim/init.lua.
 vim.cmd('autocmd!')
 
 vim.scriptencoding = 'utf-8'

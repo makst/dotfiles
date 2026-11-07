@@ -1,3 +1,4 @@
+-- nvim-tree's setup: the file tree on the right. Loaded by user/nvim-tree/init.lua.
 local status, nvim_tree = pcall(require, 'nvim-tree')
 if (not status) then return end
 

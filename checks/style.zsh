@@ -1,7 +1,8 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
 # else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
-# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker, and docs pages keep
-# the section order of docs/design.md. They only warn (check -w): a missed convention doesn't break the setup.
+# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker, docs pages keep
+# the section order of docs/design.md, and each file says at the top who uses it. They only warn (check -w):
+# a missed convention doesn't break the setup.
 # Sourced by check_dotfiles; lib.zsh has the helpers and indexes.
 
 # Brewfile: each package line says, in a comment, what uses it (the config file, alias or setup function), in
@@ -102,6 +103,22 @@ check_docs_shape() {
   note=$(count $#docs page)
 }
 
+# top comments: the first line of a config or script file (after a #! line) is a comment saying who loads or
+# calls it (docs/design.md, "One search away"). Left out: nvim's init.lua (only require lines), files that
+# can't hold a comment (JSON, Markdown, allowed_signers) or whose tool writes them (base16-vim.lua, themes).
+check_top_comments() {
+  local f first
+  local -a files=(${(M)text_files:#(config|zsh|checks|.githooks|.github)/*})
+  files+=(${(M)text_files:#(.zshrc|.fzf.zsh|prepare-zsh-install.sh)})
+  files=(${files:#*.(json|md|tape|cases)})
+  files=(${files:#(*/init.lua|*/themes/*|*/base16-vim.lua|*/allowed_signers|*/skills/*|*/lazy-lock*)})
+  for f in $files; do
+    first=$(grep -vE '^(#!|[[:space:]]*$)' $f | head -n1)
+    [[ $first == (\#|--|\"|\;|//)* ]] || print -r -- "$f: no comment at the top saying who uses it"
+  done
+  note=$(count $#files file)
+}
+
 group "Style: the conventions every change keeps to"
 check -w "each Brewfile package says what uses it" check_brew_comments
 check -w "colours are ANSI names, not hex" check_hex_colours
@@ -109,3 +126,4 @@ check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
 check -w "each zsh function has a comment" check_function_comments
 check -w "lists go through the picker, not a bare fzf" check_picker
 check -w "docs pages keep the section order of docs/design.md" check_docs_shape
+check -w "each file says at the top who uses it" check_top_comments

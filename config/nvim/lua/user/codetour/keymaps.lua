@@ -1,3 +1,5 @@
+-- Codetour's ;o and ;l, and the fzf keys inside its pickers. Loaded by user/codetour/init.lua; picker_keys
+-- is read by user/codetour/picker.
 local status, _ = pcall(require, 'codetour')
 if (not status) then return {} end
 

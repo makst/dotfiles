@@ -1,3 +1,5 @@
+# Linked to ~/.gitconfig by setup_git (zsh/functions/git.zsh). What differs per Mac (name, signing key, work
+# email) is in ~/.config/dotfiles/gitconfig, included at the bottom.
 [user]
 	name = Max Tkatschenko
 	email = makst@users.noreply.github.com

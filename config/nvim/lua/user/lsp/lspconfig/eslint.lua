@@ -1,3 +1,4 @@
+-- The eslint language server, and eslint's fixes on save. Loaded by lspconfig/init.lua.
 local base = require('user.lsp.lspconfig.base')
 
 vim.lsp.config('eslint', { root_dir = base.root_dir })

@@ -1,3 +1,5 @@
+-- What every language server here shares: the project root and the keys once one attaches. Loaded by
+-- lspconfig/init.lua and the server files next to it.
 local keymaps_module = require('user.lsp.lspconfig.keymaps')
 local M = {}
 

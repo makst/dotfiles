@@ -1,3 +1,4 @@
+-- The Lua language server, told about nvim's runtime. Loaded by lspconfig/init.lua.
 vim.lsp.config('lua_ls', {
   settings = {
     Lua = {

@@ -1,3 +1,4 @@
+-- nvim-web-devicons: the file icons nvim-tree, lualine and the pickers show. Loaded by config/nvim/init.lua.
 local status, icons = pcall(require, 'nvim-web-devicons')
 if (not status) then return end
 

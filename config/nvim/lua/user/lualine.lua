@@ -1,3 +1,4 @@
+-- lualine: the status line, in the colours of the theme. Loaded by config/nvim/init.lua.
 local status, lualine = pcall(require, 'lualine')
 if (not status) then return end
 

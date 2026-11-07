@@ -1,3 +1,4 @@
+-- xcodebuild.nvim's keys (,i…): build, run, test, pick a scheme or device. Loaded by xcodebuild/init.lua.
 local status_ok, _ = pcall(require, 'xcodebuild')
 if not status_ok then return end
 
