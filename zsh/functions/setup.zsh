@@ -192,9 +192,11 @@ function reload_dotfiles() {
 
 # check_dotfiles [-v]: the checks CI runs on every push (.github/workflows/check.yml), to run before
 # committing. Runs checks/check_dotfiles from this repo, wherever the shell is; it prints what fails and
-# returns 1. -v (CI uses it) lists every check with its result and time.
+# returns 1. -v (CI uses it) lists every check with its result and time. Without real_script_dir (a Claude Code
+# shell started from a zsh older than its export: the snapshot keeps this function but not the variable) it
+# finds the repo through the ~/.zshrc link, as .zshrc does.
 function check_dotfiles() {
-  $real_script_dir/checks/check_dotfiles "$@"
+  ${real_script_dir:-${${:-$HOME/.zshrc}:A:h}}/checks/check_dotfiles "$@"
 }
 
 # check_mac [--scripted]: whether this Mac is set up as the repo says, after a pull or on a Mac that hasn't
@@ -208,7 +210,7 @@ function check_dotfiles() {
 # all is well. The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
 function check_mac() {
   setopt local_options extended_glob
-  local repo=$real_script_dir dir=~/.config/dotfiles
+  local repo=${real_script_dir:-${${:-$HOME/.zshrc}:A:h}} dir=~/.config/dotfiles
   local -i by_hand=1
   [[ $1 == --scripted ]] && by_hand=0
   local -a problems
