@@ -11,6 +11,9 @@
 # input and the list a column short of the edge when the preview is below.
 --input-border=rounded
 --list-border=rounded
+# the header (each picker's line of keys) in the list's box, above a line: on its own it floats unboxed
+# between the input and the list, and at the very top in normal mode, where the input is hidden
+--header-border=inline
 --info=inline-right
 # fzf draws its gutter as ▌ in the text colour on every line; only the current line gets a bar.
 --gutter=' '
