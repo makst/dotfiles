@@ -1,7 +1,9 @@
 # Consistency checks: the files that describe the same thing agree. The setup's steps and links and their
 # tables in docs/setup.md, the docs and the README, nvim's plugins and lazy-lock.json, the GIFs and their tapes,
 # each key in nvim, VS Code, Android Studio and docs/vim-keys.md, and the keyboard split between Ghostty, tmux,
-# AeroSpace and nvim. Sourced by check_dotfiles; lib.zsh has the helpers and indexes.
+# AeroSpace and nvim. The ones that compare a doc or a convention with the config only warn (check -w); the
+# pinned plugins, the keys and the keyboard split fail, since there a mismatch is a real bug. Sourced by
+# check_dotfiles; lib.zsh has the helpers and indexes.
 
 # table_column <file> <section> [column]: the first word of each code span in a column (default 1) of the
 # tables under a heading of the file (setext or #)
@@ -327,15 +329,15 @@ check_ghostty_tmux() {
 }
 
 group "Consistency: the files that describe the same thing agree"
-check "setup_dotfiles' steps match docs/setup.md" check_setup_steps
-check "every symlink is in docs/setup.md, and only those" check_symlinks
-check "the README links every page in docs/" check_readme
-check "this Mac's files are documented and read" check_machine_files
+check -w "setup_dotfiles' steps match docs/setup.md" check_setup_steps
+check -w "every symlink is in docs/setup.md, and only those" check_symlinks
+check -w "the README links every page in docs/" check_readme
+check -w "this Mac's files are documented and read" check_machine_files
 check "nvim's plugins are pinned in lazy-lock.json" check_plugins
-check "every nvim key has a desc, for ;?" check_descs
-check "every nvim key is bound in a keymaps.lua" check_nvim_keymaps
-check "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
-check "every GIF has its tape and its doc" check_gifs
+check -w "every nvim key has a desc, for ;?" check_descs
+check -w "every nvim key is bound in a keymaps.lua" check_nvim_keymaps
+check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
+check -w "every GIF has its tape and its doc" check_gifs
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
 check "each layer keeps to its modifier" check_keyboard
 check "Ghostty's Cmd keys reach tmux bindings" check_ghostty_tmux

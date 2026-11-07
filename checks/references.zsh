@@ -1,6 +1,7 @@
 # Reference checks: whatever a doc, a comment or a config points at exists: links and their anchors, paths in
 # the repo and paths in ~ that are links into it, the functions and aliases the docs name, nvim's requires, the
-# scripts Claude Code's settings run. A rename that leaves one of these behind fails here. Sourced by
+# scripts Claude Code's settings run. A rename that leaves one of these behind fails here, except for what only
+# the docs' prose names (sections, settings, functions and aliases), which warns (check -w). Sourced by
 # check_dotfiles; lib.zsh has the helpers and indexes.
 
 # links: Markdown links and images point at files that exist, and their #anchors at headings in them
@@ -193,10 +194,10 @@ check_claude_commands() {
 
 group "References: what the docs, comments and configs point at exists"
 check "Markdown links and anchors resolve" check_links
-check "doc, \"Heading\" mentions name real headings" check_sections
+check -w "doc, \"Heading\" mentions name real headings" check_sections
 check "paths in the repo and in ~ exist" check_paths
 check "what the setup links from exists" check_link_sources
-check "functions and settings the docs name exist" check_names
-check "the docs' aliases and functions are defined" check_commands
+check -w "functions and settings the docs name exist" check_names
+check -w "the docs' aliases and functions are defined" check_commands
 check "nvim's requires resolve and nothing is dead" check_requires
 check "Claude Code's hooks and status line are executable" check_claude_commands

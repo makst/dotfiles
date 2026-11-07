@@ -1,11 +1,12 @@
 #!/bin/zsh
 # mutate [pattern]: tests the checks. Breaks one thing at a time in a throwaway worktree and runs check_dotfiles
-# there, which has to fail the check meant to catch that break: a check that stays green on a broken repo is
-# worse than none. Prints "caught" per break (and any other check that failed too), "MISSED" when the check
-# stayed green, "BROKEN" when the break no longer applies (the file it edits changed); exits 1 on either. The
-# worktree has the repo as it is now, uncommitted changes and new files included (checks/snapshot). A
-# pattern runs only the breaks whose description or check matches. Takes about a minute, so it isn't part of
-# check_dotfiles or CI: run it after adding or changing a check, with a new break for it below.
+# there, which has to fail (or, for a check that only warns, warn on) the check meant to catch that break: a
+# check that stays green on a broken repo is worse than none. Prints "caught" per break (and any other check
+# that failed too), "MISSED" when the check stayed green, "BROKEN" when the break no longer applies (the file
+# it edits changed); exits 1 on either. The worktree has the repo as it is now, uncommitted changes and new
+# files included (checks/snapshot). A pattern runs only the breaks whose description or check matches. Takes
+# about a minute, so it isn't part of check_dotfiles or CI: a tool to reach for when a check looks suspect or
+# after a big change to one, not a step of every change. A new check needs no break of its own.
 
 setopt extended_glob
 unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
@@ -150,7 +151,8 @@ for i in {1..$#cmds}; do
     continue
   fi
   out=$(checks/check_dotfiles 2>&1)
-  failed=(${${(M)${(f)out//$'\e'\[[0-9;]#m/}:#  FAILED  *}#  FAILED  })
+  # a check that only warns (check -w) catches a break by warning
+  failed=(${${(M)${(f)out//$'\e'\[[0-9;]#m/}:#  (FAILED|warn)  *}##  (FAILED|warn)( )##})
   failed=(${failed%% \(*})
   hit=(${(M)failed:#*$wants[i]*})
   others=(${failed:#*$wants[i]*})

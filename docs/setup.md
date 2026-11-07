@@ -142,8 +142,11 @@ check_dotfiles
 ```
 
 Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong
-and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED` or
-`skip` and its time. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
+and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED`,
+`warn` or `skip` and its time. The checks that only compare the docs or a convention with the config (setup
+tables, README links, GIFs and their toggles, the names the docs mention, nvim key descs, the style group)
+`warn`: their problems are printed in yellow, but they don't fail the run, on a Mac or on CI. A stale doc table
+is worth fixing, but it doesn't break the setup. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
 shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them outside its sandbox (this
 repo's `.claude/settings.json`), since the tmux checks need a socket; a command line with anything else on
 it, such as `checks/check_dotfiles | tail`, stays in the sandbox, where those two are skipped. GitHub runs
@@ -159,7 +162,7 @@ group-writable directories, and zsh would stop to ask about them.
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
-| Style | `checks/style.zsh` | the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` itself instead of `picker`, and each `docs/<tool>.md` has its top-level sections in the README's order ("Same shape, every page") |
+| Style | `checks/style.zsh` | warnings only, the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` itself instead of `picker`, and each `docs/<tool>.md` has its top-level sections in the README's order ("Same shape, every page") |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
 check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after
@@ -174,21 +177,23 @@ checks/mutate starship     # only the breaks whose description or check matches
 
 A check that stays green on a broken repo is worse than none, so `checks/mutate` breaks the repo on purpose,
 one thing at a time (a key set twice, a hook that allows everything, a doc page the README doesn't link), in a
-throwaway git worktree, and runs `check_dotfiles` there. Each break names the check that has to fail:
+throwaway git worktree, and runs `check_dotfiles` there. Each break names the check that has to fail (or warn):
 
 | Result | Means |
 |---|---|
-| `caught` | that check failed; any other check that failed too is shown dimmed |
+| `caught` | that check failed or warned; any other check that failed too is shown dimmed |
 | `MISSED` | that check stayed green: the check has a hole |
 | `BROKEN` | the break changed nothing, because the file it edits has changed: update the break |
 
 It exits 1 on a `MISSED` or `BROKEN`. The worktree has the repo as it is now, uncommitted changes and new
 files included (`checks/snapshot`). It takes too long for every commit, so it isn't part of
-`check_dotfiles` or CI: run it after adding or changing a check, and give a new check (or a new rule in one)
-its own break: a line `m '<check label>' '<what breaks>' '<zsh code that breaks it>'` in `checks/mutate`.
-The AeroSpace check has none, since it only validates the live config. The breaks name files and functions
-that don't exist on purpose, so the path and name checks leave `checks/mutate` out. The portability breaks
-use a list of forbidden words of their own (`DOTFILES_FORBIDDEN`), not this Mac's.
+`check_dotfiles` or CI, and it isn't a step of every change either: run it when a check looks like it lets
+something through, or after reworking one. A new check doesn't need a break of its own; add one when a check
+has let a real mistake through, so it stays caught: a line `m '<check label>' '<what breaks>' '<zsh code that
+breaks it>'` in `checks/mutate`. The AeroSpace check has none, since it only validates the live config. The
+breaks name files and functions that don't exist on purpose, so the path and name checks leave
+`checks/mutate` out. The portability breaks use a list of forbidden words of their own (`DOTFILES_FORBIDDEN`),
+not this Mac's.
 
 ### Rehearsing a new Mac
 ```sh

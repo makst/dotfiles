@@ -88,5 +88,7 @@ To look out for
 Decisions
 ---
 - **Recorded from scripts, not by hand**, so a GIF is made again when a key or the scheme changes.
+- **A tour, not a test**: a GIF shows the few keys of its section that are easier to see than to read, and the
+  section's table lists the rest. A key added to a table doesn't need the GIF made again.
 - **A made-up HOME**, so no real command, path, project or account detail can show up.
 - **keycast is Python**: it needs a pseudo-terminal in the middle of the input.

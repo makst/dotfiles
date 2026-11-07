@@ -3,8 +3,9 @@
 # reads it, the Claude Code hooks and status line behave, what the docs and comments point at exists, the
 # files that describe the same thing agree, and nothing belongs to one Mac. Prints each check that fails with
 # its problems and exits 1; -v lists every check with its result and time. A check whose tool isn't installed
-# is skipped and says so. One file per group of checks sits next to this one, lib.zsh has what they share. The
-# groups run at the same time.
+# is skipped and says so. The checks that the docs and the conventions agree with the config only warn: their
+# problems are printed, but they don't fail the run, since a stale doc table doesn't break the setup. One file
+# per group of checks sits next to this one, lib.zsh has what they share. The groups run at the same time.
 
 zmodload zsh/datetime
 setopt extended_glob
@@ -41,12 +42,15 @@ group() {
   return 0
 }
 
-# check <label> <function> [args…]: runs one check. The function prints each problem it finds on a line of its
-# own (any output fails the check), or prints why it can't run and returns 2 to be skipped. It can set `note`,
-# which -v shows after the label (what was checked, how many) with the time the check took. The result goes
-# to the group's results file.
+# check [-w] <label> <function> [args…]: runs one check. The function prints each problem it finds on a line
+# of its own (any output fails the check), or prints why it can't run and returns 2 to be skipped. It can set
+# `note`, which -v shows after the label (what was checked, how many) with the time the check took. With -w the
+# check only warns: its problems are printed under "warn" and don't fail the run. The result goes to the
+# group's results file.
 check() {
-  local label=$1 note= rc out took
+  local warn=0 note= rc out took label
+  [[ $1 == -w ]] && { warn=1; shift }
+  label=$1
   shift
   # for the report if the check stops the group (a zsh error kills the group's subshell); emptied at the end
   print -r -- $label > $tmp/running.$group_name
@@ -61,6 +65,10 @@ check() {
   elif (( rc == 0 )) && [[ -z $out ]]; then
     print -r -- "ok"$'\t'"$label" >> $tmp/results.$group_name
     (( verbose )) && print -r -- "  ${green}ok$reset      $label (${note:+$note, }$took)"
+  elif (( warn )); then
+    print -r -- "warn"$'\t'"$label" >> $tmp/results.$group_name
+    print -r -- "  ${yellow}warn$reset    $label${note:+ ($note)}"
+    [[ -n $out ]] && print -rl -- ${${(f)out}/#/          }
   else
     print -r -- "failed"$'\t'"$label" >> $tmp/results.$group_name
     print -r -- "  ${red}FAILED$reset  $label${note:+ ($note)}"
@@ -81,7 +89,7 @@ for group_name in $groups; do
   pid=$!
   pids[$group_name]=$pid
 done
-typeset -a passed failed skipped
+typeset -a passed failed skipped warned
 for group_name in $groups; do
   wait $pids[$group_name]
   rc=$?
@@ -101,6 +109,7 @@ for group_name in $groups; do
     case $result in
       (ok) passed+=$label ;;
       (skip) skipped+=$label ;;
+      (warn) warned+=$label ;;
       (*) failed+=$label ;;
     esac
   done < $tmp/results.$group_name
@@ -111,11 +120,14 @@ rm -f -- $tmp/**/*(.DN)
 rmdir -- $tmp/**/*(/DNod) $tmp 2> /dev/null
 
 seconds=$(printf '%.2f' $(( EPOCHREALTIME - start )))
-total=$(( $#passed + $#failed + $#skipped ))
+total=$(( $#passed + $#failed + $#skipped + $#warned ))
+warnings=
+(( $#warned )) && warnings=", ${yellow}$(count $#warned warning)$reset (${(j:, :)warned})"
 if (( $#failed )); then
-  print -u2 -r -- "${red}Failed $#failed of $total checks$reset in $seconds s: ${(j:, :)failed}"
+  print -u2 -r -- "${red}Failed $#failed of $total checks$reset in $seconds s: ${(j:, :)failed}$warnings"
   exit 1
 fi
-summary="${green}All $#passed checks passed$reset in $seconds s"
+summary="${green}All $#passed checks passed$reset in $seconds s$warnings"
+(( $#warned )) && summary="${green}$#passed checks passed$reset in $seconds s$warnings"
 (( $#skipped )) && summary+=", $#skipped skipped (${(j:, :)skipped})"
 print -r -- $summary

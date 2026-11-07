@@ -1,7 +1,8 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing else
 # would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a closed
 # "Show GIF" toggle, each zsh function has a comment, lists go through the picker, and docs pages keep the
-# README's section order. Sourced by check_dotfiles; lib.zsh has the helpers and indexes.
+# README's section order. They only warn (check -w): a missed convention doesn't break the setup. Sourced by
+# check_dotfiles; lib.zsh has the helpers and indexes.
 
 # Brewfile: each package line says, in a comment, what uses it (the config file, alias or setup function), in
 # the shared Brewfile and the machine template
@@ -101,9 +102,9 @@ check_docs_shape() {
 }
 
 group "Style: the conventions every change keeps to"
-check "each Brewfile package says what uses it" check_brew_comments
-check "colours are ANSI names, not hex" check_hex_colours
-check "GIFs sit in a closed Show GIF toggle" check_gif_toggles
-check "each zsh function has a comment" check_function_comments
-check "lists go through the picker, not a bare fzf" check_picker
-check "docs pages keep the README's section order" check_docs_shape
+check -w "each Brewfile package says what uses it" check_brew_comments
+check -w "colours are ANSI names, not hex" check_hex_colours
+check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
+check -w "each zsh function has a comment" check_function_comments
+check -w "lists go through the picker, not a bare fzf" check_picker
+check -w "docs pages keep the README's section order" check_docs_shape

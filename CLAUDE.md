@@ -78,9 +78,10 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   `claude`), a body with what and why.
 
 ## Testing
-- `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks").
-- A new or changed check gets a break in `checks/mutate`, and `checks/mutate` must report no `MISSED` or
-  `BROKEN` (`docs/setup.md`, "Testing the checks").
+- `check_dotfiles` before every commit: the same checks CI runs (`docs/setup.md`, "Checks"). A `warn` doesn't
+  block the commit; fix it when it's in what you touched.
+- `checks/mutate` is for when a check looks like it lets something through, not a step of every change; a new
+  check needs no break of its own (`docs/setup.md`, "Testing the checks").
 - After changing a setup step, `checks/fresh_mac` (a few minutes) sets up a new Mac of each kind in a
   throwaway HOME; `check_mac` checks the live one (`docs/setup.md`, "Rehearsing a new Mac").
 - `zsh -n <file>` for syntax; `hyperfine -i 'zsh -i -c exit'` for start-up time (~43 ms on an M5,
