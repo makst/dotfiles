@@ -38,7 +38,7 @@ Keys
 | `;d` / `;w` | symbols in this file / in the project | ✓ | ✓ | ✓ | – |
 | `;e` | diagnostics | ✓ | ✓ (Problems) | ✓ (Problems) | – |
 | `;?` | the keys, searchable | ✓ (every key with a desc) | ✓ (Keyboard Shortcuts, VS Code's own, not the vim ones) | ✓ (`:map`, the vim ones, a plain list) | – |
-| `;p` | projects | ✓ | ✓ (recent) | ✓ (recent) | – |
+| `;p` | projects | – (a tmux session each: `cmd+k`) | ✓ (recent) | ✓ (recent) | – |
 | `gd` / `gr` | definition / references | ✓ | · / ✓ | ✓ | – |
 | `ga` | code actions / quick fix | ✓ | ✓ | ✓ | – |
 | `,rn` | rename | ✓ | ✓ | ✓ | – |

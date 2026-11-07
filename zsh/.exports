@@ -22,6 +22,9 @@ cached_eval vivid _ls_colors
 unfunction _ls_colors
 
 export EDITOR=nvim
+# man pages open in nvim (docs/design.md, "One tool per job"): its motions, search, `gO` for the sections,
+# K on a word for that page, q to quit
+export MANPAGER='nvim +Man!'
 # python's REPL from 3.13 on is its own and ignores ~/.editrc; the basic one reads it, so it has vi mode
 # (config/readline/editrc)
 export PYTHON_BASIC_REPL=1

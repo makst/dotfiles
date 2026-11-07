@@ -90,10 +90,10 @@ the tools already here can do it together.
 | Job | Owner | How the other tools reach it |
 |---|---|---|
 | Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers and nvim's lazygit (`,lg`) open in tmux popups, nvim's shells (`,tt`, `,tm`, Android's Gradle and logcat) in tmux panes |
-| Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`; VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
+| Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`, `man` (`MANPAGER`); VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
 | Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups, zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
 | Projects | a tmux session per directory, from zoxide's list | `cmd+k` in tmux, `tm` in the shell |
-| Directories you visit | zoxide | `z`, the project pickers (`cmd+k`, `;p`) |
+| Directories you visit | zoxide | `z`, the project picker (`cmd+k`, and `;p` in zsh's normal mode) |
 | Shell history | atuin | `C-r` in zsh, in the picker |
 | Git: staging, committing, history | git, with lazygit on top; delta and difftastic for diffs | `lg` and `,lg`; git's pager is delta |
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
@@ -127,7 +127,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Option` (Alt) | AeroSpace, globally | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,lg` lazygit |
-| `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;p` projects |
+| `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
 | `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `gsw`, `gfix`, the kubectl ones) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 

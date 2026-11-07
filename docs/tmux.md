@@ -114,7 +114,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a [` / `C-a ]` | `cmd+[` / `cmd+]` | previous / next window (copy mode and paste, tmux's own `[` / `]`, are on `C-a Enter` and `C-a p`) |
 | `C-a l` | `cmd+0` | back to the last window |
 | `C-a ;` | `ctrl+0` | back to the last pane |
-| `C-a (` / `C-a )` | – | previous / next session (tmux default; no Cmd key, see [Decisions](#decisions)) |
+| `C-a (` / `C-a )` | – | previous / next session, past `_scratch` (no Cmd key, see [Decisions](#decisions)) |
 | `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | [session picker](#session-picker), ready to type ([picker keys](#picker-keys)) |
@@ -185,7 +185,6 @@ To look out for
 - fzf has no timeout for the second `j`: `jj` in a filter always leaves typing.
 - The tree can't collapse sessions, kill (`x`) or tag as `choose-tree` does, and a filter matches the text of
   each line, so a window matches by its own name, not its session's.
-- `C-a (` / `C-a )` (previous / next session) also stop at `_scratch`, the hidden shells' session.
 - Remote hosts often lack the `tmux-256color` terminfo, so inside tmux the `ssh` alias connects with
   `TERM=xterm-256color`.
 

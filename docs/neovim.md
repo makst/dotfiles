@@ -153,7 +153,6 @@ These override built-in vim keys, which is easy to forget:
 | `;e` | diagnostics |
 | `;q` | quickfix list |
 | `;o` / `;l` | code tours / the stops of the open tour, see [Code tours](#code-tours) |
-| `;p` | projects: the directories zoxide knows, as `cmd+k` in tmux; switches the working directory (and nvim-tree) there and finds files in it |
 | `;t` | help tags |
 | `;?` | the keys: every key with a description, found by key or by what it does (`git`, `split`); nvim's own keys too |
 | `;;` or `;c` | reopen the last picker with its query |
@@ -334,4 +333,6 @@ Decisions
 - **Shells and lazygit in tmux, no terminal plugin**: tmux owns terminals (`docs/design.md`, "One tool per
   job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. That includes the
   Gradle and logcat shells ([mobile](mobile.md)): nvim types its commands into them with `tmux send-keys`.
+- **No projects picker (`;p`)**: a project is a tmux session (`cmd+k`), so moving to another one happens in
+  tmux, not by changing nvim's working directory (`docs/design.md`, "One tool per job").
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.

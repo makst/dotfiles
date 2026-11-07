@@ -54,18 +54,6 @@ vim.keymap.set('n', ';a', function()
   fzf.files(picker('all files', { fd_opts = '--color=never --type f --type l --hidden --no-ignore --exclude .git' }))
 end, { desc = 'Find: all files, ignored ones too' })
 
--- the directories zoxide knows, as cmd+k in tmux: cd there (nvim-tree follows), then pick a file in it
-vim.keymap.set('n', ';p', function()
-  fzf.zoxide(picker('projects', {
-    actions = {
-      enter = function(selected, opts)
-        actions.zoxide_cd(selected, opts)
-        fzf.files(picker('files'))
-      end,
-    },
-  }))
-end, { desc = 'Find: projects' })
-
 vim.keymap.set('n', ';g', function()
   fzf.git_files(picker('git files'))
 end, { desc = 'Find: files in git' })
