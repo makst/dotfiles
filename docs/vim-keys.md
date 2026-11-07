@@ -6,12 +6,18 @@ VS Code (the vim extension) and Android Studio (IdeaVim) get nvim's leader `,`, 
 the `,` mappings, set in files in this repo. Xcode only has a plain vim mode. The shell, Claude Code's prompt,
 tmux and the TUIs use vim keys too.
 
-What changes where: nvim's keys are in `config/nvim/lua/user/` (see [neovim](neovim.md)), VS Code's in
-`config/vscode/settings.json` (`vim.*`), Android Studio's in `config/ideavim/ideavimrc`. A key added or
-changed in nvim goes into the other two in the same commit, when the IDE has a matching action.
-
-Shared keys
+Adding a key
 ---
+1. Bind it in nvim, in the plugin's `keymaps.lua` under `config/nvim/lua/user/` (see [neovim](neovim.md)).
+2. In the same commit, add it to VS Code (`config/vscode/settings.json`, `vim.*`) and Android Studio
+   (`config/ideavim/ideavimrc`) when the IDE has a matching action. In Android Studio, `:action` (or the
+   IdeaVim icon in the status bar → Track Action IDs) shows the action ids.
+3. Add a row to [Shared keys](#shared-keys), or to [Not shared](#not-shared) with the reason.
+
+Keys
+---
+### Shared keys
+
 `·` means the IDE's own behaviour, no mapping needed; `–` means it doesn't have it.
 
 | Key | Does | nvim | VS Code | Android Studio | Xcode |
@@ -51,8 +57,9 @@ Shared keys
 | `,xx` | all diagnostics | ✓ | ✓ | ✓ | – |
 | `,re` | reload the config | ✓ | – | ✓ | – |
 
-Debugging happens in the IDEs, so these exist there only (nvim has no debugger; its `,d` is free apart from
-`,dt` / `,do` for diff):
+### Debugging
+
+These exist in the IDEs only: nvim has no debugger (its `,d` is free apart from `,dt` / `,do` for diff).
 
 | Key | Does | VS Code | Android Studio |
 |---|---|---|---|
@@ -62,22 +69,24 @@ Debugging happens in the IDEs, so these exist there only (nvim has no debugger; 
 | `,dn` / `,di` / `,du` | step over (next) / into / out | ✓ | ✓ |
 | `,dx` | stop | ✓ | ✓ |
 
-And in Android Studio, `,ar` runs the app and `,ax` stops it, like nvim's `,a` keys.
+In Android Studio, `,ar` runs the app and `,ax` stops it, like nvim's `,a` keys.
 
-Not shared:
+### Not shared
+
 - **`H` `J` `K` `L`** walk the syntax tree in nvim (treewalker); the IDEs keep vim's meaning (top of screen,
   join lines, …).
 - **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`), git (`,g…`), terminals (`,lg`, `,tt`, `,tm`)
   and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
 
-Each tool
+Config
 ---
+How each tool gets its vim keys:
+
 - **VS Code**: the vim extension (`vscodevim.vim`, installed by `setup_vscode`), configured in
   `config/vscode/settings.json`. Keys VS Code itself wants (`cmd+…`) still work.
 - **Android Studio**: IdeaVim and AceJump, installed by `setup_ideavim` (Android Studio closed), which also
   links `~/.ideavimrc`. `C-h/j/k/l` go to IdeaVim rather than the IDE's own shortcuts. After editing the
-  file, `,re` reloads it. In any IDE, `:action` (or the IdeaVim icon in the status bar → Track Action IDs)
-  shows the action ids for new mappings.
+  file, `,re` reloads it.
 - **Xcode**: Editor → Vim Mode. Motions, operators, text objects and `:` commands work; Xcode can't take
   mappings, so no leader, `jj` or `;` pickers.
 - **zsh**: vi mode, `jj` leaves insert mode. In normal mode nvim's find keys work too: `;f` / `;a` / `;g`
@@ -87,18 +96,28 @@ Each tool
 - **Claude Code**: the prompt is in vim mode (`editorMode` in `config/claude/settings.json`), `jj` leaves
   insert mode (`vimInsertModeRemaps`). Motions, operators and text objects work; no other mappings. In
   normal mode, `j`/`k` at the first or last line go through earlier prompts, and `/` searches them.
-  `/config` → Editor mode turns it off, but writes through the link into the repo, so for every Mac.
 - **tmux**: copy mode uses vi keys, `v` selects, `y` copies (see [tmux](tmux.md)); `C-h/j/k/l` cross into
   nvim.
 - **AeroSpace**: `alt+h/j/k/l` move between windows (see [window management](window-management.md)).
 - **REPLs**: vi mode in everything that reads a line with GNU readline (bash, psql; `config/readline/inputrc`,
   with `jj`) or libedit (sqlite3, lldb, python; `config/readline/editrc`, Esc only: libedit can't wait for
-  the second `j`, so a `j` before any other letter would be lost). Python's own REPL from 3.13 on ignores
-  `~/.editrc`, so `PYTHON_BASIC_REPL=1` (`zsh/.exports`) runs the basic one: vi keys, but no colours or
-  multi-line editing. node's REPL has no vi mode.
+  the second `j`, so a `j` before any other letter would be lost). Python runs its basic REPL
+  (`PYTHON_BASIC_REPL=1`, `zsh/.exports`).
 - **atuin** (`atuin search -i`; `C-r` is a picker): `keymap_mode = "auto"` in `config/atuin/config.toml`,
   vi keys starting in the mode the shell is in.
 - **glow** (`mdv`): its pager is `less` (`PAGER`), so `j`/`k`, `/` and `q`.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
 - **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.
+
+To look out for
+---
+- Claude Code's `/config` → Editor mode turns vim mode off, but writes through the link into the repo, so for
+  every Mac.
+- In REPLs that use libedit, `jj` doesn't leave insert mode: libedit can't wait for the second `j`.
+- node's REPL has no vi mode.
+
+Decisions
+---
+- **Python's basic REPL**: from 3.13 on, Python's own REPL ignores `~/.editrc`; the basic one has vi keys, but
+  no colours or multi-line editing.

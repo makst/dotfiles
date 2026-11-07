@@ -108,7 +108,7 @@ Normal mode has vim's motions and operators: `dw`, `cb`, `yy`, `p`, `.` repeats,
 | `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
 | `;p` | normal | projects: the sessionizer (`tm`) |
 | `,lg` / `,e` | normal | lazygit / yazi |
-| `Tab` | insert | completion through fzf, see [fzf](fzf.md#completion-fzf-tab) |
+| `Tab` | insert | completion through fzf, see [fzf](fzf.md#completing-with-tab-fzf-tab) |
 
 Commands
 ---
@@ -122,7 +122,7 @@ Commands
 | `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
 | `agent_done [--force] [name]` | lists the agents, or removes a finished one's worktree, branch and window, see [claude-code](claude-code.md#finishing-an-agent) |
 | `agent_resume [name \| id]` | picks an agent's conversation in fzf, or resumes one, in its worktree again after `agent_done`, see [claude-code](claude-code.md#going-back-to-an-agent) |
-| `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#markdown-mdv) |
+| `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
 | `docker` | podman (see [Decisions](#decisions)) |
@@ -174,7 +174,7 @@ The plugins are three Homebrew formulae, sourced from `$HOMEBREW_PREFIX/share` i
 
 | Plugin | Gives you |
 |---|---|
-| fzf-tab | `Tab` completion through fzf, see [fzf](fzf.md#completion-fzf-tab) |
+| fzf-tab | `Tab` completion through fzf, see [fzf](fzf.md#completing-with-tab-fzf-tab) |
 | zsh-autosuggestions | grey suggestion from history as you type |
 | fast-syntax-highlighting | commands coloured as you type, red when they don't exist; loads last |
 

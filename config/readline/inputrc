@@ -1,5 +1,5 @@
 # GNU readline (bash, psql and other REPLs built with it): vi mode as in zsh, jj leaves insert mode.
-# Linked to ~/.inputrc by setup_readline (zsh/functions/readline.zsh); see docs/vim-keys.md, "Each tool".
+# Linked to ~/.inputrc by setup_readline (zsh/functions/readline.zsh); see docs/vim-keys.md, "Config".
 set editing-mode vi
 set keymap vi-insert
 "jj": vi-movement-mode

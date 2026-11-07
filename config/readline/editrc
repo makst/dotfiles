@@ -1,4 +1,4 @@
 # libedit (sqlite3, lldb, python from uv, psql when built with it): vi mode as in zsh. No jj: libedit has no
 # timeout for a key sequence, so a j followed by any other letter is lost; Esc leaves insert mode.
-# Linked to ~/.editrc by setup_readline (zsh/functions/readline.zsh); see docs/vim-keys.md, "Each tool".
+# Linked to ~/.editrc by setup_readline (zsh/functions/readline.zsh); see docs/vim-keys.md, "Config".
 bind -v

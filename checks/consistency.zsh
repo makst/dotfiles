@@ -101,15 +101,15 @@ check_machine_files() {
   note=$(count $#templates template)
 }
 
-# full-screen programs: each one the Brewfile marks "TUI:" is named in bold in docs/vim-keys.md, "Each tool",
+# full-screen programs: each one the Brewfile marks "TUI:" is named in bold in docs/vim-keys.md, "Config",
 # so every new TUI says how it gets vim keys or why it can't
 check_tui_keys() {
   local -a tuis=(${${(f)"$(awk -F'"' '/^(brew|cask) "[^"]+" *# TUI:/ { print $2 }' Brewfile)"}##*/})
   local -a named=(${=${(L)"$(awk '/^(---|===)$/ { section = prev } { prev = $0 }
-    section == "Each tool" && /^- \*\*/ { s = $0; sub(/^- \*\*/, "", s); sub(/\*\*.*/, "", s); print s }' docs/vim-keys.md)"//,/ }})
+    section == "Config" && /^- \*\*/ { s = $0; sub(/^- \*\*/, "", s); sub(/\*\*.*/, "", s); print s }' docs/vim-keys.md)"//,/ }})
   local t
   for t in $tuis; do
-    (( $named[(Ie)$t] )) || print -r -- "Brewfile: $t is a TUI, but docs/vim-keys.md (\"Each tool\") doesn't say how it gets vim keys"
+    (( $named[(Ie)$t] )) || print -r -- "Brewfile: $t is a TUI, but docs/vim-keys.md (\"Config\") doesn't say how it gets vim keys"
   done
   note=$(count $#tuis TUI)
 }

@@ -9,10 +9,22 @@ IDE on its own).
 
 AeroSpace puts Xcode on workspace 8 and Android Studio on 9, each with its simulator or emulator floating on
 top; with two displays both workspaces stay on the second one, so nvim and the IDE are side by side on
-different screens (`alt+8`, `alt+9`). See [window management](window-management.md#layout).
+different screens (`alt+8`, `alt+9`). See [window management](window-management.md#what-it-is).
 
 iOS
 ---
+
+### What it is
+- **Language server**: `sourcekit-lsp`, which comes with Xcode, so not from the Brewfile. It handles Swift and
+  Objective-C; C and C++ are left out so it doesn't start in other projects. Its root is the nearest
+  `buildServer.json`, `.xcodeproj` or `Package.swift`, not the git root, so each app in a repo is its own
+  project.
+- **Highlighting and indentation**: the Swift treesitter parser.
+- **Format on save**: only when the project has a style set. SwiftFormat with a `.swiftformat` file, Apple's
+  swift-format (`swift format`) with a `.swift-format` file, nothing otherwise. sourcekit-lsp's own formatting
+  is never used: without a config it would restyle every file.
+- **Build, run, test**: [xcodebuild.nvim](https://github.com/wojciech-kulik/xcodebuild.nvim). Config in
+  `config/nvim/lua/user/xcodebuild/`.
 
 ### Once per Mac
 `setup_dotfiles` installs from the Brewfile `xcode-build-server` (lets sourcekit-lsp understand Xcode
@@ -38,18 +50,6 @@ In nvim at the project's root:
 
 Swift packages (`Package.swift`) need neither step for the language server. Then `,ir` builds and runs,
 `,it` runs the tests and `,io` opens the current line in Xcode.
-
-### In nvim
-- **Language server**: `sourcekit-lsp`, which comes with Xcode, so not from the Brewfile. It handles Swift and
-  Objective-C; C and C++ are left out so it doesn't start in other projects. Its root is the nearest
-  `buildServer.json`, `.xcodeproj` or `Package.swift`, not the git root, so each app in a repo is its own
-  project.
-- **Highlighting and indentation**: the Swift treesitter parser.
-- **Format on save**: only when the project has a style set. SwiftFormat with a `.swiftformat` file, Apple's
-  swift-format (`swift format`) with a `.swift-format` file, nothing otherwise. sourcekit-lsp's own formatting
-  is never used: without a config it would restyle every file.
-- **Build, run, test**: [xcodebuild.nvim](https://github.com/wojciech-kulik/xcodebuild.nvim). Config in
-  `config/nvim/lua/user/xcodebuild/`.
 
 ### Keys
 All under `,i` (for iOS), in normal mode.
@@ -82,6 +82,17 @@ All under `,i` (for iOS), in normal mode.
 Android
 ---
 
+### What it is
+- **Language server**: kotlin-lsp, built on IntelliJ, so it reads Gradle projects (Android ones included)
+  as Android Studio does. Its root is the nearest `settings.gradle(.kts)` or `build.gradle(.kts)`. It is
+  young (JetBrains calls it pre-alpha).
+- **Highlighting and indentation**: the Kotlin, Groovy (`build.gradle`) and XML (layouts, manifests)
+  treesitter parsers.
+- **Format on save**: only when the project sets up ktlint in its `.editorconfig` (e.g.
+  `ktlint_code_style = android_studio`), nothing otherwise. kotlin-lsp's own formatting is never used.
+- **Build, run, test**: the project's own `./gradlew` and `adb`, in a terminal split at the project root
+  (the directory with `gradlew`), one per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
+
 ### Once per Mac
 `setup_dotfiles` installs from the Brewfile **Android Studio**, **kotlin-lsp** (JetBrains' Kotlin language
 server) and **ktlint**, and `setup_ideavim` gives Android Studio nvim's keys: IdeaVim and AceJump, and
@@ -107,17 +118,6 @@ go-to-definition take a minute to arrive.
 
 Then `,ae` starts an emulator, `,ar` builds, installs and launches the app, `,at` runs the unit tests, `,al`
 shows the app's logcat and `,ao` opens the current line in Android Studio.
-
-### In nvim
-- **Language server**: kotlin-lsp, built on IntelliJ, so it reads Gradle projects (Android ones included)
-  as Android Studio does. Its root is the nearest `settings.gradle(.kts)` or `build.gradle(.kts)`. It is
-  young (JetBrains calls it pre-alpha).
-- **Highlighting and indentation**: the Kotlin, Groovy (`build.gradle`) and XML (layouts, manifests)
-  treesitter parsers.
-- **Format on save**: only when the project sets up ktlint in its `.editorconfig` (e.g.
-  `ktlint_code_style = android_studio`), nothing otherwise. kotlin-lsp's own formatting is never used.
-- **Build, run, test**: the project's own `./gradlew` and `adb`, in a terminal split at the project root
-  (the directory with `gradlew`), one per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
 
 ### Keys
 All under `,a` (for Android), in normal mode. They build the debug variant; anything else (another
@@ -153,3 +153,12 @@ flavour, `lint`, `clean`, `spotlessApply`) goes through `,aa`.
   spotless run `,aa` `spotlessApply`.
 - Breakpoints and the debugger are Android Studio's: `,ao` takes you to the same line, set the breakpoint
   there and run with the debug button.
+
+Decisions
+---
+- **Xcode isn't in the Brewfile**: it is large, and installing it needs an Apple ID.
+- **No formatting by the language servers**: without a config, sourcekit-lsp would restyle every file; Swift
+  and Kotlin are formatted only when the project sets a style.
+- **sourcekit-lsp leaves C and C++ alone**, so it doesn't start in other projects.
+- **The IDE debugs**: breakpoints and the debugger are Xcode's and Android Studio's; `,io` / `,ao` take you to
+  the same line.

@@ -13,100 +13,19 @@ The setup runs in two stages, because the second needs zsh and Homebrew to exist
    idempotent, so rerun it after pulling changes. A step that fails doesn't stop the others; the failed ones
    are listed at the end, to fix and run again on their own.
 
-On a new Mac, follow [A new Mac](#a-new-mac): a few steps around these two can't be scripted.
-
-Both only ever use the native arm64 Homebrew in `/opt/homebrew`. A Homebrew in `/usr/local` on an Apple
-silicon Mac is a leftover Intel install running under Rosetta and is deliberately ignored.
-
-What `setup_dotfiles` does
+What it is
 ---
-Each step is a function you can also run on its own:
-
-| Function | Does |
-|---|---|
-| `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
-| `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
-| `setup_fzf` | links `~/.fzf.zsh` |
-| `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
-| `setup_btop` | links `~/.config/btop/btop.conf` |
-| `setup_readline` | links `~/.inputrc` and `~/.editrc`: vi mode in REPLs (see [vim-keys](vim-keys.md#each-tool)) |
-| `setup_node` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` into it |
-| `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
-| `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
-| `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore`, turns on this repo's hooks in `.githooks` (see [Staying up to date](#staying-up-to-date)) |
-| `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
-| `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
-| `setup_ghostty` | links the Ghostty config and themes |
-| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
-| `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
-| `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
-| `setup_vscode` | links VS Code's `settings.json`, installs the extensions in `config/vscode/extensions.txt` that are missing (see [debugging](debugging.md)) |
-| `setup_ideavim` | links `~/.ideavimrc`, installs the IdeaVim and AceJump plugins into Android Studio when missing (see [vim-keys](vim-keys.md)) |
-| `setup_window_management` | links the AeroSpace config and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [window-management](window-management.md)) |
-
-Not part of `setup_dotfiles`:
-
-- `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
-  `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
-
-Several Macs
----
-The repo holds what every Mac shares, and every Mac gets all of it. What only one Mac needs lives in
-`~/.config/dotfiles`, outside the repo, so a work email, work plugins or a company's tools never end up in it.
-`setup_machine` creates these files from the templates in `config/machine` when they are missing and never
-overwrites them:
-
-| File | Used by | For |
-|---|---|---|
-| `name` | `secretive_key` | what the Mac is called, e.g. `home-m5`; its keys show up on GitHub under this name |
-| `kind` | the Brewfile | `home` or `work`, whether the Mac is home-like or work-like. Packages in an `if kind == "home"` (or `"work"`) block install only on that kind: Tunnelblick only on home-like Macs |
-| `gitconfig` | `~/.gitconfig`, included last | the work email in work repos, see [git](git.md#identity) |
-| `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
-| `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
-| `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude-code](claude-code.md#this-machine) |
-| `forbidden` | `check_dotfiles` | words that must never reach the repo from this Mac, one per line: the company, the work email's domain, work hosts. The checks fail on any of them, in any case, in the repo's files and in the messages of commits not yet pushed. The words stay on this Mac, so the list itself can't leak |
-
-Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared
-`config/ssh/config`. Rename the Mac or change its kind with `setup_machine <name> <home|work>`.
-
-Symlinks
----
-The repo is never copied: everything is linked, so editing a file in the repo takes effect immediately
-(after reloading the tool: `reload_dotfiles`, see [Staying up to date](#staying-up-to-date)).
-
-| In `$HOME` | Points to |
-|---|---|
-| `~/dotfiles` | the repo, wherever it's cloned (`~/.ssh/config` and `~/.gitconfig` use this path) |
-| `~/.zshrc` | `.zshrc` |
-| `~/.fzf.zsh` | `.fzf.zsh` |
-| `~/.atuin/config.toml` | `config/atuin/config.toml` |
-| `~/.config/btop/btop.conf` | `config/btop/btop.conf` |
-| `~/.inputrc`, `~/.editrc` | `config/readline/inputrc`, `config/readline/editrc` |
-| `~/.gitconfig` | `config/git/.gitconfig` |
-| `~/.config/git/ignore` | `config/git/ignore` |
-| `~/.config/tmux/` | `config/tmux/` |
-| `~/.config/nvim/` | `config/nvim/` |
-| `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
-| `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
-| `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/hooks/`, `~/.claude/statusline.sh` | `config/claude/…` |
-| `~/.claude/skills/<name>/` | each skill in `config/claude/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory |
-| `~/.ideavimrc` | `config/ideavim/ideavimrc` |
-| `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |
-| `~/bin/vim` | `/opt/homebrew/bin/nvim` |
-
-`.zshrc` finds the repo by resolving its own symlink, so the clone can live anywhere.
-
-Data that is *not* in the repo: tmux plugins (`~/.tmux/plugins`), nvim plugins and language servers
-(`~/.local/share/nvim`), shell history (`~/.zsh_history`, atuin's `~/.atuin`), cached tool setup
-(`~/.cache/zsh`), node versions (fnm), python versions (uv, `~/.local/share/uv`).
-
-The Brewfile
----
-Grouped by why a package is there: tools these dotfiles depend on (each commented with the file that uses
-it), everyday CLI tools, GUI apps (casks), apps for one kind of Mac only, this Mac's own list from
-`~/.config/dotfiles/Brewfile`, and a commented-out review list of things from an older Mac.
-Add a package by adding a line and rerunning `setup_brew`. `brew bundle check --verbose` shows what is
-missing; `brew bundle cleanup` shows what is installed but not listed.
+- **Two stages**, above; every step of the second is idempotent, so rerun it after pulling changes.
+- **Links, not copies**: everything is linked, so editing a file in the repo takes effect immediately (after
+  reloading the tool: `reload_dotfiles`, see [Staying up to date](#staying-up-to-date)). `.zshrc` finds the
+  repo by resolving its own symlink, so the clone can live anywhere. All the links are in
+  [Symlinks](#symlinks).
+- **Several Macs**: the repo holds what every Mac shares, and every Mac gets all of it. What only one Mac needs
+  lives in `~/.config/dotfiles`, outside the repo, so a work email, work plugins or a company's tools never
+  end up in it ([Several Macs](#several-macs)).
+- **Data that is *not* in the repo**: tmux plugins (`~/.tmux/plugins`), nvim plugins and language servers
+  (`~/.local/share/nvim`), shell history (`~/.zsh_history`, atuin's `~/.atuin`), cached tool setup
+  (`~/.cache/zsh`), node versions (fnm), python versions (uv, `~/.local/share/uv`).
 
 A new Mac
 ---
@@ -142,11 +61,6 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
    work, open Android Studio once so it installs the SDK. See [iOS](mobile.md#ios) and
    [Android](mobile.md#android).
 
-For a fork, change the identity first: name and email in `config/git/.gitconfig`, the keys in
-`config/git/allowed_signers`, the repo URL above.
-
-After editing the tmux plugin list: `C-a I` inside tmux.
-
 Retiring a Mac
 ---
 When a Mac is sold, wiped, handed back or lost, stop trusting its keys. On another Mac:
@@ -168,7 +82,7 @@ git pull && setup_dotfiles
 
 That installs and upgrades brew packages (the zsh plugins are among them), installs newly listed tmux plugins and
 restores nvim plugins to the versions in `lazy-lock.json`. Updating tmux plugins (`C-a U`) and nvim plugins
-are deliberate steps, see [tmux](tmux.md#plugins) and [neovim](neovim.md#updating-plugins).
+are deliberate steps, see [tmux](tmux.md#updating-plugins) and [neovim](neovim.md#updating-plugins).
 
 A pull puts the new config on disk at once, through the links, but the programs already running keep what they
 started with: tmux, Ghostty and AeroSpace their config (a new tmux key does nothing yet), tmux's popups the
@@ -215,7 +129,11 @@ check_mac: 2 problems, each with what fixes it:
 | a new zsh and nvim start without printing errors | the error says |
 | Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
 
-The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
+Adding a package
+---
+Add a package by adding a line and rerunning `setup_brew`. `brew bundle check --verbose` shows what is
+missing; `brew bundle cleanup` shows what is installed but not listed. See [The Brewfile](#the-brewfile)
+for where it goes.
 
 Checks
 ---
@@ -297,8 +215,109 @@ new Mac doesn't have them.
 
 Run it after changing a setup step or the order of `setup_dotfiles`.
 
-Other helpers
+Commands
 ---
+### Other helpers
+
 - `mac_keys` lists which keys belong to which Mac; `retire_mac <name>` revokes one Mac's keys (see
   [Retiring a Mac](#retiring-a-mac)).
 - `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
+- `check_mac` checks this Mac against the repo, see [Is this Mac up to date?](#is-this-mac-up-to-date).
+- `reload_dotfiles` reloads tmux, Ghostty and AeroSpace, see [Staying up to date](#staying-up-to-date).
+
+### What `setup_dotfiles` does
+
+Each step is a function you can also run on its own.
+
+| Function | Does |
+|---|---|
+| `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
+| `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
+| `setup_fzf` | links `~/.fzf.zsh` |
+| `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
+| `setup_btop` | links `~/.config/btop/btop.conf` |
+| `setup_readline` | links `~/.inputrc` and `~/.editrc`: vi mode in REPLs (see [vim-keys](vim-keys.md#config)) |
+| `setup_node` | installs the latest node LTS with fnm, makes it the default, installs global `typescript` into it |
+| `setup_python` | installs the latest python with uv as `python` / `python3` in `~/.local/bin` |
+| `setup_ssh` | includes `config/ssh/config` from `~/.ssh/config`, removes the old keychain login item (see [git](git.md#ssh-keys)) |
+| `setup_git` | links `~/.gitconfig` and the global gitignore `~/.config/git/ignore`, turns on this repo's hooks in `.githooks` (see [Staying up to date](#staying-up-to-date)) |
+| `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
+| `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
+| `setup_ghostty` | links the Ghostty config and themes |
+| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
+| `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
+| `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
+| `setup_vscode` | links VS Code's `settings.json`, installs the extensions in `config/vscode/extensions.txt` that are missing (see [debugging](debugging.md)) |
+| `setup_ideavim` | links `~/.ideavimrc`, installs the IdeaVim and AceJump plugins into Android Studio when missing (see [vim-keys](vim-keys.md)) |
+| `setup_window_management` | links the AeroSpace config and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [window-management](window-management.md)) |
+
+Not part of `setup_dotfiles`:
+
+- `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
+  `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
+
+Config
+---
+### Several Macs
+
+`setup_machine` creates these files from the templates in `config/machine` when they are missing and never
+overwrites them:
+
+| File | Used by | For |
+|---|---|---|
+| `name` | `secretive_key` | what the Mac is called, e.g. `home-m5`; its keys show up on GitHub under this name |
+| `kind` | the Brewfile | `home` or `work`, whether the Mac is home-like or work-like. Packages in an `if kind == "home"` (or `"work"`) block install only on that kind: Tunnelblick only on home-like Macs |
+| `gitconfig` | `~/.gitconfig`, included last | the work email in work repos, see [git](git.md#identity) |
+| `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
+| `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
+| `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude-code](claude-code.md#this-machine) |
+| `forbidden` | `check_dotfiles` | words that must never reach the repo from this Mac, one per line: the company, the work email's domain, work hosts. The checks fail on any of them, in any case, in the repo's files and in the messages of commits not yet pushed. The words stay on this Mac, so the list itself can't leak |
+
+Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared
+`config/ssh/config`. Rename the Mac or change its kind with `setup_machine <name> <home|work>`.
+
+### Symlinks
+
+| In `$HOME` | Points to |
+|---|---|
+| `~/dotfiles` | the repo, wherever it's cloned (`~/.ssh/config` and `~/.gitconfig` use this path) |
+| `~/.zshrc` | `.zshrc` |
+| `~/.fzf.zsh` | `.fzf.zsh` |
+| `~/.atuin/config.toml` | `config/atuin/config.toml` |
+| `~/.config/btop/btop.conf` | `config/btop/btop.conf` |
+| `~/.inputrc`, `~/.editrc` | `config/readline/inputrc`, `config/readline/editrc` |
+| `~/.gitconfig` | `config/git/.gitconfig` |
+| `~/.config/git/ignore` | `config/git/ignore` |
+| `~/.config/tmux/` | `config/tmux/` |
+| `~/.config/nvim/` | `config/nvim/` |
+| `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
+| `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
+| `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/hooks/`, `~/.claude/statusline.sh` | `config/claude/…` |
+| `~/.claude/skills/<name>/` | each skill in `config/claude/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory |
+| `~/.ideavimrc` | `config/ideavim/ideavimrc` |
+| `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |
+| `~/bin/vim` | `/opt/homebrew/bin/nvim` |
+
+### The Brewfile
+
+Grouped by why a package is there: tools these dotfiles depend on (each commented with the file that uses
+it), everyday CLI tools, GUI apps (casks), apps for one kind of Mac only, this Mac's own list from
+`~/.config/dotfiles/Brewfile`, and a commented-out review list of things from an older Mac.
+
+To look out for
+---
+- After editing the tmux plugin list: `C-a I` inside tmux.
+- `check_mac` doesn't check the macOS settings the setup makes once (key repeat, Caps Lock, the Dock).
+- On a managed work Mac, a step MDM blocks shows up in the list of failed steps at the end of `setup_dotfiles`
+  (see [A new Mac](#a-new-mac), step 2).
+- For a fork, change the identity first: name and email in `config/git/.gitconfig`, the keys in
+  `config/git/allowed_signers`, the repo URL in [A new Mac](#a-new-mac).
+
+Decisions
+---
+- **Native arm64 only**: the setup only ever uses the Homebrew in `/opt/homebrew`. A Homebrew in `/usr/local`
+  on an Apple silicon Mac is a leftover Intel install running under Rosetta and is deliberately ignored.
+- **Links, not copies**, so an edit in the repo is the running setup.
+- **What one Mac needs stays outside the repo**, in `~/.config/dotfiles`, and so does the list of forbidden
+  words, so the list itself can't leak.
+- **`checks/mutate` isn't in `check_dotfiles` or CI**: it takes too long for every commit.

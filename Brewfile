@@ -1,6 +1,6 @@
 # Installed by `setup_brew` (zsh/functions/setup.zsh) via `brew bundle`. Native Homebrew only (/opt/homebrew).
 # Preview what is missing: brew bundle check --file=Brewfile --verbose
-# A comment starting with "TUI:" marks a program with its own full-screen keys: docs/vim-keys.md, "Each tool",
+# A comment starting with "TUI:" marks a program with its own full-screen keys: docs/vim-keys.md, "Config",
 # says how it gets vim keys (a check, checks/consistency.zsh, holds it to that).
 
 # This Mac's kind, home or work (setup_machine asks once). Every Mac gets all packages below; one that only

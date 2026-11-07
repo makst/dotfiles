@@ -13,18 +13,7 @@ Splitting, moving between and zooming panes, then a new window.
 
 </details>
 
-| GIF | In | Shows |
-|---|---|---|
-| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, lazygit, the session tree |
-| `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
-| `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, back to the last session |
-| `zsh-history` | [zsh](zsh.md#searching-history) | prefix search with the up arrow, grey suggestions, atuin |
-| `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
-| `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
-| `git` | [git](git.md#lazygit) | delta, difftastic, staging and committing in lazygit |
-| `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
-
-How they're made
+What it is
 ---
 - Each GIF has a [VHS](https://github.com/charmbracelet/vhs) tape in `docs/tapes/<name>.tape`: the keys to
   press and how long to wait, e.g. `Ctrl+a Type "|" Sleep 1.2s`. The GIF goes to `docs/img/<name>.gif`.
@@ -39,8 +28,8 @@ How they're made
   load. Every tape gets a fresh HOME, so one tape's commands don't turn up in the next.
 - `claude` in that HOME is the real Claude Code, logged in with the Mac's Keychain entry. Its
   `~/.claude.json` there has the account's IDs and plan but not its name, email or organisation, so those
-  can't appear in a GIF. Rendering `claude-code` is a real (small) session on your plan, and Claude's words
-  differ each time; the tape waits for what's on screen and hides the waiting.
+  can't appear in a GIF. Claude's words differ each time; the tape waits for what's on screen and hides the
+  waiting.
 - `docs/tapes/keycast` sits between the terminal and tmux and shows each key pressed as a yellow badge on a
   second status line:
   - a prefix chord that a Ghostty `cmd` key sends shows as that key, the one you'd press: the tape types
@@ -50,9 +39,9 @@ How they're made
   - in nvim and lazygit, where letters are commands, letters typed in one go share a badge: `;f`, `,e`;
   - plain typing in the shell shows no badge, since the text appears in the pane anyway.
 
-  It's Python because it needs a pseudo-terminal in the middle of the input.
-- VHS can't press `cmd` (it records a terminal in a browser, not Ghostty), so tapes type the tmux keys
-  Ghostty would send: `Ctrl+a Type "|"` for `cmd+d`. A comment above each says which `cmd` key it is.
+Once per Mac
+---
+`vhs` (which brings `ttyd` and `ffmpeg`) and the Symbols Nerd Font for the icons come from the Brewfile.
 
 Adding one
 ---
@@ -60,9 +49,10 @@ Adding one
    in the session `main`, in `~/dotfiles` (the repo). See the
    [VHS commands](https://github.com/charmbracelet/vhs#vhs-command-reference).
 2. `make_gifs <name>` and look at the result. If the GIF needs more made-up data, add it to `demo-home`.
-3. Embed it next to the keys it shows, in a toggle that's closed by default, and add it to the table above.
-   The toggle's title is always a bold `Show GIF`, so every page marks a GIF the same way and it stands out;
-   inside, one short line says what it shows (keys in backticks), and the alt text says the same in plain text:
+3. Embed it next to the keys it shows, in a toggle that's closed by default, and add it to the
+   [list](#the-gifs). The toggle's title is always a bold `Show GIF`, so every page marks a GIF the same way
+   and it stands out; inside, one short line says what it shows (keys in backticks), and the alt text says
+   the same in plain text:
 
    ```markdown
    <details>
@@ -75,6 +65,28 @@ Adding one
    </details>
    ```
 
-Keep them short (around 15 s) and under ~1 MB, since every version stays in git.
+The GIFs
+---
+| GIF | In | Shows |
+|---|---|---|
+| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, lazygit, the session tree |
+| `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
+| `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, back to the last session |
+| `zsh-history` | [zsh](zsh.md#searching-history) | prefix search with the up arrow, grey suggestions, atuin |
+| `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
+| `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
+| `git` | [git](git.md#lazygit) | delta, difftastic, staging and committing in lazygit |
+| `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
 
-Needs `vhs` (which brings `ttyd` and `ffmpeg`) and the Symbols Nerd Font for the icons, both in the Brewfile.
+To look out for
+---
+- Keep them short (around 15 s) and under ~1 MB, since every version stays in git.
+- VHS can't press `cmd` (it records a terminal in a browser, not Ghostty), so tapes type the tmux keys
+  Ghostty would send: `Ctrl+a Type "|"` for `cmd+d`. A comment above each says which `cmd` key it is.
+- Rendering `claude-code` is a real (small) session on your plan.
+
+Decisions
+---
+- **Recorded from scripts, not by hand**, so a GIF is made again when a key or the scheme changes.
+- **A made-up HOME**, so no real command, path, project or account detail can show up.
+- **keycast is Python**: it needs a pseudo-terminal in the middle of the input.
