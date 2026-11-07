@@ -10,8 +10,8 @@ function setup_fzf() {
 
 # mdv [dir|file]: pick a markdown file under dir (default: here) and read it rendered in glow's pager; a file
 # opens straight away. The list is the picker's (config/tmux/picker.zsh), in normal mode: j/k go through the
-# files while the preview below shows each one rendered, wrapped to the pane's width. The style (config/glow/ansi.json) uses the terminal's 16 colours, so it
-# follows the theme; glow's own are fixed ones.
+# files while the preview below shows each one rendered, wrapped to the pane's width. The style
+# (config/glow/ansi.json) uses the terminal's 16 colours, so it follows the theme; glow's own are fixed ones.
 #   mdv
 #   mdv docs
 #   mdv README.md

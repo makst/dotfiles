@@ -195,9 +195,9 @@ ghostty() { print 'Ghostty 1.4.0' }" > $t/home/.zshenv
   [[ $(calls) == *'tmux source-file'* ]] || print "a merge didn't reload tmux"
 }
 
-# link_claude_skills, in a throwaway HOME and repo with two skills: a skill gets linked, a real copy in its place
-# goes to the Trash, the link of a skill the repo no longer has goes, and a dangling link to elsewhere (a skill of the
-# user's own) stays.
+# link_claude_skills, in a throwaway HOME and repo with two skills: a skill gets linked, a real copy in its
+# place goes to the Trash, the link of a skill the repo no longer has goes, and a dangling link to elsewhere
+# (a skill of the user's own) stays.
 check_skill_links() {
   local t=$tmp/skills s=$tmp/skills/home/.claude/skills
   mkdir -p $t/repo/config/claude/skills/{new,copied}/ $t/home/.Trash $s/copied

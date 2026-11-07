@@ -141,19 +141,19 @@ Checks
 check_dotfiles
 ```
 
-Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong
-and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED`,
+Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong and
+`check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED`,
 `warn` or `skip` and its time. The checks that only compare the docs or a convention with the config (setup
 tables, README links, GIFs and their toggles, the names the docs mention, nvim key descs, the style group)
-`warn`: their problems are printed in yellow, but they don't fail the run, on a Mac or on CI. A stale doc table
-is worth fixing, but it doesn't break the setup. A check whose tool isn't installed (Ghostty, AeroSpace, starship, nvim, tmux, yq,
-shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them outside its sandbox (this
-repo's `.claude/settings.json`), since the tmux checks need a socket; a command line with anything else on
-it, such as `checks/check_dotfiles | tail`, stays in the sandbox, where those two are skipped. GitHub runs
-`checks/check_dotfiles -v` on every push and pull request on a macOS runner (`.github/workflows/check.yml`),
-so the run's log shows each check, and a red check there means the same as a red check here. Before the
-checks, CI runs `fix_completion_dirs` as `setup_brew` does on a Mac: the runner's Homebrew leaves
-group-writable directories, and zsh would stop to ask about them.
+`warn`: their problems are printed in yellow, but they don't fail the run, on a Mac or on CI. A stale doc
+table is worth fixing, but it doesn't break the setup. A check whose tool isn't installed (Ghostty, AeroSpace,
+starship, nvim, tmux, yq, shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them
+outside its sandbox (this repo's `.claude/settings.json`), since the tmux checks need a socket; a command line
+with anything else on it, such as `checks/check_dotfiles | tail`, stays in the sandbox, where those two are
+skipped. GitHub runs `checks/check_dotfiles -v` on every push and pull request on a macOS runner
+(`.github/workflows/check.yml`), so the run's log shows each check, and a red check there means the same as a
+red check here. Before the checks, CI runs `fix_completion_dirs` as `setup_brew` does on a Mac: the runner's
+Homebrew leaves group-writable directories, and zsh would stop to ask about them.
 
 | Group | File | What it checks |
 |---|---|---|
@@ -162,7 +162,7 @@ group-writable directories, and zsh would stop to ask about them.
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
 | Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
-| Style | `checks/style.zsh` | warnings only, the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` itself instead of `picker`, each `docs/<tool>.md` has its top-level sections in the order of `docs/design.md`, "Same shape, every page", and each config or script file starts with a comment saying who uses it (nvim's `init.lua`, JSON and Markdown excepted) |
+| Style | `checks/style.zsh` | warnings only, the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` itself instead of `picker`, each `docs/<tool>.md` has its top-level sections in the order of `docs/design.md`, "Same shape, every page", and each config or script file starts with a comment saying who uses it (nvim's `init.lua`, JSON and Markdown excepted), and prose in Markdown and zsh comments stays within about 110 columns (over 115 warns; tables, code, images and URLs excepted) |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
 check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after

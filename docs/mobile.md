@@ -91,7 +91,8 @@ Android
 - **Format on save**: only when the project sets up ktlint in its `.editorconfig` (e.g.
   `ktlint_code_style = android_studio`), nothing otherwise. kotlin-lsp's own formatting is never used.
 - **Build, run, test**: the project's own `./gradlew` and `adb`, in a tmux pane below nvim at the project
-  root (the directory with `gradlew`), one for Gradle and one for logcat per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
+  root (the directory with `gradlew`), one for Gradle and one for logcat per project. Config in
+  `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
 
 ### Once per Mac
 `setup_dotfiles` installs from the Brewfile **Android Studio**, **kotlin-lsp** (JetBrains' Kotlin language

@@ -110,8 +110,8 @@ To look out for
   too; run that one yourself with `!`.
 - `bq query` isn't denied and could run SQL that changes data (`DELETE`, `UPDATE`); Claude asks before
   anything like that like any other command.
-- With the service account, each command Claude runs prints
-  `WARNING: This command is using service account impersonation`: that's the sign it works. A command that doesn't print it (check `bq` once) runs with your
+- With the service account, each command Claude runs prints `WARNING: This command is using service account
+  impersonation`: that's the sign it works. A command that doesn't print it (check `bq` once) runs with your
   login, and only the deny rules hold it back.
 - Application default credentials (client libraries, a local server Claude starts) still use your login.
 - Claude Code started from the desktop app or an IDE skips the wrapper and so the service account: start it

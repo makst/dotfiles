@@ -42,9 +42,9 @@ the key is on the account that has the work email.
 
 ### lazygit
 
-`lg` in a shell, `,lg` inside nvim (a tmux popup over it; `e` on a file opens it in that nvim and closes the popup). The quickest
-way to stage hunks or single lines, write commits, rebase interactively, and browse branches and history.
-`?` shows the keys for the current panel.
+`lg` in a shell, `,lg` inside nvim (a tmux popup over it; `e` on a file opens it in that nvim and closes the
+popup). The quickest way to stage hunks or single lines, write commits, rebase interactively, and browse
+branches and history. `?` shows the keys for the current panel.
 
 <details>
 <summary><b>Show GIF</b></summary>

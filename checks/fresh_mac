@@ -1,11 +1,12 @@
 #!/bin/zsh
 # fresh_mac [home|work]…: rehearses setting up a new Mac of each kind given (default: both), so that what only
 # works on a Mac that has been set up for a while shows up before a real new Mac meets it. For each kind, in
-# an empty HOME with a bare environment, as at a first login, it runs what docs/setup.md's "A new Mac" runs:
-# a clone of the repo in ~/repos/dotfiles (as it is now, uncommitted changes and new files included:
-# checks/snapshot), prepare-zsh-install.sh, `setup_machine fresh-<kind> <kind>` and setup_dotfiles. Then `check_mac --scripted`
-# says whether that HOME is the setup the repo describes. Prints the failed steps and check_mac's problems,
-# exits 1 on any; the HOME is kept to look into when a kind fails, and goes to the Trash when all pass.
+# an empty HOME with a bare environment, as at a first login, it runs what docs/setup.md's "A new Mac" runs: a
+# clone of the repo in ~/repos/dotfiles (as it is now, uncommitted changes and new files included:
+# checks/snapshot), prepare-zsh-install.sh, `setup_machine fresh-<kind> <kind>` and setup_dotfiles. Then
+# `check_mac --scripted` says whether that HOME is the setup the repo describes. Prints the failed steps and
+# check_mac's problems, exits 1 on any; the HOME is kept to look into when a kind fails, and goes to the Trash
+# when all pass.
 #
 # On a Mac in use, what would reach outside that HOME is stood in for by zsh functions in its .zshenv that log
 # the call to ~/stood-in.log: brew bundle (only loads the Brewfile, so a work Mac's packages don't land on a

@@ -71,14 +71,13 @@ A picker appears with its list already in and closes as soon as you leave it.
 
 ### Status bar
 
-At the top. Left: the session name. Then the windows: current one in bold blue, a zoomed one with a
-fullscreen icon, and **a window that rang the bell in yellow with a bell icon** until you visit it. Programs
-ring the bell when they want attention. A window running Claude Code shows its agent's state instead:
-waiting 󰂞, done but not seen 󰄬, working 󰔟 (see
-[claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many agents are in each state across
-all sessions, a `PREFIX` badge while the prefix is pressed, date, time, battery. Windows are two spaces apart, as the session name and the first window, and so are the
-groups on the right; the date, time and battery are grey, as the prompt's time below, and end flush with the
-edge.
+At the top. Left: the session name. Then the windows: current one in bold blue, a zoomed one with a fullscreen
+icon, and **a window that rang the bell in yellow with a bell icon** until you visit it. Programs ring the
+bell when they want attention. A window running Claude Code shows its agent's state instead: waiting 󰂞, done
+but not seen 󰄬, working 󰔟 (see [claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many
+agents are in each state across all sessions, a `PREFIX` badge while the prefix is pressed, date, time,
+battery. Windows are two spaces apart, as the session name and the first window, and so are the groups on the
+right; the date, time and battery are grey, as the prompt's time below, and end flush with the edge.
 
 The tree (`cmd+j`) and the session picker (`cmd+k`) show the same marks: on each pane, window and session,
 the most urgent agent in it. Visiting a window marks its finished agents as seen.

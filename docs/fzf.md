@@ -19,9 +19,9 @@ What it is
 - **One look everywhere**: every fzf, in the shell, in tmux popups and in nvim (fzf-lua,
   [neovim](neovim.md#finding-things)), reads the same `config/fzf/fzfrc`. fzf takes 60 % of the screen below
   the command line instead of going full screen, with its prompt and best matches at the top. The prompt, the
-  list and the preview each sit in a rounded box of their own, all the same width; a picker's header (its
-  line of keys) sits at the top of the list's box, above a line. A bar marks the current line only. Previews show files with bat and directories as an eza tree. Colours are ANSI ones and follow
-  the [theme](theme.md).
+  list and the preview each sit in a rounded box of their own, all the same width; a picker's header (its line
+  of keys) sits at the top of the list's box, above a line. A bar marks the current line only. Previews show
+  files with bat and directories as an eza tree. Colours are ANSI ones and follow the [theme](theme.md).
 - **Search syntax** worth remembering: `'exact`, `^prefix`, `suffix$`, `!exclude`, and `a | b` for either.
 
 Completing with Tab (fzf-tab)
