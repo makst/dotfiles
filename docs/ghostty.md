@@ -46,7 +46,7 @@ Keys
 | `cmd+d` / `cmd+shift+d` | `C-a \|` / `C-a -` | split right / down |
 | `cmd+w` | `C-a x` | close pane (asks first) |
 | `cmd+1`…`9` | `C-a 1`…`9` | go to window |
-| `cmd+0` / `ctrl+0` | `C-a l` / `C-a ;` | back to the last window / pane, see [same key, every layer](../README.md#same-key-every-layer) (`cmd+0` no longer resets the font size) |
+| `cmd+0` / `ctrl+0` | `C-a l` / `C-a ;` | back to the last window / pane, see [same key, every layer](design.md#same-key-every-layer) (`cmd+0` no longer resets the font size) |
 | `cmd+[` / `cmd+]` | `C-a [` / `C-a ]` | previous / next window |
 | `cmd+shift+[` / `cmd+shift+]` | – | nothing, see [Decisions](#decisions) |
 | `cmd+shift+0` | `C-a S` | back to the last session |
@@ -85,7 +85,7 @@ Decisions
 - **tmux's windows and splits, not Ghostty's tabs and splits**: sessions survive closing Ghostty.
 - **No previous / next session on `cmd+shift+[` / `cmd+shift+]`**: too easy to mix up with previous / next
   window.
-- **`cmd+0` is the last window, not the font-size reset**: it joins the "back to the last" family (README,
-  "Same key, every layer").
+- **`cmd+0` is the last window, not the font-size reset**: it joins the "back to the last" family
+  (`docs/design.md`, "Same key, every layer").
 - **No patched Nerd Font**: Ghostty's symbol fallback draws the icons. At its defaults they stand out above
   and below the text next to them, hence `adjust-icon-height` and `adjust-font-baseline`.

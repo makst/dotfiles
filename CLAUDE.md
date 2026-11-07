@@ -32,32 +32,34 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
 
 ## When changing something
 - **Docs move with the config.** Every change updates `docs/<tool>.md` in the same commit: what it does and
-  why, keys in tables, in the section the README's "Same shape, every page" gives it (a new page follows that
-  order). A new tool or layer also goes in the README table. `docs/setup.md` lists every setup step and symlink.
+  why, keys in tables, in the section `docs/design.md`, "Same shape, every page", gives it (a new page follows
+  that order). A new tool or layer also goes in the README table. `docs/setup.md` lists every setup step and
+  symlink.
 - **Setup steps** are idempotent `setup_<tool>` functions in `zsh/functions/<tool>.zsh` (the Mac-wide ones and
   `setup_dotfiles` in `setup.zsh`) that link from `config/` with `ln -sfn "$real_script_dir/config/…" ~/…`.
-  Add each to `setup_dotfiles` and to the table in `docs/setup.md`. A real file that a link replaces goes to `~/.Trash`, not `rm`.
+  `setup_dotfiles` in `setup.zsh`) that link from `config/` with `ln -sfn "$real_script_dir/config/…" ~/…`.
 - **Brewfile**: one package per line with a comment saying what uses it (the config file, alias or setup
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.
-- **Learn it once**: every key follows the design principle in the README, "Learn it once": vim is the
+- **Learn it once**: every key follows the design principle in `docs/design.md`, "Learn it once": vim is the
   grammar, the key names the action and the modifier the layer, nvim is the reference, one picker. A new tool
   or TUI gets vim keys (by config if its own don't follow) or an entry saying why it can't; a new list to
   choose from goes through `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
-- **One search away**: every file and list follows the README's "One search away": a thing of one kind goes
-  in the file named for that kind (nvim: `lua/user/<plugin>/keymaps.lua` for keys, `config.lua` for setup),
-  each tool's parts are named for the tool (`config/<tool>/`, `docs/<tool>.md`, `setup_<tool>`), each thing is
-  defined once and referred to by file and section, a file's top comment names who uses it, and state worth
-  checking opens in the picker with a preview. Say where a change breaks this and why.
+- **One search away**: every file and list follows `docs/design.md`, "One search away": a thing of one kind
+  goes in the file named for that kind (nvim: `lua/user/<plugin>/keymaps.lua` for keys, `config.lua` for
+  setup), each tool's parts are named for the tool (`config/<tool>/`, `docs/<tool>.md`, `setup_<tool>`), each
+  thing is defined once and referred to by file and section, a file's top comment names who uses it, and state
+  worth checking opens in the picker with a preview. Say where a change breaks this and why.
 - **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
-  family it belongs to, in README "Same key, every layer" and in the existing bindings of every layer, and
-  reuse it: the same key with the layer's modifier, the same verb for the same action (next, previous, last,
-  by number, by direction). Say which family it joins or why none fits, and add it to that table. When a layer
-  is missing a family member it could have, point it out.
-- **Keys**: each layer owns its modifier (README, "How the keyboard is split"). Check for clashes with tmux,
-  Ghostty, AeroSpace and nvim before binding anything. nvim's keys are the reference for every editor: a key
-  added or changed in nvim also goes into VS Code (`config/vscode/settings.json`) and Android Studio
-  (`config/ideavim/ideavimrc`) where they have a matching action, and into the table in `docs/vim-keys.md`.
+  family it belongs to, in `docs/design.md`, "Same key, every layer", and in the existing bindings of every
+  layer, and reuse it: the same key with the layer's modifier, the same verb for the same action (next,
+  previous, last, by number, by direction). Say which family it joins or why none fits, and add it to that
+  table. When a layer is missing a family member it could have, point it out.
+- **Keys**: each layer owns its modifier (`docs/design.md`, "How the keyboard is split"). Check for clashes
+  with tmux, Ghostty, AeroSpace and nvim before binding anything. nvim's keys are the reference for every
+  editor: a key added or changed in nvim also goes into VS Code (`config/vscode/settings.json`) and Android
+  Studio (`config/ideavim/ideavimrc`) where they have a matching action, and into the table in
+  `docs/vim-keys.md`.
 - **GIFs** in any Markdown file sit in a `<details>` toggle, closed by default, where they belong on the page.
   The `<summary>` is always `<b>Show GIF</b>`; inside, one short line says what the GIF shows, then the image.
   Format in `docs/gifs.md`, "Adding one".

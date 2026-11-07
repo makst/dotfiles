@@ -279,9 +279,9 @@ check_keys() {
   note=$(count $n key)
 }
 
-# keyboard: each layer keeps to its modifier (README, "How the keyboard is split"): AeroSpace's own keys use
-# Option, Ghostty binds no Option and not tmux's C-a or C-h/j/k/l, tmux's prefix-free keys use no Option, and
-# nvim maps no Option or Cmd keys, which never reach it
+# keyboard: each layer keeps to its modifier (`docs/design.md`, "How the keyboard is split"): AeroSpace's own
+# keys use Option, Ghostty binds no Option and not tmux's C-a or C-h/j/k/l, tmux's prefix-free keys use no
+# Option, and nvim maps no Option or Cmd keys, which never reach it
 check_keyboard() {
   local line
   local -i n=0

@@ -112,7 +112,7 @@ These override built-in vim keys, which is easy to forget:
 | `x` | delete without yanking | |
 | `m` | flash: jump to any visible position | set a mark (use `:mark`) |
 | `H` `J` `K` `L` | treewalker: move by syntax node | screen top, **join lines**, keyword help, screen bottom |
-| `Space` | next split, cycling: see [same key, every layer](../README.md#same-key-every-layer) | |
+| `Space` | next split, cycling: see [same key, every layer](design.md#same-key-every-layer) | |
 | `Backspace` | back to the last split, as `C-w p` | move left, like `h` |
 | arrow keys | resize the split: narrower, taller, shorter, wider, as `Shift+h/j/k/l` on the other layers | move the cursor |
 | `Esc` | also clears search highlights | |
@@ -328,6 +328,6 @@ Decisions
 ---
 - **Language servers from the Brewfile, not Mason**: like every other tool, so `brew upgrade` updates them.
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
-  (README, "Learn it once").
+  (`docs/design.md`, "Learn it once").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.

@@ -22,8 +22,9 @@ keymap.set('n', '<leader>bdr', ':%bd|e#|bd#<Return>', { desc = 'Buffer: close al
 -- Split window
 keymap.set('n', '<leader>ss', ':split<Return><C-w>w', { desc = 'Split: below' })
 keymap.set('n', '<leader>sv', ':vsplit<Return><C-w>w', { desc = 'Split: to the right' })
--- Zoom and equal sizes, as the other layers (README, "Same key, every layer"): ,z makes the split as big as
--- it gets (CTRL-W _ and |) and, again, puts the layout back as it was; ,= makes all splits equal (CTRL-W =)
+-- Zoom and equal sizes, as the other layers (`docs/design.md`, "Same key, every layer"): ,z makes the split
+-- as big as it gets (CTRL-W _ and |) and, again, puts the layout back as it was; ,= makes all splits equal
+-- (CTRL-W =)
 keymap.set('n', '<leader>z', function()
   if vim.t.zoom_restore then
     vim.cmd(vim.t.zoom_restore)
@@ -36,7 +37,7 @@ end, { desc = 'Split: zoom, and back' })
 keymap.set('n', '<leader>=', '<C-w>=', { desc = 'Split: all the same size' })
 
 -- Move window. Space cycles splits, Backspace goes back to the last one; the other layers follow the same
--- pattern (README, "Same key, every layer").
+-- pattern (`docs/design.md`, "Same key, every layer").
 keymap.set('n', '<Space>', '<C-w>w', { desc = 'Split: the next one, cycling' })
 keymap.set('n', '<BS>', '<C-w>p', { desc = 'Split: back to the last one' })
 keymap.set('', '<leader>sh', '<C-w>h', { desc = 'Split: the one to the left' })

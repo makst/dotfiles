@@ -126,7 +126,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a I` / `C-a U` | | tpm: install / update plugins |
 | `C-h/j/k/l` | | move to the pane left/down/up/right, *including nvim splits* |
 | `C-a C-l` | | clear the screen (`C-l` moves to the pane on the right) |
-| `C-Space` | | next pane, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
+| `C-Space` | | next pane, cycling: see [same key, every layer](design.md#same-key-every-layer) |
 
 ### Picker keys
 

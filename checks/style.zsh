@@ -1,8 +1,8 @@
-# Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing else
-# would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a closed
-# "Show GIF" toggle, each zsh function has a comment, lists go through the picker, and docs pages keep the
-# README's section order. They only warn (check -w): a missed convention doesn't break the setup. Sourced by
-# check_dotfiles; lib.zsh has the helpers and indexes.
+# Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
+# else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
+# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker, and docs pages keep
+# the section order of docs/design.md. They only warn (check -w): a missed convention doesn't break the setup.
+# Sourced by check_dotfiles; lib.zsh has the helpers and indexes.
 
 # Brewfile: each package line says, in a comment, what uses it (the config file, alias or setup function), in
 # the shared Brewfile and the machine template
@@ -70,10 +70,11 @@ check_picker() {
   note=$(count $#zsh file)
 }
 
-# docs pages: the top-level sections (setext, `---`) of each docs/<tool>.md come in the README's order, "Same
-# shape, every page": What it is, Once per Mac / per project, a heading per task, Keys, Commands, Config, To look
-# out for, Decisions. Any other name is a task; a page may skip sections, and only the "once per" and task ones
-# may repeat. A big page's areas (mobile.md's iOS, Android) are tasks here, their own shape in `###` below them.
+# docs pages: the top-level sections (setext, `---`) of each docs/<tool>.md come in the order of
+# docs/design.md, "Same shape, every page": What it is, Once per Mac / per project, a heading per task, Keys,
+# Commands, Config, To look out for, Decisions. Any other name is a task; a page may skip sections, and only
+# the "once per" and task ones may repeat. A big page's areas (mobile.md's iOS, Android) are tasks here, their
+# own shape in `###` below them.
 check_docs_shape() {
   local -a docs=(${(M)md_files:#docs/*.md})
   awk '
@@ -93,7 +94,7 @@ check_docs_shape() {
       r = rank(prev)
       if (r < last || (r == last && r != 2 && r != 3))
         print FILENAME ":" FNR - 1 ": \"" prev "\" after \"" lastname "\"; the order is What it is, Once per, " \
-          "tasks, Keys, Commands, Config, To look out for, Decisions (README, \"Same shape, every page\")"
+          "tasks, Keys, Commands, Config, To look out for, Decisions (docs/design.md, \"Same shape, every page\")"
       last = r; lastname = prev
     }
     { prev = $0 }
@@ -107,4 +108,4 @@ check -w "colours are ANSI names, not hex" check_hex_colours
 check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
 check -w "each zsh function has a comment" check_function_comments
 check -w "lists go through the picker, not a bare fzf" check_picker
-check -w "docs pages keep the README's section order" check_docs_shape
+check -w "docs pages keep the section order of docs/design.md" check_docs_shape

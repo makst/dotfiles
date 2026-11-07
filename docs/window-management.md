@@ -54,8 +54,8 @@ Keys
 | Key | Action |
 |---|---|
 | `alt+h/j/k/l` | focus the window left/down/up/right |
-| `alt+space` | focus the next window on this workspace, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
-| `shift+alt+h/j/k/l` | resize the window: narrower, taller, shorter, wider, as `C-a H/J/K/L` in tmux: see [same key, every layer](../README.md#same-key-every-layer) |
+| `alt+space` | focus the next window on this workspace, cycling: see [same key, every layer](design.md#same-key-every-layer) |
+| `shift+alt+h/j/k/l` | resize the window: narrower, taller, shorter, wider, as `C-a H/J/K/L` in tmux: see [same key, every layer](design.md#same-key-every-layer) |
 | `ctrl+shift+alt+h/j/k/l` | move the window through the layout in that direction |
 | `alt+e` | switch the split between side by side and stacked |
 | `alt+s` | accordion: the windows on top of each other, the focused one in front (again: back to tiles) |
@@ -64,7 +64,7 @@ Keys
 | `alt+=` | make all windows equal size |
 | `alt+1`…`9` | go to workspace 1…9 |
 | `alt+0` | back to the previous workspace |
-| `alt+[` / `alt+]` | previous / next workspace with windows on this display, cycling: see [same key, every layer](../README.md#same-key-every-layer) |
+| `alt+[` / `alt+]` | previous / next workspace with windows on this display, cycling: see [same key, every layer](design.md#same-key-every-layer) |
 | `shift+alt+1`…`9` | move the window to workspace 1…9 and follow it |
 | `shift+alt+n` / `shift+alt+p` | move the window to the next / previous display and follow it |
 | `shift+alt+tab` | move the whole workspace to the next display |
