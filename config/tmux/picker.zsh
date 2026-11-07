@@ -85,8 +85,9 @@ function picker() {
 # are nvim's: in normal mode j/k move, g/G go to the first/last line, ctrl+d/ctrl+u half a page, q quits, /
 # starts typing a filter; while typing, jj goes back to normal mode and keeps the filter, so j/k move through
 # what it matched. Esc clears the filter and goes back to the mode the picker opened in; in that mode with no
-# filter, it quits. Normal mode hides the input until there's a filter. The prompt says which mode:
-# "<name>> " while typing, "<name>: " in normal mode. Events get their actions with :+, after any the caller
+# filter, it quits. The input stays on screen in both modes, so the list doesn't jump when typing starts or
+# stops; the prompt says which mode: "<name>> " while typing, "<name>: " in normal mode, where the empty input
+# shows "/ to filter" in grey. Events get their actions with :+, after any the caller
 # binds (fzf-lua binds start and result too).
 # ? in normal mode lists the keys, as ? does in nvim (;?), tmux and lazygit: by default it shows / hides
 # picker_help below the list, and the list's label " ? keys " says so; [help] is another fzf action for it
@@ -96,8 +97,9 @@ function picker_modes() {
   local typing="$name> " normal="$name: " keys="k,g,G,ctrl-d,ctrl-u,q,/,?"
   local help=${5:-"transform:[ \"\$FZF_LIST_LABEL\" = ' ? keys ' ] &&
     echo 'change-footer($picker_help)+change-list-label( ? hide keys )' || echo 'change-footer()+change-list-label( ? keys )'"}
-  local to_normal="change-prompt($normal)+change-list-label( ? keys )+rebind($keys)"
-  local to_insert="change-prompt($typing)+change-footer()+change-list-label()+show-input+unbind($keys)"
+  local ghost='/ to filter'
+  local to_normal="change-prompt($normal)+change-ghost($ghost)+change-list-label( ? keys )+rebind($keys)"
+  local to_insert="change-prompt($typing)+change-ghost()+change-footer()+change-list-label()+unbind($keys)"
   # j can't be unbound while typing, as the first j of jj has to be told apart from a j in the filter, so
   # it asks fzf which mode it's in. fzf has no timeout for the second j, unlike nvim: jj always leaves.
   local j="case \$FZF_PROMPT in
@@ -111,12 +113,9 @@ function picker_modes() {
   local home=$typing back=$to_insert
   [[ $start == normal ]] && home=$normal back=$to_normal
   local esc="if [ -n \"\$FZF_QUERY\" ]; then echo 'change-query()+$back'
-    elif [ \"\$FZF_PROMPT\" != '$home' ]; then echo '${${start:#insert}:+hide-input+}$back'; else echo '$quit'; fi"
-  # normal mode hides the input while there's no filter. Not with the query change itself: hiding the input
-  # in the same step leaves the list unfiltered, so once fzf has filtered.
-  local hide="[ \"\$FZF_PROMPT\" = '$normal' ] && [ -z \"\$FZF_QUERY\" ] && echo hide-input"
+    elif [ \"\$FZF_PROMPT\" != '$home' ]; then echo '$back'; else echo '$quit'; fi"
   reply=(--bind "j:transform:$j" --bind "k:up,g:first,G:last,ctrl-d:half-page-down,ctrl-u:half-page-up,q:$quit"
-    --bind "/:$to_insert" --bind "?:$help" --bind "esc:transform:$esc" --bind "result:+transform:$hide"
+    --bind "/:$to_insert" --bind "?:$help" --bind "esc:transform:$esc"
     --list-label-pos=-3:bottom --footer-border=rounded)
   # asking fzf the mode, not unbinding: fzf-lua binds the keys of actions that reload again after each reload
   local pair
@@ -124,7 +123,7 @@ function picker_modes() {
     reply+=(--bind "${pair%%:*}:transform:[ \"\$FZF_PROMPT\" = '$normal' ] && echo 'trigger(${pair#*:})' || echo 'put(${pair%%:*})'")
   done
   if [[ $start == normal ]]; then
-    reply+=(--prompt $normal --no-input --list-label ' ? keys ')
+    reply+=(--prompt $normal --ghost $ghost --list-label ' ? keys ')
   else
     reply+=(--prompt $typing --bind "start:+unbind($keys)")
   fi

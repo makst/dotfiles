@@ -60,9 +60,10 @@ The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`
 buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search (`C-r`,
 [zsh](zsh.md#searching-history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share their keys
 and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
-`change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode, with the
-filter hidden until there is one. The prompt shows the mode: `session> ` while typing, `session: ` in normal
-mode. A picker appears with its list already in and closes as soon as you leave it.
+`change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode. The filter
+box stays on screen in both modes, so the list doesn't jump when you start or stop typing; the prompt shows the
+mode: `session> ` while typing, `session: ` in normal mode, where an empty filter says `/ to filter` in grey.
+A picker appears with its list already in and closes as soon as you leave it.
 
 ### Status bar
 
