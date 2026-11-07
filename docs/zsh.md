@@ -199,6 +199,10 @@ To look out for
   lists anything else to fix by hand. `setup_brew` runs it after every `brew bundle`.
 - starship's icons are written as `\u…` escapes in the config: pasted as characters, the ones in
   U+E000–U+F8FF went missing and left a space.
+- The first prompt in a repo after a reboot can take about a second: git's fsmonitor daemon
+  (`core.fsmonitor` in the gitconfig) isn't running yet, and the first `git status` starts it and scans the
+  repo; after that, status takes ~10 ms. starship gives commands 2 s (`command_timeout`); at its old 500 ms it
+  warned *Executing command "git" timed out* and left out the git status.
 
 Decisions
 ---

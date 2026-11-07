@@ -22,7 +22,8 @@ $time
 $character"""
 
 add_newline = true
-command_timeout = 500
+# commands get 2 s: the first `git status` in a repo after a reboot starts the fsmonitor daemon (~1 s)
+command_timeout = 2000
 
 [directory]
 style = "bold blue"
