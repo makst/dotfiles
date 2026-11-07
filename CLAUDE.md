@@ -50,6 +50,9 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   setup), each tool's parts are named for the tool (`config/<tool>/`, `docs/<tool>.md`, `setup_<tool>`), each
   thing is defined once and referred to by file and section, a file's top comment names who uses it, and state
   worth checking opens in the picker with a preview. Say where a change breaks this and why.
+- **One tool per job**: before adding a tool, plugin or script, follow `docs/design.md`, "One tool per job":
+  look up the job's owner in its table and hand the job to it (nvim in a tmux pane, `$EDITOR`, `picker`)
+  rather than adding a second way to do it; a new job gets a row. Say where a change keeps its own copy and why.
 - **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
   family it belongs to, in `docs/design.md`, "Same key, every layer", and in the existing bindings of every
   layer, and reuse it: the same key with the layer's modifier, the same verb for the same action (next,

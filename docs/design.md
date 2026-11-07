@@ -6,8 +6,8 @@ sums them up; this page is where they are defined, and where a change that can't
 
 What it is
 ---
-Three principles, one per question a newcomer asks: how do I move (Learn it once), where is it (One search
-away), where on the page (Same shape, every page).
+Four principles, one per question a newcomer asks: how do I move (Learn it once), where is it (One search
+away), where on the page (Same shape, every page), which tool does it (One tool per job).
 
 ### Learn it once
 The design principle behind every key here: learn a move once and it works on every layer, from a line of
@@ -81,6 +81,35 @@ page per tool instead of four folders, so a tool is still one search away.
 3. **The README is the only tutorial.** "Install from scratch" and "A typical day" walk through the whole
    setup once; everything else assumes you have it.
 4. **Docs describe what exists.** An idea not built yet stays out of the pages until it is.
+
+### One tool per job
+The design principle behind which tool does what: every job has one tool that owns it, and the other tools
+hand the job to it instead of doing it their own way. Before adding a tool, a plugin or a script, check whether
+the tools already here can do it together.
+
+| Job | Owner | How the other tools reach it |
+|---|---|---|
+| Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers open in tmux popups |
+| Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`; VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
+| Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups, zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
+| Projects | a tmux session per directory, from zoxide's list | `cmd+k` in tmux, `tm` in the shell |
+| Directories you visit | zoxide | `z`, the project pickers (`cmd+k`, `;p`) |
+| Shell history | atuin | `C-r` in zsh, in the picker |
+| Git: staging, committing, history | git, with lazygit on top; delta and difftastic for diffs | `lg` and `,lg`; git's pager is delta |
+| Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
+| Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |
+
+1. **Join before you add.** If the tools already here can do it wired together, that is the way: nvim in a
+   tmux pane rather than a terminal emulator inside nvim, git's editor set to nvim rather than a second editor.
+   A new tool or plugin comes in only for a job none of them does, and its Brewfile comment or doc names the job.
+2. **One owner per job.** A tool that needs a job calls the owner (`$EDITOR`, `tmux display-popup`, `picker`)
+   rather than carrying its own copy, and the copy already running where there is one. So the job looks and
+   works the same wherever it starts, and its keys, its state and its fixes live in one place.
+3. **Meet at the seams.** Where two tools touch, crossing from one to the other takes no thought: `C-h/j/k/l`
+   crosses nvim splits and tmux panes, OSC 52 carries a copy through tmux and ssh, focus events reload files in
+   nvim when you come back to its pane, `fzfrc` gives nvim's pickers the shell's look.
+4. **Exceptions say why.** A tool that keeps its own copy of a job, because the owner can't do it from there,
+   says why in its page's Decisions, as VS Code does for debugging ([debugging](debugging.md#decisions)).
 
 Keys
 ---

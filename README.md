@@ -51,14 +51,16 @@ only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step do
 
 How it is designed
 ---
-Three principles decide where every key, file and page goes, so learning one part of the setup teaches the
-rest. [design](docs/design.md) defines them:
+Four principles decide where every key, file, page and tool goes, so learning one part of the setup teaches
+the rest. [design](docs/design.md) defines them:
 
 - **Learn it once**: vim is the grammar, the key names the action and the modifier the layer, nvim is the
   reference, one picker for every list.
 - **One search away**: the file name says the kind and the folder the tool, each thing is defined in one
   place, and state you check opens in the picker.
 - **Same shape, every page**: every `docs/<tool>.md` has the same sections in the same order.
+- **One tool per job**: each job (terminals, editing, lists, projects, git) has one tool that owns it, and the
+  others hand it over instead of doing it their own way.
 
 Each layer owns a modifier ([how the keyboard is split](docs/design.md#how-the-keyboard-is-split)), and a move
 you know on one layer works on the others ([same key, every layer](docs/design.md#same-key-every-layer)).
