@@ -91,7 +91,7 @@ Repository layout
 Brewfile                  every package and app, commented by purpose
 prepare-zsh-install.sh    first-run bootstrap (bash, before zsh exists)
 .zshrc                    sources zsh/*; everything else is linked from config/
-zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dotfiles is in setup.zsh)
+zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dotfiles: functions/setup.zsh)
 config/atuin/             shell history search
 config/btop/              btop: vim keys, the terminal's colours
 config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for libedit)
