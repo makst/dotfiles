@@ -90,8 +90,8 @@ Android
   treesitter parsers.
 - **Format on save**: only when the project sets up ktlint in its `.editorconfig` (e.g.
   `ktlint_code_style = android_studio`), nothing otherwise. kotlin-lsp's own formatting is never used.
-- **Build, run, test**: the project's own `./gradlew` and `adb`, in a terminal split at the project root
-  (the directory with `gradlew`), one per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
+- **Build, run, test**: the project's own `./gradlew` and `adb`, in a tmux pane below nvim at the project
+  root (the directory with `gradlew`), one for Gradle and one for logcat per project. Config in `config/nvim/lua/user/android/` (`config.lua`, keys in `keymaps.lua`).
 
 ### Once per Mac
 `setup_dotfiles` installs from the Brewfile **Android Studio**, **kotlin-lsp** (JetBrains' Kotlin language
@@ -121,7 +121,9 @@ shows the app's logcat and `,ao` opens the current line in Android Studio.
 
 ### Keys
 All under `,a` (for Android), in normal mode. They build the debug variant; anything else (another
-flavour, `lint`, `clean`, `spotlessApply`) goes through `,aa`.
+flavour, `lint`, `clean`, `spotlessApply`) goes through `,aa`. Gradle and logcat run in two shells in tmux
+panes below nvim, one pair per project, like `,tt` ([tmux](tmux.md)); the cursor stays in nvim. A new command
+stops what still runs in its shell first, and the shells keep their output when hidden or after nvim quits.
 
 | Key | Does |
 |---|---|
@@ -131,8 +133,8 @@ flavour, `lint`, `clean`, `spotlessApply`) goes through `,aa`.
 | `,ax` | stop the running Gradle task |
 | `,at` | run the unit tests (`testDebugUnitTest`) |
 | `,ai` | run the instrumented tests on the emulator or device (`connectedDebugAndroidTest`) |
-| `,ag` | show or hide the Gradle terminal |
-| `,al` | logcat for the app only, in its own terminal; launch the app first |
+| `,ag` | show or hide the Gradle shell |
+| `,al` | logcat for the app only, in its own shell; launch the app first |
 | `,ae` | start an emulator: pick one of those made in Android Studio |
 | `,ao` | open this file at this line in Android Studio (`studio`), e.g. for a layout preview |
 

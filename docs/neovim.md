@@ -331,7 +331,7 @@ Decisions
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
   (`docs/design.md`, "Learn it once").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.
-- **Shells and lazygit in tmux, not in toggleterm's floats**: tmux owns terminals (`docs/design.md`, "One tool
-  per job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. toggleterm stays
-  for the Gradle and logcat terminals ([mobile](mobile.md)), which nvim sends commands to.
+- **Shells and lazygit in tmux, no terminal plugin**: tmux owns terminals (`docs/design.md`, "One tool per
+  job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. That includes the
+  Gradle and logcat shells ([mobile](mobile.md)): nvim types its commands into them with `tmux send-keys`.
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.

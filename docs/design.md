@@ -89,7 +89,7 @@ the tools already here can do it together.
 
 | Job | Owner | How the other tools reach it |
 |---|---|---|
-| Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers and nvim's lazygit (`,lg`) open in tmux popups, nvim's shells (`,tt`, `,tm`) in tmux panes |
+| Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers and nvim's lazygit (`,lg`) open in tmux popups, nvim's shells (`,tt`, `,tm`, Android's Gradle and logcat) in tmux panes |
 | Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`; VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
 | Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups, zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
 | Projects | a tmux session per directory, from zoxide's list | `cmd+k` in tmux, `tm` in the shell |

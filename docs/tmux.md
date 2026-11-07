@@ -14,7 +14,8 @@ What it is
 - Closing the last window of a session switches to another session instead of closing the terminal.
 - **Shells that wait**: `,tt` and `,tm` (nvim, and zsh's normal mode) show a shell in a pane below, one each per
   directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists.
-  It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)).
+  It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)). nvim's Android keys
+  run Gradle and logcat in two more of these, at the project root ([mobile](mobile.md)).
 - **Moving between panes and nvim**: `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether
   the pane runs nvim and, if so, lets nvim move between its own splits first. Inside nvim the same keys cross
   into tmux panes.
@@ -165,7 +166,7 @@ Config
 | File | Contains |
 |---|---|
 | `config/tmux/tmux.conf` (linked to `~/.config/tmux/`) | everything; reload with `C-a r` |
-| `config/tmux/scratch` | the `,tt` / `,tm` shells: shows, hides and finds each one by its name and directory |
+| `config/tmux/scratch` | the `,tt` / `,tm` shells and nvim's Gradle and logcat ones: shows, hides and finds each one by its name and directory; `--show` prints its pane for nvim to type into |
 | `config/tmux/picker.zsh` | the shared part of every picker: `picker_modes`, which nvim's pickers ask for their modes too; it also keeps the list and the preview of the tmux pickers current, redrawing only what changed |
 | `~/.tmux/plugins` | the plugins, installed by tpm, outside the repo |
 

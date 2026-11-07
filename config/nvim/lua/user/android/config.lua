@@ -1,18 +1,13 @@
 -- Android: build, install, run and test a Gradle project from nvim, and jump to Android Studio for what only
 -- it does (layout preview, the debugger, profilers). Everything runs through the project's own ./gradlew and
--- adb in a terminal split at the project root (the directory with gradlew), one per project, so its output
--- stays readable and `,ax` can stop it. The app module is the one whose build file applies the Android
--- application plugin; its package name is read from the APK it built, so applicationIdSuffix works too.
+-- adb, typed into a shell in a tmux pane below nvim at the project root (the directory with gradlew), one for
+-- Gradle and one for logcat per project (user/tmux), so its output stays readable and `,ax` can stop it. The app
+-- module is the one whose build file applies the Android application plugin; its package name is read from the
+-- APK it built, so applicationIdSuffix works too.
 -- Only the debug variant has keys (keymaps.lua): other variants and tasks go through `,aa`.
-local status_ok, toggleterm = pcall(require, 'toggleterm')
-if not status_ok then return {} end
-toggleterm.setup {} -- the only user of toggleterm; other shells are tmux popups (user/tmux)
+local tmux = require('user.tmux.config')
 
 local M = {}
-
-local Terminal = require('toggleterm.terminal').Terminal
-
-local terminals = {} -- [root .. name] = Terminal
 
 local function project_root()
   local root = vim.fs.root(0, 'gradlew') or vim.fs.root(vim.fn.getcwd(), 'gradlew')
@@ -20,21 +15,12 @@ local function project_root()
   return root
 end
 
-local function terminal(root, name)
-  local key = root .. name
-  terminals[key] = terminals[key] or Terminal:new({
-    dir = root, direction = 'horizontal', hidden = true, close_on_exit = false,
-  })
-  return terminals[key]
-end
-
--- runs `cmd` in the project's terminal `name` ('gradle' or 'logcat') and keeps the cursor where it was
+-- runs `cmd` in the project's shell `name` ('gradle' or 'logcat'), stopping what ran there, and keeps the
+-- cursor where it was
 function M.run(name, cmd)
   local root = project_root()
   if not root then return end
-  local term = terminal(root, name)
-  if not term:is_open() then term:open() end
-  term:send(type(cmd) == 'function' and cmd(root) or cmd, true)
+  tmux.run(name, root, type(cmd) == 'function' and cmd(root) or cmd)
 end
 
 -- the directory of the app module under `root`, e.g. 'app'
@@ -96,16 +82,15 @@ end
 function M.install_and_launch() M.run('gradle', install_and_launch) end
 function M.logcat() M.run('logcat', logcat) end
 
--- stop(): Ctrl-C to the project's Gradle terminal
+-- stop(): Ctrl-C to the project's Gradle shell
 function M.stop()
   local root = project_root()
-  local term = root and terminals[root .. 'gradle']
-  if term and term.job_id then vim.fn.chansend(term.job_id, '\x03') end
+  if root then tmux.interrupt('gradle', root) end
 end
 
 function M.toggle_gradle()
   local root = project_root()
-  if root then terminal(root, 'gradle'):toggle() end
+  if root then tmux.scratch('gradle', root) end
 end
 
 -- open_in_studio(): the same file and line in Android Studio, which opens it in the window that already has
