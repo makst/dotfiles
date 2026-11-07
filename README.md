@@ -110,13 +110,13 @@ page per tool instead of four folders, so a tool is still one search away.
 | Decisions | explanation | "X, not Y, because …": what was tried or dropped, so it isn't tried again |
 
 1. **Leave out, don't reorder.** A page skips the sections it doesn't need; the ones it has come in this
-   order. A big page (neovim) repeats the task, Keys and Config sections per area, in the same order.
+   order. A page that covers several areas (mobile: iOS, Android) gives each area a top-level section and
+   repeats the shape inside it. `check_dotfiles` checks the order.
 2. **One kind per section.** Explanation doesn't go into a key table and steps don't go into "What it is";
    a sentence that would belong elsewhere moves there and is linked.
 3. **The README is the only tutorial.** "Install from scratch" and "A typical day" walk through the whole
    setup once; everything else assumes you have it.
-4. **Exceptions say why.** A page that can't follow the shape (`docs/vim-keys.md` is a single cross-tool
-   table) says so in its first paragraph.
+4. **Docs describe what exists.** An idea not built yet stays out of the pages until it is.
 
 How the keyboard is split
 ---

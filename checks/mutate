@@ -134,6 +134,9 @@ m 'Show GIF toggle' 'a GIF without its caption' "perl -0pi -e 's/(<summary><b>Sh
 m 'Show GIF toggle' 'a GIF toggle not closed after it' "perl -0pi -e 's/(\\.gif\\)\\n\\n)<\\/details>\\n/\$1/' docs/git.md"
 m 'zsh function has a comment' 'a function without a comment' "print '\nzz_helper() { print hi }' >> zsh/.aliases"
 m 'not a bare fzf' 'a function running fzf itself' "print '\n# zz_pick: picks a file\nzz_pick() { ls | fzf }' >> zsh/.aliases"
+m 'section order' 'a section added after Decisions' "print '\nIdeas, not built yet\n---\nLater.' >> docs/claude-code.md"
+m 'section order' 'a Keys section below Config' "perl -0pi -e 's/\\nTo look out for\\n---\\n/\\nKeys\\n---\\n\\nTo look out for\\n---\\n/' docs/ghostty.md"
+m 'section order' 'a second Config section' "perl -0pi -e 's/\\nTo look out for\\n---\\n/\\nConfig\\n---\\n/' docs/theme.md"
 
 reset=$'\e[0m' red=$'\e[31m' green=$'\e[32m' dim=$'\e[2m'
 integer caught=0 missed=0 broken=0

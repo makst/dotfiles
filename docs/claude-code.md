@@ -399,25 +399,3 @@ Decisions
   and sends no progress bar, so neither can show the state.
 - **Reading the screen for approvals**, like [herdr](https://github.com/herdrdev/herdr) does: no hook fires
   when you answer a permission prompt.
-
-Ideas, not built yet
----
-Reviewing an agent's work like a pull request, locally: [herdr](https://github.com/herdrdev/herdr)'s
-community mods (reviewer, Agent Review, herdr-reviewr) let you read the agent's diff, comment on lines and send
-all the comments to the agent as one message. The same could be built here from what's already in place:
-
-1. **Comment in nvim**: a key on a line or a selection asks for a comment, shown above the code as the same
-   shaded block as a code tour's note, with "comment 2 of 5" on top.
-2. **A picker of the pending comments**, like the stops picker `;l`: jump, reword, delete.
-3. **Send the review**: one message, each comment as `path:line` with the lines it's about, typed into the
-   Claude pane of the current tmux window (the one marked as an agent), or a pick when there are several; the
-   sent comments are cleared.
-4. **The branch's changes in the quickfix list**, every hunk since it left the default branch, walked with
-   `]q` / `[q` like a pull request's files.
-5. **A pull request agent** (an agent_pr command, say), separately: an agent in a worktree on a GitHub pull
-   request's branch, starting from its description and its unresolved review comments, pushing only when you
-   say so.
-
-Later, if they're missed: a diff of only the agent's last turn, comments that move with their lines when the
-agent edits the file, a "viewed" tick per file. The keys need a free family first: `,r…` is partly taken
-(`,re`, `,sr`).
