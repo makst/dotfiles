@@ -21,8 +21,10 @@ check_zsh_start() {
 # zsh's functions find the repo in a shell that has them without having read .zshrc: Claude Code's shell, a
 # snapshot of the interactive one, keeps only exported variables. The child zsh stands in for it.
 check_zsh_exports() {
-  local got=$(TERM=xterm-256color ZDOTDIR=$repo zsh -i -c 'zsh -fc "print -r -- \$real_script_dir"' \
-    < /dev/null 2> /dev/null)
+  # without the variable it may already have (Claude Code's shell exports it), which would keep it exported
+  # even if .zshrc stopped exporting it
+  local got=$(env -u real_script_dir TERM=xterm-256color ZDOTDIR=$repo zsh -i -c \
+    'zsh -fc "print -r -- \$real_script_dir"' < /dev/null 2> /dev/null)
   [[ $got == $repo ]] || print -r -- "a child shell doesn't get real_script_dir (got '$got'): export it in .zshrc"
   return 0
 }
