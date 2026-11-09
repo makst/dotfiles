@@ -12,6 +12,16 @@ count() {
   fi
 }
 
+# commits_to_check: the commits the commit checks look at, newest first: the ones no remote has yet (what a push
+# would publish), or on CI the range in CHECK_COMMITS (.github/workflows/check.yml: what the push brought)
+commits_to_check() {
+  if [[ -n $CHECK_COMMITS ]]; then
+    git rev-list $CHECK_COMMITS
+  else
+    git rev-list HEAD --not --remotes 2> /dev/null
+  fi
+}
+
 # zsh_files: the zsh files, by their name or their shebang
 zsh_files() {
   local f

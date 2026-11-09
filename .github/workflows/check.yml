@@ -8,6 +8,9 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # the whole history, for the commit checks' range
+          fetch-depth: 0
       - name: Install the tools the checks run
         env:
           HOMEBREW_NO_AUTO_UPDATE: 1
@@ -16,4 +19,8 @@ jobs:
         shell: zsh {0}
         run: TERM=xterm-256color ZDOTDIR=$PWD zsh -i -c fix_completion_dirs < /dev/null
       - name: check_dotfiles
+        # the commit checks look at what the push brought (a new branch: what main doesn't have); on a pull
+        # request, what it adds to its base
+        env:
+          CHECK_COMMITS: ${{ github.event_name == 'pull_request' && format('origin/{0}..HEAD', github.base_ref) || (github.event.before == '0000000000000000000000000000000000000000' && 'origin/main..HEAD' || format('{0}..{1}', github.event.before, github.sha)) }}
         run: checks/check_dotfiles -v

@@ -287,7 +287,7 @@ function check_mac() {
       if [[ ! -r $key ]]; then
         problems+="the signing key ${key/#$HOME/~} is missing: secretive_key signing"
       else
-        grep -qF -- ${${=$(<$key)}[2]} $repo/config/git/allowed_signers ||
+        grep -qF -- ${${="$(<$key)"}[2]} $repo/config/git/allowed_signers ||
           problems+="this Mac's signing key isn't in config/git/allowed_signers: secretive_key signing"
       fi
     fi

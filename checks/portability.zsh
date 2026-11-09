@@ -49,13 +49,13 @@ check_this_mac() {
   note="$(count $#names name), $(count $#words "forbidden word")"
 }
 
-# commits: the commits no remote has yet (the ones a push would publish) use the email of
+# commits: the commits no remote has yet (commits_to_check, the ones a push would publish) use the email of
 # config/git/.gitconfig, as author and as committer, and their messages name neither this Mac nor a forbidden
 # word. A work email (from a work repo's includeIf) or a made-up one (user@host.local, when git had none)
 # would otherwise reach GitHub with them.
 check_commits() {
   local email=$(git config --file config/git/.gitconfig user.email)
-  local -a commits=(${(f)"$(git rev-list HEAD --not --remotes 2> /dev/null)"})
+  local -a commits=(${(f)"$(commits_to_check)"})
   local -a words=(${(f)"$(mac_names)"} ${(f)"$(forbidden_words)"})
   local sha author committer subject message
   for sha in $commits; do

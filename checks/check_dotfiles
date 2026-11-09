@@ -81,7 +81,7 @@ check() {
 build_indexes
 
 # every group in a subshell of its own, all at once; their output is printed in this order
-groups=(syntax behaviour references consistency portability style)
+groups=(syntax behaviour references consistency portability safety commits style)
 typeset -A pids
 for group_name in $groups; do
   ( source checks/$group_name.zsh ) > $tmp/group.$group_name 2>&1 &

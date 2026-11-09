@@ -1,8 +1,9 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
 # else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
 # closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker, docs pages keep the
-# section order of docs/design.md, each file says at the top who uses it, and prose wraps at about 110
-# columns. They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
+# section order of docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns,
+# table rows have the header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
+# They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
 # lib.zsh has the helpers and indexes.
 
 # Brewfile: each package line says, in a comment, what uses it (the config file, alias or setup function), in
@@ -150,6 +151,77 @@ check_prose_width() {
   note=$(count $(( $#md_files + $#zsh )) file)
 }
 
+# Markdown tables: every row has as many cells as the header, so no row is cut short or spills a column. A |
+# inside a code span or written \| is part of a cell; code blocks are skipped.
+check_md_tables() {
+  awk '
+    function cells(s) {
+      gsub(/\\\|/, "", s)
+      gsub(/`[^`]*`/, "", s)
+      sub(/^[ \t]*\|/, "", s); sub(/\|[ \t]*$/, "", s)
+      return gsub(/\|/, "|", s) + 1
+    }
+    FNR == 1 { code = 0; want = 0; prev = "" }
+    /^[ \t]*(```|~~~)/ { code = !code; want = 0; next }
+    code { next }
+    /^[ \t]*\|/ {
+      if (!want && $0 ~ /^[ \t]*\|[ \t:|-]+$/ && prev ~ /^[ \t]*\|/) { want = cells(prev); header = FNR - 1 }
+      else if (want && cells($0) != want)
+        print FILENAME ":" FNR ": " cells($0) " cells, the header (line " header ") has " want
+      prev = $0
+      next
+    }
+    { want = 0; prev = $0 }
+  ' $md_files
+  note=$(count $#md_files file)
+}
+
+# command substitutions: one inside ${…} is quoted, "${(f)"$(cmd)"}" or "${(@f)$(cmd)}", since unquoted zsh
+# splits its output into words before the flags see it (CLAUDE.md, "Style"). Comments are skipped; a " opened
+# earlier on the line counts, one on an earlier line doesn't.
+check_quoted_substitutions() {
+  local -a zsh=(${(f)"$(zsh_files)"})
+  awk '
+    /^[ \t]*#/ { next }
+    {
+      s = $0; at = 0
+      while (match(s, /\$\{(\([^)]*\))?[#^=~]*\$\(/)) {
+        before = substr($0, 1, at + RSTART - 1)
+        # the quotes before it, without escaped ones and single-quoted text
+        gsub(/\\"/, "", before); gsub(/\047[^\047"]*\047/, "", before)
+        if (gsub(/"/, "", before) % 2 == 0)
+          print FILENAME ":" FNR ": $(…) inside ${…} without quotes; write \"$(…)\""
+        at += RSTART + RLENGTH - 1; s = substr(s, RSTART + RLENGTH)
+      }
+    }
+  ' $zsh
+  note=$(count $#zsh file)
+}
+
+# bash: the repo is zsh; only prepare-zsh-install.sh, which runs before zsh is set up, is bash (CLAUDE.md,
+# "Style"). Scripts in other languages (docs/tapes/keycast, Python) are fine.
+check_bash() {
+  local f
+  for f in ${(k)shebangs}; do
+    [[ $f != prepare-zsh-install.sh && $shebangs[$f] == (*/(ba|)sh|*env\ (ba|)sh)(|\ *) ]] &&
+      print -r -- "$f: $shebangs[$f]; the repo's scripts are zsh"
+  done
+  note=$(count $#shebangs script)
+}
+
+# exec bits: a script with a #! line is executable, and an executable file has one, so it runs the same from
+# any shell. The .zsh files are sourced, not run: their #! line only tells editors the language.
+check_exec_bits() {
+  local f
+  for f in ${(k)shebangs}; do
+    [[ $f == *.zsh || -x $f ]] || print -r -- "$f: has a #! line but isn't executable"
+  done
+  for f in $text_files; do
+    [[ -x $f && ! -L $f && -z $shebangs[$f] ]] && print -r -- "$f: executable without a #! line"
+  done
+  note=$(count $#text_files file)
+}
+
 group "Style: the conventions every change keeps to"
 check -w "each Brewfile package says what uses it" check_brew_comments
 check -w "colours are ANSI names, not hex" check_hex_colours
@@ -159,3 +231,7 @@ check -w "lists go through the picker, not a bare fzf" check_picker
 check -w "docs pages keep the section order of docs/design.md" check_docs_shape
 check -w "each file says at the top who uses it" check_top_comments
 check -w "prose and comments wrap at about 110 columns" check_prose_width
+check -w "Markdown table rows have the header's cells" check_md_tables
+check -w "\$(…) inside \${…} is quoted" check_quoted_substitutions
+check -w "scripts are zsh, bash only for prepare-zsh-install.sh" check_bash
+check -w "scripts are executable, executables are scripts" check_exec_bits

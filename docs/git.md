@@ -136,7 +136,7 @@ In `~/.config/dotfiles/gitconfig` on the work Mac:
 	path = ~/.config/dotfiles/gitconfig-work
 ```
 
-with `[user] email = me@my-company.com` in `gitconfig-work`. `git config user.email` inside a repo shows
+with `[user] email = me@example.com` in `gitconfig-work`. `git config user.email` inside a repo shows
 which one applies.
 
 Retiring a Mac

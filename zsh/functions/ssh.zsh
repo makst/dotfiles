@@ -17,7 +17,7 @@ function setup_ssh() {
   # ssh-ident used to stand in for ssh, scp and sftp
   local tool
   for tool in ssh scp sftp; do
-    [[ ${$(readlink ~/bin/$tool 2> /dev/null):t} == ssh-ident ]] && rm ~/bin/$tool
+    [[ ${"$(readlink ~/bin/$tool 2> /dev/null)":t} == ssh-ident ]] && rm ~/bin/$tool
   done
 
   # the keys are in Secretive now (config/ssh/config), so the login item that loaded keychain keys into macOS's
@@ -43,12 +43,12 @@ function secretive_key() {
   local dir=~/Library/Containers/com.maxgoedjen.Secretive.SecretAgent/Data/PublicKeys pub
   local -a found words
   for pub in $dir/*.pub(N); do
-    words=(${=$(<$pub)})
+    words=(${="$(<$pub)"})
     [[ ${(L)${(j:-:)words[3,-1]}} == *${(L)name// /-}* ]] && found+=$pub
   done
   if (( $#found != 1 )); then
     print -u2 "${#found} Secretive keys match '$name'; pass the name as the second argument. Keys:"
-    for pub in $dir/*.pub(N); do words=(${=$(<$pub)}); print -u2 "  ${words[3,-1]}"; done
+    for pub in $dir/*.pub(N); do words=(${="$(<$pub)"}); print -u2 "  ${words[3,-1]}"; done
     return 1
   fi
 
@@ -58,7 +58,7 @@ function secretive_key() {
   local key=~/.ssh/identities/secretive/$role.pub title="$machine (Secretive)"
   mkdir -p ${key:h} && chmod 700 ${key:h}
   cp $found[1] $key || return
-  words=(${=$(<$key)})
+  words=(${="$(<$key)"})
 
   # adding ssh keys needs one more permission than gh asks for at login
   gh auth status 2>&1 | grep -q admin:public_key || gh auth refresh -h github.com -s admin:public_key || return

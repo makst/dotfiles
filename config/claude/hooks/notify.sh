@@ -20,7 +20,7 @@ app_of() {
   while (( pid > 1 )); do
     comm=$(ps -o comm= -p $pid) || return 1
     [[ $comm == */*.app/Contents/MacOS/* ]] && { print -r -- "$pid ${comm%%.app/*}.app"; return }
-    pid=${$(ps -o ppid= -p $pid)// } || return 1
+    pid=${"$(ps -o ppid= -p $pid)"// } || return 1
   done
   return 1
 }
