@@ -8,6 +8,18 @@ timezsh() {
   hyperfine --warmup 3 --shell=none "${1-$SHELL} -i -c exit"
 }
 
+# zi [words…]: pick among the directories zoxide knows (matching the words, most used first) and change into
+# the one picked. Replaces zoxide's own zi (zsh/.zshdefault loads it first), which runs a plain fzf: this one
+# is the picker's (config/tmux/picker.zsh), with the same keys as every other list, and a tree preview.
+function zi() {
+  local dir
+  source $_fzf_picker
+  dir=$({ for dir in ${(f)"$(zoxide query --list -- "$@")"}; print -r -- "$dir"$'\t'"${dir/#$HOME/~}" } |
+    picker directories --insert --header 'type to filter, jj for j/k · Enter goes there · Esc quits' \
+      --preview 'eza --tree --level=2 --color=always --icons=always {1}' --preview-window $picker_preview) || return
+  __zoxide_cd "${dir%%$'\t'*}"
+}
+
 # setup_node: installs the latest node LTS with fnm (Brewfile, zsh/.exports), makes it the default and
 # installs the global npm packages into it. Through fnm exec: in a shell started before node had a default (a
 # new Mac's), `npm` is Homebrew's, a dependency of the language servers, which would install into /opt/homebrew.

@@ -67,7 +67,7 @@ The up arrow searches by prefix, grey suggestions come from history, `C-r` searc
 Jumping to a directory
 ---
 - `z foo` jumps to the most frecent directory matching `foo` (`z foo bar` for both words).
-- `zi foo` picks among matches with fzf.
+- `zi foo` picks among the matches in the [picker](tmux.md#picker-keys), with a tree of each directory below.
 - `Alt+C` (fzf) changes into any subdirectory.
 
 Switching language versions

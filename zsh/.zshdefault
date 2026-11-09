@@ -164,5 +164,5 @@ function _prompt_gcloud() {
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _prompt_gcloud
 
-# zoxide: `z foo` jumps to the best match, `zi` picks with fzf
+# zoxide: `z foo` jumps to the best match; `zi` (zsh/functions/zsh.zsh) picks through the picker
 cached_eval zoxide zoxide init zsh
