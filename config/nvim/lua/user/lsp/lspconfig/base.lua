@@ -1,5 +1,5 @@
 -- What every language server here shares: the project root and the keys once one attaches. Loaded by
--- lspconfig/init.lua and the server files next to it.
+-- lspconfig/config.lua and the server files next to it.
 local keymaps_module = require('user.lsp.lspconfig.keymaps')
 local M = {}
 
@@ -11,7 +11,7 @@ M.root_dir = function(bufnr, on_dir)
   on_dir(root)
 end
 
--- Called from the LspAttach autocmd (lspconfig/init.lua) for every client, so the servers'
+-- Called from the LspAttach autocmd (lspconfig/config.lua) for every client, so the servers'
 -- own on_attach (e.g. eslint's LspEslintFixAll command) stay untouched.
 -- Formatting on save is conform.nvim's (user/conform.lua).
 M.on_attach = function(_client, bufnr)

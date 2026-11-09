@@ -1,4 +1,5 @@
--- How diagnostics look: signs, no virtual text, rounded floats. Loaded by lspconfig/init.lua.
+-- How diagnostics look (signs, no virtual text, rounded floats), and the keys bound once a server attaches.
+-- Loaded by lspconfig/init.lua.
 local icons_module = require('user.lsp.lspconfig.icons')
 
 -- signs in the number column; the icons are nerd font glyphs, see icons.lua
@@ -47,4 +48,16 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   pattern = '*',
   desc = 'Avoid overwritten by loading color schemes later',
   callback = set_hl_for_floating_window,
+})
+
+-- the keys and settings of base.on_attach, in every buffer a server attaches to. The servers themselves are
+-- the files next to this one (nvim 0.11+ API: vim.lsp.config() merges over the defaults that nvim-lspconfig
+-- ships in lsp/*.lua, vim.lsp.enable() starts the server); completion capabilities come from blink.cmp.
+local base = require('user.lsp.lspconfig.base')
+vim.api.nvim_create_autocmd('LspAttach', {
+  group = vim.api.nvim_create_augroup('UserLspAttach', { clear = true }),
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client then base.on_attach(client, args.buf) end
+  end,
 })
