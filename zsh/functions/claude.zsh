@@ -167,7 +167,7 @@ function _agent_worktree() {
 # _agent_default <main>: the default branch, origin's or else the one checked out in <main>
 function _agent_default() {
   local default=${"$(git -C $1 symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
-  print -r -- ${default:-$(git -C $1 rev-parse --abbrev-ref HEAD)}
+  print -r -- ${default:-"$(git -C $1 rev-parse --abbrev-ref HEAD)"}
 }
 
 # agent_resume [name | session id]: go back to an agent's conversation, also after agent_done removed its
@@ -203,10 +203,10 @@ function agent_resume() {
       | map(select(startswith("<") | not)) | .[]
       | if $t == "user" then "\u001b[1m❯ " + . + "\u001b[0m" else "⏺ " + . end, ""'
     # keys as in every picker (config/tmux/picker.zsh): opens in normal mode, / filters, jj back to j/k
-    source ~/.config/tmux/picker.zsh
+    source $_fzf_picker
     row=$(print -rl -- $shown | picker resume \
       --header 'j/k move · Enter resumes · / filters, jj back · q quits' \
-      --preview "jq -r ${(q)preview} {1}" --preview-window 'nohidden,down,60%,wrap,follow') || return 0
+      --preview "jq -r ${(q)preview} {1}" --preview-window "$picker_preview,wrap,follow") || return 0
     row=${(M)rows:#${(b)row%%$'\t'*}$'\t'*}
   fi
   local f=${row%%$'\t'*} name=${${row#*$'\t'}%%$'\t'*}

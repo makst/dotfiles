@@ -59,7 +59,7 @@ The up arrow searches by prefix, grey suggestions come from history, `C-r` searc
 - Type to search; `jj` switches to moving with `j`/`k`, as in every picker
   ([picker keys](tmux.md#picker-keys)). `C-r` again cycles the filter, shown on the list's border: everywhere
   (`global`), this Mac (`host`), this session, this git repo (`workspace`), this directory.
-- `?` shows the whole command, wrapped, with its directory and exit code. `Enter` puts the command on the
+- `ctrl+/` shows the whole command, wrapped, with its directory and exit code. `Enter` puts the command on the
   command line, ready to edit or run.
 - `atuin stats` shows your most used commands; `atuin search --exit 0 --cwd . <text>` searches from scripts;
   `atuin search -i` opens atuin's own search.

@@ -104,9 +104,9 @@ fzf-history-widget() {
   local choice
   choice=$($_fzf_history global | picker history --insert --read0 --sort --scheme history --tabstop 1 \
     --with-nth $'{1}\t{4}' --nth 2 --no-track --accept-nth 4 --list-label ' global ' --query "$BUFFER" \
-    --header 'type to filter, jj for j/k · ctrl+r cycles global, host, session, workspace, directory · ? whole command' \
+    --header 'type to filter, jj for j/k · ctrl+r cycles global, host, session, workspace, directory · ctrl+/ whole command' \
     --bind "ctrl-r:transform:$cycle" \
-    --preview $'printf "\e[90m%s · exit %s\e[0m\n\n%s\n" {2} {3} {4}' --preview-window 'down,40%,wrap')
+    --preview $'printf "\e[90m%s · exit %s\e[0m\n\n%s\n" {2} {3} {4}' --preview-window "${picker_preview/nohidden/hidden},wrap")
   [[ -n $choice ]] && BUFFER=$choice CURSOR=$#choice
   zle reset-prompt
 }

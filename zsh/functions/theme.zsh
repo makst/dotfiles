@@ -8,7 +8,7 @@
 function change_theme() {
   local colors=~/.local/share/nvim/lazy/tinted-vim/colors
   local scheme
-  source ~/.config/tmux/picker.zsh
+  source $_fzf_picker
   # the best match first, as it's a name you type; the list shows it without the base16- in front
   scheme=$(print -rl -- $colors/base16-*.vim(N:t:r) | awk '{ print $0 "\t" substr($0, 8) }' |
     picker scheme --insert --sort --header 'type to filter, jj for j/k · Enter picks · Esc quits') || return

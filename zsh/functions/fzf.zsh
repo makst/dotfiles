@@ -19,7 +19,7 @@ function mdv() {
   local style=$real_script_dir/config/glow/ansi.json
   [[ -f $1 ]] && { glow -p -s "$style" "$1"; return }
   local file
-  source ~/.config/tmux/picker.zsh
+  source $_fzf_picker
   file=$(fd --extension md . "${1:-.}" | awk '{ print $0 "\t" $0 }' |
     picker markdown --header 'j/k move · Enter reads · / filters, jj back · q quits' \
       --preview "glow -s ${(q)style} -w \$FZF_PREVIEW_COLUMNS {1}" --preview-window $picker_preview) || return
