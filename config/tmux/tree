@@ -14,7 +14,7 @@ source ${0:A:h}/picker.zsh
 # a session's line comes before its first pane's, a window's too.
 if [[ $1 == --list ]]; then
   title='#{s/^✳ //:pane_title}'
-  rows=(${(f)"$(tmux list-panes -a -f '#{E:@listed}' -F "$(print -rl -- '#{session_id}' '#S' '#{session_windows}' \
+  rows=(${(f)"$(tmux list-panes -a -f '#{?@listed,#{E:@listed},1}' -F "$(print -rl -- '#{session_id}' '#S' '#{session_windows}' \
     '#{?session_attached, (attached),}' '#{E:@claude-session-state}' '#{window_id}' '#I' '#W#{window_flags}' \
     '#{window_end_flag}' '#{window_panes}' '#{E:@claude-window-state}' "#{P:#{?#{E:@claude-agent}, $title,}}" \
     '#{pane_id}' '#P' '#{pane_current_command}#{?pane_active,*,}' '#{@claude}' "#{?#{E:@claude-agent}, $title,}" \

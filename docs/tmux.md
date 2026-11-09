@@ -13,7 +13,8 @@ What it is
 - **Panes** for things you want side by side. Splits and new windows start in the current pane's directory.
 - Closing the last window of a session switches to another session instead of closing the terminal.
 - **Shells that wait**: `,tt` and `,tm` (nvim, and zsh's normal mode) show a shell in a pane below, one each per
-  directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists.
+  directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists
+  (a server started before that rule and not reloaded lists every session, `_scratch` too, rather than none).
   It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)). nvim's Android keys
   run Gradle and logcat in two more of these, at the project root ([mobile](mobile.md)).
 - **Moving between panes and nvim**: `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether

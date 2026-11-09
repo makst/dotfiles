@@ -13,7 +13,7 @@ source ${0:A:h}/picker.zsh
 # within one state
 if [[ $1 == --list ]]; then
   typeset -A rank=(waiting 1 done 2 working 3)
-  for line in ${(f)"$(tmux list-panes -a -f '#{&&:#{E:@claude-agent},#{E:@listed}}' \
+  for line in ${(f)"$(tmux list-panes -a -f '#{&&:#{E:@claude-agent},#{?@listed,#{E:@listed},1}}' \
     -F '#{pane_id}'$'\t''#{@claude}'$'\t''#S:#I #W'$'\t''#{s/^✳ //:pane_title}')"}; do
     fields=("${(@ps:\t:)line}")
     print -r -- "${rank[$fields[2]]:-4}"$'\t'"$fields[1]"$'\t'"${picker_marks[$fields[2]]:- } $fields[3]  $fields[4]"

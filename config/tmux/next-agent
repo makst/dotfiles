@@ -7,7 +7,7 @@
 
 client=$1 current=$2
 waiting=() done=()
-for line in ${(f)"$(tmux list-panes -a -f '#{E:@listed}' -F '#{pane_id} #{@claude}')"}; do
+for line in ${(f)"$(tmux list-panes -a -f '#{?@listed,#{E:@listed},1}' -F '#{pane_id} #{@claude}')"}; do
   case ${line#* } in
     waiting) waiting+=(${line%% *}) ;;
     done) done+=(${line%% *}) ;;
