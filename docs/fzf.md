@@ -80,7 +80,7 @@ Keys
 | Key | Action |
 |---|---|
 | `Tab` / `Shift+Tab` | mark / unmark (not in the pickers, `cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, `mdv`, `zi`, `change_theme`: they take one line) |
-| `C-a` | mark all |
+| `Alt+a` | mark all (`C-a` is the tmux prefix) |
 | `C-/` | show / hide the preview (hidden by default, shown from the start in the pickers); `?` is a character to type, in the pickers' normal mode it lists the keys |
 | `C-Alt+n` / `C-Alt+p` | scroll the preview half a page |
 | `C-y` | copy the marked entries to the clipboard |

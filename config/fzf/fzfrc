@@ -25,7 +25,9 @@
 # ctrl-/ for the preview, with ctrl-alt-n/p that scroll it half a page: ? is a character to type here, and in
 # the pickers' normal mode it lists the keys, as ? does everywhere else (picker_modes, config/tmux/picker.zsh)
 --bind 'ctrl-/:toggle-preview'
---bind 'ctrl-a:select-all'
+# alt-a marks all: inside tmux ctrl-a is the prefix, so it would need C-a C-a; Option outside AeroSpace's own keys
+# reaches the terminal (docs/design.md, "How the keyboard is split")
+--bind 'alt-a:select-all'
 --bind 'ctrl-y:execute-silent(echo {+} | pbcopy)'
 # ctrl-n/p: the next / previous line, as in nvim's completion and command line (docs/design.md, "Learn it once"),
 # while typing too; fzf's own default, set here so it stays
