@@ -141,12 +141,8 @@ which one applies.
 
 Retiring a Mac
 ---
-When a Mac is sold, wiped, handed back or lost, on another Mac:
-
-1. `retire_mac <name>`. It asks before it changes anything, then deletes the Mac's push and signing keys on
-   GitHub (found by the Mac's name in their titles) and marks its line in `allowed_signers` `valid-before`
-   the current time.
-2. Commit `allowed_signers` and do what it lists (GitLab, servers, tokens).
+`retire_mac <name>` on another Mac revokes the keys of one that is sold, wiped, handed back or lost; the steps,
+including what it can't do for you, are in [setup](setup.md#retiring-a-mac).
 
 Turning signing off in a repo
 ---

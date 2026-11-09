@@ -9,7 +9,7 @@ be made again whenever a binding or the colour scheme changes.
 
 Splitting, moving between and zooming panes, then a new window.
 
-![tmux panes](img/tmux-panes.gif)
+![Splitting, moving between and zooming panes, then a new window](img/tmux-panes.gif)
 
 </details>
 

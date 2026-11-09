@@ -13,8 +13,7 @@ What it is
 - **Panes** for things you want side by side. Splits and new windows start in the current pane's directory.
 - Closing the last window of a session switches to another session instead of closing the terminal.
 - **Shells that wait**: `,tt` and `,tm` (nvim, and zsh's normal mode) show a shell in a pane below, one each per
-  directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists
-  (a server started before that rule and not reloaded lists every session, `_scratch` too, rather than none).
+  directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists.
   It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)). nvim's Android keys
   run Gradle and logcat in two more of these, at the project root ([mobile](mobile.md)).
 - **Moving between panes and nvim**: `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether
@@ -183,6 +182,8 @@ To look out for
 - resurrect brings back the layout, directories and pane contents, but running programs are not restarted
   (except a few like `vim`), so an agent or dev server shows up as a shell.
 - fzf has no timeout for the second `j`: `jj` in a filter always leaves typing.
+- After a change to `tmux.conf`, reload it (`C-a r`): a running server keeps the old config. One started before
+  `@listed` (which hides `_scratch`) lists every session in the pickers, `_scratch` too.
 - The tree can't collapse sessions, kill (`x`) or tag as `choose-tree` does, and a filter matches the text of
   each line, so a window matches by its own name, not its session's.
 - Remote hosts often lack the `tmux-256color` terminfo, so inside tmux the `ssh` alias connects with

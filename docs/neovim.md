@@ -336,4 +336,7 @@ Decisions
   Gradle and logcat shells ([mobile](mobile.md)): nvim types its commands into them with `tmux send-keys`.
 - **No projects picker (`;p`)**: a project is a tmux session (`cmd+k`), so moving to another one happens in
   tmux, not by changing nvim's working directory (`docs/design.md`, "One tool per job").
+- **nvim-tree in nvim, yazi in the shell, both on `,e`**: the tree stays open beside the file you edit and
+  opens files in this nvim; yazi has no nvim inside it and is a whole-screen browser with previews for the
+  shell. One job, files to open, so one key; which tool depends on where you are, as with `;f`.
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.

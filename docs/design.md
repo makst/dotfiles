@@ -128,7 +128,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,lg` lazygit |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `gsw`, `gfix`, the kubectl ones) | |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `mdv`, `change_theme`, `gsw`, `gfix`, the kubectl ones) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 
 ### Same key, every layer
@@ -139,14 +139,14 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 |---|---|---|---|---|
 | `Space`: the next one, cycling | `Space` | `C-Space` | – (`cmd+space` is Spotlight; `cmd+]`; agents that need you: `cmd+shift+space`) | `alt+space` (windows on the workspace) |
 | `h/j/k/l`: the one in that direction | `C-h/j/k/l` | `C-h/j/k/l` | – | `alt+h/j/k/l` (windows) |
-| `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: none, too easy to mix up with windows) | `alt+[` / `alt+]` (workspaces with windows) |
+| `[` / `]`: previous / next | – (`[` / `]` start nvim's motions) | – (`ctrl+[` is Esc) | `cmd+[` / `cmd+]` (sessions: `C-a (` / `C-a )`, no `cmd` key: too easy to mix up with windows) | `alt+[` / `alt+]` (workspaces with windows) |
 | `1`…`9`: by number | a count: `3 Space` | – (`C-h/j/k/l` is enough) | `cmd+1`…`9` | `alt+1`…`9` (workspaces) |
 | `0`: back to the last one | `Backspace` (`0` is start of line) | `ctrl+0` | `cmd+0` (sessions: `cmd+shift+0`) | `alt+0` (workspace) |
 | `z`: zoom, and back | `,z` | `C-a z` (`cmd+shift+enter`: `cmd+z` is undo) | – | `alt+z` (fills the workspace) |
 | `Shift+h/j/k/l`: resize | arrow keys (`H J K L` walk the syntax tree) | `C-a H/J/K/L` | – | `alt+shift+h/j/k/l` |
 | `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
 | `Shift+Ctrl+h/j/k/l`: move it that way | `C-w H/J/K/L` (nvim's own) | – (not bound; tmux's own `C-a {` / `}` swap panes) | – (not bound) | `alt+ctrl+shift+h/j/k/l` (the window, through the layout) |
-| split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | – (windows tile themselves) |
+| split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | `alt+e` (side by side / stacked; new windows tile themselves) |
 | close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own) | – (the app closes it: `cmd+w`) |
 
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim

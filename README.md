@@ -97,7 +97,10 @@ zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dot
 config/atuin/             shell history search
 config/btop/              btop: vim keys, the terminal's colours
 config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for libedit)
-.fzf.zsh                  fzf and fzf-tab configuration
+.fzf.zsh                  fzf and fzf-tab configuration, the zsh pickers
+config/fzf/               fzfrc: the look and keys every fzf reads
+config/glow/              mdv's Markdown style
+config/lazygit/           lazygit's settings when nvim starts it (,lg)
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the pickers (sessions, windows, agents, paste buffers)
 config/nvim/              Neovim: one directory per plugin under lua/user/
@@ -107,9 +110,11 @@ config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
 config/vscode/            VS Code, the debugger: settings (with nvim's keys) and the extensions to install
 config/ideavim/           nvim's keys in Android Studio (IdeaVim)
-config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line
+config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line, skills
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
+.githooks/                reload the live setup after a pull, rebase or branch switch
+.github/                  CI: check_dotfiles and the fresh-Mac rehearsal
 checks/                   check_dotfiles: the checks run before a commit and on CI; mutate tests them;
                           fresh_mac rehearses a new Mac
 CLAUDE.md                 instructions for Claude Code working on this repo

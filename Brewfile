@@ -11,7 +11,6 @@ tap "nikitabobko/tap"              # aerospace
 
 # --- Used by these dotfiles
 brew "git"                         # newer than Apple's, config/git/.gitconfig
-brew "wget"                        # downloads; nothing in the repo calls it
 brew "uv"                          # python versions, venvs, tools; setup_python, mds
 brew "zsh"                         # the login shell, prepare-zsh-install.sh
 brew "zsh-completions"             # extra completions, zsh/.zshdefault
@@ -28,7 +27,6 @@ brew "vhs"                         # records the GIFs in docs/ from docs/tapes, 
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI
-brew "gnu-sed"                     # gsed, GNU sed for scripts written for Linux; nothing in the repo calls it
 brew "fzf"                         # setup_fzf
 brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
@@ -53,7 +51,9 @@ brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
 brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_id_sudo
 
-# --- Everyday tools
+# --- Everyday tools: for you at the prompt; nothing in the repo needs one unless its comment names the user
+brew "wget"                        # downloads
+brew "gnu-sed"                     # gsed, GNU sed for scripts written for Linux
 brew "jq"                          # JSON in scripts: Claude Code hooks, status line, mds
 brew "yq"                          # jq for YAML (and TOML, XML)
 brew "shellcheck"                  # finds bugs in shell scripts

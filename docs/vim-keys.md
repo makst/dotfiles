@@ -22,7 +22,7 @@ Keys
 
 | Key | Does | nvim | VS Code | Android Studio | Xcode |
 |---|---|---|---|---|---|
-| `jj` | leave insert mode (zsh, Claude Code and the fzf pickers too) | ✓ | ✓ | ✓ | – |
+| `jj` | leave insert mode (zsh, Claude Code, readline REPLs and the fzf pickers too) | ✓ | ✓ | ✓ | – |
 | `,` | leader | ✓ | ✓ | ✓ | – |
 | `x` | delete a character without yanking it | ✓ | ✓ | ✓ | – |
 | yank / paste | system clipboard | ✓ | ✓ | ✓ | – |
@@ -106,7 +106,7 @@ How each tool gets its vim keys:
   (`PYTHON_BASIC_REPL=1`, `zsh/.exports`).
 - **atuin** (`atuin search -i`; `C-r` is a picker): `keymap_mode = "auto"` in `config/atuin/config.toml`,
   vi keys starting in the mode the shell is in.
-- **glow** (`mdv`): its pager is `less` (`PAGER`), so `j`/`k`, `/` and `q`.
+- **glow** (`mdv`): its pager is `less` (glow's default, as nothing sets `PAGER`), so `j`/`k`, `/` and `q`.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
 - **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.
