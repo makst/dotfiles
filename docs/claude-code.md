@@ -179,6 +179,8 @@ Where a plugin is turned on decides who gets it:
 | one project, for you | the project's `.claude/settings.local.json` (`/plugin` → scope *local*) | only you, ignored by git everywhere |
 | one project, for the whole team | the project's `.claude/settings.json` (scope *project*) | everyone working on it |
 
+On every Mac: `frontend-design` from the official marketplace, design guidance when building a UI.
+
 A plugin turned on in `claude.json` needs its marketplace there too:
 
 ```json
