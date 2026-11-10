@@ -279,6 +279,9 @@ they show up in `git diff`.
   (`.claude/settings.json`, this repo's own project settings).
 - **Google Cloud is read-only**: `gcloud`, `bq` and `gsutil` commands that create, change or delete
   resources or access, and `gcloud config set`, are denied (see [gcloud](gcloud.md#what-claude-code-can-do)).
+- **AWS is read-only**: `aws` commands that create, change or delete resources or access, `aws configure
+  set`, and `cdk deploy` / `destroy` / … are denied, and so is reading `~/.aws/credentials` and the SSO and
+  CLI caches (see [aws](aws.md#what-claude-code-can-do)).
 - Everything else asks as usual, including `git commit` and `git push`, outside auto mode.
 - **In auto mode** (`shift+tab`) Claude doesn't ask before a command its classifier judges safe for the task,
   and that includes `git commit`. The global `CLAUDE.md` still says to commit only when asked; push, force
@@ -292,7 +295,8 @@ under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandbox
 - **write** in the project, the temp directory, `~/.cache` and `~/.local/state` (shell and nvim state). Not
   even there: Claude Code's own settings, hooks and `CLAUDE.md`, so Claude edits those with its Edit tool,
   which asks.
-- **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, this repo's secrets).
+- **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, AWS credentials and caches, this
+  repo's secrets).
 - **reach** GitHub, Homebrew's API, npm and PyPI without asking, any port on localhost (dev servers), and
   Secretive's socket (see [This machine](#this-machine)); a host not listed asks.
 
@@ -301,6 +305,7 @@ under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandbox
 | `trash`, `gio trash` | moves to the Trash, outside the project: the way `CLAUDE.md` says to delete |
 | `git push / pull / fetch` | SSH to GitHub can't go through the sandbox's proxy |
 | `gh`, `gcloud`, `bq`, `gsutil`, `kubectl` | Go programs whose TLS checks fail under Seatbelt |
+| `aws` | needs the SSO token in `~/.aws/sso/cache`, which the sandbox can't read ([aws](aws.md#to-look-out-for)) |
 | `brew` | writes to `/opt/homebrew` |
 | `tmux` | needs its socket: `tmux -L probe` and the hooks' window state |
 | `check_dotfiles`, `check_mac`, `checks/*` | in this repo only (`.claude/settings.json`): the tmux checks need a socket |

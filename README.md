@@ -27,6 +27,7 @@ lazygit, `cmd+j` shows every session.
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
+| AWS | aws CLI with SSO logins; Claude Code reads, can't change | [aws](docs/aws.md) |
 | Google Cloud | gcloud, bq, gsutil on work Macs; Claude Code reads, can't change | [gcloud](docs/gcloud.md) |
 | Containers | podman in a VM as `docker` and `docker compose`, no Docker Desktop | [podman](docs/podman.md) |
 | Kubernetes deploys | argocd CLI: what's deployed, healthy, in sync | [argocd](docs/argocd.md) |

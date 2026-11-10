@@ -46,6 +46,7 @@ brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
 brew "lazygit"                     # TUI: `lg` alias, `,lg` in nvim (config/lazygit/nvim.yml)
 brew "podman"                      # containers, `docker` (~/bin/docker): setup_podman, docs/podman.md
 brew "docker-compose"              # `docker compose` on podman (docs/podman.md)
+brew "awscli"                      # aws (docs/aws.md), profiles in ~/.aws/config; brings its own zsh completion
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
