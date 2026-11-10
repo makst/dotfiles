@@ -89,6 +89,8 @@ A typical day
 3. `vim .` in one window, `cmd+d` for a shell next to it, `C-h`/`C-l` to move between them.
 4. `agent fix-login "the login form rejects valid emails"` starts Claude Code in its own worktree and
    window; its state shows on the window, the session and the status bar: waiting for you, done, working.
+5. `agent_review fix-login` puts a reviewer beside it; `agent_land fix-login` rebases, checks and merges the
+   finished work.
 
 Repository layout
 ---

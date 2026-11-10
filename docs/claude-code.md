@@ -103,6 +103,18 @@ of the limits, so a session that gets expensive shows while it runs, not a day l
 
 ANSI colours and no icon font, so it follows the terminal's theme (here base16, like starship).
 
+Once per project
+---
+Tell `agent_land` which checks to run before it merges an agent, in the project's main checkout:
+
+```sh
+git config agent.check 'checks/check_dotfiles'   # this repo
+git config agent.check 'npm test'                # e.g. a Node project
+```
+
+It goes in the clone's `.git/config`, not into the project, so set it again in a new clone and on each Mac.
+Pick what's fast and local, the checks you'd run before a commit.
+
 Starting an agent
 ---
 ```sh
@@ -117,17 +129,49 @@ tmux it runs right there. Arguments after the name are passed on to `claude`.
 When Claude exits, the window stays open as a shell in the worktree. The worktrees live in
 `.claude/worktrees/`, which the global gitignore hides from `git status` in every repo.
 
+Reviewing an agent
+---
+```sh
+agent_review fix-login                  # a reviewer beside fix-login, running /code-review on its branch
+agent_review fix-login --model sonnet   # the same on a cheaper model; arguments go to claude
+```
+
+`agent_review <name>` starts a second Claude Code in the agent's worktree, in a pane beside the agent's own
+(in a new window when the agent has none open), and goes there. It runs `/code-review` on the agent's branch,
+so it reviews what's committed: `/ship` first, it says so when there are uncommitted changes. It can't use
+the Edit and Write tools, so it reports and doesn't change code; tell the agent what's worth fixing, while it
+still has the change in its context. Its conversation isn't one of the agent's: `agent_resume` doesn't list it.
+It runs on the default model (Opus) and effort; pass `--model` or `--effort` after the name.
+
 Finishing an agent
 ---
 ```sh
-agent_done                    # list the repo's agents: branch, merged or not, uncommitted changes
-agent_done fix-login          # remove the worktree, delete the branch, close the tmux window
-agent_done --force fix-login  # the same for a branch you don't want to merge
+agent_land fix-login             # rebase, run the checks, merge into the default branch, then agent_done
+agent_land --no-check fix-login  # the same without the checks
+agent_done                       # list the repo's agents: branch, merged or not, uncommitted changes
+agent_done fix-login             # remove the worktree, delete the branch, close the tmux window
+agent_done --force fix-login     # the same for a branch you don't want to merge
 ```
 
 1. `/ship` in the agent's window commits its work in the project's style.
-2. Merge the agent's branch (`git merge worktree-fix-login` or a PR).
-3. `agent_done fix-login`.
+2. `agent_land fix-login` merges it and finishes the agent; for a PR instead, `/ship pr`, then `agent_done
+   fix-login` once it's merged.
+3. `git push` when you're ready: `agent_land` never pushes.
+
+`agent_land` does in one go what you'd do by hand, and stops at the first step that fails, saying why, with the
+agent left as it was so you can ask it to fix things:
+
+| Step | Stops when |
+|---|---|
+| the worktree is clean and the local default branch isn't behind origin's | there are uncommitted changes (`/ship`), or you need to pull |
+| the branch is rebased onto the default branch, in the agent's worktree | it conflicts: the rebase is undone, the files are listed; ask the agent to rebase |
+| the project's checks run in the worktree, on the rebased branch | they fail, or none are set (below) |
+| the default branch is fast-forwarded to the branch, then `agent_done` | the main checkout's own changes are in the way |
+
+The checks are the command in `git config agent.check`, once per clone (see [Once per
+project](#once-per-project)): nothing goes into the project. It runs in your shell, so a shell function
+works too. Without one `agent_land` stops; `--no-check` lands anyway. The main checkout moves along when it
+has the default branch out; otherwise only the branch moves.
 
 `agent_done` only removes things when nothing would be lost: it stops if the worktree has uncommitted
 changes, and without `--force` if the branch has commits that aren't in the default branch. A commit counts as
@@ -230,6 +274,8 @@ Commands
 | Command | Does |
 |---|---|
 | `agent <name> [prompt]` | Claude Code in a worktree and window of its own ([Starting an agent](#starting-an-agent)) |
+| `agent_review <name> [claude args]` | a read-only reviewer beside the agent, running `/code-review` on its branch ([Reviewing an agent](#reviewing-an-agent)) |
+| `agent_land [--no-check] <name>` | rebase, check, merge into the default branch and finish the agent ([Finishing an agent](#finishing-an-agent)) |
 | `agent_done [--force] [name]` | list the agents, or finish one ([Finishing an agent](#finishing-an-agent)) |
 | `agent_resume [name \| id]` | pick or resume an agent's conversation ([Going back to an agent](#going-back-to-an-agent)) |
 | `claude_tokens [days]` | token usage and cost ([Checking token usage](#checking-token-usage)) |
@@ -389,6 +435,12 @@ To look out for
   for text.
 - **Sandbox**: a change to the sandbox settings applies to the next command, a new exclusion in a project's
   `.claude/settings.json` only after a restart.
+- **`agent_review` reads only what Claude Code's tools let it**: the Edit and Write tools are taken away, but
+  a Bash command could still write; in auto mode the classifier and the sandbox stop most of that, not all.
+- **A reviewer's conversation** is told apart by its first prompt, `/code-review`: one you start by hand with
+  that prompt in an agent's worktree is left out of `agent_resume` too.
+- **`agent_land` rebases the agent's branch under it**: when the agent is still working, let it finish its
+  turn first, or its next edit lands on the rebased files.
 - `claude_tokens`' prices are in the function (from the `claude-api` skill, 2026-10); they matched Claude
   Code's own cost for a session to the cent. Requests Claude Code makes outside the conversation, like titles,
   aren't in the files and aren't counted.

@@ -105,17 +105,28 @@ function agent() {
   _agent_window $name $PWD claude -w $name "$@"
 }
 
-# _agent_window <name> <dir> <command...>: runs the command in <dir>, inside tmux in a new window named <name>
-# that stays a shell once the command exits, outside tmux right here. Shared by agent and agent_resume.
+# _agent_window [--pane] <name> <dir> <command...>: runs the command in <dir>, inside tmux in a new window named
+# <name> that stays a shell once the command exits, outside tmux right here. With --pane it splits the window
+# that already has a pane in <dir> instead (the agent's own, in any session) and goes there; a new window when
+# none has. Shared by agent, agent_resume and agent_review.
 function _agent_window() {
+  local split=0
+  [[ $1 == --pane ]] && { split=1; shift }
   local name=$1 dir=$2
   shift 2
   if [[ -z $TMUX ]]; then
     (cd $dir && "$@")
     return
   fi
-  local pane
-  pane=$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$dir") || return
+  local pane window
+  (( split )) && window=$(tmux list-panes -a -F $'#{window_id}\t#{pane_current_path}' |
+    awk -F '\t' -v dir=$dir '$2 == dir || index($2, dir "/") == 1 { print $1; exit }')
+  if [[ -n $window ]]; then
+    pane=$(tmux split-window -h -P -F '#{pane_id}' -t "$window" -c "$dir") || return
+    tmux switch-client -t "$pane"
+  else
+    pane=$(tmux new-window -P -F '#{pane_id}' -n "$name" -c "$dir") || return
+  fi
   tmux send-keys -t "$pane" "${(j: :)${(q)@}}" Enter
 }
 
@@ -130,15 +141,19 @@ function _agent_main() {
 # transcript<tab>name<tab>last active<tab>title. Claude Code keeps a transcript per directory under
 # ~/.claude/projects: an agent's stays in its worktree's folder, or moves to the main checkout's when Claude
 # removes the worktree itself on exit, so both are searched for conversations that ran in .claude/worktrees/.
+# A reviewer's conversation (agent_review, its first prompt is /code-review) is left out: it isn't the agent's.
 function _agent_sessions() {
   local root=$1/.claude/worktrees f name title
   local -a dirs=(~/.claude/projects/${1//[^A-Za-z0-9]/-}*(N/))
   (( $#dirs )) || return 0  # rg without a path would wait for stdin
   local -a files=(${(f)"$(rg -l --sortr modified -F "\"cwd\":\"$root/" -- $dirs 2> /dev/null)"})
   for f in $files; do
-    # the agent's name from the first worktree path it ran in; the title Claude gave it, else the last prompt
+    # the agent's name from the first worktree path it ran in (none for a reviewer); the title Claude gave it,
+    # else the last prompt
     IFS=$'\t' read -r name title < <(jq -rn --arg root $root/ '[inputs] as $e | [
-      ($e | map(.cwd? // "" | select(startswith($root))) | first | ltrimstr($root) | split("/")[0]),
+      if $e | map(select(.type == "user" and (.isMeta | not)) | .message.content | strings) | first // ""
+        | test("^(<command-name>)?/code-review") then "" else
+      ($e | map(.cwd? // "" | select(startswith($root))) | first | ltrimstr($root) | split("/")[0]) end,
       (($e | map(select(.type == "ai-title")) | last.aiTitle)
         // ($e | map(select(.type == "last-prompt")) | last.lastPrompt) // "" | gsub("\\s+"; " ") | .[0:70])
     ] | join("\t")' $f)
@@ -164,9 +179,15 @@ function _agent_worktree() {
   git -C $main worktree add -q -b $branch $wt $base && print "re-created $name's worktree on $branch from ${base#refs/}"
 }
 
-# _agent_default <main>: the default branch, origin's or else the one checked out in <main>
+# _agent_default <main>: the default branch: origin's, else main or master when there is one, else the one
+# checked out in <main> (a repo without a remote, where any branch may be out)
 function _agent_default() {
-  local default=${"$(git -C $1 symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/}
+  local default=${"$(git -C $1 symbolic-ref --short refs/remotes/origin/HEAD 2> /dev/null)"#origin/} b
+  if [[ -z $default ]]; then
+    for b in main master; do
+      git -C $1 rev-parse -q --verify refs/heads/$b > /dev/null && { default=$b; break }
+    done
+  fi
   print -r -- ${default:-"$(git -C $1 rev-parse --abbrev-ref HEAD)"}
 }
 
@@ -296,6 +317,95 @@ function agent_done() {
   return 0
 }
 
+# agent_land [--no-check] <name>: lands a finished agent on the default branch and finishes it, in one go
+# instead of rebase, checks, merge and agent_done by hand. Stops at the first step that fails and says why:
+# 1. the agent's work is committed (/ship in its window does that) and the local default branch isn't behind
+#    origin's, since you push it afterwards
+# 2. the agent's branch is rebased onto the default branch, in its worktree; a conflict undoes the rebase and
+#    leaves it to the agent, who knows the change
+# 3. the repo's checks run in the worktree on the rebased branch: the command in `git config agent.check`, set
+#    once per clone so nothing lands in the project; without one it stops, --no-check lands unchecked
+# 4. the default branch is fast-forwarded to the branch, then agent_done removes the worktree, branch and window
+# It never pushes: that stays yours.
+function agent_land() {
+  local check=1
+  [[ $1 == --no-check ]] && { check=0; shift }
+  local name=${1:?usage: agent_land [--no-check] <name>}
+  local main
+  main=$(_agent_main) || return
+  local wt=$main/.claude/worktrees/$name default=$(_agent_default $main) cmd
+  [[ -d $wt ]] || { print -u2 "no agent worktree $wt"; return 1 }
+  local branch=$(git -C $wt branch --show-current)
+  [[ -n $branch ]] || { print -u2 "$name's worktree isn't on a branch (a rebase in progress?)"; return 1 }
+  if [[ -n $(git -C $wt status --porcelain) ]]; then
+    print -u2 "$name has uncommitted changes; /ship in its window commits them:"
+    git -C $wt status --short >&2
+    return 1
+  fi
+  if git -C $main rev-parse -q --verify refs/remotes/origin/$default > /dev/null &&
+    ! git -C $main merge-base --is-ancestor origin/$default $default; then
+    print -u2 "$default is behind origin/$default; pull it first"
+    return 1
+  fi
+  if (( check )); then
+    cmd=$(git -C $main config agent.check)
+    [[ -n $cmd ]] || {
+      print -u2 "no checks set for this repo: git config agent.check '<command>', or agent_land --no-check $name"
+      return 1
+    }
+  fi
+  if git -C $main merge-base --is-ancestor $branch $default; then
+    print "$branch is already in $default"
+    agent_done $name
+    return
+  fi
+
+  local out
+  if ! out=$(git -C $wt rebase -q $default 2>&1); then
+    local conflicts=$(git -C $wt diff --name-only --diff-filter=U)
+    git -C $wt rebase --abort 2> /dev/null
+    [[ -n $conflicts ]] || { print -ru2 -- $out; return 1 }  # not a conflict: git's own message
+    print -u2 "$branch conflicts with $default in:\n$conflicts\nask $name to rebase onto $default, then land again"
+    return 1
+  fi
+  if (( check )); then
+    print "checking $branch: $cmd"
+    (cd $wt && eval $cmd) || {
+      print -u2 "checks failed on $branch (rebased onto $default); fix them in $name, then land again"
+      return 1
+    }
+  fi
+  local count=$(git -C $main rev-list --count $default..$branch)
+  # the main checkout has the default branch out: merge there, so its files move too; else move the branch alone
+  if [[ $(git -C $main branch --show-current) == $default ]]; then
+    git -C $main merge -q --ff-only $branch || return
+  else
+    git -C $main fetch -q . $branch:$default || return
+  fi
+  print "landed $count commit${${count:#1}:+s} from $branch on $default; push it when you're ready"
+  agent_done $name
+}
+
+# agent_review <name> [claude args…]: a second Claude Code that reviews an agent's committed branch while the
+# agent is still there to fix what it finds: /code-review of the branch in the agent's worktree, in a pane beside
+# the agent's (a new window when it has none). The edit tools are taken away, so it reads and reports; you pass
+# on what's worth fixing. Arguments go to claude, e.g. --model sonnet for a cheaper review.
+function agent_review() {
+  local name=${1:?usage: agent_review <name> [claude args...]}
+  shift
+  local main
+  main=$(_agent_main) || return
+  local wt=$main/.claude/worktrees/$name
+  [[ -d $wt ]] || { print -u2 "no agent worktree $wt"; return 1 }
+  local branch=$(git -C $wt branch --show-current)
+  [[ -n $branch ]] || { print -u2 "$name's worktree isn't on a branch"; return 1 }
+  [[ -n $(git -C $wt status --porcelain) ]] &&
+    print -u2 "$name has uncommitted changes; only its commits are reviewed (/ship commits them)"
+  # the prompt goes first: --disallowedTools takes every word after it
+  _agent_window --pane $name $wt claude "/code-review $branch" -n "review $name" "$@" \
+    --disallowedTools Edit Write NotebookEdit
+}
+
 # _agent_resume: completion; agent_resume offers the agents with a conversation (with its title), agent_done
 # the worktrees
 function _agent_resume() {
@@ -312,13 +422,18 @@ function _agent_resume() {
   _describe agent entries
 }
 
-# _agent_done: completion for agent_done, the agents' worktrees and --force
+# _agent_done: completion for agent_done, agent_land and agent_review: the agents' worktrees and each one's flag
 function _agent_done() {
   local main=$(_agent_main 2> /dev/null)
   [[ -n $main ]] || return 1
-  _arguments '--force[drop an unmerged branch]' "1:agent:($main/.claude/worktrees/*(N/:t))"
+  local -a flag
+  case $service in
+    agent_done) flag=('--force[drop an unmerged branch]') ;;
+    agent_land) flag=('--no-check[land without the checks]') ;;
+  esac
+  _arguments $flag "1:agent:($main/.claude/worktrees/*(N/:t))"
 }
-(( $+functions[compdef] )) && compdef _agent_resume agent_resume && compdef _agent_done agent_done
+(( $+functions[compdef] )) && compdef _agent_resume agent_resume && compdef _agent_done agent_done agent_land agent_review
 
 # setup_claude: links config/claude's settings, CLAUDE.md, hooks, status line and skills into ~/.claude; a real
 # file Claude Code made in their place goes to the Trash first.

@@ -125,6 +125,8 @@ Commands
 | `lg` | lazygit |
 | `tm` | tmux session picker |
 | `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
+| `agent_review <name> [claude args]` | a read-only reviewer Claude beside the agent, running `/code-review` on its branch, see [claude-code](claude-code.md#reviewing-an-agent) |
+| `agent_land [--no-check] <name>` | rebases an agent's branch, runs the checks, merges it and finishes the agent, see [claude-code](claude-code.md#finishing-an-agent) |
 | `agent_done [--force] [name]` | lists the agents, or removes a finished one's worktree, branch and window, see [claude-code](claude-code.md#finishing-an-agent) |
 | `agent_resume [name \| id]` | picks an agent's conversation in fzf, or resumes one, in its worktree again after `agent_done`, see [claude-code](claude-code.md#going-back-to-an-agent) |
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
