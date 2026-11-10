@@ -44,8 +44,8 @@ brew "gopls"                       # Go language server in nvim, lsp/lspconfig/g
 brew "tree-sitter"                 # parser library for nvim treesitter
 brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
 brew "lazygit"                     # TUI: `lg` alias, `,lg` in nvim (config/lazygit/nvim.yml)
-brew "podman"                      # `docker` alias
-brew "docker-compose"              # compose files with podman
+brew "podman"                      # containers, `docker` (~/bin/docker): setup_podman, docs/podman.md
+brew "docker-compose"              # `docker compose` on podman (docs/podman.md)
 brew "kubernetes-cli"              # `k` aliases in zsh/.aliases
 brew "hyperfine"                   # benchmarks, `timezsh`
 brew "shfmt"                       # formats shell scripts: conform in nvim, the Claude format hook
@@ -112,7 +112,7 @@ machine_brewfile = File.expand_path("~/.config/dotfiles/Brewfile")
 instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(machine_brewfile)
 
 # --- Review: installed on the old Mac, probably leftovers. Uncomment what you still use.
-# cask "docker-desktop"  # `docker` is aliased to podman
+# cask "docker-desktop"  # podman is `docker` (docs/podman.md)
 # brew "ansible"
 # brew "aws-sam-cli"
 # brew "minikube"

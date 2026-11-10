@@ -25,7 +25,8 @@ What it is
   end up in it ([Several Macs](#several-macs)).
 - **Data that is *not* in the repo**: tmux plugins (`~/.tmux/plugins`), nvim plugins and language servers
   (`~/.local/share/nvim`), shell history (`~/.zsh_history`, atuin's `~/.atuin`), cached tool setup
-  (`~/.cache/zsh`), node versions (fnm), python versions (uv, `~/.local/share/uv`).
+  (`~/.cache/zsh`), node versions (fnm), python versions (uv, `~/.local/share/uv`), podman's VM
+  (`~/.local/share/containers`).
 
 A new Mac
 ---
@@ -126,9 +127,12 @@ check_mac: 2 problems, each with what fixes it:
 | nvim's plugins are at the commits in `lazy-lock.json`, tmux's plugins are installed | `setup_nvim`, `setup_tmux` |
 | fnm's default node has typescript, `~/.local/bin/python` exists, VS Code has the extensions | `setup_node`, `setup_python`, `setup_vscode` |
 | where gcloud is installed, it has `gke-gcloud-auth-plugin` | `setup_gcloud` |
+| where the Mac can run a VM, podman has one and no connection to one that's gone | `setup_podman` |
+| `~/.npm` has no files of another user (root's, from an npm run with `sudo`), which make npm fail with EPERM | `sudo chown -R $(id -u) ~/.npm` |
 | the repo's git hooks are on, `~/.ssh/config` includes the shared one, the login shell is Homebrew's zsh | `setup_git`, `setup_ssh`, `prepare-zsh-install.sh` |
 | a new zsh and nvim start without printing errors | the error says |
 | Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
+| gh's login is valid; npm accepts each registry token in `~/.npmrc` (not from Claude Code's sandbox, where every login looks invalid) | `gh auth refresh`; `npm_gh_token` for GitHub's registry, the registry's own login for others |
 
 Adding a package
 ---
@@ -215,11 +219,12 @@ keeping that HOME and its `setup.log` to look into; when all pass, the HOME goes
 On a Mac in use, what would reach outside that HOME is stood in for, and each stand-in logs its call to the
 HOME's `stood-in.log`: `brew bundle` only loads the Brewfile (so a work Mac's packages don't land on a home
 Mac), and `defaults write`, `killall`, `open`, `hidutil`, `launchctl` and Android Studio's `studio` do
-nothing. nvim, tmux and VS Code plugins, node and python install for real into the HOME, so it needs the
-network. On GitHub (`.github/workflows/fresh-mac.yml`, every Monday and by hand under Actions → fresh-mac →
-Run workflow) nothing is stood in for: each kind gets a fresh macOS runner and `brew bundle` installs every
-package. The runner's own copies of apps the Brewfile installs (Google Chrome) are moved away first, since a
-new Mac doesn't have them.
+nothing, and `podman machine` only remembers an `init`, so no second VM is made. nvim, tmux and VS Code
+plugins, node and python install for real into the HOME, so it needs the network. On GitHub
+(`.github/workflows/fresh-mac.yml`, every Monday and by hand under Actions → fresh-mac → Run workflow)
+nothing is stood in for: each kind gets a fresh macOS runner and `brew bundle` installs every package.
+Its runners can't run a VM, so there `setup_podman` only makes the link. The runner's own copies of apps the
+Brewfile installs (Google Chrome) are moved away first, since a new Mac doesn't have them.
 
 Run it after changing a setup step or the order of `setup_dotfiles`.
 
@@ -242,6 +247,7 @@ Each step is a function you can also run on its own.
 | `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
 | `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
 | `setup_gcloud` | where gcloud is installed (work Macs), adds its `gke-gcloud-auth-plugin` component, which kubectl needs to log in to GKE (see [gcloud](gcloud.md#config)) |
+| `setup_podman` | links `~/bin/docker` to podman, makes podman's VM if it's missing and starts it, removes connections to a VM that's gone (see [podman](podman.md)) |
 | `setup_fzf` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
 | `setup_btop` | links `~/.config/btop/btop.conf` |
@@ -306,6 +312,7 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 | `~/.ideavimrc` | `config/ideavim/ideavimrc` |
 | `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |
 | `~/bin/vim` | `/opt/homebrew/bin/nvim` |
+| `~/bin/docker` | `/opt/homebrew/bin/podman` |
 
 ### The Brewfile
 

@@ -28,6 +28,7 @@ lazygit, `cmd+j` shows every session.
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
 | Google Cloud | gcloud, bq, gsutil on work Macs; Claude Code reads, can't change | [gcloud](docs/gcloud.md) |
+| Containers | podman in a VM as `docker` and `docker compose`, no Docker Desktop | [podman](docs/podman.md) |
 | Kubernetes deploys | argocd CLI: what's deployed, healthy, in sync | [argocd](docs/argocd.md) |
 | Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |

@@ -17,8 +17,6 @@ alias tm='~/.config/tmux/sessionizer'
 # remote hosts often lack tmux-256color's terminfo: inside tmux, ssh with a TERM every server knows
 [[ -n $TMUX ]] && alias ssh='TERM=xterm-256color ssh'
 
-alias docker="podman"
-
 # eza instead of ls for the long listings: colours (LS_COLORS), git status, icons (Ghostty bundles the Nerd
 # Font symbols)
 alias ll='eza -l --git --group-directories-first --icons=auto'

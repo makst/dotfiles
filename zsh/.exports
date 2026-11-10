@@ -53,9 +53,38 @@ fi
 # gke-gcloud-auth-plugin for kubectl, live here; brew links only gcloud, bq and gsutil
 [[ -d /opt/homebrew/share/google-cloud-sdk/bin ]] && path+=(/opt/homebrew/share/google-cloud-sdk/bin)
 
-# node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls), and cd into a
-# directory with .nvmrc / .node-version switches to that version. Not cached: it makes a link per shell.
-command -v fnm > /dev/null && eval "$(fnm env --use-on-cd --version-file-strategy=recursive --resolve-engines --shell zsh)"
+# node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls). Not cached: it makes a
+# link per shell. Its own --use-on-cd hook fails on a version that isn't installed and leaves the last node
+# active without a word, so _node_use_pinned replaces it.
+if command -v fnm > /dev/null; then
+  eval "$(fnm env --version-file-strategy=recursive --resolve-engines --shell zsh)"
+  # _node_use_pinned [fnm options]: chpwd hook, and once at start (a new pane can open inside a project), where
+  # --log-level=error leaves out the "Using Node" line. Switches to the version that .nvmrc, .node-version or
+  # package.json's engines pins here or above, installing it when it's missing; says so in red when that fails,
+  # rather than going on with another node.
+  function _node_use_pinned() {
+    fnm "$@" use --install-if-missing --silent-if-unchanged ||
+      print -u2 -P "%F{red}node: the version pinned for ${PWD/#$HOME/~} couldn't be used; still on $(node -v)%f"
+  }
+  autoload -Uz add-zsh-hook
+  add-zsh-hook chpwd _node_use_pinned
+  # at start only where something here or above can pin a version: fnm takes ~6 ms
+  () {
+    local dir=$PWD
+    while [[ -n $dir ]]; do
+      [[ -e $dir/.nvmrc || -e $dir/.node-version || -e $dir/package.json ]] &&
+        { _node_use_pinned --log-level=error; return }
+      dir=${dir%/*}
+    done
+  }
+fi
+
+# _docker_host: the socket podman's VM serves the Docker API on, for what talks to it directly rather than
+# through the `docker` command (docker-compose, testcontainers); docs/podman.md. It sits in macOS's temp
+# directory for this user, which getconf names even where TMPDIR is another (Claude Code's shell)
+_docker_host() { print -r -- "export DOCKER_HOST=unix://$(getconf DARWIN_USER_TEMP_DIR)podman/podman-machine-default-api.sock" }
+cached_eval podman _docker_host
+unfunction _docker_host
 
 # remove duplicates, and directories that no longer exist (left in an inherited PATH / FPATH, e.g. by a
 # tmux server started from an older shell)

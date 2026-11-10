@@ -128,7 +128,7 @@ function setup_dotfiles() {
   setup_machine || return
   local step
   local -a failed
-  for step in setup_brew setup_gcloud setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
+  for step in setup_brew setup_gcloud setup_podman setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_caps_lock setup_macos_defaults \
     setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
@@ -202,10 +202,11 @@ function check_dotfiles() {
 # check_mac [--scripted]: whether this Mac is set up as the repo says, after a pull or on a Mac that hasn't
 # been used for a while; check_dotfiles checks the repo, this the Mac it runs on. Checks every link the setup
 # makes, this Mac's files in ~/.config/dotfiles, the Brewfile's packages, nvim's plugins against
-# lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, the repo's git hooks, the ssh include,
-# the login shell, that a new zsh and nvim start without errors, and the steps of "A new Mac" done by hand:
-# the ssh agent, commit signing and, on a work Mac signed in to gcloud, Claude's Viewer service account
-# (docs/gcloud.md). --scripted leaves those out, for checks/fresh_mac, which can only run the
+# lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, podman's VM, npm's cache, the repo's
+# git hooks, the ssh include, the login shell, that a new zsh and nvim start without errors, and the steps of
+# "A new Mac" done by hand: the ssh agent, commit signing, on a work Mac signed in to gcloud, Claude's Viewer
+# service account (docs/gcloud.md), and the logins of gh and npm's registries. --scripted leaves those out,
+# for checks/fresh_mac, which can only run the
 # scripts. Changes nothing: prints each problem with the step that fixes it and returns 1, or one line when
 # all is well. The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
 function check_mac() {
@@ -274,6 +275,20 @@ function check_mac() {
   fi
   (( ! $+commands[gcloud] || $+commands[gke-gcloud-auth-plugin] )) ||
     problems+="gcloud has no gke-gcloud-auth-plugin, so kubectl can't log in to GKE: setup_gcloud"
+  # podman's VM, where this Mac can run one, and no connection left to a VM that's gone (it reads as a
+  # network error). A VM that is only stopped is fine: `podman machine start`
+  if _podman_vm_ok; then
+    local -a machines=(${${(f)"$(podman machine list --format '{{.Name}}' 2> /dev/null)"}%\*})
+    (( $machines[(Ie)podman-machine-default] )) || problems+="podman has no VM, so no container runs: setup_podman"
+    for name in ${(f)"$(podman system connection list --format '{{.Name}}' 2> /dev/null)"}; do
+      (( $machines[(Ie)${name%-root}] )) && continue
+      problems+="podman connects to $name, a VM that's gone: setup_podman"
+      break
+    done
+  fi
+  # an npm once run with sudo leaves root's files in its cache, and every npm ci then fails with EPERM
+  [[ -z $(find ~/.npm ! -user $UID -print -quit 2> /dev/null) ]] ||
+    problems+="~/.npm has files that aren't yours, so npm fails with EPERM: sudo chown -R \$(id -u) ~/.npm"
 
   # git, ssh and the shell
   [[ $(git -C $repo config core.hooksPath) == .githooks ]] ||
@@ -297,6 +312,20 @@ function check_mac() {
     [[ -r $dir/kind && $(<$dir/kind) == work && -s ${CLOUDSDK_CONFIG:-~/.config/gcloud}/credentials.db ]] &&
       ! jq -e '.env.CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT' $dir/claude.json > /dev/null 2>&1 &&
       problems+="Claude Code uses your own gcloud login: docs/gcloud.md, \"Read-only for real\""
+    # logins that expire: gh's, and each npm registry token in ~/.npmrc, which gh's doesn't refresh. Not in
+    # Claude Code's sandbox, which can't reach the keychain or the network and so sees every login as invalid
+    if [[ -z $SANDBOX_RUNTIME ]]; then
+      gh auth status > /dev/null 2>&1 || problems+="gh's login is invalid or missing: gh auth refresh"
+      local host
+      for host in ${(f)"$(sed -nE 's#^//(.+):_authToken=.*#\1#p' ~/.npmrc 2> /dev/null)"}; do
+        [[ $(npm whoami --registry=https://$host 2>&1) == *(E401|ENEEDAUTH)* ]] || continue
+        if [[ $host == npm.pkg.github.com/ ]]; then
+          problems+="npm's token for $host was rejected: npm_gh_token"
+        else
+          problems+="npm's token for $host was rejected: log in again the way that registry says"
+        fi
+      done
+    fi
   fi
   grep -qxF "Include ~/dotfiles/config/ssh/config" ~/.ssh/config 2> /dev/null ||
     problems+="~/.ssh/config doesn't include the repo's config/ssh/config: setup_ssh"

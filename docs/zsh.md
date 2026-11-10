@@ -73,8 +73,10 @@ Jumping to a directory
 Switching language versions
 ---
 - **node**: fnm. Entering a directory with `.nvmrc`, `.node-version` or a `package.json` `engines` field
-  switches to that version (in subdirectories too); otherwise the default version is used. The default
-  is on `PATH` everywhere, including for nvim's language servers. `fnm install <v>`, `fnm default <v>`.
+  switches to that version (in subdirectories too), installing it first if it's missing; a version that can't
+  be installed is reported in red, never skipped quietly. A new shell does the same where it opens. Elsewhere
+  the default version is used; it is on `PATH` everywhere, including for nvim's language servers. `fnm install
+  <v>`, `fnm default <v>`.
 - **python**: [uv](https://docs.astral.sh/uv/). `python` / `python3` are the latest version (from
   `setup_python`); in a project, `uv init`, `uv add <pkg>`, `uv run <script>` manage the virtualenv and
   `uv python pin <v>` its version. `uv tool install <pkg>` installs a CLI tool, `uvx <pkg>` runs one once.
@@ -128,7 +130,7 @@ Commands
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
-| `docker` | podman (see [Decisions](#decisions)) |
+| `npm_gh_token` | gives npm gh's token for GitHub's npm registry, after `gh auth refresh`; `check_mac` says when (`zsh/functions/zsh.zsh`) |
 | `k`, `kg`, `kd`, `kgpo`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
 | `kctx`, `kns` | kubectl: switch the context / the namespace, given or picked in fzf (`zsh/functions/kubectl.zsh`) |
 | `klo`, `kex` | kubectl: follow a pod's logs / a shell in it (bash, else sh), the pod given or picked in fzf |
@@ -163,7 +165,7 @@ Config
 
 | File | Contains |
 |---|---|
-| `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`, the Android SDK's tools), fnm, pager and colour settings |
+| `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`, the Android SDK's tools), fnm and its hook that switches node on `cd`, `DOCKER_HOST` (see [podman](podman.md)), pager and colour settings |
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide, vi mode and its keys |
 | `zsh/.aliases` | aliases |
 | `zsh/functions/<tool>.zsh` | shell functions, one file per tool, named like its `config/<tool>` or `docs/<tool>.md`: `claude.zsh` has the `claude` wrapper and agents, `setup.zsh` the whole install (`setup_dotfiles`) and the checks |
@@ -217,4 +219,8 @@ Decisions
 - **History stays on this Mac**: atuin's sync needs an account (`atuin register`) and is off; its AI key (`?`)
   isn't bound.
 - **fnm isn't cached** like the other tools: it makes a link per shell.
-- **podman as `docker`**: Docker Desktop isn't installed.
+- **podman as `docker`**: Docker Desktop isn't installed; a link in `~/bin`, not an alias, so scripts see it
+  too ([podman](podman.md#decisions)).
+- **fnm installs a pinned node on `cd`**: its own hook only switches, and on a version that isn't installed it
+  failed and silently kept the last node, so a project built against the wrong major. Installing a set of
+  majors wouldn't help: `.nvmrc` pins exact versions.

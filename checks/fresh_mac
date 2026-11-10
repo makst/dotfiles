@@ -10,10 +10,11 @@
 #
 # On a Mac in use, what would reach outside that HOME is stood in for by zsh functions in its .zshenv that log
 # the call to ~/stood-in.log: brew bundle (only loads the Brewfile, so a work Mac's packages don't land on a
-# home Mac), defaults write, killall, open, hidutil, launchctl and Android Studio's studio. tmux gets its own
-# socket directory. The rest installs for real into the throwaway HOME (nvim, tmux and VS Code plugins, node,
-# python), so it needs the network and takes a few minutes. On CI ($CI set, .github/workflows/fresh-mac.yml),
-# where the runner is a fresh Mac to throw away, nothing is stood in for.
+# home Mac), defaults write, killall, open, hidutil, launchctl, Android Studio's studio and podman's VM. tmux
+# gets its own socket directory. The rest installs for real into the throwaway HOME (nvim, tmux and VS Code
+# plugins, node, python), so it needs the network and takes a few minutes. On CI ($CI set,
+# .github/workflows/fresh-mac.yml), where the runner is a fresh Mac to throw away, nothing is stood in for; its
+# runners have no hypervisor, so setup_podman makes no VM there and check_mac doesn't look for one.
 
 setopt extended_glob
 unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
@@ -45,6 +46,17 @@ hidutil() { _stood_in hidutil "$@" }
 launchctl() { _stood_in launchctl "$@" }
 # what Android Studio prints for a plugin it installed, which setup_ideavim looks for
 studio() { _stood_in studio "$@"; print "installed plugin (stood in)" }
+# the VM podman runs containers in: a second real one would be heavy; an init is remembered for check_mac
+podman() {
+  [[ $1 == (machine|system) ]] || { command podman "$@"; return }
+  _stood_in podman "$@"
+  case $2 in
+    init) touch ~/.stood-in-vm ;;
+    list) [[ -e ~/.stood-in-vm ]] && print "podman-machine-default*" ;;
+    inspect) print running ;;
+  esac
+  return 0
+}
 '
 
 integer failed=0
