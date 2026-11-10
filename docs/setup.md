@@ -125,6 +125,7 @@ check_mac: 2 problems, each with what fixes it:
 | `brew bundle check`: every Brewfile package is installed | `setup_brew` |
 | nvim's plugins are at the commits in `lazy-lock.json`, tmux's plugins are installed | `setup_nvim`, `setup_tmux` |
 | fnm's default node has typescript, `~/.local/bin/python` exists, VS Code has the extensions | `setup_node`, `setup_python`, `setup_vscode` |
+| where gcloud is installed, it has `gke-gcloud-auth-plugin` | `setup_gcloud` |
 | the repo's git hooks are on, `~/.ssh/config` includes the shared one, the login shell is Homebrew's zsh | `setup_git`, `setup_ssh`, `prepare-zsh-install.sh` |
 | a new zsh and nvim start without printing errors | the error says |
 | Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
@@ -240,6 +241,7 @@ Each step is a function you can also run on its own.
 |---|---|
 | `setup_machine [<name> <home\|work>]` | this Mac's own settings in `~/.config/dotfiles`: asks for its name and kind once, creates the local files that are missing (see [below](#several-macs)), links `~/dotfiles` |
 | `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
+| `setup_gcloud` | where gcloud is installed (work Macs), adds its `gke-gcloud-auth-plugin` component, which kubectl needs to log in to GKE (see [gcloud](gcloud.md#config)) |
 | `setup_fzf` | links `~/.fzf.zsh` |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
 | `setup_btop` | links `~/.config/btop/btop.conf` |

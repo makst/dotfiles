@@ -60,6 +60,7 @@ brew "shellcheck"                  # finds bugs in shell scripts
 brew "ast-grep"                    # search and rewrite code by syntax, not text
 brew "just"                        # project task runner: `just <recipe>` from a justfile
 brew "xh"                          # HTTP requests, httpie-compatible syntax
+brew "argocd"                      # Argo CD from the command line: deploys, health, sync (docs/argocd.md)
 brew "btop"                        # TUI: processes, CPU, memory, network; config/btop, setup_btop
 brew "yazi"                        # TUI: file manager with previews; ,e in zsh's normal mode (.fzf.zsh)
 brew "chafa"                       # images and GIFs in the terminal, `img`

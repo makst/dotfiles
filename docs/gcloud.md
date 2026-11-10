@@ -40,11 +40,10 @@ gcloud config set project <project-id>  # the default project; --project overrid
 ```
 
 `--update-adc` also writes the application default credentials that client libraries and local servers use,
-so `gcloud auth application-default login` isn't needed separately. For GKE clusters, add the kubectl plugin
-and fetch a cluster's credentials:
+so `gcloud auth application-default login` isn't needed separately. For GKE clusters, fetch a cluster's
+credentials (`setup_gcloud` has installed the plugin kubectl logs in with):
 
 ```zsh
-gcloud components install gke-gcloud-auth-plugin
 gcloud container clusters get-credentials <cluster> --region <region> --project <project-id>
 ```
 
@@ -98,6 +97,7 @@ Config
 | Part | Where | What it does |
 |---|---|---|
 | `gcloud-cli` cask | `Brewfile`, `kind == "work"` block | `gcloud`, `gsutil`, `bq` and a bundled Python; updates with `brew upgrade` |
+| `setup_gcloud` | `zsh/functions/gcloud.zsh` | installs the `gke-gcloud-auth-plugin` component kubectl runs to log in to GKE; without it kubectl fails and some tools (`argocd --core`) only time out. `check_mac` reports it missing |
 | PATH | `zsh/.exports` | adds `/opt/homebrew/share/google-cloud-sdk/bin`: components that `gcloud components install` adds, such as `gke-gcloud-auth-plugin`, live there |
 | Completion | `zsh/.zshdefault` | gcloud's own completion script, sourced after `compinit` when the cask is installed (~1 ms) |
 | Prompt | `config/starship.toml`, `_prompt_gcloud` in `zsh/.zshdefault` | the active project inside git repos; zsh reads it from gcloud's config files before each prompt, without starting a process |

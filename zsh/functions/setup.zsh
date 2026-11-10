@@ -128,7 +128,7 @@ function setup_dotfiles() {
   setup_machine || return
   local step
   local -a failed
-  for step in setup_brew setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
+  for step in setup_brew setup_gcloud setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_caps_lock setup_macos_defaults \
     setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
@@ -272,6 +272,8 @@ function check_mac() {
     done
     (( $#stale )) && problems+="VS Code extensions missing (${(j:, :)stale}): setup_vscode"
   fi
+  (( ! $+commands[gcloud] || $+commands[gke-gcloud-auth-plugin] )) ||
+    problems+="gcloud has no gke-gcloud-auth-plugin, so kubectl can't log in to GKE: setup_gcloud"
 
   # git, ssh and the shell
   [[ $(git -C $repo config core.hooksPath) == .githooks ]] ||
