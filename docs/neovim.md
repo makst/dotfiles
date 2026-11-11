@@ -240,7 +240,7 @@ In normal and visual mode, so `vJJ` selects across nodes.
 | `,gb` | blame for the file in a side window |
 | `,go` | open the file in the browser on the git host (GitHub); in visual mode, the selected lines |
 | `,gp` / `,gn` | open this branch's pull request / create one |
-| `,gd` / `,gD` | diff this file against HEAD / close the diff |
+| `,gd` / `,gD` | diff this file against HEAD / close the diff; a file HEAD doesn't have yet shows against an empty side, all of it added |
 | `,gr` / `,gR` | pick a commit to revert / a commit of this file |
 | `:Gitsigns <Tab>` | gitsigns' actions: stage hunk, preview, blame line, … (no keys bound) |
 

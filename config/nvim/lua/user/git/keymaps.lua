@@ -1,4 +1,4 @@
--- git.nvim's keys (,g…): blame, browse, diff, revert. Loaded by user/git/init.lua.
+-- git.nvim's keys (,g…): blame, browse, diff (through user/git/diff), revert. Loaded by user/git/init.lua.
 local status, _ = pcall(require, 'git')
 if (not status) then return end
 
@@ -12,7 +12,8 @@ map('n', '<leader>go', function() require('git.browse').open(false) end, 'Git: o
 map('x', '<leader>go', ':<C-u>lua require("git.browse").open(true)<CR>', 'Git: open these lines on the git host')
 map('n', '<leader>gp', function() require('git.browse').pull_request() end, "Git: open this branch's pull request")
 map('n', '<leader>gn', function() require('git.browse').create_pull_request() end, 'Git: create a pull request')
-map('n', '<leader>gd', function() require('git.diff').open() end, 'Git: diff this file against HEAD')
-map('n', '<leader>gD', function() require('git.diff').close() end, 'Git: close the diff')
+-- through user/git/diff, which also diffs a file HEAD doesn't have, against an empty side
+map('n', '<leader>gd', function() require('user.git.diff').open() end, 'Git: diff this file against HEAD')
+map('n', '<leader>gD', function() require('user.git.diff').close() end, 'Git: close the diff')
 map('n', '<leader>gr', function() require('git.revert').open(false) end, 'Git: pick a commit to revert')
 map('n', '<leader>gR', function() require('git.revert').open(true) end, 'Git: pick a commit of this file to revert')
