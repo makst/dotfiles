@@ -105,10 +105,56 @@ function agent() {
   _agent_window $name $PWD claude -w $name "$@"
 }
 
+# agent_ci <number>: an agent that fixes the failing checks of pull request <number> of this repo, from the
+# GitHub picker's f (cmd+g, config/github/inbox) or by hand in a clone of the repo. It makes the worktree
+# ci-<number> on a branch worktree-ci-<number> at the pull request's head (not on the pull request's own
+# branch, which is often checked out in the clone already, and git checks a branch out in one place only), then
+# starts Claude in a window as `agent` does, told which checks failed and how to read their logs with gh, to
+# commit a fix without pushing, or say the failure looks flaky. You push it with
+# `git push origin HEAD:<branch>`; agent_done ci-<number> cleans up as for any agent. Pull requests from forks
+# are refused: their branch isn't on origin.
+#   agent_ci 15607
+function agent_ci() {
+  local number=${1:?usage: agent_ci <pull request number>}
+  local main
+  main=$(_agent_main) || return
+  local name=ci-$number wt=$main/.claude/worktrees/ci-$number
+  if [[ -d $wt ]]; then
+    print -u2 "$name exists: agent_resume $name goes back to it, agent_done $name removes it"
+    return 1
+  fi
+  local pr
+  pr=$(cd $main && gh pr view $number --json title,url,headRefName,isCrossRepository \
+    --jq '[.title, .url, .headRefName, .isCrossRepository] | @tsv') || return
+  local -a fields=("${(@ps:\t:)pr}")
+  local title=$fields[1] url=$fields[2] branch=$fields[3]
+  [[ $fields[4] == false ]] || { print -u2 "#$number comes from a fork: its branch isn't on origin"; return 1 }
+  # the failing checks, each with how to read its log: GitHub Actions' links name the run. One line: the prompt
+  # is typed into the agent's window, where a newline would be Enter
+  local checks
+  checks=$(cd $main && gh pr checks $number --json name,bucket,link --jq '[.[] | select(.bucket == "fail")
+    | ((.link | capture("/actions/runs/(?<run>[0-9]+)").run) // null) as $run
+    | "\(.name) (" + (if $run then "gh run view \($run) --log-failed" else .link end) + ")"] | join("; ")' \
+    2> /dev/null)
+  [[ -n $checks ]] || { print -u2 "#$number has no failing checks"; return 1 }
+
+  print "=> fetching #$number's head"
+  git -C $main fetch -q origin pull/$number/head && git -C $main worktree add -q -b worktree-$name $wt FETCH_HEAD ||
+    return
+  local prompt="CI failed on pull request #$number ($title, $url). This worktree is at its head, on a local \
+branch worktree-$name; the pull request's branch on origin is $branch. The failing checks, each with the \
+command that prints its log (long: read the end first): $checks. Find the cause and fix it, and run the \
+same check locally if the repo lets you. Commit the fix but don't push: I review it, and you end by telling \
+me to push it with git push origin HEAD:$branch. If the failure looks flaky or has nothing to do with this \
+pull request, say so instead of changing code."
+  print "=> $name: when its fix is in, push it with: git -C $wt push origin HEAD:$branch"
+  _agent_window $name $wt claude $prompt
+}
+
 # _agent_window [--pane] <name> <dir> <command...>: runs the command in <dir>, inside tmux in a new window named
 # <name> that stays a shell once the command exits, outside tmux right here. With --pane it splits the window
 # that already has a pane in <dir> instead (the agent's own, in any session) and goes there; a new window when
-# none has. Shared by agent, agent_resume and agent_review.
+# none has. Shared by agent, agent_ci, agent_resume and agent_review.
 function _agent_window() {
   local split=0
   [[ $1 == --pane ]] && { split=1; shift }

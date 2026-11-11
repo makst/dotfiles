@@ -142,6 +142,26 @@ so it reviews what's committed: `/ship` first, it says so when there are uncommi
 the Edit and Write tools, so it reports and doesn't change code; tell the agent what's worth fixing, while it
 still has the change in its context. Its conversation isn't one of the agent's: `agent_resume` doesn't list it.
 It runs on the default model (Opus) and effort; pass `--model` or `--effort` after the name.
+Fixing a pull request's CI
+---
+```sh
+agent_ci 15607
+```
+
+`agent_ci <number>`, in a clone of the repo, or `f` on a failing pull request in the GitHub picker (`cmd+g`,
+[github](github.md#keys)): an agent named `ci-<number>` that fixes the pull request's failing checks.
+
+1. It fetches the pull request's head and makes the worktree `ci-<number>` there, on a branch
+   `worktree-ci-<number>`, then starts Claude in a window as `agent` does.
+2. Claude's first prompt names the failing checks, each with the `gh run view <run> --log-failed` that prints
+   its log, and asks it to fix the cause and commit, not push, or to say when the failure looks flaky.
+3. When it's done (green mark, notification), look at its commit and push it to the pull request:
+   `git push origin HEAD:<branch>`, which Claude repeats at the end.
+4. `agent_done --force ci-<number>`: squash-merged pull requests leave the commit out of the default branch, so
+   it doesn't count as merged. Not `agent_land`: the fix goes to the pull request, not into the default branch.
+
+It refuses a pull request without failing checks, one from a fork (its branch isn't on origin) and a second
+`ci-<number>` while the first is still there (`agent_resume ci-<number>` goes back to it).
 
 Finishing an agent
 ---
@@ -276,6 +296,7 @@ Commands
 | `agent <name> [prompt]` | Claude Code in a worktree and window of its own ([Starting an agent](#starting-an-agent)) |
 | `agent_review <name> [claude args]` | a read-only reviewer beside the agent, running `/code-review` on its branch ([Reviewing an agent](#reviewing-an-agent)) |
 | `agent_land [--no-check] <name>` | rebase, check, merge into the default branch and finish the agent ([Finishing an agent](#finishing-an-agent)) |
+| `agent_ci <number>` | an agent that fixes pull request `<number>`'s failing checks ([Fixing a pull request's CI](#fixing-a-pull-requests-ci)) |
 | `agent_done [--force] [name]` | list the agents, or finish one ([Finishing an agent](#finishing-an-agent)) |
 | `agent_resume [name \| id]` | pick or resume an agent's conversation ([Going back to an agent](#going-back-to-an-agent)) |
 | `claude_tokens [days]` | token usage and cost ([Checking token usage](#checking-token-usage)) |

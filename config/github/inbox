@@ -4,12 +4,13 @@
 # ones that ask you by name for a review and unread notifications about you, most urgent first, with the marks
 # and colours of the tmux status line. The preview shows a pull request's checks and description, or a
 # notification's thread with its comments, asked of gh each time. Enter opens it in the browser, c checks out
-# the pull request in a window of its repo's session, r marks a notification read, R reruns a pull request's
-# failed jobs. The list comes from the watcher's state file, so it opens at once and follows each run. Keys as
-# in every picker (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix g
-# (cmd+g, config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
-# `inbox --list` prints the lines alone, for fzf's reload; `inbox --preview <key>`, `inbox --read <key>`,
-# `inbox --rerun <key>`, `inbox --checkout <key>` and `inbox --label <key>` are the keys' actions.
+# the pull request in a window of its repo's session, f starts an agent that fixes its failing checks
+# (agent_ci), r marks a notification read, R reruns a pull request's failed jobs. The list comes from the
+# watcher's state file, so it opens at once and follows each run. Keys as in every picker
+# (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix g (cmd+g,
+# config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup. `inbox --list`
+# prints the lines alone, for fzf's reload; `inbox --preview <key>`, `inbox --read <key>`, `inbox --rerun
+# <key>`, `inbox --checkout <key>`, `inbox --fix <key>` and `inbox --label <key>` are the keys' actions.
 source ${0:A:h}/../tmux/picker.zsh
 
 state=${XDG_STATE_HOME:-$HOME/.local/state}/github/state.json
@@ -62,6 +63,18 @@ key() {
 }
 [[ -n $2 ]] && key $2
 
+# clone: sets dir to the clone of $repo among zoxide's directories (its origin is that GitHub repo), or says
+# there's none in tmux's message line and fails
+clone() {
+  local d
+  for d in ${(f)"$(zoxide query --list 2> /dev/null)"}; do
+    [[ $(git -C $d remote get-url origin 2> /dev/null) == *[:/]$repo(|.git) &&
+      $(git -C $d rev-parse --show-toplevel 2> /dev/null) == $d ]] && { dir=$d; return }
+  done
+  tmux display-message "no clone of $repo among zoxide's directories: clone it and cd there once"
+  return 1
+}
+
 case $1 in
   --label)
     print -r -- " $repo#$number "
@@ -103,21 +116,20 @@ case $1 in
     exit 0 ;;
   --checkout)
     [[ $kind != note || $url == */pull/<-> ]] || { tmux display-message "$repo: not a pull request"; exit 0 }
-    # the clone of the repo among zoxide's directories: its origin is that GitHub repo
-    local dir= d
-    for d in ${(f)"$(zoxide query --list 2> /dev/null)"}; do
-      [[ $(git -C $d remote get-url origin 2> /dev/null) == *[:/]$repo(|.git) &&
-        $(git -C $d rev-parse --show-toplevel 2> /dev/null) == $d ]] && { dir=$d; break }
-    done
-    if [[ -z $dir ]]; then
-      tmux display-message "no clone of $repo among zoxide's directories: clone it and cd there once"
-      exit 0
-    fi
+    clone || exit 0
     # the repo's session, named as the sessionizer (cmd+k) names it, and a window there for the pull request
     local session=${${dir:t}//[.:]/_}
     tmux has-session -t "=$session" 2> /dev/null || tmux new-session -d -s $session -c $dir
     local window=$(tmux new-window -P -F '#{window_id}' -t "=$session:" -n "pr-$number" -c $dir \
       "gh pr checkout $number; exec zsh") && tmux switch-client -t $window
+    exit 0 ;;
+  --fix)
+    # agent_ci (zsh/functions/claude.zsh) in the repo's clone, in an interactive zsh, which has the functions;
+    # it shows its progress here, then opens the agent's window. What went wrong goes to tmux's message line
+    [[ $kind == mine ]] || { tmux display-message 'f fixes the checks of your own pull requests'; exit 0 }
+    clone || exit 0
+    local error=$(cd $dir && zsh -i -c "agent_ci $number" 2>&1 > /dev/tty | grep -v "can't change option: zle")
+    [[ -z $error ]] || tmux display-message "agent_ci: ${error//$'\n'/ }"
     exit 0 ;;
 esac
 
@@ -137,12 +149,13 @@ fi
 # The action goes in double quotes: fzf fills {1} into the command already single-quoted.
 action() { print -r -- "${1}:transform:[ \"\$FZF_PROMPT\" = 'github: ' ] && echo \"${2}\" || echo 'put(${1})'" }
 choice=$(print -r -- $list | picker github --live "$self --list" \
-  --header 'Enter opens · c checks out · r marks read · R reruns failed · / filters, jj back · q quits' \
+  --header 'Enter opens · c checks out · f fixes CI · r marks read · R reruns failed · / filters · q quits' \
   --preview "$self --preview {1}" --preview-window "$picker_preview,wrap" \
   --bind "focus:transform-preview-label:$self --label {1}" \
   --bind "$(action c "become($self --checkout {1})")" \
   --bind "$(action r "execute-silent($self --read {1})+reload-sync($self --list)")" \
-  --bind "$(action R "execute-silent($self --rerun {1})")" "$@")
+  --bind "$(action R "execute-silent($self --rerun {1})")" \
+  --bind "$(action f "become($self --fix {1})")" "$@")
 [[ -z $choice ]] && exit 0
 # become (c) prints nothing; Enter prints the chosen line
 key ${choice%%$'\t'*}

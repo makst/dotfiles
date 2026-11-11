@@ -50,6 +50,7 @@ waiting for review, changes requested). It opens in normal mode, with the keys o
 | `c` | check out the pull request: a new window `pr-<number>` in its repo's session runs `gh pr checkout`; the repo must be a clone zoxide knows |
 | `r` | mark the notification read on GitHub; it leaves the list at once and the status line's mark within seconds |
 | `R` | rerun the failed jobs of your pull request's last failed run |
+| `f` | start an agent that fixes your pull request's failing checks: `agent_ci` in the repo's clone ([claude-code](claude-code.md#fixing-a-pull-requests-ci)); what goes wrong shows in tmux's message line |
 | `ctrl+/` | show / hide the preview: a pull request's checks and description, or the thread with its comments |
 
 Commands
@@ -107,6 +108,13 @@ Decisions
   is as fresh as the watcher's last run, a minute at most. Only the preview and the keys ask GitHub.
 - **`cmd+g`, though it's Ghostty's find next**: `cmd+f` already goes to tmux's search, which uses `n` and `N`,
   so Ghostty's own search keys do nothing here; g names GitHub, as j and k name the other pickers' lists.
+- **The CI agent on a branch of its own, `worktree-ci-<number>`**: the pull request's branch is often
+  checked out in the clone already, and git checks a branch out in one place only. The price is the push
+  command, `git push origin HEAD:<branch>`, as a plain `git push` refuses a branch whose name differs.
+- **The CI agent reads the logs itself**: its prompt names the failing checks and the `gh run view` that prints
+  each log, rather than carrying the logs, which run to thousands of lines and would be typed into its window.
+  `gh run view` is allowed without asking in Claude Code's settings.
+- **`R` and `f` both, not one**: a flaky test needs a rerun, not an agent; you decide which it is.
 - **launchd, not tmux's `#()`**: tmux reruns a `#()` command every status refresh and per client, and it would
   stop when tmux isn't running; the LaunchAgent runs once a minute either way.
 - **Only reviews asked of you by name**: team requests (hundreds open at a time) would turn the notifications
