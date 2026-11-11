@@ -129,7 +129,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,lg` lazygit |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `C-a P`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `mdv`, `zi`, `change_theme`, `gsw`, `gfix`, the kubectl ones) | |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `cmd+g`, `C-a P`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `mdv`, `zi`, `change_theme`, `gsw`, `gfix`, the kubectl ones) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 
 ### Same key, every layer

@@ -306,6 +306,7 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 | `~/.gitconfig` | `config/git/.gitconfig` |
 | `~/.config/git/ignore` | `config/git/ignore` |
 | `~/.config/tmux/` | `config/tmux/` |
+| `~/.config/github/` | `config/github/` |
 | `~/.config/nvim/` | `config/nvim/` |
 | `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |

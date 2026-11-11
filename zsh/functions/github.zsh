@@ -2,8 +2,9 @@
 # Shell functions for watching GitHub (docs/github.md). Sourced by .zshrc with the rest of zsh/functions/*.zsh;
 # each function's comment says what it does.
 
-# setup_github: runs config/github/watch every minute with a LaunchAgent, which notifies you when your pull
-# requests' checks or reviews change or a notification about you arrives, and keeps the tmux mark current.
+# setup_github: links ~/.config/github, where tmux finds the picker (cmd+g), and runs config/github/watch
+# every minute with a LaunchAgent, which notifies you when your pull requests' checks or reviews change or a
+# notification about you arrives, and keeps the tmux mark current.
 # launchd starts programs with a bare PATH, so the agent gets Homebrew's. Reloads the agent, so a rerun
 # picks up a moved repo.
 function setup_github() {
@@ -11,6 +12,9 @@ function setup_github() {
   local plist="$HOME/Library/LaunchAgents/$label.plist"
   local log="${XDG_STATE_HOME:-$HOME/.local/state}/github/watch.log"
   mkdir -p "$HOME/Library/LaunchAgents" "${log:h}"
+  # the picker, for tmux's binding (cmd+g)
+  mkdir -p "$HOME/.config"
+  ln -sfn "$real_script_dir/config/github" ~/.config/github
   cat > "$plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

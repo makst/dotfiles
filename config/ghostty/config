@@ -78,6 +78,8 @@ keybind = super+shift+enter=text:\x01z
 keybind = super+k=text:\x01f
 keybind = super+j=text:\x01w
 keybind = super+shift+j=text:\x01a
+# your pull requests and GitHub notifications; Ghostty's own cmd+g (next match) is unused: cmd+f is tmux's
+keybind = super+g=text:\x01g
 # the next Claude Code agent that needs you, cycling, as Space cycles panes and splits
 keybind = super+shift+space=text:\x01A
 keybind = super+f=text:\x01/

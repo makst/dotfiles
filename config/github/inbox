@@ -1,0 +1,150 @@
+#!/usr/bin/env zsh
+# Usage: inbox [fzf options]
+# What the GitHub watcher (config/github/watch) found, in a picker (docs/github.md): your pull requests, the
+# ones that ask you by name for a review and unread notifications about you, most urgent first, with the marks
+# and colours of the tmux status line. The preview shows a pull request's checks and description, or a
+# notification's thread with its comments, asked of gh each time. Enter opens it in the browser, c checks out
+# the pull request in a window of its repo's session, r marks a notification read, R reruns a pull request's
+# failed jobs. The list comes from the watcher's state file, so it opens at once and follows each run. Keys as
+# in every picker (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix g
+# (cmd+g, config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
+# `inbox --list` prints the lines alone, for fzf's reload; `inbox --preview <key>`, `inbox --read <key>`,
+# `inbox --rerun <key>`, `inbox --checkout <key>` and `inbox --label <key>` are the keys' actions.
+source ${0:A:h}/../tmux/picker.zsh
+
+state=${XDG_STATE_HOME:-$HOME/.local/state}/github/state.json
+
+# each line is "key<tab>what fzf shows"; the key is "kind|repo|number|thread id", nothing a shell would read
+# (fzf puts it into the keys' commands, which run in a shell): the url and branch come from the state file by
+# key when an action needs them. jq gives the parts,
+# with a sort key in front that orders them as the status line does (failing, asked of you, notifications,
+# ready to merge, then the rest of yours); the repo column is padded to the longest, so the titles line up
+if [[ $1 == --list ]]; then
+  lines=(${(f)"$(jq -r '
+    def short: .key | sub("^[^/]+/"; "");
+    def line($rank; $mark; $colour; $kind; $id; $status):
+      [$rank, "\($kind)|\(.repo)|\(.number)|\($id)", "\u001b[\($colour)m\($mark)\u001b[0m",
+       short, .title, $status] | @tsv;
+    (.mine[] | . + {repo: (.key | sub("#.*"; "")), number: (.key | sub(".*#"; ""))}
+      | if .checks == "FAILURE" or .checks == "ERROR" then line(1; "󰅙"; 31; "mine"; ""; "checks failed")
+        elif .checks == "SUCCESS" and .review == "APPROVED" and (.draft | not) then
+          line(4; "󰗠"; 32; "mine"; ""; "ready to merge")
+        elif .checks == "PENDING" or .checks == "EXPECTED" then line(5; "󰔟"; 36; "mine"; ""; "checks running")
+        else line(6; "󰘬"; 90; "mine"; "";
+          if .draft then "draft" elif .review == "CHANGES_REQUESTED" then "changes requested"
+          elif .review == "APPROVED" then "approved" else "waiting for review" end)
+        end),
+    (.asked[] | . + {repo: (.key | sub("#.*"; "")), number: (.key | sub(".*#"; ""))}
+      | line(2; "󰈈"; 34; "asked"; ""; "review asked of you")),
+    (.notes[] | . + {number: ((.url | capture("/(?<n>[0-9]+)$").n) // ""),
+        key: (.repo + (if (.url | test("/(pull|issues)/[0-9]+$")) then "#" + (.url | sub(".*/"; "")) else "" end))}
+      | line(3; "󰊤"; 35; "note"; .id; ({mention: "mentioned you", team_mention: "mentioned your team",
+          comment: "new comment", author: "new activity", assign: "assigned to you", state_change: "state changed",
+          manual: "subscribed"}[.reason] // .reason)))
+  ' $state 2> /dev/null | sort -s -t $'\t' -k 1,1n | cut -f 2-)"})
+  local -i width=0
+  for line in $lines; fields=("${(@ps:\t:)line}") && (( width = $#fields[3] > width ? $#fields[3] : width ))
+  for line in $lines; do
+    fields=("${(@ps:\t:)line}")
+    print -r -- "$fields[1]"$'\t'"$fields[2] ${(r:width:)fields[3]}  $fields[4]  "$'\e[90m'"$fields[5]"$'\e[0m'
+  done
+  exit 0
+fi
+
+# key <key>: sets kind, repo, number and thread from a line's key, and url and branch from the state file
+key() {
+  local -a fields=("${(@ps:|:)1}")
+  kind=$fields[1] repo=$fields[2] number=$fields[3] thread=$fields[4]
+  fields=("${(@f)$(jq -r --arg kind $kind --arg key "$repo#$number" --arg id "$thread" '
+    if $kind == "note" then .notes[] | select(.id == $id) | .url, ""
+    else .mine[], .asked[] | select(.key == $key) | .url, .branch end' $state 2> /dev/null)}")
+  url=$fields[1] branch=$fields[2]
+}
+[[ -n $2 ]] && key $2
+
+case $1 in
+  --label)
+    print -r -- " $repo#$number "
+    exit 0 ;;
+  --preview)
+    export GH_FORCE_TTY=${FZF_PREVIEW_COLUMNS:-100}
+    if [[ $kind == mine ]]; then
+      gh pr checks $number -R $repo 2>&1
+      print
+      gh pr view $number -R $repo 2>&1
+    elif [[ $kind == asked ]]; then
+      gh pr view $number -R $repo 2>&1
+    elif [[ $url == */pull/<-> ]]; then
+      gh pr view $number -R $repo --comments 2>&1
+    elif [[ $url == */issues/<-> ]]; then
+      gh issue view $number -R $repo --comments 2>&1
+    else
+      print -r -- $url
+    fi
+    exit 0 ;;
+  --read)
+    # read on GitHub, and gone from the list now instead of at the watcher's next run
+    [[ $kind == note ]] || exit 0
+    gh api -X PATCH notifications/threads/$thread > /dev/null 2>&1 || exit 1
+    jq --arg id $thread '.notes |= map(select(.id != $id))' $state > $state.new && mv $state.new $state
+    # the status line's mark follows when the watcher next runs: now
+    launchctl kickstart gui/$UID/com.makst.github-watch > /dev/null 2>&1
+    exit 0 ;;
+  --rerun)
+    [[ $kind == mine && -n $branch ]] || exit 0
+    local run=$(gh run list -R $repo -b $branch -s failure -L 1 --json databaseId --jq '.[0].databaseId // empty')
+    if [[ -z $run ]]; then
+      tmux display-message "no failed run on $repo $branch"
+    else
+      gh run rerun $run -R $repo --failed > /dev/null 2>&1 &&
+        tmux display-message "rerunning the failed jobs of $repo#$number" ||
+        tmux display-message "couldn't rerun $repo#$number's failed jobs"
+    fi
+    exit 0 ;;
+  --checkout)
+    [[ $kind != note || $url == */pull/<-> ]] || { tmux display-message "$repo: not a pull request"; exit 0 }
+    # the clone of the repo among zoxide's directories: its origin is that GitHub repo
+    local dir= d
+    for d in ${(f)"$(zoxide query --list 2> /dev/null)"}; do
+      [[ $(git -C $d remote get-url origin 2> /dev/null) == *[:/]$repo(|.git) &&
+        $(git -C $d rev-parse --show-toplevel 2> /dev/null) == $d ]] && { dir=$d; break }
+    done
+    if [[ -z $dir ]]; then
+      tmux display-message "no clone of $repo among zoxide's directories: clone it and cd there once"
+      exit 0
+    fi
+    # the repo's session, named as the sessionizer (cmd+k) names it, and a window there for the pull request
+    local session=${${dir:t}//[.:]/_}
+    tmux has-session -t "=$session" 2> /dev/null || tmux new-session -d -s $session -c $dir
+    local window=$(tmux new-window -P -F '#{window_id}' -t "=$session:" -n "pr-$number" -c $dir \
+      "gh pr checkout $number; exec zsh") && tmux switch-client -t $window
+    exit 0 ;;
+esac
+
+if [[ ! -r $state ]]; then
+  tmux display-message 'the GitHub watcher has not run yet: setup_github (docs/github.md)'
+  exit 0
+fi
+self=${0:A}
+list=$("$self" --list)
+if [[ -z $list ]]; then
+  tmux display-message 'nothing on GitHub needs you'
+  exit 0
+fi
+
+# action <key> <fzf action>: an fzf --bind that runs the action on <key> in normal mode and types the key
+# while filtering, as picker_modes does for nvim's pickers
+# The action goes in double quotes: fzf fills {1} into the command already single-quoted.
+action() { print -r -- "${1}:transform:[ \"\$FZF_PROMPT\" = 'github: ' ] && echo \"${2}\" || echo 'put(${1})'" }
+choice=$(print -r -- $list | picker github --live "$self --list" \
+  --header 'Enter opens · c checks out · r marks read · R reruns failed · / filters, jj back · q quits' \
+  --preview "$self --preview {1}" --preview-window "$picker_preview,wrap" \
+  --bind "focus:transform-preview-label:$self --label {1}" \
+  --bind "$(action c "become($self --checkout {1})")" \
+  --bind "$(action r "execute-silent($self --read {1})+reload-sync($self --list)")" \
+  --bind "$(action R "execute-silent($self --rerun {1})")" "$@")
+[[ -z $choice ]] && exit 0
+# become (c) prints nothing; Enter prints the chosen line
+key ${choice%%$'\t'*}
+[[ -n $url ]] && open $url
+exit 0

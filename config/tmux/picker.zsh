@@ -1,8 +1,8 @@
 # The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j),
-# buffers (C-a P), agent_resume, mdv, zi, change_theme, gsw, gfix and kctx/kns/klo/kex (zsh/functions/), the
-# history search (C-r) and the find keys (;f, ;r, … in zsh's normal mode; find_file and fif in .fzf.zsh), and
-# nvim's pickers (;f, ;r, …) for their keys: the agent marks, nvim's keys, and a list and preview that stay
-# current while fzf is open.
+# config/github/inbox (cmd+g), buffers (C-a P), agent_resume, mdv, zi, change_theme, gsw, gfix and
+# kctx/kns/klo/kex (zsh/functions/), the history search (C-r) and the find keys (;f, ;r, … in zsh's normal
+# mode; find_file and fif in .fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys: the agent marks, nvim's
+# keys, and a list and preview that stay current while fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")
 typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')

@@ -24,7 +24,7 @@ fail() {
 # you by name for a review; one query, one point of GraphQL's 5000 an hour
 prs=$(gh api graphql -f query='
   fragment pr on PullRequest {
-    number title url isDraft reviewDecision
+    number title url isDraft reviewDecision headRefName
     repository { nameWithOwner }
     commits(last: 1) { nodes { commit { statusCheckRollup { state } } } }
   }
@@ -34,7 +34,7 @@ prs=$(gh api graphql -f query='
       nodes { ...pr }
     }
   }' --jq '.data | map_values([.nodes[] | {key: "\(.repository.nameWithOwner)#\(.number)", title, url,
-    draft: .isDraft, review: (.reviewDecision // ""),
+    draft: .isDraft, branch: .headRefName, review: (.reviewDecision // ""),
     checks: (.commits.nodes[0].commit.statusCheckRollup.state // "")}])' 2>&1) ||
   fail "gh: ${prs//$'\n'/ }"
 

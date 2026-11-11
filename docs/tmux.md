@@ -60,14 +60,14 @@ session, window or pane.
 
 ### Pickers
 
-The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), the paste
-buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search (`C-r`,
-[zsh](zsh.md#searching-history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share their keys
-and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
-`change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode. The filter
-box stays on screen in both modes, so the list doesn't jump when you start or stop typing; the prompt shows the
-mode: `session> ` while typing, `session: ` in normal mode, where an empty filter says `/ to filter` in grey.
-A picker appears with its list already in and closes as soon as you leave it.
+The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), GitHub
+(`cmd+g`), the paste buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search
+(`C-r`, [zsh](zsh.md#searching-history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share
+their keys and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
+`change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode. The
+filter box stays on screen in both modes, so the list doesn't jump when you start or stop typing; the prompt
+shows the mode: `session> ` while typing, `session: ` in normal mode, where an empty filter says `/ to filter`
+in grey. A picker appears with its list already in and closes as soon as you leave it.
 
 ### Status bar
 
@@ -120,6 +120,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a f` | `cmd+k` | [session picker](#session-picker), ready to type ([picker keys](#picker-keys)) |
 | `C-a w` | `cmd+j` | [tree](#tree) of sessions and windows, with previews: the quickest way to switch to any of them |
 | `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. Opens in normal mode: `j`/`k` move, `/` filters ([picker keys](#picker-keys)) |
+| `C-a g` | `cmd+g` | your pull requests and GitHub notifications in a popup, most urgent first, with checks or the thread in the preview ([github](github.md#keys)) |
 | `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after; `cmd+0` back, or `cmd+shift+0` from another session |
 | `C-a /` | `cmd+f` | search the scrollback upwards (`n` / `N` for more) |
 | `C-a ,` / `C-a $` | `cmd+r` / `cmd+shift+r` | rename the window / session. The prompt opens in the status bar with the current name; `C-u` clears it |
