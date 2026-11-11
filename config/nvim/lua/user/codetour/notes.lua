@@ -20,20 +20,25 @@ local function set_highlights()
 end
 
 -- wrap(text, width) -> { 'line', … }
--- Breaks text at spaces into lines of at most width cells; a longer word gets a line of its own.
+-- Breaks text at spaces into lines of at most width cells; a longer word gets a line of its own. The note's
+-- own line breaks stay, an empty line too (notes written in user/codetour/editor have several lines).
 local function wrap(text, width)
-  local lines, line = {}, ''
-  for word in text:gmatch('%S+') do
-    if line == '' then
-      line = word
-    elseif vim.fn.strdisplaywidth(line .. ' ' .. word) <= width then
-      line = line .. ' ' .. word
-    else
-      table.insert(lines, line)
-      line = word
+  local lines = {}
+  if text:match('^%s*$') then return lines end
+  for _, paragraph in ipairs(vim.split(text, '\n', { plain = true })) do
+    local line = ''
+    for word in paragraph:gmatch('%S+') do
+      if line == '' then
+        line = word
+      elseif vim.fn.strdisplaywidth(line .. ' ' .. word) <= width then
+        line = line .. ' ' .. word
+      else
+        table.insert(lines, line)
+        line = word
+      end
     end
+    table.insert(lines, line)
   end
-  if line ~= '' then table.insert(lines, line) end
   return lines
 end
 

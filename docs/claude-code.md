@@ -163,6 +163,22 @@ agent_ci 15607
 It refuses a pull request without failing checks, one from a fork (its branch isn't on origin) and a second
 `ci-<number>` while the first is still there (`agent_resume ci-<number>` goes back to it).
 
+To review it yourself, committed or not, comment on the code in nvim and send the comments to the agent as one
+message:
+1. Open nvim in the agent's worktree (`,gd` diffs a file against HEAD; `,lg` lists the changed files).
+2. `,n` on a line opens a window below it to write the comment in, several lines if you like: `:w` saves it
+   and it shows above the line, like a code tour's note; `q` closes without saving. `,n` on a line that has
+   one opens it to change; saving it empty deletes it.
+3. `;n` lists the comments not sent yet, each previewed at its line: `Enter` goes there, `M-r` opens one in
+   the same window, `M-d` removes one.
+4. `M-p` (`p` in normal mode) pastes them all into the agent's prompt, in file and line order, each with its
+   `path:line` and the line as it read, and goes to the agent's pane. Read it, add to it, press `Enter`.
+
+The agent's pane is the Claude Code pane working in the same git root; with a reviewer beside it, `M-p` asks
+which. The comments are sent once: after `M-p` they're gone from the code, and tmux keeps the message in its
+paste buffer `review` (`C-a P`) in case the prompt was cleared. Outside tmux, or with no agent here, the
+message goes to the clipboard.
+
 Finishing an agent
 ---
 ```sh
@@ -460,6 +476,9 @@ To look out for
   a Bash command could still write; in auto mode the classifier and the sandbox stop most of that, not all.
 - **A reviewer's conversation** is told apart by its first prompt, `/code-review`: one you start by hand with
   that prompt in an agent's worktree is left out of `agent_resume` too.
+- **Review comments are a code tour named `review`**: `,n` and `;n` open it, which closes another open tour
+  (`;o` reopens that one). It lives in `.codetour/review.json`, which the global gitignore hides in every
+  repo, so the agent doesn't commit it.
 - **`agent_land` rebases the agent's branch under it**: when the agent is still working, let it finish its
   turn first, or its next edit lands on the rebased files.
 - `claude_tokens`' prices are in the function (from the `claude-api` skill, 2026-10); they matched Claude

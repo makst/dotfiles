@@ -16,10 +16,13 @@ local M = {}
 local function picker(...) return require('user.fzf-lua.config').picker(...) end
 local ansi = fzf.utils.ansi_codes
 
+-- one_line(note) -> the note's lines joined with ⏎, for a list that has one line per stop
+local function one_line(note) return (note:gsub('%s*\n%s*', ' ⏎ ')) end
+
 -- stop_line(idx, stop) -> '[1]  path/file.lua:10  ─  note'
 -- One stop as the plugin's own :CodeTour buffer shows it, so its 'codetour' syntax colours the tour preview.
 local function stop_line(idx, stop)
-  local note = stop.note ~= '' and stop.note or '(no note)'
+  local note = stop.note ~= '' and one_line(stop.note) or '(no note)'
   return string.format('[%d]  %s:%d  ─  %s', idx, vim.fn.fnamemodify(stop.file, ':~:.'), stop.lnum or 1, note)
 end
 
@@ -34,7 +37,7 @@ local function stops_list(fzf_cb)
   local stops = state.stops()
   local width = #tostring(#stops)
   for idx, stop in ipairs(stops) do
-    local note = stop.note ~= '' and stop.note or ansi.grey('(no note)')
+    local note = stop.note ~= '' and one_line(stop.note) or ansi.grey('(no note)')
     local where = string.format('%s:%d', vim.fn.fnamemodify(stop.file, ':~:.'), stop.lnum or 1)
     fzf_cb(string.format('%d\t%s  %s  %s', idx, ansi.magenta(string.format('%' .. width .. 'd', idx)), note,
       ansi.grey(where)))
@@ -97,18 +100,29 @@ local function remove_stop(selected)
   change_stops(selected, function(stops, idx) table.remove(stops, idx) end)
 end
 
+-- reword_stop(selected): the stop's note in a window of its own (user/codetour/editor), then back to the
+-- picker; saved empty, the stop goes
 local function reword_stop(selected)
   local idx = index(selected[1])
   local stop = idx and state.stops()[idx]
   if stop == nil then return end
-  local note = vim.fn.input({ prompt = 'Note: ', default = stop.note, cancelreturn = '\0' })
-  if note == '\0' then return end
-  change_stops(selected, function(stops, i) stops[i] = vim.tbl_extend('force', stops[i], { note = note }) end)
+  require('user.codetour.editor').edit({
+    text = stop.note,
+    title = string.format('stop %d · %s:%d', idx, vim.fn.fnamemodify(stop.file, ':~:.'), stop.lnum or 1),
+    on_save = function(note)
+      change_stops(selected, function(stops, i)
+        if note == '' then table.remove(stops, i) else stops[i] = vim.tbl_extend('force', stops[i], { note = note }) end
+      end)
+      fzf.resume()
+    end,
+  })
 end
 
--- stops(): the open tour's stops in order, previewed at their line. Enter jumps there; the keys to remove a
--- stop and reword its note are in user/codetour/keymaps; C-s sends them to the quickfix list like any picker.
-function M.stops()
+-- stops([extra]): the open tour's stops in order, previewed at their line. Enter jumps there; the keys to
+-- remove a stop and reword its note are in user/codetour/keymaps; C-s sends them to the quickfix list like any
+-- picker. extra = { title, actions, normal } adds a picker's own keys on top, as user/codetour/review does.
+function M.stops(extra)
+  extra = extra or {}
   state.ensure_loaded()
   local tour = state.data.active_tour
   if tour == nil then
@@ -132,13 +146,13 @@ function M.stops()
     ['ctrl-s'] = function(selected, opts) fzf_actions.file_sel_to_qf(as_file(selected), opts) end,
   }
   actions[keys.remove] = { fn = remove_stop, reload = true }
-  -- reopened afterwards, as the note is typed on nvim's command line
-  actions[keys.reword] = { reword_stop, fzf_actions.resume }
-  fzf.fzf_exec(stops_list, picker('tour ' .. tour.name, {
+  -- the picker comes back once the note is saved (reword_stop)
+  actions[keys.reword] = reword_stop
+  fzf.fzf_exec(stops_list, picker(extra.title or ('tour ' .. tour.name), {
     fzf_opts = { ['--delimiter'] = '\t', ['--with-nth'] = '2..', ['--no-sort'] = true, ['--multi'] = true },
     previewer = { _ctor = function() return StopPreviewer end },
-    actions = actions,
-  }, keys.normal))
+    actions = vim.tbl_extend('force', actions, extra.actions or {}),
+  }, extra.normal and (keys.normal .. ',' .. extra.normal) or keys.normal))
 end
 
 -- tours_list(fzf_cb): the repo's tours as "idx<tab>● name  N stops", ● on the open one

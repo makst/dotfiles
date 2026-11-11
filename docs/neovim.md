@@ -153,6 +153,7 @@ These override built-in vim keys, which is easy to forget:
 | `;e` | diagnostics |
 | `;q` | quickfix list |
 | `;o` / `;l` | code tours / the stops of the open tour, see [Code tours](#code-tours) |
+| `;n` | review comments not sent yet, `M-p` sends them to the agent, see [Code tours](#code-tours) |
 | `;t` | help tags |
 | `;?` | the keys: every key with a description, found by key or by what it does (`git`, `split`); nvim's own keys too |
 | `;;` or `;c` | reopen the last picker with its query |
@@ -265,14 +266,23 @@ In normal and visual mode, so `vJJ` selects across nodes.
 | `:CodeTour toggle-notes` | hide / show the notes |
 | `:CodeTour close` | end the tour and restore the previous quickfix list |
 | `:CodeTour create <name>`, `:CodeTour add <note>` | start a tour, add the cursor line as a stop |
+| `,n` / `;n` | the review comment on this line, new or to change / the ones not sent yet: the tour `review`, sent to the Claude Code agent with `M-p` ([Reviewing an agent](claude-code.md#reviewing-an-agent)) |
+
+A note is written in a window of its own (`,n`, `M-r`), a markdown buffer with vim's keys:
+
+| Key | What |
+|---|---|
+| `:w` (`:wq`, `ZZ`) | save the note and close the window; saved empty, the stop is deleted |
+| `q` in normal mode, `:q` | close without saving; so does leaving the window |
 
 In the tour pickers, as `M-d` / `d` in `;b`:
 
-| Key | `;o` tours | `;l` stops |
+| Key | `;o` tours | `;l` stops, `;n` review comments |
 |---|---|---|
 | `Enter` | open the tour | jump to the stop |
 | `M-d`, or `d` in normal mode | delete the tour (asks first) | remove the stop |
-| `M-r`, or `r` in normal mode | – | reword the stop's note |
+| `M-r`, or `r` in normal mode | – | change the stop's note, in the note window |
+| `M-p`, or `p` in normal mode | – | `;n` only: paste every comment into the agent's prompt and go there |
 | `C-s` | – | send the stops to the quickfix list |
 
 Config
@@ -331,6 +341,9 @@ Decisions
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
   (`docs/design.md`, "Learn it once").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.
+- **Review comments are a code tour, not a plugin of their own**: the tour already draws notes above lines,
+  follows edits and has a picker, so `,n` / `;n` add only the sending. Pasted, not submitted, so you read the
+  message in the agent's prompt first; `M-p`, not `M-s`, which is AeroSpace's.
 - **Shells and lazygit in tmux, no terminal plugin**: tmux owns terminals (`docs/design.md`, "One tool per
   job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. That includes the
   Gradle and logcat shells ([mobile](mobile.md)): nvim types its commands into them with `tmux send-keys`.

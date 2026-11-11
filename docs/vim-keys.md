@@ -75,8 +75,8 @@ In Android Studio, `,ar` runs the app and `,ax` stops it, like nvim's `,a` keys.
 
 - **`H` `J` `K` `L`** walk the syntax tree in nvim (treewalker); the IDEs keep vim's meaning (top of screen,
   join lines, …).
-- **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`), git (`,g…`), terminals (`,lg`, `,tt`, `,tm`)
-  and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
+- **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`) and review comments (`,n`, `;n`), git
+  (`,g…`), terminals (`,lg`, `,tt`, `,tm`) and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
 
 Config
 ---
