@@ -133,6 +133,7 @@ check_mac: 2 problems, each with what fixes it:
 | a new zsh and nvim start without printing errors | the error says |
 | Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
 | gh's login is valid; npm accepts each registry token in `~/.npmrc` (not from Claude Code's sandbox, where every login looks invalid) | `gh auth refresh`; `npm_gh_token` for GitHub's registry, the registry's own login for others |
+| the GitHub watcher is loaded and its last run worked | `setup_github`; the error says ([github](github.md#to-look-out-for)) |
 
 Adding a package
 ---
@@ -260,6 +261,7 @@ Each step is a function you can also run on its own.
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
 | `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
+| `setup_github` | a LaunchAgent that runs the GitHub watcher every minute: notifications and a tmux mark for your pull requests (see [github](github.md)) |
 | `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 | `setup_vscode` | links VS Code's `settings.json`, installs the extensions in `config/vscode/extensions.txt` that are missing (see [debugging](debugging.md)) |

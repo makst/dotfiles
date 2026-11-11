@@ -129,7 +129,7 @@ function setup_dotfiles() {
   local step
   local -a failed
   for step in setup_brew setup_gcloud setup_podman setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
-    setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_caps_lock setup_macos_defaults \
+    setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_github setup_caps_lock setup_macos_defaults \
     setup_window_management setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
     $step || failed+=$step
@@ -205,10 +205,10 @@ function check_dotfiles() {
 # lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, podman's VM, npm's cache, the repo's
 # git hooks, the ssh include, the login shell, that a new zsh and nvim start without errors, and the steps of
 # "A new Mac" done by hand: the ssh agent, commit signing, on a work Mac signed in to gcloud, Claude's Viewer
-# service account (docs/gcloud.md), and the logins of gh and npm's registries. --scripted leaves those out,
-# for checks/fresh_mac, which can only run the
-# scripts. Changes nothing: prints each problem with the step that fixes it and returns 1, or one line when
-# all is well. The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
+# service account (docs/gcloud.md), the logins of gh and npm's registries, and that the GitHub watcher runs
+# and works. --scripted leaves those out, for checks/fresh_mac, which can only run the scripts. Changes
+# nothing: prints each problem with the step that fixes it and returns 1, or one line when all is well.
+# The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
 function check_mac() {
   setopt local_options extended_glob
   local repo=${real_script_dir:-${${:-$HOME/.zshrc}:A:h}} dir=~/.config/dotfiles
@@ -308,6 +308,11 @@ function check_mac() {
           problems+="this Mac's signing key isn't in config/git/allowed_signers: secretive_key signing"
       fi
     fi
+    # the GitHub watcher runs every minute and its last run worked
+    launchctl print gui/$UID/com.makst.github-watch > /dev/null 2>&1 ||
+      problems+="the GitHub watcher isn't loaded, so no GitHub notifications: setup_github"
+    file=${XDG_STATE_HOME:-~/.local/state}/github/error
+    [[ ! -r $file ]] || problems+="the GitHub watcher fails ($(<$file)): docs/github.md, \"To look out for\""
     # a work Mac signed in to gcloud: Claude should act as the Viewer service account, not as you
     [[ -r $dir/kind && $(<$dir/kind) == work && -s ${CLOUDSDK_CONFIG:-~/.config/gcloud}/credentials.db ]] &&
       ! jq -e '.env.CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT' $dir/claude.json > /dev/null 2>&1 &&

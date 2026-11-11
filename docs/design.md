@@ -97,6 +97,7 @@ the tools already here can do it together.
 | Shell history | atuin | `C-r` in zsh, in the picker |
 | Git: staging, committing, history | git, with lazygit on top; delta and difftastic for diffs | `lg` and `,lg`; git's pager is delta |
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
+| Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
 | Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |
 
 1. **Join before you add.** If the tools already here can do it wired together, that is the way: nvim in a

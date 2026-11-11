@@ -31,6 +31,7 @@ lazygit, `cmd+j` shows every session.
 | Google Cloud | gcloud, bq, gsutil on work Macs; Claude Code reads, can't change | [gcloud](docs/gcloud.md) |
 | Containers | podman in a VM as `docker` and `docker compose`, no Docker Desktop | [podman](docs/podman.md) |
 | Kubernetes deploys | argocd CLI: what's deployed, healthy, in sync | [argocd](docs/argocd.md) |
+| GitHub | a watcher: notifications and a tmux mark for your pull requests' checks and reviews, mentions, comments | [github](docs/github.md) |
 | Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |

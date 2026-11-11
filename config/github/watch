@@ -1,0 +1,107 @@
+#!/bin/zsh -f
+# Usage: watch (run every minute by the LaunchAgent setup_github makes; by hand to try it)
+# Watches GitHub for what you'd otherwise keep a browser tab open for (docs/github.md): your open pull
+# requests' checks and reviews, pull requests that ask you by name for a review, and unread notifications
+# about you (a mention, a comment on your thread). Each change since the last run sends a macOS notification
+# that opens the pull request or issue when clicked, and the tmux status line shows what's open now through
+# the global option @github. Reviews asked of a team you're in are left out: they come by the hundred. The
+# first run, and the first after a day asleep, only records what's there, so you aren't flooded. Needs gh
+# (logged in) and jq; without terminal-notifier it shows no notifications, without tmux no mark.
+
+dir=${XDG_STATE_HOME:-$HOME/.local/state}/github
+state=$dir/state.json
+mkdir -p $dir
+
+# fail <message>: keeps the last good state and mark, and leaves the reason in $dir/error for check_mac
+fail() {
+  print -r -- "$(date '+%F %T') $1" > $dir/error
+  exit 1
+}
+
+(( $+commands[gh] && $+commands[jq] )) || fail 'gh or jq is missing'
+
+# your open pull requests, with the last commit's checks and the review decision, and the open ones that ask
+# you by name for a review; one query, one point of GraphQL's 5000 an hour
+prs=$(gh api graphql -f query='
+  fragment pr on PullRequest {
+    number title url isDraft reviewDecision
+    repository { nameWithOwner }
+    commits(last: 1) { nodes { commit { statusCheckRollup { state } } } }
+  }
+  query {
+    mine: search(query: "is:pr is:open author:@me archived:false", type: ISSUE, first: 50) { nodes { ...pr } }
+    asked: search(query: "is:pr is:open user-review-requested:@me archived:false", type: ISSUE, first: 50) {
+      nodes { ...pr }
+    }
+  }' --jq '.data | map_values([.nodes[] | {key: "\(.repository.nameWithOwner)#\(.number)", title, url,
+    draft: .isDraft, review: (.reviewDecision // ""),
+    checks: (.commits.nodes[0].commit.statusCheckRollup.state // "")}])' 2>&1) ||
+  fail "gh: ${prs//$'\n'/ }"
+
+# unread notifications about you from the last week; checks come from the query above, review requests too
+# (only yours by name). All pages: team review requests would push the rest past the first (~3 requests)
+since=$(date -u -v-7d +%Y-%m-%dT%H:%M:%SZ)
+notes=$(gh api --paginate "notifications?participating=true&per_page=100&since=$since" --jq '.[]
+  | select(.reason != "ci_activity" and .reason != "review_requested") | {id, reason, updated: .updated_at,
+  title: .subject.title, repo: .repository.full_name, url: (.subject.url // .repository.url
+    | sub("//api\\.github\\.com/repos/"; "//github.com/") | sub("/pulls/"; "/pull/") | sub("/commits/"; "/commit/"))}' \
+  2>&1) || fail "gh: ${notes//$'\n'/ }"
+notes=$(jq -s . <<< $notes)
+
+now=$(jq -n --argjson prs $prs --argjson notes $notes '{mine: $prs.mine, asked: $prs.asked, notes: $notes, at: now}')
+
+# what changed since the last run, one line each: group, url, subtitle, message
+if [[ -r $state ]] && jq -e '.at > now - 86400' $state > /dev/null 2>&1; then
+  changes=$(jq -r --slurpfile was $state '
+    ($was[0].mine | map({(.key): .}) | add // {}) as $old_mine
+    | ($was[0].asked | map({(.key): true}) | add // {}) as $old_asked
+    | ($was[0].notes | map({(.id): .updated}) | add // {}) as $old_notes
+    | (.mine[] | . as $pr | $old_mine[.key] as $old
+        | [if .checks != ($old.checks // "") then
+             {SUCCESS: "checks passed", FAILURE: "checks failed", ERROR: "checks failed"}[.checks] else null end,
+           if .review != ($old.review // "") then
+             {APPROVED: "approved", CHANGES_REQUESTED: "changes requested"}[.review] else null end]
+        | map(select(. != null)) | select(length > 0)
+        | [$pr.key, $pr.url, $pr.key, "\(join(", ")): \($pr.title)"]),
+      (.asked[] | select($old_asked[.key] | not) | [.key, .url, .key, "review requested: \(.title)"]),
+      (.notes[] | select($old_notes[.id] != .updated)
+        | ((.url | capture("/(?<n>[0-9]+)$").n) // "") as $n
+        | ({mention: "mentioned you", team_mention: "mentioned your team", comment: "new comment",
+            author: "new activity", assign: "assigned to you", state_change: "state changed",
+            manual: "subscribed"}[.reason] // .reason) as $why
+        | (if $n == "" then .repo else "\(.repo)#\($n)" end) as $where
+        | [$where, .url, $where, "\($why): \(.title)"])
+    | @tsv' <<< $now) || fail 'jq failed comparing with the last run'
+  if (( $+commands[terminal-notifier] )); then
+    for line in ${(f)changes}; do
+      fields=("${(@ps:\t:)line}")
+      message=$fields[4]
+      # it can't read a message that starts with one of these unless it's escaped
+      [[ $message == [-\[\(\{\"\']* ]] && message="\\$message"
+      terminal-notifier -title GitHub -subtitle $fields[3] -message $message -open $fields[2] \
+        -group "github-$fields[1]" > /dev/null 2>&1
+    done
+  fi
+fi
+print -r -- $now > $state.new && mv $state.new $state
+rm -f $dir/error
+
+# the tmux mark: red for your pull requests with failing checks, green for those approved with passing checks
+# (ready to merge), blue for reviews asked of you by name, magenta for unread notifications about you;
+# nothing when all are none
+if (( $+commands[tmux] )) && tmux list-sessions > /dev/null 2>&1; then
+  counts=(${(f)"$(jq -r '([.mine[] | select(.checks == "FAILURE" or .checks == "ERROR")] | length),
+    ([.mine[] | select(.checks == "SUCCESS" and .review == "APPROVED" and (.draft | not))] | length),
+    (.asked | length), (.notes | length)' <<< $now)"})
+  mark=
+  (( counts[1] )) && mark+="#[fg=red]󰅙 $counts[1]  "
+  (( counts[2] )) && mark+="#[fg=green]󰗠 $counts[2]  "
+  (( counts[3] )) && mark+="#[fg=blue]󰈈 $counts[3]  "
+  (( counts[4] )) && mark+="#[fg=magenta]󰊤 $counts[4]  "
+  if [[ -n $mark ]]; then
+    tmux set -g @github $mark
+  else
+    tmux set -gu @github 2> /dev/null
+  fi
+fi
+exit 0

@@ -22,11 +22,11 @@ brew "starship"                    # prompt, config/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"                        # config/tmux, setup_tmux
-brew "terminal-notifier"           # Claude Code notifications you can click, config/claude/hooks/notify.sh
+brew "terminal-notifier"           # Claude Code notifications you can click, config/claude/hooks/notify.sh, config/github/watch
 brew "vhs"                         # records the GIFs in docs/ from docs/tapes, make_gifs
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
-brew "gh"                          # GitHub CLI
+brew "gh"                          # GitHub CLI; config/github/watch asks it what changed
 brew "fzf"                         # setup_fzf
 brew "eza"                         # replaces the discontinued exa
 brew "zoxide"                      # z / zi, zsh/.zshdefault
@@ -55,7 +55,7 @@ brew "pam-reattach"                # Touch ID for sudo inside tmux, setup_touch_
 # --- Everyday tools: for you at the prompt; nothing in the repo needs one unless its comment names the user
 brew "wget"                        # downloads
 brew "gnu-sed"                     # gsed, GNU sed for scripts written for Linux
-brew "jq"                          # JSON in scripts: Claude Code hooks, status line, mds
+brew "jq"                          # JSON in scripts: Claude Code hooks, status line, mds, config/github/watch
 brew "yq"                          # jq for YAML (and TOML, XML)
 brew "shellcheck"                  # finds bugs in shell scripts
 brew "ast-grep"                    # search and rewrite code by syntax, not text
