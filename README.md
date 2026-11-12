@@ -8,10 +8,10 @@ the shells, nvim sessions and Claude Code agents, and one base16 colour scheme i
 <summary><b>Show GIF</b></summary>
 
 A quick tour: `cmd+k` opens a project as a session, `git diff` through delta, `;f` finds a file in nvim,
-`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `cmd+w` closes the nvim pane, `lg` opens
-lazygit, `cmd+j` shows every session.
+`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `cmd+w` closes the nvim pane, `gs` shows
+git status in nvim, `cmd+j` shows every session.
 
-![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, cmd+w closes the nvim pane, lg opens lazygit, cmd+j shows every session](docs/img/tour.gif)
+![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, cmd+w closes the nvim pane, gs shows git status in nvim, cmd+j shows every session](docs/img/tour.gif)
 
 </details>
 
@@ -23,7 +23,7 @@ lazygit, `cmd+j` shows every session.
 | Shell | zsh (no framework, vi mode), starship, atuin, zoxide, fnm, uv | [zsh](docs/zsh.md) |
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, fzf-lua) | [neovim](docs/neovim.md) |
-| Version control | git, delta, difftastic, lazygit, gh, Secretive (SSH keys) | [git](docs/git.md) |
+| Version control | git, delta, difftastic, fugitive (in nvim), gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
@@ -107,7 +107,6 @@ config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for
 .fzf.zsh                  fzf and fzf-tab configuration, the zsh pickers
 config/fzf/               fzfrc: the look and keys every fzf reads
 config/glow/              mdv's Markdown style
-config/lazygit/           lazygit's settings when nvim starts it (,lg)
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the pickers (sessions, windows, agents, paste buffers)
 config/nvim/              Neovim: one directory per plugin under lua/user/

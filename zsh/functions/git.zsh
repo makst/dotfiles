@@ -29,6 +29,14 @@ function gsw() {
   git switch $branch
 }
 
+# greview: the files this branch changes since it left the default branch, committed or not, in nvim's ;g
+# picker (config/nvim/lua/user/git/changes.lua): Enter opens one beside its old side to read and comment on
+# (,n), M-p sends the comments to the agent; Esc quits nvim again. zsh's ;g in normal mode runs it.
+function greview() {
+  git rev-parse --show-toplevel > /dev/null || return
+  nvim +'lua require("user.git.changes").pick({ quit = true })'
+}
+
 # gfix: commit what's staged as a fixup of a commit picked from those not yet on the upstream (or on main,
 # where there's no upstream), with the commit as the preview. `git rebase -i --autosquash <base>` folds it in.
 function gfix() {

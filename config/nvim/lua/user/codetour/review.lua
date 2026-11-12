@@ -1,6 +1,7 @@
 -- Review comments for the Claude Code agent working in this repo: each comment is a stop of the code tour
 -- "review", so it shows above its line like any tour note and follows edits. ;n lists the ones not sent yet
--- and sends them to the agent's tmux pane as one message. Used by user/codetour/keymaps (,n and ;n).
+-- and sends them to the agent's tmux pane as one message. Used by user/codetour/keymaps (,n and ;n) and
+-- user/git/changes (;g: the comment counts, M-p sends).
 local status, state = pcall(require, 'codetour.state')
 if (not status) then return {} end
 
@@ -55,6 +56,10 @@ end
 function M.comment()
   local name = vim.api.nvim_buf_get_name(0)
   if name == '' then return vim.notify('codetour: this buffer has no file', vim.log.levels.WARN) end
+  -- the old side of a diff (fugitive's, or user/git/diff's empty one) is a revision, not a file to comment on
+  if name:match('^%a+://') or vim.b.git_empty_side then
+    return vim.notify('codetour: comment on the file\'s side of the diff', vim.log.levels.WARN)
+  end
   local win, lnum = vim.api.nvim_get_current_win(), vim.api.nvim_win_get_cursor(0)[1]
   local file = require('codetour.util').canonical(name) or name
   local title = string.format('review · %s:%d', vim.fn.fnamemodify(name, ':~:.'), lnum)
@@ -177,13 +182,38 @@ local function send()
   end
 end
 
+-- has_review() -> whether there are comments not sent yet; says so when there are none
+local function has_review()
+  state.ensure_loaded()
+  if vim.tbl_contains(state.list_tours(), TOUR) then return true end
+  vim.notify('codetour: no review comments here: ,n adds one', vim.log.levels.WARN)
+end
+
+-- send_all(): the comments to the agent from outside ;n (user/git/changes, ;g's M-p)
+function M.send_all()
+  if has_review() then open_review(send) end
+end
+
+-- counts() -> { [file] = n }: how many comments not sent yet each file has, by full path, without opening the
+-- tour (user/git/changes shows them next to each changed file)
+function M.counts()
+  state.ensure_loaded()
+  local active = state.data.active_tour
+  local stops
+  if active and active.name == TOUR then
+    stops = state.stops()
+  else
+    local tour = vim.tbl_contains(state.list_tours(), TOUR) and require('codetour.storage').load_tour(TOUR)
+    stops = tour and tour.stops or {}
+  end
+  local counts = {}
+  for _, stop in ipairs(stops) do counts[stop.file] = (counts[stop.file] or 0) + 1 end
+  return counts
+end
+
 -- pick(): the comments not sent yet, as the stops picker of a tour, with one more key: send them all
 function M.pick()
-  state.ensure_loaded()
-  if not vim.tbl_contains(state.list_tours(), TOUR) then
-    vim.notify('codetour: no review comments here: ,n adds one', vim.log.levels.WARN)
-    return
-  end
+  if not has_review() then return end
   local actions = {}
   actions[keys.send] = { fn = send, desc = 'send-to-agent' }
   open_review(function()

@@ -117,7 +117,7 @@
         "g"
       ],
       "commands": [
-        "workbench.action.quickOpen"
+        "workbench.view.scm"
       ]
     },
     {

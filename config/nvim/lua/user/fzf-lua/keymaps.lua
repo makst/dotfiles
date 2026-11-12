@@ -53,10 +53,6 @@ vim.keymap.set('n', ';a', function()
   fzf.files(picker('all files', { fd_opts = '--color=never --type f --type l --hidden --no-ignore --exclude .git' }))
 end, { desc = 'Find: all files, ignored ones too' })
 
-vim.keymap.set('n', ';g', function()
-  fzf.git_files(picker('git files'))
-end, { desc = 'Find: files in git' })
-
 vim.keymap.set('n', ';s', function()
   fzf.grep_cword(picker('grep'))
 end, { desc = 'Find: the word under the cursor' })
@@ -99,7 +95,7 @@ end, { desc = 'Find: the quickfix list' })
 
 -- ;?: every key that has a desc, searchable by key or by what it does (each desc starts with its area, e.g.
 -- "Git:", "Split:"), nvim's own built-in keys included. Buffer-local keys (LSP, the file tree) show in the
--- buffers that have them. `?` lists the keys in tmux (C-a ?) and lazygit too. Enter presses the key.
+-- buffers that have them. `?` lists the keys in tmux (C-a ?), g? in fugitive's buffers. Enter presses the key.
 vim.keymap.set('n', ';?', function()
   require('user.fzf-lua.config').keys()
 end, { desc = 'Find: keys, by key or by what they do' })

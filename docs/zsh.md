@@ -108,10 +108,11 @@ Normal mode has vim's motions and operators: `dw`, `cb`, `yy`, `p`, `.` repeats,
 | `C-k` / `C-j` | normal | the same as `↑` / `↓`, on the home row (outside tmux; inside tmux these keys move between panes) |
 | `C-r` | insert | history search (atuin's history in fzf) |
 | `/` | normal | the same |
-| `;f` / `;a` / `;g` | normal | open a file in nvim: any but ignored ones / all / in git (`find_file` in `.fzf.zsh`) |
+| `;f` / `;a` | normal | open a file in nvim: any but ignored ones / all (`find_file` in `.fzf.zsh`) |
+| `;g` | normal | the branch's changed files, to review in nvim (`greview`, see [neovim](neovim.md#reviewing-a-branch)) |
 | `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
 | `;p` | normal | projects: the sessionizer (`tm`) |
-| `,lg` / `,e` | normal | lazygit / yazi |
+| `,gs` / `,e` | normal | git status in nvim (`gs`) / yazi |
 | `,tt` / `,tm` | normal | show or hide nvim's two shells for this directory, in a tmux pane below; inside one, hide it |
 | `Tab` | insert | completion through fzf, see [fzf](fzf.md#completing-with-tab-fzf-tab) |
 
@@ -122,7 +123,7 @@ Commands
 | Command | Does |
 |---|---|
 | `ll`, `la` (`l`), `lt` | eza: long listing with git status and icons; with hidden files; tree two levels deep |
-| `lg` | lazygit |
+| `gs` | git status in nvim (fugitive), see [git](git.md#staging-and-committing) |
 | `tm` | tmux session picker |
 | `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
 | `agent_review <name> [claude args]` | a read-only reviewer Claude beside the agent, running `/code-review` on its branch, see [claude-code](claude-code.md#reviewing-an-agent) |

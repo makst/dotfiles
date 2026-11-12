@@ -38,7 +38,7 @@ nnoremap <BS> <C-w>p
 
 " ; pickers (fzf-lua in nvim)
 nmap ;f <Action>(GotoFile)
-nmap ;g <Action>(GotoFile)
+nmap ;g <Action>(ActivateCommitToolWindow)
 nmap ;r <Action>(FindInPath)
 nmap ;s <Action>(FindInPath)
 nmap ;b <Action>(RecentFiles)

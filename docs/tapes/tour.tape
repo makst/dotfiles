@@ -1,5 +1,5 @@
 # A quick tour for the README: a project as a session, delta, nvim and a shell side by side, closing a pane,
-# lazygit, and the session tree. Render with `make_gifs tour`.
+# git status in nvim, and the session tree. Render with `make_gifs tour`.
 Output docs/img/tour.gif
 
 # start outside the repo, so its branch and changes don't show in the prompt
@@ -27,14 +27,14 @@ Ctrl+a Type "|" Sleep 1.2s
 Ctrl+h Sleep 1s
 Ctrl+l Sleep 1s
 
-# cmd+w: close the nvim pane (tmux asks first), so lazygit gets the whole window
+# cmd+w: close the nvim pane (tmux asks first), so git status gets the whole window
 Ctrl+h Sleep 800ms
 Ctrl+a Type "x" Sleep 1s
 Type "y" Sleep 1.2s
 
-# lazygit
-Type "lg" Enter Sleep 2.5s
-Type "q" Sleep 1s
+# gs: git status in nvim (fugitive)
+Type "gs" Enter Sleep 2.5s
+Type ":q" Enter Sleep 1s
 
 # cmd+j: every session and window as a tree, back to main
 Ctrl+a Type "w" Sleep 2s

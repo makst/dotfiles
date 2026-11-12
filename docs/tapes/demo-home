@@ -38,13 +38,6 @@ jq --arg version "$(claude --version | cut -d' ' -f1)" --arg api ${home:A}/repos
   oauthAccount: (.oauthAccount | del(.emailAddress, .displayName, .fullName, .organizationName))
 }' ~/.claude.json > $home/.claude.json
 
-# lazygit without its welcome and "breaking changes" popups, which would swallow the first keys: the two
-# lines of its state that say they were seen (not the rest, it lists recent repos)
-local lazygit=$home/Library/Application\ Support/lazygit
-mkdir -p $lazygit
-grep -E '^(startuppopupversion|lastversion):' ~/Library/Application\ Support/lazygit/state.yml \
-  > $lazygit/state.yml 2> /dev/null || true
-
 # projects for the session picker and zoxide
 local project
 for project in api website notes; do
@@ -80,7 +73,7 @@ local -i t=$(( EPOCHSECONDS - 86400 ))
 local cmd
 for cmd in 'brew upgrade' 'git status' 'nvim README.md' 'docker compose up -d' 'docker compose logs -f api' \
   'npm run dev' 'npm test' 'gh pr create --fill' 'gh pr checks' 'rg TODO' 'fd -e md' 'git log --oneline -10' \
-  'kubectl get pods' 'curl -s localhost:8080/health | jq' 'git push' 'z api' 'lg'; do
+  'kubectl get pods' 'curl -s localhost:8080/health | jq' 'git push' 'z api' 'gs'; do
   print -r -- ": $(( t += 600 )):0;$cmd"
 done > $home/.zsh_history
 HOME=$home atuin import zsh > /dev/null 2>&1

@@ -46,7 +46,7 @@ require('lazy').setup({
   'folke/flash.nvim', -- jump to any visible position with labels
   'tpope/vim-repeat',
   'lewis6991/gitsigns.nvim',
-  'dinhhuy258/git.nvim', -- For git blame & browse
+  'tpope/vim-fugitive', -- git inside nvim: :Git status, blame, diffs, commits (user/git)
 
   'MagicDuck/grug-far.nvim', -- search and replace across files
 

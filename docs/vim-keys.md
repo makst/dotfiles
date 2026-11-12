@@ -32,7 +32,8 @@ Keys
 | `C-h/j/k/l` | to the split left/down/up/right | ✓ (and tmux panes) | ✓ | ✓ | – |
 | `Space` | to the next split, cycling | ✓ | ✓ | ✓ | – |
 | `Backspace` | back to the last split | ✓ | ✓ (the previous group) | ✓ | – |
-| `;f` / `;g` | find a file / a file in git | ✓ | ✓ (both: quick open) | ✓ (both: go to file) | – |
+| `;f` | find a file | ✓ | ✓ (quick open) | ✓ (go to file) | – |
+| `;g` | the branch's changed files, to review | ✓ (since the default branch, committed or not) | ✓ (Source Control: uncommitted only) | ✓ (Commit window: uncommitted only) | – |
 | `;r` / `;s` | grep the project / the word under the cursor | ✓ | ✓ | ✓ | – |
 | `;b` | open files, most recent first | ✓ | ✓ | ✓ | – |
 | `;d` / `;w` | symbols in this file / in the project | ✓ | ✓ | ✓ | – |
@@ -76,7 +77,7 @@ In Android Studio, `,ar` runs the app and `,ax` stops it, like nvim's `,a` keys.
 - **`H` `J` `K` `L`** walk the syntax tree in nvim (treewalker); the IDEs keep vim's meaning (top of screen,
   join lines, …).
 - **Harpoon** (`;m`, `;j`, `;k`, `,m`), code tours (`;o`, `;l`) and review comments (`,n`, `;n`), git
-  (`,g…`), terminals (`,lg`, `,tt`, `,tm`) and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
+  (`,g…`), terminals (`,tt`, `,tm`) and the `,a` / `,i` / `,vo` keys that open the IDEs stay in nvim.
 
 Config
 ---
@@ -89,8 +90,8 @@ How each tool gets its vim keys:
   file, `,re` reloads it.
 - **Xcode**: Editor → Vim Mode. Motions, operators, text objects and `:` commands work; Xcode can't take
   mappings, so no leader, `jj` or `;` pickers.
-- **zsh**: vi mode, `jj` leaves insert mode. In normal mode nvim's find keys work too: `;f` / `;a` / `;g`
-  files, `;r` grep, `;p` projects, `,lg` lazygit, `,e` yazi (see [zsh](zsh.md#vi-mode)).
+- **zsh**: vi mode, `jj` leaves insert mode. In normal mode nvim's find keys work too: `;f` / `;a` files, `;g`
+  changed files, `;r` grep, `;p` projects, `,gs` git status, `,e` yazi (see [zsh](zsh.md#vi-mode)).
 - **fzf pickers** (`cmd+k`, `cmd+j`, `cmd+shift+j`, `cmd+g`, `C-a P`, `C-r`, zsh's `;` keys, `gsw`, `gfix`,
   `kctx`, `kns`, `klo`, `kex`, `agent_resume`, `mdv`, `change_theme`): a normal mode with `j`/`k`, `g`/`G`,
   `/` to filter and `jj` back from typing (see [tmux](tmux.md#picker-keys)).
@@ -109,7 +110,9 @@ How each tool gets its vim keys:
 - **glow** (`mdv`): its pager is `less` (glow's default, as nothing sets `PAGER`), so `j`/`k`, `/` and `q`.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
-- **lazygit, yazi, less, man**: `j`/`k`, `/` to search, out of the box.
+- **fugitive** (`gs`, `,gs`): its status, blame and log are nvim buffers, so all of vim's keys; its own (`s`,
+  `u`, `cc`, …) are listed by `g?`.
+- **yazi, less, man**: `j`/`k`, `/` to search, out of the box.
 
 To look out for
 ---

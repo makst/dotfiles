@@ -73,7 +73,7 @@ Keys
 | `C-t` | pick files (several with `Tab`) and insert their paths |
 | `Alt+C` | `cd` into a subdirectory |
 | `**<Tab>` | fzf completion after a command, e.g. `vim **<Tab>`, `cd **<Tab>`, `kill **<Tab>` |
-| `;f` / `;a` / `;g`, `;r`, `;p` | in normal mode: nvim's pickers in the shell, files, grep, projects ([zsh](zsh.md#vi-mode)) |
+| `;f` / `;a`, `;g`, `;r`, `;p` | in normal mode: nvim's pickers in the shell, files, the branch's changes, grep, projects ([zsh](zsh.md#vi-mode)) |
 
 ### Inside any fzf list
 

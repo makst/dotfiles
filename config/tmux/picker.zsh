@@ -89,7 +89,7 @@ function picker() {
 # stops; the prompt says which mode: "<name>> " while typing, "<name>: " in normal mode, where the empty input
 # shows "/ to filter" in grey. Events get their actions with :+, after any the caller
 # binds (fzf-lua binds start and result too).
-# ? in normal mode lists the keys, as ? does in nvim (;?), tmux and lazygit: by default it shows / hides
+# ? in normal mode lists the keys, as ? does in nvim (;?) and tmux: by default it shows / hides
 # picker_help below the list, and the list's label " ? keys " says so; [help] is another fzf action for it
 # (nvim's pickers open fzf-lua's list, which has their own keys too). While typing, ? is a character.
 function picker_modes() {

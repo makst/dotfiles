@@ -15,7 +15,7 @@ ARROWS = {s + d: name for s in (b'\x1b[', b'\x1bO')
           for d, name in ((b'A', 'Up'), (b'B', 'Down'), (b'C', 'Right'), (b'D', 'Left'))}
 PREFIX = 0x01  # C-a, the prefix in config/tmux/tmux.conf
 # programs where every key is a command, so typed letters get badges too
-APPS = {'nvim', 'lazygit'}
+APPS = {'nvim'}
 
 
 def name(data):

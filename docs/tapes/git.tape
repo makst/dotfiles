@@ -1,4 +1,4 @@
-# git in a small demo project: delta for diffs, difftastic for structural ones, lazygit.
+# git in a small demo project: delta for diffs, difftastic for structural ones, fugitive's status in nvim.
 # Render with `make_gifs git`.
 Output docs/img/git.gif
 
@@ -12,10 +12,13 @@ Type "clear" Enter
 Type "git dft" Enter Sleep 3s
 Type "clear" Enter
 
-# lg: lazygit; stage the file with Space, c to commit
-Type "lg" Enter Sleep 2.5s
-Space Sleep 1.5s
-Type "c" Sleep 1s
-Type "Trim names, add farewell" Sleep 500ms
-Enter Sleep 2s
-Type "q" Sleep 1s
+# gs: fugitive's status in nvim; gu goes to the first unstaged file, = shows its diff inline, s stages it,
+# cc writes the commit message
+Type "gs" Enter Sleep 2.5s
+Type "gu" Sleep 1s
+Type "=" Sleep 2s
+Type "s" Sleep 1.5s
+Type "cc" Sleep 1.5s
+Type "iTrim names, add farewell" Sleep 500ms
+Escape Type ":wq" Enter Sleep 2s
+Type ":q" Enter Sleep 1s

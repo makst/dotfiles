@@ -43,7 +43,6 @@ brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig
 brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
 brew "tree-sitter"                 # parser library for nvim treesitter
 brew "tree-sitter-cli"             # compiles the nvim treesitter parsers
-brew "lazygit"                     # TUI: `lg` alias, `,lg` in nvim (config/lazygit/nvim.yml)
 brew "podman"                      # containers, `docker` (~/bin/docker): setup_podman, docs/podman.md
 brew "docker-compose"              # `docker compose` on podman (docs/podman.md)
 brew "awscli"                      # aws (docs/aws.md), profiles in ~/.aws/config; brings its own zsh completion
@@ -132,3 +131,4 @@ instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(mach
 # cask "gifcapture"
 # brew "navi"            # cheatsheets on C-g; atuin, tldr and Claude Code cover it
 # brew "cmake"           # built telescope-fzf-native; fzf-lua, which replaced telescope, runs fzf itself
+# brew "lazygit"         # git TUI; fugitive in nvim (gs, ,gs) does the staging and committing, in vim buffers

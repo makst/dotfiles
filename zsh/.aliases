@@ -7,7 +7,9 @@ alias sp="spotify prev"
 # https://apple.stackexchange.com/a/110541
 alias copy_last_cmd='fc -ln -1 | awk '\''{$1=$1}1'\'' ORS='\'''\'' | pbcopy'
 
-alias lg='lazygit'
+# git status in nvim (fugitive), alone in the window: stage with s / u, commit with cc, g? for its keys. nvim's
+# ,gs opens the same in a split.
+alias gs='nvim +Git +only'
 
 # images and GIFs in the terminal: Ghostty's Kitty graphics protocol, through tmux's passthrough
 alias img='chafa'

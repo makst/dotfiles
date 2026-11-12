@@ -35,8 +35,11 @@ What it is
   own `vim.snippet`; TypeScript also gets the JavaScript ones) and words in the buffer. The first match shows
   as grey ghost text, the documentation of the selected item next to the menu, and the signature help while
   you type a function's arguments. `:BlinkCmp status` checks the setup.
-- **Git**: gitsigns marks added, changed and deleted lines in the sign column; lazygit opens in a tmux popup
-  over nvim, and a file you open in it (`e`) opens in this nvim, closing the popup.
+- **Git** ([fugitive](https://github.com/tpope/vim-fugitive)): `:Git` runs any git command; its status, blame,
+  log and commit messages are nvim buffers, so you move, search, select and yank in them as anywhere. In the
+  status (`,gs`), `s` / `u` stage and unstage the file under the cursor or the lines selected in its inline
+  diff (`=`), `cc` commits, `g?` lists the rest. gitsigns marks added, changed and deleted lines in the sign
+  column. `;g` lists what the branch changes, for reviewing it (see [Reviewing a branch](#reviewing-a-branch)).
 - **Terminals** are tmux panes: two shells per working directory (e.g. one for tests, one for anything else)
   come up in a pane below nvim and keep running while hidden ([tmux](tmux.md#what-it-is)).
 - **File tree** (nvim-tree) on the right, following the current file and the working directory.
@@ -89,6 +92,19 @@ Replacing across files
   files, case-insensitive unless the search has a capital letter. `\r` replaces in all files.
 - Or the built-in way: send matches to the quickfix list (`;r`, mark entries with `Tab`, then `C-s`) and run
   `:cdo s/old/new/ | update`.
+
+Reviewing a branch
+---
+1. `;g` (or `greview` in a shell) lists the files the branch changes since it left the default branch,
+   committed or not, new files included, as a pull request's "Files changed": the status letter, the file,
+   how many review comments it has. The preview is its diff through delta. On the default branch it lists
+   what isn't pushed yet.
+2. `Enter` opens the file beside its old side (fugitive's diff, the old side on the left): `]c` / `[c` go
+   to the next / previous change, `do` takes the old version of a change back into the file.
+3. `,n` on a line of the file's side writes a review comment ([Reviewing an
+   agent](claude-code.md#reviewing-an-agent)); the old side is a revision, so `,n` there says to comment on
+   the file instead.
+4. `;g` again for the next file; `M-p` (`p` in normal mode) sends every comment to the agent, as in `;n`.
 
 Keys
 ---
@@ -145,7 +161,7 @@ These override built-in vim keys, which is easy to forget:
 |---|---|
 | `;f` | files, including dotfiles, respecting `.gitignore` |
 | `;a` | all files, including ignored ones |
-| `;g` | files tracked by git |
+| `;g` | the files this branch changes, to review ([Reviewing a branch](#reviewing-a-branch)) |
 | `;r` | live grep |
 | `;s` | grep the word under the cursor |
 | `;b` | open buffers |
@@ -236,13 +252,15 @@ In normal and visual mode, so `vJJ` selects across nodes.
 
 | Key | Action |
 |---|---|
-| `,lg` | lazygit in a tmux popup at the working directory; `e` on a file opens it here, `q` closes it |
-| `,gb` | blame for the file in a side window |
-| `,go` | open the file in the browser on the git host (GitHub); in visual mode, the selected lines |
-| `,gp` / `,gn` | open this branch's pull request / create one |
+| `,gs` | fugitive's status in a split: `s` / `u` stage / unstage, `=` the inline diff, `cc` commit, `dv` the diff side by side, `g?` the keys, `gq` closes it |
+| `,gb` | blame in a side window: `Enter` opens the commit of the line, `~` blames from the commit before it, `gq` closes it |
+| `,go` | open the file on GitHub (`gh browse`), on this branch once it's pushed; in visual mode, the selected lines |
+| `,gp` / `,gn` | open this branch's pull request / create one (`gh pr view` / `gh pr create`, in the browser) |
 | `,gd` / `,gD` | diff this file against HEAD / close the diff; a file HEAD doesn't have yet shows against an empty side, all of it added |
-| `,gr` / `,gR` | pick a commit to revert / a commit of this file |
-| `:Gitsigns <Tab>` | gitsigns' actions: stage hunk, preview, blame line, … (no keys bound) |
+| `,gr` / `,gR` | pick a commit to revert / a commit of this file; the preview shows it through delta. `,gr` reverts it with `--no-commit`, staged for you to commit; `,gR` takes back only its change to this file, unstaged |
+| `;g` | the branch's changed files ([Reviewing a branch](#reviewing-a-branch)) |
+| `:Git <anything>` | any git command, its output in a buffer: `:Git log`, `:Git push`, `:Gclog` (commits into the quickfix list) |
+| `:Gitsigns <Tab>` | gitsigns' actions: preview, blame line, … (no keys bound; staging is fugitive's) |
 
 ### Search and replace (grug-far)
 
@@ -344,9 +362,16 @@ Decisions
 - **Review comments are a code tour, not a plugin of their own**: the tour already draws notes above lines,
   follows edits and has a picker, so `,n` / `;n` add only the sending. Pasted, not submitted, so you read the
   message in the agent's prompt first; `M-p`, not `M-s`, which is AeroSpace's.
-- **Shells and lazygit in tmux, no terminal plugin**: tmux owns terminals (`docs/design.md`, "One tool per
+- **Shells in tmux, no terminal plugin**: tmux owns terminals (`docs/design.md`, "One tool per
   job"), so they are in tmux's tree, saved across reboots, and `C-h/j/k/l` reach them. That includes the
   Gradle and logcat shells ([mobile](mobile.md)): nvim types its commands into them with `tmux send-keys`.
+- **fugitive, not lazygit**: lazygit ran in a tmux popup and needed glue (its own config, `nvim --remote`) to
+  open a file back in nvim; fugitive's status, blame, diffs and commit messages are nvim buffers, so vim's keys,
+  the quickfix list and diff mode work in them without it. lazygit was better at moving commits around and
+  drawing the branch graph, which Claude Code's rebases and `agent_land` now cover. fugitive replaced git.nvim
+  too; its GitHub links went to `gh` (`docs/design.md`, "One tool per job").
+- **`;g` is the changed files, not git's files**: `;f` already lists the same files, bar untracked ones, so
+  `;g` went to the list a review starts from.
 - **No projects picker (`;p`)**: a project is a tmux session (`cmd+k`), so moving to another one happens in
   tmux, not by changing nvim's working directory (`docs/design.md`, "One tool per job").
 - **nvim-tree in nvim, yazi in the shell, both on `,e`**: the tree stays open beside the file you edit and

@@ -48,9 +48,9 @@ fif() {
 }
 
 # The find keys in normal mode (bound in zsh/.zshdefault), nvim's in the shell: ;f files, ;a all files
-# (ignored ones too), ;g files in git, ;r grep, ;p projects, and ,lg lazygit, ,e yazi, ,tt / ,tm the shells. Each
-# but the shells puts the command it runs on the command line and runs it, so it lands in the history; what was
-# typed comes back afterwards.
+# (ignored ones too), ;g the branch's changed files (greview), ;r grep, ;p projects, and ,gs git status, ,e yazi,
+# ,tt / ,tm the shells. Each but the shells puts the command it runs on the command line and runs it, so it
+# lands in the history; what was typed comes back afterwards.
 _find_run() {
   zle push-line
   BUFFER=$1
@@ -64,10 +64,10 @@ _find_open() {
 }
 find-files-widget() { _find_open }
 find-all-files-widget() { _find_open fd --type f --type l --hidden --no-ignore --exclude .git --color never }
-find-git-files-widget() { _find_open git ls-files --cached --others --exclude-standard }
+git-review-widget() { _find_run greview }
 find-grep-widget() { _find_run fif }
 find-projects-widget() { _find_run tm }
-lazygit-widget() { _find_run lazygit }
+git-status-widget() { _find_run gs }
 yazi-widget() { _find_run yazi }
 # ,tt / ,tm: nvim's two shells in a tmux pane below (config/tmux/scratch) for this directory; inside one, they
 # hide it.
@@ -76,10 +76,10 @@ scratch-tt-widget() { ~/.config/tmux/scratch tt; zle reset-prompt }
 scratch-tm-widget() { ~/.config/tmux/scratch tm; zle reset-prompt }
 zle -N find-files-widget
 zle -N find-all-files-widget
-zle -N find-git-files-widget
+zle -N git-review-widget
 zle -N find-grep-widget
 zle -N find-projects-widget
-zle -N lazygit-widget
+zle -N git-status-widget
 zle -N yazi-widget
 zle -N scratch-tt-widget
 zle -N scratch-tm-widget

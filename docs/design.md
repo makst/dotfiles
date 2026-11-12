@@ -89,13 +89,13 @@ the tools already here can do it together.
 
 | Job | Owner | How the other tools reach it |
 |---|---|---|
-| Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers and nvim's lazygit (`,lg`) open in tmux popups, nvim's shells (`,tt`, `,tm`, Android's Gradle and logcat) in tmux panes |
+| Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers open in tmux popups, nvim's shells (`,tt`, `,tm`, Android's Gradle and logcat) in tmux panes |
 | Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`, `man` (`MANPAGER`); VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
 | Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups, zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
 | Projects | a tmux session per directory, from zoxide's list | `cmd+k` in tmux, `tm` in the shell |
 | Directories you visit | zoxide | `z`, the project picker (`cmd+k`, and `;p` in zsh's normal mode) |
 | Shell history | atuin | `C-r` in zsh, in the picker |
-| Git: staging, committing, history | git, with lazygit on top; delta and difftastic for diffs | `lg` and `,lg`; git's pager is delta |
+| Git: staging, committing, history, reviewing | git, with fugitive in nvim on top; delta and difftastic for diffs; gh for GitHub | `gs` and `,gs` (status), `;g` and `greview` (the branch's changes), nvim's `,go` / `,gp` / `,gn` through gh; git's pager and the pickers' previews are delta |
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
 | Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
 | Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |
@@ -127,7 +127,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
 | `Option` (Alt) | AeroSpace, globally; the few it leaves free reach the terminal, for keys inside a list (fzf: `alt-a` mark all, `ctrl-alt-n/p` scroll the preview; nvim's pickers: `alt-d` delete, `alt-r` reword, `alt-p` paste into the agent) | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
-| `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,lg` lazygit |
+| `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,gs` git status |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
 | `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `cmd+g`, `C-a P`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `mdv`, `zi`, `change_theme`, `gsw`, `gfix`, the kubectl ones) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
@@ -158,8 +158,11 @@ splitting and closing differ in letter from layer to layer (`,sv` / `cmd+d`, `,q
 `cmd+d` and `cmd+w` are the Mac's own keys for them, which Ghostty hands to tmux.
 `C-Space` goes to tmux in every pane, nvim's too, so nvim's completion opens with `Tab` instead.
 In zsh's completion list (fzf-tab), `[` / `]` go to the previous / next group of completions.
-`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `?` in lazygit,
-and `?` in normal mode in every picker; `ctrl+/` shows / hides a picker's preview.
+In nvim, one letter is one area: `,` plus the letter acts on it, `;` plus the letter lists it. `,m` / `;m` mark a
+file / list the marked ones (harpoon), `,n` / `;n` write a review comment / list them, `,g…` / `;g` act through
+git / list the branch's changed files.
+`?` lists the keys, searchable: `;?` in nvim (VS Code and Android Studio too), `C-a ?` in tmux, `g?` in fugitive's
+buffers, and `?` in normal mode in every picker; `ctrl+/` shows / hides a picker's preview.
 
 Decisions
 ---

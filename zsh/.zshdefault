@@ -118,8 +118,8 @@ bindkey -M vicmd '/' fzf-history-widget
 bindkey -M vicmd '^R' redo
 # nvim's find keys in normal mode (widgets in ~/.fzf.zsh): ; pickers, , leader. A lone ; or , still repeats the
 # last f/t, once KEYTIMEOUT (0.2 s) has passed without a second key.
-bindkey -M vicmd ';f' find-files-widget ';a' find-all-files-widget ';g' find-git-files-widget \
-  ';r' find-grep-widget ';p' find-projects-widget ',lg' lazygit-widget ',e' yazi-widget \
+bindkey -M vicmd ';f' find-files-widget ';a' find-all-files-widget ';g' git-review-widget \
+  ';r' find-grep-widget ';p' find-projects-widget ',gs' git-status-widget ',e' yazi-widget \
   ',tt' scratch-tt-widget ',tm' scratch-tm-widget
 # atuin makes itself the source of the grey suggestions, which starts atuin on every key press; zsh's own
 # history gives the same prefix match from memory

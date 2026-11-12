@@ -36,7 +36,7 @@ What it is
     `C-a |`, the badge says `cmd+d`. It reads the keybinds from `config/ghostty/config`, so it stays right
     when they change. Chords without a Ghostty key show as `C-a l`;
   - keys like `C-h`, `C-r`, `Enter`, `Tab` and the arrows show as they are;
-  - in nvim and lazygit, where letters are commands, letters typed in one go share a badge: `;f`, `,e`;
+  - in nvim, where letters are commands, letters typed in one go share a badge: `;f`, `,e`;
   - plain typing in the shell shows no badge, since the text appears in the pane anyway.
 
 Once per Mac
@@ -69,13 +69,13 @@ The GIFs
 ---
 | GIF | In | Shows |
 |---|---|---|
-| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, lazygit, the session tree |
+| `tour` | [README](../README.md) | a bit of everything: session picker, delta, nvim, opening and closing panes, git status in nvim, the session tree |
 | `tmux-panes` | [tmux](tmux.md#keys) | splitting, moving between and zooming panes, a new window |
 | `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, back to the last session |
 | `zsh-history` | [zsh](zsh.md#searching-history) | prefix search with the up arrow, grey suggestions, atuin |
 | `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
 | `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
-| `git` | [git](git.md#lazygit) | delta, difftastic, staging and committing in lazygit |
+| `git` | [git](git.md#staging-and-committing) | delta, difftastic, staging and committing in nvim (fugitive) |
 | `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
 
 To look out for

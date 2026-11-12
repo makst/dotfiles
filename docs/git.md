@@ -1,8 +1,8 @@
 git
 ===
 
-Plain git with current defaults, delta and difftastic for diffs, signed commits, a few aliases, lazygit for
-staging and history, and SSH keys that live in the Secure Enclave (Secretive).
+Plain git with current defaults, delta and difftastic for diffs, signed commits, a few aliases, fugitive in nvim
+for staging, committing and reviewing, and SSH keys that live in the Secure Enclave (Secretive).
 
 What it is
 ---
@@ -30,7 +30,7 @@ What it is
 - **Editor** is nvim and shows the diff below the commit message; `git difftool` and `git mergetool` open
   nvim's diff mode.
 - **In nvim**: changed lines are marked in the sign column (gitsigns), `,gb` shows blame and `,go` opens the
-  file on GitHub. See [neovim](neovim.md#git).
+  file on GitHub; `;g` lists the branch's changed files for a review. See [neovim](neovim.md#git).
 
 ### Identity
 
@@ -40,18 +40,23 @@ What it is
 email](#using-a-work-email)). Each Mac signs with its own Secretive key; GitHub verifies a work commit when
 the key is on the account that has the work email.
 
-### lazygit
+### Staging and committing
 
-`lg` in a shell, `,lg` inside nvim (a tmux popup over it; `e` on a file opens it in that nvim and closes the
-popup). The quickest way to stage hunks or single lines, write commits, rebase interactively, and browse
-branches and history. `?` shows the keys for the current panel.
+`gs` in a shell, `,gs` inside nvim: [fugitive](https://github.com/tpope/vim-fugitive)'s status, an nvim
+buffer listing what's untracked, unstaged, staged and not pushed. It opens on the `Head:` line: `gu` goes to
+the first untracked or unstaged file, `gs` to the first staged one. `s` / `u` stage and unstage the file under
+the cursor; `=` opens its diff inline, where `s` on a hunk or on lines selected with `V` stages just those.
+`cc` writes the commit message in a buffer of the same nvim (`:wq` commits, `:q` without saving doesn't),
+`ca` amends, `dv` opens the file's diff side by side. `g?` lists every key; any other git command is `:Git
+<command>`, its output in a buffer. Interactive rebases (`git rebase -i`) open nvim on the todo list:
+reorder lines with `dd` / `p`, change `pick` to `fixup` with `cw`.
 
 <details>
 <summary><b>Show GIF</b></summary>
 
-`git diff` through delta, `git dft` through difftastic, then staging and committing in lazygit.
+`git diff` through delta, `git dft` through difftastic, then staging and committing in fugitive (`gs`).
 
-![git diff through delta, git dft through difftastic, then staging and committing in lazygit](img/git.gif)
+![git diff through delta, git dft through difftastic, then staging and committing in fugitive](img/git.gif)
 
 </details>
 
@@ -156,6 +161,8 @@ Commands
 |---|---|
 | `git go <branch>` | switch to the branch, creating it if needed |
 | `gsw [branch]` | the same with a name; without one, pick a branch (local or remote, newest first) in fzf, its log as the preview (`zsh/functions/git.zsh`) |
+| `gs` | git status in nvim (fugitive), alone in the window: [Staging and committing](#staging-and-committing) |
+| `greview` | the branch's changed files in nvim's `;g` picker, to review ([neovim](neovim.md#reviewing-a-branch)) |
 | `gfix` | commit what's staged as `--fixup` of a commit picked from the branch's own, `git show` as the preview; `git rebase -i --autosquash` folds it in |
 | `git dft`, `git dlog`, `git dshow` | `diff`, `log -p`, `show` through difftastic |
 | `git get <branch>` | check out `origin/<branch>` as a tracking branch |
@@ -181,7 +188,7 @@ Config
 | `config/git/ignore` (linked to `~/.config/git/ignore`) | ignored in every repo |
 | `config/git/allowed_signers` | every Mac's signing key, for `git log --show-signature` |
 | `config/ssh/config` | included at the top of `~/.ssh/config`: Secretive's agent, the push key for GitHub and GitLab |
-| `config/lazygit/nvim.yml` | lazygit's settings when nvim's `,lg` starts it (through `LG_CONFIG_FILE`): `e` opens the file in that nvim; `lg` in a shell uses the defaults |
+| `config/nvim/lua/user/git/` | fugitive's keys and the `;g` review picker ([neovim](neovim.md#git)) |
 
 To look out for
 ---
@@ -196,6 +203,8 @@ To look out for
 
 Decisions
 ---
+- **fugitive, not lazygit**: one place for git, inside nvim, with vim's keys in every list; see
+  [neovim](neovim.md#decisions).
 - **Secretive keys, not key files**: the private halves can't be copied. The price: no backups, so a new Mac
   means new keys, and they are ECDSA P-256 (the only kind the Secure Enclave makes), which GitHub and GitLab
   accept like ed25519.

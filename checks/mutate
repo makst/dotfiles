@@ -87,7 +87,7 @@ m 'setup links from' 'a link from a missing source' "perl -0pi -e 's/^(function 
 m 'functions and settings' 'a doc names a function that does not exist' "print 'Run \`setup_nonexistent\`.' >> docs/zsh.md"
 m 'functions and settings' 'the Brewfile comment names a missing function' "print 'brew \"jq\" # used by zz_nofunc' >> Brewfile"
 m 'functions and settings' 'the machine Brewfile comment names a missing function' "print 'brew \"jq\" # used by zz_nofunc' >> config/machine/Brewfile"
-m 'aliases and functions are defined' 'a documented zsh alias removed' "perl -ni -e 'print unless /^alias lg=/' zsh/.aliases"
+m 'aliases and functions are defined' 'a documented zsh alias removed' "perl -ni -e 'print unless /^alias gs=/' zsh/.aliases"
 m 'aliases and functions are defined' 'a documented git alias removed' "perl -ni -e 'print unless /^\\tgo = /' config/git/.gitconfig"
 m "requires resolve" 'a require of a missing module' "print \"require('user.nope')\" >> config/nvim/init.lua"
 m "requires resolve" 'a Lua file nothing requires' "print 'return {}' > config/nvim/lua/user/deadfile.lua"
