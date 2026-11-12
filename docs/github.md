@@ -57,7 +57,7 @@ Commands
 ---
 | Command | What it does |
 |---|---|
-| `setup_github` | links `~/.config/github`, writes the LaunchAgent and (re)loads it; rerun after moving the repo |
+| `setup_github` | links `~/.config/github`, writes the LaunchAgent and loads it; a rerun reloads it only when the plist changed, so rerun after moving the repo |
 | `~/dotfiles/config/github/watch` | one run now, instead of waiting for the next minute |
 | `launchctl kickstart gui/$UID/com.makst.github-watch` | the same, through launchd |
 | `launchctl bootout gui/$UID/com.makst.github-watch` | stops the watcher until the next `setup_github` |
@@ -90,6 +90,9 @@ To look out for
   all be review requests and push a mention or comment off the first page. That's why the watcher reads every
   page of the last week, and why a notification older than a week isn't counted, even when unread; open your
   inbox on GitHub for those.
+- **`r`, `R` and `f` act at once and can't be taken back**: `r` marks the thread read on GitHub, `R` reruns
+  the failed jobs, `f` starts an agent. There is no question first, as these are what the picker is for;
+  `r` and `R` are a Shift apart.
 - **Running it from Claude Code**: inside Claude Code's sandbox `gh` can't read its token from the keychain and
   says the login is invalid; run the watcher with the sandbox off, or from a shell.
 - **Trying changes without real notifications**: put stand-ins for `gh`, `terminal-notifier` and `tmux` first

@@ -6,7 +6,7 @@
 # and AceJump plugins when Android Studio doesn't have them yet; that needs Android Studio closed, so a running
 # one is left alone with a note.
 function setup_ideavim() {
-  ln -sfn "$real_script_dir/config/ideavim/ideavimrc" ~/.ideavimrc
+  keep_real ~/.ideavimrc && ln -sfn "$real_script_dir/config/ideavim/ideavimrc" ~/.ideavimrc || return
   command -v studio > /dev/null || return 0
   local -a plugins=(~/Library/'Application Support'/Google/AndroidStudio*/plugins/{IdeaVIM,acejump}(N/))
   (( $#plugins == 2 )) && return 0

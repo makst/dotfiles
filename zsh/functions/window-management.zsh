@@ -7,10 +7,13 @@
 # Settings > Privacy & Security > Accessibility); from then on it starts at login (start-at-login in the config).
 function setup_window_management() {
   mkdir -p "$HOME/.config/aerospace"
-  ln -sfn "$real_script_dir/config/aerospace/aerospace.toml" "$HOME/.config/aerospace/aerospace.toml"
-  # Mission Control shows the windows of other workspaces too small without this
-  defaults write com.apple.dock expose-group-apps -bool true && killall Dock
+  keep_real ~/.config/aerospace/aerospace.toml &&
+    ln -sfn "$real_script_dir/config/aerospace/aerospace.toml" ~/.config/aerospace/aerospace.toml || return
+  # Mission Control shows the windows of other workspaces too small without this; the Dock restarts to take
+  # it, so only when it isn't set yet
+  [[ $(defaults read com.apple.dock expose-group-apps 2> /dev/null) == 1 ]] ||
+    { defaults write com.apple.dock expose-group-apps -bool true && killall Dock }
   # ctrl+cmd and drag anywhere in a window moves it; applies after logging out and in
   defaults write -g NSWindowShouldDragOnGesture -bool true
-  open -a AeroSpace
+  pgrep -xq AeroSpace || open -a AeroSpace
 }

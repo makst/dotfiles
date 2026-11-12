@@ -70,9 +70,9 @@ m 'running programs reload' 'tmux is never reloaded' "perl -pi -e 's/tmux source
 m 'running programs reload' 'everything reloads, changed or not' "perl -pi -e 's/local -i all=\\\$\\(\\( ! \\\$#files \\)\\)/local -i all=1/' zsh/functions/setup.zsh"
 m 'running programs reload' 'the hook acts in any checkout' "perl -pi -e 's/^\\[\\[ ~\\/\\.zshrc -ef .*/true/' .githooks/reload"
 m 'running programs reload' 'a branch switch reloads nothing' "perl -pi -e 's/^    \\[\\[ \\\$3 == 1 .*/    exit 0/' .githooks/reload"
-m 'skills are linked' 'a new skill is never linked' "perl -pi -e 's/^    ln -sfn \\\$skill .*/    true/' zsh/functions/claude.zsh"
+m 'skills are linked' 'a new skill is never linked' "perl -pi -e 's/^    keep_real \\\$link && ln -sfn .*/    true/' zsh/functions/claude.zsh"
 m 'skills are linked' 'every dangling link is removed' "perl -pi -e 's/ == \\\$real_script_dir\/config\/claude\/skills\/\* / == * /' zsh/functions/claude.zsh"
-m 'running programs reload' 'any mention of ln -sfn asks for setup_dotfiles' "perl -pi -e 's/-G .\\^\\[\\[:space:\\]\\]\\*ln -sfn./-G \"ln -sfn\"/' zsh/functions/setup.zsh"
+m 'running programs reload' 'any mention of keep_real asks for setup_dotfiles' "perl -pi -e 's/-G .\\^\\[\\[:space:\\]\\]\\*keep_real ./-G \"keep_real\"/' zsh/functions/setup.zsh"
 m 'status line' 'a cold cache shown as warm' "perl -pi -e 's/cache cold/cache warm/' config/claude/statusline.sh"
 m 'status line' 'the status line needs a tool not on the minimal PATH' "perl -0pi -e 's/\\n/\\nrg --version > \\/dev\\/null || exit 1\\n/' config/claude/statusline.sh"
 # --- references

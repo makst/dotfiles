@@ -213,8 +213,10 @@ has the default branch out; otherwise only the branch moves.
 `agent_done` only removes things when nothing would be lost: it stops if the worktree has uncommitted
 changes, and without `--force` if the branch has commits that aren't in the default branch. A commit counts as
 merged when it's in the local default branch or in origin's, so an agent that pushed its work straight to
-`origin/main` can be finished without pulling first. It works from anywhere in the repo, the worktree itself
-included. Claude Code locks its worktree while it runs, so `agent_done` closes the window first, which ends
+`origin/main` can be finished without pulling first. Ignored files (`.env`, `node_modules`) are in no commit,
+so a worktree that has any goes to the Trash whole instead of being removed. It works from anywhere in the
+repo, the worktree itself included. Claude Code locks its worktree while it runs, so `agent_done` closes the
+window first, which ends
 Claude, and waits a moment for the lock to go. Before deleting the branch it saves the agent's last commit in
 `refs/agents/<name>`, and the conversation stays, so [`agent_resume`](#going-back-to-an-agent) can bring the
 agent back. Tab completes the names of the repo's agent worktrees.

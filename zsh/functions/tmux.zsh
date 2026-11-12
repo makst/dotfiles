@@ -5,7 +5,7 @@
 # setup_tmux: links ~/.config/tmux and installs tpm and the plugins tmux.conf lists.
 function setup_tmux() {
   mkdir -p "$HOME/.config"
-  ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux"
+  keep_real "$HOME/.config/tmux" && ln -sfn "$real_script_dir/config/tmux" "$HOME/.config/tmux" || return
   # the config used to live in ~/.tmux.conf, which tmux would still prefer
   [[ -L ~/.tmux.conf ]] && rm ~/.tmux.conf
 

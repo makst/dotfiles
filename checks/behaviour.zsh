@@ -168,7 +168,7 @@ ghostty() { print 'Ghostty 1.4.0' }" > $t/home/.zshenv
       touch $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config,config/aerospace/aerospace.toml} &&
       $git add -A && $git commit -qm a &&
       print x | tee $t/repo/{.zshrc,Brewfile,config/tmux/tmux.conf,config/ghostty/config} > /dev/null &&
-      print "# not a link: ln -sfn" >> $t/repo/zsh/functions/setup.zsh &&
+      print "# not a link: keep_real x && ln -sfn" >> $t/repo/zsh/functions/setup.zsh &&
       $git commit -qam b
   } > /dev/null 2>&1 || { print "couldn't make the test repo"; return }
   reload() { HOME=$t/home zsh -c "real_script_dir=$t/repo; for f in $t/repo/zsh/functions/*.zsh; do source \$f; done; reload_dotfiles $1" }
@@ -203,11 +203,12 @@ check_skill_links() {
   mkdir -p $t/repo/config/claude/skills/{new,copied}/ $t/home/.Trash $s/copied
   ln -s $t/repo/config/claude/skills/gone $s/gone
   ln -s $t/home/moved $s/own
-  HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/functions/claude.zsh; link_claude_skills" ||
+  HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/functions/setup.zsh
+    source zsh/functions/claude.zsh; link_claude_skills" > /dev/null ||
     print "link_claude_skills failed"
   [[ -L $s/new && $s/new -ef $t/repo/config/claude/skills/new ]] || print "a new skill wasn't linked"
   [[ -L $s/copied ]] || print "a real copy in a skill's place wasn't replaced by the link"
-  [[ -n $(print $t/home/.Trash/claude-skill-copied-*(N)) ]] || print "the real copy didn't go to the Trash"
+  [[ -n $(print $t/home/.Trash/copied-*(N)) ]] || print "the real copy didn't go to the Trash"
   [[ -L $s/gone ]] && print "the link of a skill the repo no longer has is still there"
   [[ -L $s/own ]] || print "a link that doesn't point into the repo, dangling, was removed"
   note="4 skills"

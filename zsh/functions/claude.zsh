@@ -286,7 +286,8 @@ function agent_resume() {
 # worktree, deletes its branch and closes its tmux window, but only if nothing would be lost: no uncommitted
 # changes and the branch merged into the default branch. --force deletes an unmerged branch too (uncommitted
 # changes still stop it). Merged means in the local default branch or in origin's: an agent that pushed its
-# work straight to origin leaves the local branch behind.
+# work straight to origin leaves the local branch behind. A worktree with ignored files (.env, node_modules),
+# which are in no commit, goes to the Trash whole instead of being removed.
 function agent_done() {
   local force=0
   [[ $1 == --force ]] && { force=1; shift }
@@ -354,7 +355,19 @@ function agent_done() {
   fi
 
   [[ $PWD == $wt(|/*) ]] && cd $main
-  git -C $main worktree remove $wt || return
+  # git removes a worktree's ignored files (.env, node_modules) with it, and those are in no commit: a
+  # worktree that has any goes to the Trash whole. Where the Trash can't be written (Claude Code's sandbox),
+  # git removes it and this says what went.
+  local -a ignored=(${(f)"$(git -C $wt status --porcelain --ignored)"})
+  ignored=(${${(M)ignored:#'!! '*}#'!! '})
+  if (( $#ignored )) && mkdir -p ~/.Trash && mv $wt ~/.Trash/agent-$name-$(date +%s) 2> /dev/null; then
+    git -C $main worktree prune
+    print "$name's worktree is in the Trash, with its ignored files: ${(j:, :)ignored}"
+  else
+    git -C $main worktree remove $wt || return
+    (( $#ignored )) &&
+      print -u2 "removed for good with the worktree (the Trash can't be written): ${(j:, :)ignored}"
+  fi
   # the work is kept in refs/agents/<name>, which agent_resume re-creates the worktree from; the conversation
   # stays in ~/.claude/projects
   git -C $main update-ref -m "agent_done $name" refs/agents/$name $tip
@@ -488,8 +501,7 @@ function setup_claude() {
   local item
   for item in settings.json CLAUDE.md hooks statusline.sh; do
     # a copy Claude Code made itself goes to the Trash; the repo's version replaces it
-    [[ -e ~/.claude/$item && ! -L ~/.claude/$item ]] && mv ~/.claude/$item ~/.Trash/claude-$item-$(date +%s)
-    ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item
+    keep_real ~/.claude/$item && ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item || return
   done
   link_claude_skills
 }
@@ -505,8 +517,7 @@ function link_claude_skills() {
   for skill in $real_script_dir/config/claude/skills/*(N/); do
     link=~/.claude/skills/${skill:t}
     [[ -L $link && $link -ef $skill ]] && continue
-    [[ -e $link && ! -L $link ]] && mv $link ~/.Trash/claude-skill-${skill:t}-$(date +%s)
-    ln -sfn $skill ~/.claude/skills/${skill:t}
+    keep_real $link && ln -sfn $skill ~/.claude/skills/${skill:t}
   done
   # (-@): links whose target is gone; only the ones into this repo, the rest aren't ours to remove
   for link in ~/.claude/skills/*(N-@); do

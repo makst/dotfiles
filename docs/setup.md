@@ -238,10 +238,15 @@ Commands
 - `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
 - `check_mac` checks this Mac against the repo, see [Is this Mac up to date?](#is-this-mac-up-to-date).
 - `reload_dotfiles` reloads tmux, Ghostty and AeroSpace, see [Staying up to date](#staying-up-to-date).
+- `keep_real <path>` and `load_launch_agent <label> <plist>` are what the setup steps share: the first moves
+  a real file to the Trash before a link takes its place, the second loads a LaunchAgent only when its plist
+  changed.
 
 ### What `setup_dotfiles` does
 
-Each step is a function you can also run on its own.
+Each step is a function you can also run on its own. A step that links a file first moves a real file or
+directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and stops when it can't
+(`keep_real`), so nothing you had is replaced for good.
 
 | Function | Does |
 |---|---|
@@ -271,7 +276,8 @@ Each step is a function you can also run on its own.
 Not part of `setup_dotfiles`:
 
 - `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
-  `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so.
+  `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so. A file that
+  already says something else is copied to the Trash first; one that says the same is left alone.
 
 Config
 ---
@@ -327,6 +333,16 @@ To look out for
 ---
 - After editing the tmux plugin list: `C-a I` inside tmux.
 - `check_mac` doesn't check the macOS settings the setup makes once (key repeat, Caps Lock, the Dock).
+- **A rerun isn't a no-op for Homebrew**: `setup_brew` runs `brew bundle`, which also upgrades what is
+  installed, so `git pull && setup_dotfiles` is how the Mac gets new versions. Every other step leaves a Mac
+  that is set up as it is.
+- **Only nvim's plugins are pinned** (`lazy-lock.json`), so only they go back with `git revert`. Homebrew has
+  no lock file; tmux's plugins, VS Code's extensions, the treesitter parsers, the global `typescript` and the
+  node and python that `setup_node` and `setup_python` install are the newest at the time. After a bad
+  upgrade, the way back is the tool's own: `brew install <formula>@<version>` where there is one, a commit
+  checked out in `~/.tmux/plugins/<plugin>`, `code --install-extension <id>@<version>`.
+- **`check_mac` starts a zsh and an nvim** to see that they start clean. On a Mac that is set up this changes
+  nothing; on one that isn't, zsh fills its cache and nvim fetches lazy.nvim and the parsers.
 - On a managed work Mac, a step MDM blocks shows up in the list of failed steps at the end of `setup_dotfiles`
   (see [A new Mac](#a-new-mac), step 2).
 - For a fork, change the identity first: name and email in `config/git/.gitconfig`, the keys in

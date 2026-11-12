@@ -5,9 +5,11 @@
 # setup_git: links ~/.gitconfig and the global gitignore, and turns on this repo's hooks (.githooks), which
 # run reload_dotfiles after a pull, rebase or branch switch.
 function setup_git() {
-  ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig"
+  keep_real "$HOME/.gitconfig" &&
+    ln -sfn "$real_script_dir/config/git/.gitconfig" "$HOME/.gitconfig" || return
   mkdir -p "$HOME/.config/git"
-  ln -sfn "$real_script_dir/config/git/ignore" "$HOME/.config/git/ignore"
+  keep_real "$HOME/.config/git/ignore" &&
+    ln -sfn "$real_script_dir/config/git/ignore" "$HOME/.config/git/ignore" || return
   git -C "$real_script_dir" config core.hooksPath .githooks
 }
 

@@ -4,17 +4,17 @@
 
 # change_theme: pick a base16 scheme for nvim and Ghostty (config/ghostty/themes/base16) together.
 # tmux, fzf, bat and starship use the terminal's 16 colours, so they follow Ghostty. The list is the
-# picker's (config/tmux/picker.zsh), ready to type in: there are a few hundred schemes.
+# picker's (config/tmux/picker.zsh), ready to type in: there are a few hundred schemes. Ghostty's theme is
+# written next to the live one and checked before it replaces it, so a scheme file it can't read changes nothing.
 function change_theme() {
   local colors=~/.local/share/nvim/lazy/tinted-vim/colors
+  local theme=$real_script_dir/config/ghostty/themes/base16
   local scheme
   source $_fzf_picker
   # the best match first, as it's a name you type; the list shows it without the base16- in front
   scheme=$(print -rl -- $colors/base16-*.vim(N:t:r) | awk '{ print $0 "\t" substr($0, 8) }' |
     picker scheme --insert --sort --header 'type to filter, jj for j/k · Enter picks · Esc quits') || return
   scheme=${scheme%%$'\t'*}
-
-  print -r "vim.cmd [[colorscheme $scheme]]" >"$real_script_dir/config/nvim/lua/user/base16-vim.lua"
 
   # base16 -> ANSI the way tinted-terminal maps it
   awk -F"'" -v scheme="$scheme" '
@@ -26,7 +26,15 @@ function change_theme() {
       print "selection-background = " c["02"]; print "selection-foreground = " c["05"]
       split("00 08 0B 0A 0D 0E 0C 05 03 08 0B 0A 0D 0E 0C 07", ansi, " ")
       for (i = 1; i <= 16; i++) print "palette = " i - 1 "=" c[ansi[i]]
-    }' "$colors/$scheme.vim" > "$real_script_dir/config/ghostty/themes/base16"
+    }' "$colors/$scheme.vim" > $theme.new
+  # 22 colours, each a # and six hex digits, or the scheme's file isn't what this reads
+  if (( $(grep -cE '= ([0-9]+=)?#[0-9A-Fa-f]{6}$' $theme.new) != 22 )); then
+    print -u2 "couldn't read the colours of $colors/$scheme.vim; the theme stays as it was"
+    command rm -f $theme.new
+    return 1
+  fi
+  mv $theme.new $theme
+  print -r "vim.cmd [[colorscheme $scheme]]" > "$real_script_dir/config/nvim/lua/user/base16-vim.lua"
 
   print -r "=> $scheme: reload Ghostty with cmd+shift+, and restart nvim"
 }

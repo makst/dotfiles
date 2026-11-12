@@ -3,6 +3,35 @@
 # steps, reload_dotfiles, check_dotfiles, check_mac. Sourced by .zshrc with the rest of zsh/functions/*.zsh;
 # each function's comment says what it does.
 
+# keep_real <path>…: before a setup step links over <path>, moves a real file or directory there (not a link) to
+# the Trash as <name>-<time> (without a leading dot, so Finder shows it), so the link replaces nothing for
+# good (docs/design.md, "Safe to try"). Returns 1 and leaves it when it can't be moved, so
+# `keep_real <path> && ln -sfn …` doesn't link over it.
+function keep_real() {
+  local p
+  for p; do
+    [[ -e $p && ! -L $p ]] || continue
+    if mkdir -p ~/.Trash && mv $p ~/.Trash/${${p:t}#.}-$(date +%s); then
+      print "=> $p wasn't a link: moved to the Trash"
+    else
+      print -u2 "$p isn't a link and couldn't be moved to the Trash; move it away and rerun"
+      return 1
+    fi
+  done
+}
+
+# load_launch_agent <label> <plist text>: writes ~/Library/LaunchAgents/<label>.plist and loads it. When the
+# file already says the same and the agent is loaded it does nothing, so a rerun doesn't stop a job that is
+# running; a changed plist (a moved repo) reloads it.
+function load_launch_agent() {
+  local label=$1 text=$2 plist=~/Library/LaunchAgents/$1.plist
+  [[ -r $plist && "$(<$plist)" == "$text" ]] && launchctl print gui/$UID/$label > /dev/null 2>&1 && return 0
+  mkdir -p ${plist:h}
+  print -r -- $text > $plist
+  launchctl bootout gui/$UID/$label 2> /dev/null
+  launchctl bootstrap gui/$UID $plist
+}
+
 # setup_brew: installs the Brewfile's packages (see the Brewfile for what and why) with `brew bundle`, then
 # fix_completion_dirs, since an install can leave a completion directory zsh calls insecure.
 function setup_brew() {
@@ -39,12 +68,9 @@ function setup_caps_lock() {
 
   # hidutil mappings are lost on reboot, so re-apply it at every login
   local label="com.makst.capslock-to-ctrl"
-  local plist="$HOME/Library/LaunchAgents/$label.plist"
-  mkdir -p "$HOME/Library/LaunchAgents"
-  cat > "$plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+  load_launch_agent $label "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
   <key>Label</key>
   <string>$label</string>
@@ -58,10 +84,7 @@ function setup_caps_lock() {
   <key>RunAtLoad</key>
   <true/>
 </dict>
-</plist>
-PLIST
-  launchctl bootout "gui/$(id -u)/$label" 2> /dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$plist"
+</plist>"
 }
 
 # setup_macos_defaults: the macOS settings these dotfiles rely on, for keys held down in vim.
@@ -75,10 +98,16 @@ function setup_macos_defaults() {
 
 # setup_touch_id_sudo: Touch ID for sudo, also inside tmux (pam-reattach from the Brewfile). Uses sudo itself,
 # so it isn't part of setup_dotfiles. /etc/pam.d/sudo_local survives macOS updates, unlike /etc/pam.d/sudo.
+# Does nothing when the file already says this; a file that says something else is copied to the Trash first.
 function setup_touch_id_sudo() {
-  printf '%s\n' \
-    "auth       optional       $HOMEBREW_PREFIX/lib/pam/pam_reattach.so ignore_ssh" \
-    "auth       sufficient     pam_tid.so" | sudo tee /etc/pam.d/sudo_local > /dev/null
+  local file=/etc/pam.d/sudo_local
+  local want="auth       optional       $HOMEBREW_PREFIX/lib/pam/pam_reattach.so ignore_ssh
+auth       sufficient     pam_tid.so"
+  [[ -r $file && "$(<$file)" == "$want" ]] && return 0
+  if [[ -e $file ]]; then
+    mkdir -p ~/.Trash && cp $file ~/.Trash/sudo_local-$(date +%s) || return
+  fi
+  print -r -- $want | sudo tee $file > /dev/null
 }
 
 # setup_machine [<name> <home|work>]: this Mac's own settings, kept out of the repo in ~/.config/dotfiles. Asks
@@ -181,7 +210,7 @@ function reload_dotfiles() {
     (( $files[(I)config/ideavim/*] )) && todo+='Android Studio: `:source ~/.ideavimrc`'
     # a link added or changed in a setup step (a line that starts with it: this one only mentions it)
     # (skills aren't on the list: the claude wrapper links new ones when it starts)
-    [[ -n $(git -C $real_script_dir diff $1 HEAD -G '^[[:space:]]*ln -sfn' --name-only -- zsh/functions) ]] &&
+    [[ -n $(git -C $real_script_dir diff $1 HEAD -G '^[[:space:]]*keep_real ' --name-only -- zsh/functions) ]] &&
       todo+='links: `setup_dotfiles` makes the new ones'
   fi
 

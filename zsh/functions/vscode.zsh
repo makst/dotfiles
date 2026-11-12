@@ -14,9 +14,8 @@ function setup_vscode() {
   local user_dir=~/Library/'Application Support'/Code/User ext
   mkdir -p $user_dir
   # settings made before the link go to the Trash; the repo's version replaces them
-  [[ -e $user_dir/settings.json && ! -L $user_dir/settings.json ]] &&
-    mv $user_dir/settings.json ~/.Trash/vscode-settings-$(date +%s).json
-  ln -sfn "$real_script_dir/config/vscode/settings.json" $user_dir/settings.json
+  keep_real $user_dir/settings.json &&
+    ln -sfn "$real_script_dir/config/vscode/settings.json" $user_dir/settings.json || return
   local -a installed=(${(f)"$(code --list-extensions)"})
   for ext in ${${(f)"$(<$real_script_dir/config/vscode/extensions.txt)"}%%[[:space:]]#\#*}; do
     [[ -n $ext ]] || continue

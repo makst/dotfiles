@@ -5,20 +5,18 @@
 # setup_github: links ~/.config/github, where tmux finds the picker (cmd+g), and runs config/github/watch
 # every minute with a LaunchAgent, which notifies you when your pull requests' checks or reviews change or a
 # notification about you arrives, and keeps the tmux mark current.
-# launchd starts programs with a bare PATH, so the agent gets Homebrew's. Reloads the agent, so a rerun
-# picks up a moved repo.
+# launchd starts programs with a bare PATH, so the agent gets Homebrew's. A rerun reloads the agent only when
+# its plist changed (a moved repo), so it doesn't stop a run of the watcher (load_launch_agent).
 function setup_github() {
   local label="com.makst.github-watch"
-  local plist="$HOME/Library/LaunchAgents/$label.plist"
   local log="${XDG_STATE_HOME:-$HOME/.local/state}/github/watch.log"
-  mkdir -p "$HOME/Library/LaunchAgents" "${log:h}"
+  mkdir -p "${log:h}"
   # the picker, for tmux's binding (cmd+g)
   mkdir -p "$HOME/.config"
-  ln -sfn "$real_script_dir/config/github" ~/.config/github
-  cat > "$plist" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+  keep_real ~/.config/github && ln -sfn "$real_script_dir/config/github" ~/.config/github || return
+  load_launch_agent $label "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
   <key>Label</key>
   <string>$label</string>
@@ -40,8 +38,5 @@ function setup_github() {
   <key>StandardErrorPath</key>
   <string>$log</string>
 </dict>
-</plist>
-PLIST
-  launchctl bootout "gui/$(id -u)/$label" 2> /dev/null || true
-  launchctl bootstrap "gui/$(id -u)" "$plist"
+</plist>"
 }

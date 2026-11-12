@@ -15,7 +15,7 @@ function _podman_vm_ok() {
 # command fail like a network error. Doesn't start the VM at login: it holds its memory while it runs.
 function setup_podman() {
   mkdir -p "$HOME/bin"
-  ln -sfn /opt/homebrew/bin/podman "$HOME/bin/docker" || return
+  keep_real "$HOME/bin/docker" && ln -sfn /opt/homebrew/bin/podman "$HOME/bin/docker" || return
   _podman_vm_ok || { print "podman or the hypervisor is missing: no VM"; return 0 }
   local machine=podman-machine-default name
   # the default machine's name ends in a *

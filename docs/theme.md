@@ -38,6 +38,8 @@ To look out for
 ---
 - `change_theme` needs nvim's plugins installed, because the scheme list comes from tinted-vim.
 - Don't edit `themes/base16` by hand: the next `change_theme` overwrites it.
+- A scheme whose file `change_theme` can't read (tinted-vim changed its format) changes nothing: the new theme
+  is written next to the live one and replaces it only with all 22 colours in it.
 
 Decisions
 ---

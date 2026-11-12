@@ -6,7 +6,8 @@
 # history once, if there is one (a new Mac has none, and atuin import fails without it).
 function setup_atuin() {
   mkdir -p ~/.atuin
-  ln -sfn "$real_script_dir/config/atuin/config.toml" ~/.atuin/config.toml
+  keep_real ~/.atuin/config.toml &&
+    ln -sfn "$real_script_dir/config/atuin/config.toml" ~/.atuin/config.toml || return
   # once: copy the zsh history in, so C-r finds what was typed before atuin
   [[ -f ~/.atuin/data/history.db || ! -s ~/.zsh_history ]] || atuin import zsh
 }

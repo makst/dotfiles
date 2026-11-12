@@ -37,7 +37,8 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   table. `docs/setup.md` lists every setup step and symlink.
 - **Setup steps** are idempotent `setup_<tool>` functions in `zsh/functions/<tool>.zsh` (the Mac-wide ones and
   `setup_dotfiles` in `zsh/functions/setup.zsh`) that link from `config/` with
-  `ln -sfn "$real_script_dir/config/…" ~/…`.
+  `keep_real ~/… && ln -sfn "$real_script_dir/config/…" ~/…`: a real file in the link's place goes to the
+  Trash first.
 - **Brewfile**: one package per line with a comment saying what uses it (the config file, alias or setup
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.

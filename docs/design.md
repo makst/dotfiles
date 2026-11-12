@@ -124,17 +124,20 @@ can be run again and a change can be taken back.
 
 1. **Run it again.** Every `setup_<tool>` leaves a Mac that is already set up as it is, so `setup_dotfiles`
    is rerun after a pull, after a failed step or when in doubt, and a step that fails doesn't stop the others
-   ([setup](setup.md#what-it-is)).
-2. **Trash, don't delete.** Nothing here deletes for good: scripts move things to the Trash, a hook stops
-   Claude Code's recursive `rm` ([claude-code](claude-code.md#hooks)), and a Brewfile package that is dropped
-   stays commented out at the bottom.
+   ([setup](setup.md#what-it-is)). Homebrew is the exception: a rerun upgrades
+   ([setup](setup.md#to-look-out-for)).
+2. **Trash, don't delete.** Nothing here deletes for good: scripts move things to the Trash, a setup step
+   moves a real file there before it links over it (`keep_real`), a hook stops Claude Code's recursive `rm`
+   ([claude-code](claude-code.md#hooks)), and a Brewfile package that is dropped stays commented out at the
+   bottom.
 3. **Looking changes nothing.** What reports on state only reports: `check_dotfiles` and `check_mac` print
    each problem with the step that fixes it and leave the fixing to you, Claude Code reads AWS and Google
    Cloud but can't change them ([aws](aws.md), [gcloud](gcloud.md)), and `agent_done` removes a worktree only
    when nothing would be lost ([claude-code](claude-code.md#finishing-an-agent)).
-4. **One step back.** A change is made on a branch (an agent's in a worktree of its own), versions are pinned
-   (`lazy-lock.json`) so an update is a commit, and swapping something familiar for something new goes in a
-   commit of its own, so `git revert` brings the old one back and keeps the rest.
+4. **One step back.** A change is made on a branch (an agent's in a worktree of its own), nvim's plugins are
+   pinned (`lazy-lock.json`) so an update is a commit, and swapping something familiar for something new goes in a
+   commit of its own, so `git revert` brings the old one back and keeps the rest. What isn't pinned is
+   listed ([setup](setup.md#to-look-out-for)).
 5. **The live setup stays valid.** The config files are links into this repo, so an edit is live at once:
    each step leaves them loadable (`zsh -n`, `jq -e .`), and keys and anything interactive are tried in a tmux
    server of their own (`tmux -L probe`) before the running one gets them.
@@ -159,7 +162,7 @@ remembered, so a rule here is checked by `check_dotfiles`, or is listed as not c
 | One search away | each file's top comment, every nvim key in a `keymaps.lua` with a desc, the links, paths and names in the docs, setup steps and symlinks against `docs/setup.md` | that a thing is defined only once |
 | Same shape, every page | the order of a page's sections, the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions |
 | One tool per job | no zsh file runs `fzf` itself | a second tool for any other job in the table |
-| Safe to try | the hook blocks every recursive `rm`, no code deletes for good, nvim's plugins are pinned, every config file parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once), that a replacement has its own commit |
+| Safe to try | the hook blocks every recursive `rm`, no code deletes for good, every link the setup makes keeps a real file (`keep_real`), nvim's plugins are pinned, every config file parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once), that a replacement has its own commit |
 | A rule has a check | `checks/mutate`, by hand | that this table is complete |
 
 Keys

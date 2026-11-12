@@ -5,7 +5,7 @@
 # setup_fzf: links ~/.fzf.zsh, which zsh sources. fzf, eza (improved file/directory listing), bat (cat with
 # syntax highlighting) and lesspipe (display more with less) come from the Brewfile.
 function setup_fzf() {
-  ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh"
+  keep_real "$HOME/.fzf.zsh" && ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh" || return
 }
 
 # mdv [dir|file]: pick a markdown file under dir (default: here) and read it rendered in glow's pager; a file

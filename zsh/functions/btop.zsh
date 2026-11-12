@@ -5,5 +5,6 @@
 # setup_btop: links btop's config, which sets vim keys and the terminal's colours.
 function setup_btop() {
   mkdir -p ~/.config/btop
-  ln -sfn "$real_script_dir/config/btop/btop.conf" ~/.config/btop/btop.conf
+  keep_real ~/.config/btop/btop.conf &&
+    ln -sfn "$real_script_dir/config/btop/btop.conf" ~/.config/btop/btop.conf || return
 }

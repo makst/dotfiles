@@ -5,6 +5,6 @@
 # setup_readline: vi mode in the REPLs: links ~/.inputrc for GNU readline (bash, psql) and ~/.editrc for
 # libedit (sqlite3, lldb, python).
 function setup_readline() {
-  ln -sfn "$real_script_dir/config/readline/inputrc" ~/.inputrc
-  ln -sfn "$real_script_dir/config/readline/editrc" ~/.editrc
+  keep_real ~/.inputrc && ln -sfn "$real_script_dir/config/readline/inputrc" ~/.inputrc || return
+  keep_real ~/.editrc && ln -sfn "$real_script_dir/config/readline/editrc" ~/.editrc || return
 }

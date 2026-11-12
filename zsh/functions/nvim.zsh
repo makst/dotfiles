@@ -5,10 +5,10 @@
 # setup_nvim: links ~/.config/nvim, makes `vim` run nvim, installs the plugin versions in lazy-lock.json and
 # the treesitter parsers; fails when nvim's start prints an error.
 function setup_nvim() {
-  ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim"
+  keep_real "$HOME/.config/nvim" && ln -sfn "$real_script_dir/config/nvim" "$HOME/.config/nvim" || return
   mkdir -p "$HOME/bin"
   # `vim` runs nvim, also where aliases don't (git's core.editor = vim)
-  ln -sfn /opt/homebrew/bin/nvim "$HOME/bin/vim"
+  keep_real "$HOME/bin/vim" && ln -sfn /opt/homebrew/bin/nvim "$HOME/bin/vim" || return
 
   # plugins: lazy.nvim bootstraps itself on first start; install the versions pinned in
   # config/nvim/lazy-lock.json (needs network)

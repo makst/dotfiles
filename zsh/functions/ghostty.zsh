@@ -5,6 +5,8 @@
 # setup_ghostty: links Ghostty's config and the base16 theme change_theme writes.
 function setup_ghostty() {
   mkdir -p "$HOME/.config/ghostty"
-  ln -sfn "$real_script_dir/config/ghostty/config" "$HOME/.config/ghostty/config"
-  ln -sfn "$real_script_dir/config/ghostty/themes" "$HOME/.config/ghostty/themes"
+  keep_real "$HOME/.config/ghostty/config" &&
+    ln -sfn "$real_script_dir/config/ghostty/config" "$HOME/.config/ghostty/config" || return
+  keep_real "$HOME/.config/ghostty/themes" &&
+    ln -sfn "$real_script_dir/config/ghostty/themes" "$HOME/.config/ghostty/themes" || return
 }

@@ -1,7 +1,8 @@
 # Safety checks: nothing the repo publishes can hurt the user or a Mac that takes it: no secret (a token, a
 # private key), no real email address, the private files stay out of git, config/claude (~/.claude on any
 # machine, docs/claude-code.md) names nothing of this Mac or this repo, nothing reaches for Intel Homebrew or
-# Rosetta, and no code deletes what can't be put back. Sourced by check_dotfiles; lib.zsh has the helpers.
+# Rosetta, no code deletes what can't be put back, and no setup step links over a real file. Sourced by
+# check_dotfiles; lib.zsh has the helpers.
 
 # secrets: no file holds a token or a private key. Prints the kind and where, never the secret itself, so it
 # doesn't land in CI's log either.
@@ -79,9 +80,25 @@ check_deletes() {
 }
 
 group "Safety: nothing published can hurt the user or a Mac"
+# links: `ln -sf` replaces a real file for good, so a setup step's link comes after keep_real, which moves
+# one to the Trash (docs/design.md, "Safe to try"): on the same line, or on the line before, ending in &&.
+# A link behind a test of its own ([[ … ]] || ln) is left to that test.
+check_links_keep() {
+  awk '
+    FNR == 1 { prev = "" }
+    /^[[:space:]]*ln -s/ && prev !~ /^[[:space:]]*keep_real .*&&[[:space:]]*$/ {
+      print FILENAME ":" FNR ": links without keep_real: a real file there would be replaced for good"
+    }
+    { prev = $0 }
+  ' zsh/functions/*.zsh
+  local -a links=(${(f)"$(grep -h '^[^#]*ln -sfn' zsh/functions/*.zsh)"})
+  note=$(count $#links link)
+}
+
 check "no tokens or private keys" check_secrets
 check "only example and noreply email addresses" check_emails
 check "the private files are ignored and untracked" check_private
 check "config/claude names nothing of this Mac or repo" check_claude_global
 check "nothing reaches for Intel Homebrew or Rosetta" check_arm64
 check "no code deletes for good" check_deletes
+check "every link the setup makes keeps a real file" check_links_keep
