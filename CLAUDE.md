@@ -31,10 +31,10 @@ symlinks into this repo, so an edit here changes the running setup immediately, 
 session (`config/claude/settings.json`). Keep the config valid at every step; check JSON with `jq -e .`.
 
 ## When changing something
-- **Docs move with the config.** Every change updates `docs/<tool>.md` in the same commit: what it does and
-  why, keys in tables, in the section `docs/design.md`, "Same shape, every page", gives it (a new page follows
-  that order). A new tool or layer also goes in the README table. `docs/setup.md` lists every setup step and
-  symlink.
+- **Docs move with the config** (`docs/design.md`, "Same shape, every page"): every change updates
+  `docs/<tool>.md` in the same commit: what it does and why, keys in tables, in the section that page gives it
+  (a new page follows that order), and nothing that isn't built. A new tool or layer also goes in the README
+  table. `docs/setup.md` lists every setup step and symlink.
 - **Setup steps** are idempotent `setup_<tool>` functions in `zsh/functions/<tool>.zsh` (the Mac-wide ones and
   `setup_dotfiles` in `zsh/functions/setup.zsh`) that link from `config/` with
   `ln -sfn "$real_script_dir/config/…" ~/…`.
@@ -42,17 +42,25 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   function). Native arm64 only. Dropped packages stay commented out at the bottom, with the reason when it
   isn't obvious.
 - **Learn it once**: every key follows the design principle in `docs/design.md`, "Learn it once": vim is the
-  grammar, the key names the action and the modifier the layer, nvim is the reference, one picker. A new tool
-  or TUI gets vim keys (by config if its own don't follow) or an entry saying why it can't; a new list to
-  choose from goes through `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
+  grammar, the key names the action and the modifier the layer, nvim is the reference. A new tool or TUI gets
+  vim keys (by config if its own don't follow) or an entry saying why it can't.
 - **One search away**: every file and list follows `docs/design.md`, "One search away": a thing of one kind
   goes in the file named for that kind (nvim: `lua/user/<plugin>/keymaps.lua` for keys, `config.lua` for
   setup), each tool's parts are named for the tool (`config/<tool>/`, `docs/<tool>.md`, `setup_<tool>`), each
   thing is defined once and referred to by file and section, a file's top comment names who uses it, and state
-  worth checking opens in the picker with a preview. Say where a change breaks this and why.
+  worth checking opens in a list with a preview.
 - **One tool per job**: before adding a tool, plugin or script, follow `docs/design.md`, "One tool per job":
   look up the job's owner in its table and hand the job to it (nvim in a tmux pane, `$EDITOR`, `picker`)
-  rather than adding a second way to do it; a new job gets a row. Say where a change keeps its own copy and why.
+  rather than adding a second way to do it; a new job gets a row. A new list to choose from goes through
+  `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
+- **Safe to try**: every change follows `docs/design.md`, "Safe to try": a setup step can be run again, nothing
+  deletes for good, what reports on state changes nothing, and a swap of something familiar goes in a commit
+  of its own so it can be reverted.
+- **A rule has a check**: a new rule follows `docs/design.md`, "A rule has a check": it gets a check in
+  `checks/` in the same commit, failing for what breaks the setup and warning for what drifts, or a line in
+  that section's "Not checked" column.
+- **Exceptions say why** (`docs/design.md`, "Exceptions say why"): where a change can't follow a principle,
+  say so and write the reason where that section's table puts it.
 - **Key families**: before adding any key or command (navigation, editing, windows, anything), look for the
   family it belongs to, in `docs/design.md`, "Same key, every layer", and in the existing bindings of every
   layer, and reuse it: the same key with the layer's modifier, the same verb for the same action (next,

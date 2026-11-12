@@ -361,7 +361,7 @@ Decisions
 ---
 - **Language servers from the Brewfile, not Mason**: like every other tool, so `brew upgrade` updates them.
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
-  (`docs/design.md`, "Learn it once").
+  (`docs/design.md`, "One tool per job").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.
 - **Review comments are a code tour, not a plugin of their own**: the tour already draws notes above lines,
   follows edits and has a picker, so `,n` / `;n` add only the sending. Pasted, not submitted, so you read the

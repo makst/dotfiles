@@ -98,8 +98,7 @@ To look out for
 ---
 - `.fzf.zsh` is loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
 - `C-t`, `Alt+C` and fzf-tab are plain fzf, not the [picker](tmux.md#picker-keys): no normal mode, so `jj` and
-  `j`/`k` don't work there (type to filter, the arrow keys move). They stay because `C-t` takes several paths with
-  `Tab` and fzf-tab works inside the command line ([design](design.md#learn-it-once), "One picker").
+  `j`/`k` don't work there (type to filter, the arrow keys move); why is in [Decisions](#decisions).
 - In `mdv`, code blocks are plain: glow's highlighter only takes fixed colours.
 
 Decisions
@@ -110,4 +109,7 @@ Decisions
 - **fzf's options in a file, not in the environment**: an edit to `fzfrc` shows in the next fzf, without a new
   shell or restarting tmux. The tmux server keeps the environment it started with, and the options used to
   live there.
+- **`C-t`, `Alt+C` and fzf-tab stay plain fzf, not the picker**: `C-t` and `Alt+C` pick several paths with
+  `Tab` and put them on the command line, and fzf-tab completes inside it, which the picker (one line, its own
+  window) can't do. Every other list goes through the picker (`docs/design.md`, "One tool per job").
 - **glow's own style in 16 colours**, so `mdv` follows the theme like everything else.

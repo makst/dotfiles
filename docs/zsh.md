@@ -218,7 +218,7 @@ Decisions
 - **Plugins from Homebrew**, so `brew upgrade` updates them with everything else.
 - **Grey suggestions from zsh's history, not atuin's**: atuin would start itself on every key press.
 - **atuin's history in fzf, not atuin's own list**: one picker for every list
-  (`docs/design.md`, "Learn it once").
+  (`docs/design.md`, "One tool per job").
 - **History stays on this Mac**: atuin's sync needs an account (`atuin register`) and is off; its AI key (`?`)
   isn't bound.
 - **fnm isn't cached** like the other tools: it makes a link per shell.

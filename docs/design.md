@@ -1,13 +1,28 @@
 design
 ===
 
-The principles every key, file and page here follows, and the two keyboard tables that apply them. The README
-sums them up; this page is where they are defined, and where a change that can't follow one says why.
+The principles every key, file, page and change here follows, and the two keyboard tables that apply them.
+The README sums them up; this page is where they are defined, and where a change that can't follow one says
+why.
 
 What it is
 ---
-Four principles, one per question a newcomer asks: how do I move (Learn it once), where is it (One search
-away), where on the page (Same shape, every page), which tool does it (One tool per job).
+Six principles, one per question: how the keys work (Learn it once), where a thing is (One search away),
+where on its page (Same shape, every page), which tool does it (One tool per job), what happens when it goes
+wrong (Safe to try) and what keeps a rule true (A rule has a check). One rule holds under all six.
+
+### Exceptions say why
+Something that can't follow a principle says what it does instead and why, in the place where the rule would
+be looked up, so the gap is a decision and not an accident.
+
+| Principle | Where the reason goes |
+|---|---|
+| Learn it once | the cell of the key table ([Same key, every layer](#same-key-every-layer)), or the tool's entry in [vim keys](vim-keys.md), as for Xcode |
+| One search away | the file's top comment, or its doc |
+| Same shape, every page | the page's Decisions |
+| One tool per job | the page's Decisions, as VS Code has for debugging ([debugging](debugging.md#decisions)) |
+| Safe to try | the page's "To look out for", next to what can't be run again or taken back |
+| A rule has a check | the "Not checked" column in [A rule has a check](#a-rule-has-a-check) |
 
 ### Learn it once
 The design principle behind every key here: learn a move once and it works on every layer, from a line of
@@ -16,24 +31,15 @@ text up to a macOS workspace.
 1. **Vim is the grammar.** Anything that takes keys moves like vim: `h/j/k/l`, `g`/`G` for the ends,
    `ctrl+d`/`ctrl+u` for half a page, `/` to search and `n`/`N` for the next match, `v` to select and `y` to
    copy, `q` to quit. Where a tool lets you type, typing and moving are separate modes and `jj` leaves typing.
+   A list is no different: the picker has a normal mode with the same keys ([picker keys](tmux.md#picker-keys)).
 2. **The key names the action, the modifier names the layer.** Splits, panes, windows, sessions and workspaces
    nest, and the same key does the same thing at each level: `h/j/k/l` goes that way, `Space` to the next one,
-   `0` back to the last. nvim has no modifier or `ctrl`, tmux `ctrl`, `C-a` or `cmd`, AeroSpace `alt`
-   ([Same key, every layer](#same-key-every-layer)).
+   `0` back to the last. Each layer has its own modifier ([How the keyboard is split](#how-the-keyboard-is-split),
+   [Same key, every layer](#same-key-every-layer)).
 3. **nvim is the reference.** `,` starts an action and `;` opens a picker. Another tool with a leader or a
    normal mode borrows nvim's key for the same action ([vim keys](vim-keys.md)).
 4. **Set it, don't hope for it.** A tool whose own keys already follow is left alone and noted as such; one
-   that can follow with some config gets that config here; one that can't (Xcode) is written down as an
-   exception.
-5. **One picker.** Choosing from a list (a session, a window, an agent, a conversation, a command from
-   history) happens in the same fzf picker, `config/tmux/picker.zsh`: the same look, the same normal mode
-   with `j`/`k` and `/`, `jj` back from typing. A tool with a list of its own gets its output wrapped in the
-   picker rather than learnt on its own, wherever it can be ([picker keys](tmux.md#picker-keys)). Plain fzf
-   is the exception: `C-t` and `Alt+C` pick several paths with `Tab` and put them on the command line, and
-   fzf-tab completes inside it, which the picker (one line, its own window) can't do; they have no normal
-   mode, so there `jj` and `j`/`k` don't apply ([fzf](fzf.md#shell-keys)).
-6. **Exceptions say why.** When a key can't follow, because macOS, another layer or the tool itself has it,
-   the table shows what is used instead and why, so the gap is a decision and not an accident.
+   that can follow with some config gets that config here.
 
 ### One search away
 The design principle behind how files and lists are laid out: anything here is found with one search in a
@@ -48,13 +54,11 @@ picker, not by remembering where it is, and anything running is looked at in a l
    finds the definition and everything that relies on it.
 3. **Files say who uses them.** The comment at the top of a file says what links it, loads it or calls it
    (`config/tmux/picker.zsh` lists every picker built on it), so a thing can be followed in both directions.
+   Two kinds of file are fixed by their tools and have none: nvim's `init.lua` in a plugin's folder holds only
+   the `require` lines for its `config.lua` and `keymaps.lua` (that is how nvim loads a folder), and JSON
+   files can't hold comments (their doc says who uses them).
 4. **Look, don't recall.** Something you check often (sessions, windows, agents, paste buffers, the docs,
-   history) opens in the picker with a live preview, so you see the state and go to it in one step.
-5. **Exceptions say why.** A file that holds several kinds, or a list without a picker, says why in its top
-   comment or its doc. Two are fixed by their tools and need no comment: nvim's `init.lua` in a plugin's folder
-   holds only the `require` lines for its `config.lua` and `keymaps.lua` (that is how nvim loads a folder), and
-   JSON files can't hold comments (their doc says who uses them). `check_dotfiles` warns about any other file
-   without a top comment.
+   history) opens as a list with a live preview, so you see the state and go to it in one step.
 
 ### Same shape, every page
 The design principle behind the docs: every `docs/<tool>.md` has the same sections in the same order, so you
@@ -75,17 +79,17 @@ page per tool instead of four folders, so a tool is still one search away.
 
 1. **Leave out, don't reorder.** A page skips the sections it doesn't need; the ones it has come in this
    order. A page that covers several areas (mobile: iOS, Android) gives each area a top-level section and
-   repeats the shape inside it. `check_dotfiles` checks the order.
+   repeats the shape inside it.
 2. **One kind per section.** Explanation doesn't go into a key table and steps don't go into "What it is";
    a sentence that would belong elsewhere moves there and is linked.
 3. **The README is the only tutorial.** "Install from scratch" and "A typical day" walk through the whole
    setup once; everything else assumes you have it.
-4. **Docs describe what exists.** An idea not built yet stays out of the pages until it is.
+4. **The page is the config.** A change updates its page in the same commit, and an idea not built yet stays
+   out of the pages until it is, so a page says neither less nor more than what runs.
 
 ### One tool per job
 The design principle behind which tool does what: every job has one tool that owns it, and the other tools
-hand the job to it instead of doing it their own way. Before adding a tool, a plugin or a script, check whether
-the tools already here can do it together.
+hand the job to it instead of doing it their own way.
 
 | Job | Owner | How the other tools reach it |
 |---|---|---|
@@ -100,17 +104,63 @@ the tools already here can do it together.
 | Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
 | Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |
 
-1. **Join before you add.** If the tools already here can do it wired together, that is the way: nvim in a
-   tmux pane rather than a terminal emulator inside nvim, git's editor set to nvim rather than a second editor.
-   A new tool or plugin comes in only for a job none of them does, and its Brewfile comment or doc names the job.
+1. **Join before you add.** Before adding a tool, a plugin or a script, check whether the tools already here
+   can do it wired together: nvim in a tmux pane rather than a terminal emulator inside nvim, git's editor set
+   to nvim rather than a second editor. A new one comes in only for a job none of them does, and its Brewfile
+   comment or doc names the job.
 2. **One owner per job.** A tool that needs a job calls the owner (`$EDITOR`, `tmux display-popup`, `picker`)
    rather than carrying its own copy, and the copy already running where there is one. So the job looks and
-   works the same wherever it starts, and its keys, its state and its fixes live in one place.
+   works the same wherever it starts, and its keys, its state and its fixes live in one place. Choosing from a
+   list (a session, a window, an agent, a conversation, a command from history) is one picker with one look,
+   and a tool with a list of its own gets its output wrapped in the picker wherever it can be; plain fzf keeps
+   three keys in the shell ([fzf](fzf.md#decisions)).
 3. **Meet at the seams.** Where two tools touch, crossing from one to the other takes no thought: `C-h/j/k/l`
    crosses nvim splits and tmux panes, OSC 52 carries a copy through tmux and ssh, focus events reload files in
    nvim when you come back to its pane, `fzfrc` gives nvim's pickers the shell's look.
-4. **Exceptions say why.** A tool that keeps its own copy of a job, because the owner can't do it from there,
-   says why in its page's Decisions, as VS Code does for debugging ([debugging](debugging.md#decisions)).
+
+### Safe to try
+The design principle behind every command and change here: trying something costs nothing, because a step
+can be run again and a change can be taken back.
+
+1. **Run it again.** Every `setup_<tool>` leaves a Mac that is already set up as it is, so `setup_dotfiles`
+   is rerun after a pull, after a failed step or when in doubt, and a step that fails doesn't stop the others
+   ([setup](setup.md#what-it-is)).
+2. **Trash, don't delete.** Nothing here deletes for good: scripts move things to the Trash, a hook stops
+   Claude Code's recursive `rm` ([claude-code](claude-code.md#hooks)), and a Brewfile package that is dropped
+   stays commented out at the bottom.
+3. **Looking changes nothing.** What reports on state only reports: `check_dotfiles` and `check_mac` print
+   each problem with the step that fixes it and leave the fixing to you, Claude Code reads AWS and Google
+   Cloud but can't change them ([aws](aws.md), [gcloud](gcloud.md)), and `agent_done` removes a worktree only
+   when nothing would be lost ([claude-code](claude-code.md#finishing-an-agent)).
+4. **One step back.** A change is made on a branch (an agent's in a worktree of its own), versions are pinned
+   (`lazy-lock.json`) so an update is a commit, and swapping something familiar for something new goes in a
+   commit of its own, so `git revert` brings the old one back and keeps the rest.
+5. **The live setup stays valid.** The config files are links into this repo, so an edit is live at once:
+   each step leaves them loadable (`zsh -n`, `jq -e .`), and keys and anything interactive are tried in a tmux
+   server of their own (`tmux -L probe`) before the running one gets them.
+
+### A rule has a check
+The design principle behind the rules themselves: a rule that nothing checks holds only as long as it is
+remembered, so a rule here is checked by `check_dotfiles`, or is listed as not checked.
+
+1. **The check comes with the rule.** A rule a script can test gets a check in the same commit, in the group
+   of `checks/` it belongs to ([setup](setup.md#checks)), and the rule's text names it.
+2. **Fast enough to run every time.** All of `check_dotfiles` takes about a second, so it runs before every
+   commit and on every push. What takes longer stays out of it and has its own moment: `checks/mutate` when a
+   check looks like it lets something through, `checks/fresh_mac` after changing a setup step.
+3. **Fail what breaks, warn what drifts.** A check on something that breaks the setup or publishes what
+   shouldn't be fails the run; one that compares the docs or a convention with the config warns.
+4. **Check the checks.** A check that stays green on a broken repo is worse than none: `checks/mutate` breaks
+   the repo on purpose and says which check missed it ([setup](setup.md#testing-the-checks)).
+
+| Principle | Checked | Not checked |
+|---|---|---|
+| Learn it once | each layer keeps to its modifier, Ghostty's `cmd` keys reach tmux bindings, `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI in the Brewfile, lists go through `picker` | that a new key joins its family in "Same key, every layer" |
+| One search away | each file's top comment, every nvim key in a `keymaps.lua` with a desc, the links, paths and names in the docs, setup steps and symlinks against `docs/setup.md` | that a thing is defined only once |
+| Same shape, every page | the order of a page's sections, the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions |
+| One tool per job | no zsh file runs `fzf` itself | a second tool for any other job in the table |
+| Safe to try | the hook blocks every recursive `rm`, no code deletes for good, nvim's plugins are pinned, every config file parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once), that a replacement has its own commit |
+| A rule has a check | `checks/mutate`, by hand | that this table is complete |
 
 Keys
 ---
@@ -129,7 +179,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,gs` git status |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
-| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and the fzf pickers (`cmd+k`, `cmd+j`, `cmd+shift+j`, `cmd+g`, `C-a P`, `C-r`, `agent_resume`, nvim's and zsh's `;` pickers, `mdv`, `zi`, `change_theme`, `gsw`, `gfix`, the kubectl ones) | |
+| `jj` | leave insert mode, in nvim, zsh, Claude Code, VS Code, Android Studio, readline REPLs (bash, psql) and every picker (the top of `config/tmux/picker.zsh` lists them) | |
 | `C-r` / `C-t` | history (atuin's, in fzf), files, in zsh | |
 
 ### Same key, every layer
@@ -169,3 +219,7 @@ Decisions
 - **One page for the principles, not sections of the README**: the README is the overview and the tutorial;
   the principles are what every change is checked against, so they get a page of their own that `docs/`,
   `CLAUDE.md` and the checks refer to.
+- **"Exceptions say why" once, not as the last item of each principle**: it was the same rule three times,
+  and the docs' principle had none. Stated once, it covers every principle, new ones too.
+- **The picker belongs to "One tool per job"**, not to "Learn it once" or "One search away": those two keep
+  what is theirs (its keys are vim's, state opens in a list) and point to the owner.

@@ -36,7 +36,7 @@ git status in nvim, `cmd+j` shows every session.
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
 | GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
-| Design | the principles every key, file and page follows; which layer owns which modifier | [design](docs/design.md) |
+| Design | the principles every key, file, page and change follows; which layer owns which modifier | [design](docs/design.md) |
 
 Install from scratch
 ---
@@ -55,16 +55,22 @@ only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step do
 
 How it is designed
 ---
-Four principles decide where every key, file, page and tool goes, so learning one part of the setup teaches
-the rest. [design](docs/design.md) defines them:
+Six principles decide where every key, file, page and tool goes and how a change is made, so learning one
+part of the setup teaches the rest. [design](docs/design.md) defines them:
 
 - **Learn it once**: vim is the grammar, the key names the action and the modifier the layer, nvim is the
-  reference, one picker for every list.
+  reference.
 - **One search away**: the file name says the kind and the folder the tool, each thing is defined in one
-  place, and state you check opens in the picker.
-- **Same shape, every page**: every `docs/<tool>.md` has the same sections in the same order.
+  place, and state you check opens in a list with a preview.
+- **Same shape, every page**: every `docs/<tool>.md` has the same sections in the same order, and says what
+  the config does, no less and no more.
 - **One tool per job**: each job (terminals, editing, lists, projects, git) has one tool that owns it, and the
-  others hand it over instead of doing it their own way.
+  others hand it over instead of doing it their own way; every list is the same picker.
+- **Safe to try**: a setup step can be run again, nothing deletes for good, and a change can be taken back.
+- **A rule has a check**: `check_dotfiles` checks a rule in about a second, or the rule is listed as not
+  checked.
+
+Whatever can't follow one says why, where the rule would be looked up.
 
 Each layer owns a modifier ([how the keyboard is split](docs/design.md#how-the-keyboard-is-split)), and a move
 you know on one layer works on the others ([same key, every layer](docs/design.md#same-key-every-layer)).
