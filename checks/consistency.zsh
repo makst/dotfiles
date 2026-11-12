@@ -27,19 +27,32 @@ table_column() {
   ' $1
 }
 
-# setup steps: what setup_dotfiles runs is defined, docs/setup.md's table of steps lists exactly those (and
-# setup_machine, which runs first), and every other setup_* function is under "Not part of setup_dotfiles"
-check_setup_steps() {
+# setup_steps: the steps setup_dotfiles runs, one per line, from its `for step in … ; do`
+setup_steps() {
   local text=$(awk '/for step in/ { on = 1 } on { print } on && /; do/ { exit }' zsh/functions/setup.zsh)
   text=${${${text//\\/ }#*for step in}%%; do*}
-  local -a steps=(${=text}) defined=(${(f)"$(zsh_definitions)"})
-  local -a table=(${${(f)"$(table_column docs/setup.md 'What `setup_dotfiles` does')"}%% *})
-  local -a apart=(${${(f)"$(awk '/^Not part of `setup_dotfiles`/ { on = 1; next } on && /^[A-Za-z]/ { exit }
-    on && /^- `/ { s = $0; sub(/^- `/, "", s); sub(/`.*/, "", s); print s }' docs/setup.md)"}%% *})
+  print -rl -- ${=text}
+}
+
+# steps defined: every step setup_dotfiles runs is a function. This one fails: an undefined step breaks the
+# setup, where a table that is behind (check_setup_steps) only warns.
+check_steps_defined() {
+  local -a steps=(${(f)"$(setup_steps)"}) defined=(${(f)"$(zsh_definitions)"})
   local f
   for f in $steps; do
     (( $defined[(Ie)$f] )) || print -r -- "zsh/functions/setup.zsh: setup_dotfiles runs $f, which isn't defined"
   done
+  note="$(count $#steps step)"
+}
+
+# setup steps: docs/setup.md's table of steps lists exactly what setup_dotfiles runs (and setup_machine, which
+# runs first), and every other setup_* function is under "Not part of setup_dotfiles"
+check_setup_steps() {
+  local -a steps=(${(f)"$(setup_steps)"}) defined=(${(f)"$(zsh_definitions)"})
+  local -a table=(${${(f)"$(table_column docs/setup.md 'What `setup_dotfiles` does')"}%% *})
+  local -a apart=(${${(f)"$(awk '/^Not part of `setup_dotfiles`/ { on = 1; next } on && /^[A-Za-z]/ { exit }
+    on && /^- `/ { s = $0; sub(/^- `/, "", s); sub(/`.*/, "", s); print s }' docs/setup.md)"}%% *})
+  local f
   for f in $steps setup_machine; do
     (( $table[(Ie)$f] )) || print -r -- "docs/setup.md: $f isn't in the table of what setup_dotfiles does"
   done
@@ -329,6 +342,7 @@ check_ghostty_tmux() {
 }
 
 group "Consistency: the files that describe the same thing agree"
+check "the steps setup_dotfiles runs are defined" check_steps_defined
 check -w "setup_dotfiles' steps match docs/setup.md" check_setup_steps
 check -w "every symlink is in docs/setup.md, and only those" check_symlinks
 check -w "the README links every page in docs/" check_readme

@@ -5,13 +5,17 @@
 # check_dotfiles; lib.zsh has the helpers.
 
 # secrets: no file holds a token or a private key. Prints the kind and where, never the secret itself, so it
-# doesn't land in CI's log either.
+# doesn't land in CI's log either. It reads the files as they are now, not git's history.
 check_secrets() {
   local -A kinds=(
     'gh[pousr]_[A-Za-z0-9]{36}' 'a GitHub token'
     'github_pat_[A-Za-z0-9_]{60,}' 'a GitHub token'
     'sk-ant-[A-Za-z0-9_-]{20,}' 'an Anthropic API key'
     'sk-[A-Za-z0-9]{40,}' 'an API key'
+    'sk-(proj|svcacct|admin)-[A-Za-z0-9_-]{40,}' 'an OpenAI API key'
+    'npm_[A-Za-z0-9]{36}' 'an npm token'
+    '[sr]k_live_[0-9A-Za-z]{20,}' 'a Stripe key'
+    'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}' 'a JSON web token'
     'AKIA[0-9A-Z]{16}' 'an AWS access key'
     'AIza[0-9A-Za-z_-]{35}' 'a Google API key'
     'xox[abprs]-[0-9A-Za-z-]{10,}' 'a Slack token'
@@ -69,12 +73,14 @@ check_arm64() {
   note=$(count $#code file)
 }
 
-# deletes: no code deletes recursively (rm -r, find -delete, git clean -f): what it removes can't be put back,
-# so it goes to the Trash (CLAUDE.md, "Deleting"). The rm hook names them to refuse them, its cases list them;
-# checks/mutate cleans its own throwaway worktree. Comments are skipped.
+# deletes: no code deletes recursively (rm -r, find -delete, git clean -f; the flag may come after others,
+# as in rm -f -r): what it removes can't be put back, so it goes to the Trash (CLAUDE.md, "Deleting"). The
+# rm hook names them to refuse them, its cases list them; checks/mutate cleans its own throwaway worktree.
+# Comments are skipped.
 check_deletes() {
   local -a code=(${${text_files:#*.md}:#(config/claude/hooks/no-recursive-rm.sh|checks/(rm-hook.cases|mutate|safety.zsh))})
-  grep -nE '(^|[^A-Za-z_-])rm[[:space:]]+(-[A-Za-z]*[rR]|--recursive)|[[:space:]]-delete([[:space:]]|$)|git[[:space:]]+clean[[:space:]]+(-[A-Za-z]*f|--force)' \
+  local flags='([[:space:]]+-[A-Za-z-]+)*[[:space:]]+'
+  grep -nE "(^|[^A-Za-z_-])rm$flags(-[A-Za-z]*[rR]|--recursive)|[[:space:]]-delete([[:space:]]|\$)|git[[:space:]]+clean$flags(-[A-Za-z]*f|--force)" \
     -- $code | awk -F: '$3 !~ /^[[:space:]]*(#|--|\/\/)/ { print $1 ":" $2 ": deletes for good; move it to the Trash" }'
   note=$(count $#code file)
 }

@@ -166,11 +166,11 @@ Homebrew leaves group-writable directories, and zsh would stop to ask about them
 | Syntax | `checks/syntax.zsh` | every zsh, bash, JSON, TOML, YAML and Lua file parses; tmux.conf, gitconfig, ssh config, Brewfile, Ghostty, starship and AeroSpace configs load in their own tool |
 | Behaviour | `checks/behaviour.zsh` | zsh starts without errors, and its functions find the repo in a shell that hasn't read `.zshrc` (Claude Code's); Claude Code's hooks (deletes that can't be undone, format, bell) and status line do what they should, with only zsh, jq, git and gh on PATH |
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
-| Consistency | `checks/consistency.zsh` | setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
+| Consistency | `checks/consistency.zsh` | every step `setup_dotfiles` runs is defined; setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; GIFs have tapes; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
-| Safety | `checks/safety.zsh` | nothing published can hurt: no token or private key (it says which kind, never the secret), no email address but GitHub's noreply ones, `git@github.com` and made-up ones (`example.com`, `.local`, …), `zsh/.private` and nvim's `hidden/` ignored and untracked, `config/claude` names no machine path and nothing of this repo, no code reaches for `/usr/local`, x86_64 or Rosetta, and none deletes for good (`rm -r`, `find -delete`, `git clean -f`) |
+| Safety | `checks/safety.zsh` | nothing published can hurt: no token or private key in the files as they are now (it says which kind, never the secret), no email address but GitHub's noreply ones, `git@github.com` and made-up ones (`example.com`, `.local`, …), `zsh/.private` and nvim's `hidden/` ignored and untracked, `config/claude` names no machine path and nothing of this repo, no code reaches for `/usr/local`, x86_64 or Rosetta, none deletes for good (`rm -r`, `find -delete`, `git clean -f`), and every link a setup step makes comes after `keep_real` |
 | Commits | `checks/commits.zsh` | the commits a push would publish (on CI, those the push brought): a `type(scope): summary` subject, a body besides the trailers, no "Generated with" line, signed with a key in `config/git/allowed_signers` |
-| Style | `checks/style.zsh` | warnings only, the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` itself instead of `picker`, each `docs/<tool>.md` has its top-level sections in the order of `docs/design.md`, "Same shape, every page", and each config or script file starts with a comment saying who uses it (nvim's `init.lua`, JSON and Markdown excepted), prose in Markdown and zsh comments stays within about 110 columns (over 115 warns; tables, code, images and URLs excepted), table rows have as many cells as their header, `$(…)` inside `${…}` is quoted, scripts are zsh (bash only for `prepare-zsh-install.sh`), and a file is executable exactly when it has a `#!` line (the sourced `.zsh` files excepted) |
+| Style | `checks/style.zsh` | warnings, the conventions of `CLAUDE.md`: each Brewfile package has a comment saying what uses it, colours are ANSI names (hex only in Ghostty's theme), GIFs sit in a closed `Show GIF` toggle with a caption, each zsh function has a comment, no zsh file runs `fzf` or `fzf-tmux` itself instead of `picker`, each `docs/<tool>.md` has its top-level sections in the order of `docs/design.md`, "Same shape, every page", and each config or script file starts with a comment saying who uses it (nvim's `init.lua`, JSON and Markdown excepted), prose in Markdown and zsh comments stays within about 110 columns (over 115 warns; tables, code, images and URLs excepted), table rows have as many cells as their header, `$(…)` inside `${…}` is quoted, scripts are zsh (bash only for `prepare-zsh-install.sh`); one check of the group fails: a file is executable exactly when it has a `#!` line (the sourced `.zsh` files excepted) |
 
 `checks/lib.zsh` builds what the groups share; the groups then run at the same time. A zsh error inside a
 check stops the rest of its group: that fails as "stopped in" the check, with the error, and the checks after
@@ -193,15 +193,15 @@ throwaway git worktree, and runs `check_dotfiles` there. Each break names the ch
 | `MISSED` | that check stayed green: the check has a hole |
 | `BROKEN` | the break changed nothing, because the file it edits has changed: update the break |
 
-It exits 1 on a `MISSED` or `BROKEN`. The worktree has the repo as it is now, uncommitted changes and new
-files included (`checks/snapshot`). It takes too long for every commit, so it isn't part of
-`check_dotfiles` or CI, and it isn't a step of every change either: run it when a check looks like it lets
-something through, or after reworking one. A new check doesn't need a break of its own; add one when a check
-has let a real mistake through, so it stays caught: a line `m '<check label>' '<what breaks>' '<zsh code that
-breaks it>'` in `checks/mutate`. The AeroSpace check has none, since it only validates the live config. The
-breaks name files and functions that don't exist on purpose, so the path and name checks leave
-`checks/mutate` out. The portability breaks use a list of forbidden words of their own (`DOTFILES_FORBIDDEN`),
-not this Mac's.
+It exits 1 on a `MISSED` or `BROKEN`. A run of every break ends with the checks that no break names. The
+worktree has the repo as it is now, uncommitted changes and new files included (`checks/snapshot`). It takes
+too long for every commit, so it isn't part of `check_dotfiles` or CI, and it isn't a step of every change
+either: run it when a check looks like it lets something through, or after reworking one. A new check
+doesn't need a break of its own; add one when a check has let a real mistake through, so it stays caught: a
+line `m '<check label>' '<what breaks>' '<zsh code that breaks it>'` in `checks/mutate`. The AeroSpace check
+has none, since it only validates the live config. The breaks name files and functions that don't exist on
+purpose, so the path and name checks leave `checks/mutate` out. The portability breaks use a list of
+forbidden words of their own (`DOTFILES_FORBIDDEN`), not this Mac's.
 
 ### Rehearsing a new Mac
 ```sh

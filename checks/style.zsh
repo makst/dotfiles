@@ -63,11 +63,13 @@ check_function_comments() {
 }
 
 # one picker: a list to choose from goes through `picker` (config/tmux/picker.zsh), so it has the same keys and
-# normal mode as every other; no zsh file runs fzf itself, except the picker, .fzf.zsh, which sets fzf up, and
-# checks/ (checks/mutate's break does it on purpose)
+# normal mode as every other; no zsh file runs fzf or fzf-tmux itself (after a pipe, a variable set for it,
+# `command` or xargs too), except the picker, .fzf.zsh, which sets fzf up, and checks/ (checks/mutate's break
+# does it on purpose). nvim's lists are fzf-lua's and aren't looked at.
 check_picker() {
   local -a zsh=(${${${${(f)"$(zsh_files)"}:#config/tmux/picker.zsh}:#.fzf.zsh}:#checks/*})
-  grep -nE '(^|[|;&({]|\$\(|then|do|else)[[:space:]]*(command[[:space:]]+)?fzf([[:space:]]|$)' -- $zsh |
+  local before='(^|[|;&({]|\$\(|then|do|else|xargs)[[:space:]]*([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*'
+  grep -nE "$before(command[[:space:]]+)?fzf(-tmux)?([[:space:]]|\$)" -- $zsh |
     awk -F: '$3 !~ /^[[:space:]]*#/ { print $1 ":" $2 ": runs fzf; a list goes through picker (config/tmux/picker.zsh)" }'
   note=$(count $#zsh file)
 }
@@ -210,7 +212,8 @@ check_bash() {
 }
 
 # exec bits: a script with a #! line is executable, and an executable file has one, so it runs the same from
-# any shell. The .zsh files are sourced, not run: their #! line only tells editors the language.
+# any shell. It fails: a picker or the watcher that lost its bit doesn't run. The .zsh files are sourced, not
+# run: their #! line only tells editors the language.
 check_exec_bits() {
   local f
   for f in ${(k)shebangs}; do
@@ -234,4 +237,4 @@ check -w "prose and comments wrap at about 110 columns" check_prose_width
 check -w "Markdown table rows have the header's cells" check_md_tables
 check -w "\$(…) inside \${…} is quoted" check_quoted_substitutions
 check -w "scripts are zsh, bash only for prepare-zsh-install.sh" check_bash
-check -w "scripts are executable, executables are scripts" check_exec_bits
+check "scripts are executable, executables are scripts" check_exec_bits

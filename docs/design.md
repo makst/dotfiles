@@ -147,23 +147,30 @@ The design principle behind the rules themselves: a rule that nothing checks hol
 remembered, so a rule here is checked by `check_dotfiles`, or is listed as not checked.
 
 1. **The check comes with the rule.** A rule a script can test gets a check in the same commit, in the group
-   of `checks/` it belongs to ([setup](setup.md#checks)), and the rule's text names it.
+   of `checks/` it belongs to ([setup](setup.md#checks)), and the check's comment names the rule, so a grep
+   for the rule's name finds what holds it.
 2. **Fast enough to run every time.** All of `check_dotfiles` takes about a second, so it runs before every
    commit and on every push. What takes longer stays out of it and has its own moment: `checks/mutate` when a
    check looks like it lets something through, `checks/fresh_mac` after changing a setup step.
-3. **Fail what breaks, warn what drifts.** A check on something that breaks the setup or publishes what
-   shouldn't be fails the run; one that compares the docs or a convention with the config warns.
+3. **Fail what breaks, warn what drifts.** A check fails the run for what breaks the setup (a file that
+   doesn't parse, a step or script that can't run, a key on another layer's modifier, a link or path to
+   something that isn't there), for what could lose something and for what gets published (a secret, an
+   address, a commit). One that compares the docs or a convention with the config warns.
 4. **Check the checks.** A check that stays green on a broken repo is worse than none: `checks/mutate` breaks
-   the repo on purpose and says which check missed it ([setup](setup.md#testing-the-checks)).
+   the repo on purpose, says which check missed it and lists the checks that have no break
+   ([setup](setup.md#testing-the-checks)).
+
+What the checks hold of each principle, and what is left to reading the change. `docs/setup.md`, "Checks",
+has every check.
 
 | Principle | Checked | Not checked |
 |---|---|---|
-| Learn it once | each layer keeps to its modifier, Ghostty's `cmd` keys reach tmux bindings, `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI in the Brewfile, lists go through `picker` | that a new key joins its family in "Same key, every layer" |
-| One search away | each file's top comment, every nvim key in a `keymaps.lua` with a desc, the links, paths and names in the docs, setup steps and symlinks against `docs/setup.md` | that a thing is defined only once |
-| Same shape, every page | the order of a page's sections, the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions |
-| One tool per job | no zsh file runs `fzf` itself | a second tool for any other job in the table |
-| Safe to try | the hook blocks every recursive `rm`, no code deletes for good, every link the setup makes keeps a real file (`keep_real`), nvim's plugins are pinned, every config file parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once), that a replacement has its own commit |
-| A rule has a check | `checks/mutate`, by hand | that this table is complete |
+| Learn it once | each layer keeps to its modifier; Ghostty's `cmd` keys reach tmux bindings; `docs/vim-keys.md` agrees with nvim, VS Code and IdeaVim on the keys it lists and has an entry for every TUI in the Brewfile | that a tool's keys are vim's (only that it has an entry); that a new key joins its family in "Same key, every layer"; that every nvim key is in `docs/vim-keys.md` and in the other editors |
+| One search away | each file starts with a comment; every nvim key set with `vim.keymap.set` is in a `keymaps.lua` and has a desc; the links, paths and names in the docs exist; setup steps and symlinks agree with `docs/setup.md` | that the top comment names who uses the file; nvim keys a plugin takes as a table; that a tool's parts carry its name; that a thing is defined only once; that state has a list with a preview |
+| Same shape, every page | the order of a page's sections; the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions; that a change and its page are one commit |
+| One tool per job | no zsh file runs `fzf` or `fzf-tmux` itself | lists in nvim; a second tool for any other job in the table; the seams |
+| Safe to try | the hook blocks the recursive `rm` forms in `checks/rm-hook.cases`; no code deletes recursively; every link the setup makes keeps a real file (`keep_real`); nvim's plugins are pinned; zsh, JSON, TOML, YAML, Lua, tmux, git, ssh, Ghostty, starship, fzf and AeroSpace config parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once); that what reports changes nothing; that a replacement has its own commit; `ideavimrc`, which nothing parses; secrets in git's history |
+| A rule has a check | `checks/mutate`, by hand, with the list of checks that have no break | that a new rule got a check; how long `check_dotfiles` takes; that a check's level follows item 3; that this table is complete |
 
 Keys
 ---

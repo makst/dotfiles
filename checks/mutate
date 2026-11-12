@@ -6,7 +6,8 @@
 # it edits changed); exits 1 on either. The worktree has the repo as it is now, uncommitted changes and new
 # files included (checks/snapshot). A pattern runs only the breaks whose description or check matches. Takes
 # about a minute, so it isn't part of check_dotfiles or CI: a tool to reach for when a check looks suspect or
-# after a big change to one, not a step of every change. A new check needs no break of its own.
+# after a big change to one, not a step of every change. A new check needs no break of its own; a run of every
+# break ends with the checks that have none.
 
 setopt extended_glob
 unsetopt bg_nice  # jobs keep their priority: a sandbox (Claude Code's) can't lower it and zsh would print an error
@@ -96,7 +97,7 @@ m 'hooks and status line are executable' 'a hook points at a missing script' "pe
 # --- consistency
 m "setup_dotfiles' steps" 'a setup function that is neither a step nor documented' "print 'setup_zz() { :; }' >> zsh/functions/setup.zsh"
 m "setup_dotfiles' steps" 'a step dropped from setup_dotfiles' "perl -pi -e 's/ setup_ideavim; do/; do/' zsh/functions/setup.zsh"
-m "setup_dotfiles' steps" 'setup_dotfiles runs an undefined step' "perl -pi -e 's/ setup_ideavim; do/ setup_ideavim setup_zz; do/' zsh/functions/setup.zsh"
+m 'steps setup_dotfiles runs' 'setup_dotfiles runs an undefined step' "perl -pi -e 's/ setup_ideavim; do/ setup_ideavim setup_zz; do/' zsh/functions/setup.zsh"
 m 'every symlink' 'a symlink missing from the table' "perl -ni -e 'print unless /^\\| \`~\\/\\.zshrc\`/' docs/setup.md"
 m 'README links every page' 'a doc page the README does not link' "print '# New' > docs/newpage.md"
 m "this Mac's files" 'a machine template nobody reads or documents' "print x > config/machine/newfile"
@@ -126,6 +127,12 @@ m 'names this Mac' "this Mac's hostname in a comment" "print -r -- \"# from \${(
 m 'names this Mac' 'a forbidden word in a doc, in capitals' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print \"Ask \${(U)w} first.\" >> docs/zsh.md"
 m 'shared email' 'an unpushed commit with a work email' "print x >> docs/zsh.md; git -c user.email=me@work.example -c commit.gpgsign=false commit -qam x"
 m 'shared email' 'an unpushed commit whose message has a forbidden word' "w=zz-co w+=rp; print \$w > \$DOTFILES_FORBIDDEN; print x >> docs/zsh.md; git -c commit.gpgsign=false commit -qam \"fix for \$w\""
+# --- safety (a token is put together, so that checks/mutate itself doesn't hold one)
+m 'no tokens' 'a GitHub token in a zsh file' "print \"export GH_TOKEN=ghp_\${(l:36::a:)}\" >> zsh/.exports"
+m 'no tokens' 'an OpenAI project key in a doc' "print \"sk-proj\${(l:48::-aB3:)}\" >> docs/zsh.md"
+m 'deletes for good' 'rm with -r after another flag' "print '\n# zz_clean: empties the cache\nzz_clean() { rm -f -r ~/.cache/zz }' >> zsh/.aliases"
+m 'deletes for good' 'git clean with -f after another flag' "print '\n# zz_tidy: drops untracked files\nzz_tidy() { git clean -d -f }' >> zsh/.aliases"
+m 'keeps a real file' 'a link without keep_real' "perl -pi -e 's/^  keep_real ~\/\.ideavimrc && //' zsh/functions/ideavim.zsh"
 # --- style
 m 'Brewfile package says' 'a package without its comment' "perl -pi -e 's/\\s+#.*// if /^brew / && !\$d++' Brewfile"
 m 'ANSI names' 'a hex colour in a zsh file' "print \"export ZZ_COLOR='#ff0000'\" >> zsh/.exports"
@@ -135,6 +142,9 @@ m 'Show GIF toggle' 'a GIF without its caption' "perl -0pi -e 's/(<summary><b>Sh
 m 'Show GIF toggle' 'a GIF toggle not closed after it' "perl -0pi -e 's/(\\.gif\\)\\n\\n)<\\/details>\\n/\$1/' docs/git.md"
 m 'zsh function has a comment' 'a function without a comment' "print '\nzz_helper() { print hi }' >> zsh/.aliases"
 m 'not a bare fzf' 'a function running fzf itself' "print '\n# zz_pick: picks a file\nzz_pick() { ls | fzf }' >> zsh/.aliases"
+m 'not a bare fzf' 'fzf-tmux behind a variable' "print '\n# zz_pick: picks a file\nzz_pick() { ls | FZF_DEFAULT_OPTS= fzf-tmux -p }' >> zsh/.aliases"
+m 'executables are scripts' 'the GitHub picker loses its exec bit' "chmod -x config/github/inbox"
+m 'says at the top who uses it' 'a script without a top comment' "perl -0pi -e 's/^(#!.*\n)(#.*\n)+/\$1/' config/github/watch"
 m 'section order' 'a section added after Decisions' "print '\nIdeas, not built yet\n---\nLater.' >> docs/claude-code.md"
 m 'section order' 'a Keys section below Config' "perl -0pi -e 's/\\nTo look out for\\n---\\n/\\nKeys\\n---\\n\\nTo look out for\\n---\\n/' docs/ghostty.md"
 m 'section order' 'a second Config section' "perl -0pi -e 's/\\nTo look out for\\n---\\n/\\nConfig\\n---\\n/' docs/theme.md"
@@ -165,4 +175,12 @@ for i in {1..$#cmds}; do
   fi
 done
 print "caught $caught, missed $missed, broken $broken"
+# a full run also lists the checks no break names, so a check that was never tested shows
+if [[ -z $1 ]]; then
+  git reset -q --hard $base
+  labels=(${${${(f)"$(grep -hE '^check (-w )?"' checks/*.zsh)"}#check (-w |)\"}%\" *})
+  labels=(${labels//\\/})
+  for want in $wants; do labels=(${labels:#*$want*}); done
+  (( $#labels )) && print -r -- "${dim}no break for $#labels checks: ${(j:; :)labels}$reset"
+fi
 (( missed + broken == 0 ))
