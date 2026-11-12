@@ -171,7 +171,7 @@ message:
    and it shows above the line, like a code tour's note; `q` closes without saving. `,n` on a line that has
    one opens it to change; saving it empty deletes it.
 3. `;n` lists the comments not sent yet, each previewed at its line: `Enter` goes there, `M-r` opens one in
-   the same window, `M-d` removes one.
+   the same window, `M-d` removes one. `M-g` switches to `;g`'s files, and `M-n` there comes back.
 4. `M-p` (`p` in normal mode) pastes them all into the agent's prompt, in file and line order, each with its
    `path:line` and the line as it read, and goes to the agent's pane. Read it, add to it, press `Enter`.
 

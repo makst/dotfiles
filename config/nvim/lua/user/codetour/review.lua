@@ -211,14 +211,21 @@ function M.counts()
   return counts
 end
 
--- pick(): the comments not sent yet, as the stops picker of a tour, with one more key: send them all
-function M.pick()
-  if not has_review() then return end
+-- pick(opts) -> whether it opened: the comments not sent yet, as the stops picker of a tour, with two more
+-- keys: send them all, and switch to the changed files (;g, user/git/changes) they are about. opts.quit: Esc
+-- quits nvim too, for the nvim greview started (kept when switching back and forth).
+function M.pick(opts)
+  opts = opts or {}
+  if not has_review() then return false end
   local actions = {}
   actions[keys.send] = { fn = send, desc = 'send-to-agent' }
+  actions[keys.to_changes] = { fn = function() require('user.git.changes').pick(opts) end, desc = 'changed-files' }
+  -- Esc reaches fzf-lua as the action esc (picker_modes, user/fzf-lua/config)
+  if opts.quit then actions.esc = function() vim.cmd('qall') end end
   open_review(function()
     require('user.codetour.picker').stops({ title = 'review', actions = actions, normal = keys.send_normal })
   end)
+  return true
 end
 
 return M

@@ -125,7 +125,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Cmd` | Ghostty, translated into tmux commands | `cmd+t` new window, `cmd+d` split, `cmd+k` session picker |
 | `C-a` | tmux prefix | `C-a f` session picker, `C-a w` session tree, `C-a z` zoom |
 | `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
-| `Option` (Alt) | AeroSpace, globally; the few it leaves free reach the terminal, for keys inside a list (fzf: `alt-a` mark all, `ctrl-alt-n/p` scroll the preview; nvim's pickers: `alt-d` delete, `alt-r` reword, `alt-p` paste into the agent) | `alt+h` focus window left, `alt+2` workspace 2 |
+| `Option` (Alt) | AeroSpace, globally; the few it leaves free reach the terminal, for keys inside a list (fzf: `alt-a` mark all, `ctrl-alt-n/p` scroll the preview; nvim's pickers: `alt-d` delete, `alt-r` reword, `alt-p` paste into the agent, `alt-n` / `alt-g` from `;g` to `;n` and back: alt plus the picker's letter) | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,gs` git status |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |

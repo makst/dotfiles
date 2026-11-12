@@ -1,8 +1,9 @@
 -- ;g: the files this branch changes, as a pull request's "Files changed" lists them: everything that differs
 -- from where the branch left the default branch, committed or not, new files included. Each shows its status
 -- and how many review comments it has (user/codetour/review); the preview is its diff through delta. Enter
--- opens it beside its old side (user/git/diff) to read and comment on with ,n; M-p sends the comments, as in ;n.
--- Used by user/git/keymaps.lua.
+-- opens it beside its old side (user/git/diff) to read and comment on with ,n; M-p sends the comments, as in ;n,
+-- and M-n (n in normal mode) switches to ;n's list of them, whose M-g comes back. Used by user/git/keymaps.lua and
+-- user/codetour/review.
 local status, fzf = pcall(require, 'fzf-lua')
 if (not status) then return {} end
 
@@ -118,12 +119,17 @@ function M.pick(opts)
   -- Esc reaches fzf-lua as the action esc (picker_modes, user/fzf-lua/config)
   if opts.quit then actions.esc = function() vim.cmd('qall') end end
   actions[review_keys.send] = { fn = function() require('user.codetour.review').send_all() end, desc = 'send-to-agent' }
+  -- to the comments (;n), whose alt-g comes back; with none yet, this list opens again
+  actions[review_keys.to_review] = {
+    fn = function() if not require('user.codetour.review').pick(opts) then M.pick(opts) end end,
+    desc = 'review-comments',
+  }
 
   fzf.fzf_exec(entries, require('user.fzf-lua.config').picker('changes since ' .. name, {
     fzf_opts = { ['--delimiter'] = '\t', ['--with-nth'] = '5', ['--no-multi'] = true },
     preview = preview(root, rev),
     actions = actions,
-  }, review_keys.send_normal))
+  }, review_keys.send_normal .. ',' .. review_keys.to_review_normal))
 end
 
 return M

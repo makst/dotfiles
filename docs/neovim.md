@@ -104,7 +104,10 @@ Reviewing a branch
 3. `,n` on a line of the file's side writes a review comment ([Reviewing an
    agent](claude-code.md#reviewing-an-agent)); the old side is a revision, so `,n` there says to comment on
    the file instead.
-4. `;g` again for the next file; `M-p` (`p` in normal mode) sends every comment to the agent, as in `;n`.
+4. `;g` again for the next file: the counts show which ones you've covered. `M-n` (`n` in normal mode)
+   switches to `;n`'s list of the comments, to change or drop some, and `M-g` there comes back: alt plus the
+   letter of the picker it opens.
+5. `M-p` (`p` in normal mode) in either list sends every comment to the agent.
 
 Keys
 ---
@@ -301,6 +304,7 @@ In the tour pickers, as `M-d` / `d` in `;b`:
 | `M-d`, or `d` in normal mode | delete the tour (asks first) | remove the stop |
 | `M-r`, or `r` in normal mode | – | change the stop's note, in the note window |
 | `M-p`, or `p` in normal mode | – | `;n` only: paste every comment into the agent's prompt and go there |
+| `M-g` | – | `;n` only: switch to the files they're about (`;g`), whose `M-n` (`n` in normal mode) comes back |
 | `C-s` | – | send the stops to the quickfix list |
 
 Config
