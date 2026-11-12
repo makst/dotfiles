@@ -381,4 +381,8 @@ Decisions
 - **nvim-tree in nvim, yazi in the shell, both on `,e`**: the tree stays open beside the file you edit and
   opens files in this nvim; yazi has no nvim inside it and is a whole-screen browser with previews for the
   shell. One job, files to open, so one key; which tool depends on where you are, as with `;f`.
+- **Three lists that aren't the picker**, because each stays open while you work, which a picker can't:
+  trouble's diagnostics and references (`,xx`, `gr`) sit in a split while you fix them one by one, the
+  outline (`,so`) is a sidebar that follows the cursor, and harpoon's list (`;m`) is a buffer you reorder and
+  delete in with vim's own keys. Anything you choose from and leave goes through fzf-lua.
 - **nvim's `gr…` LSP keys removed**, so `gr` (references) doesn't wait for a third key.

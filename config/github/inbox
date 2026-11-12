@@ -118,7 +118,7 @@ case $1 in
     [[ $kind != note || $url == */pull/<-> ]] || { tmux display-message "$repo: not a pull request"; exit 0 }
     clone || exit 0
     # the repo's session, named as the sessionizer (cmd+k) names it, and a window there for the pull request
-    local session=${${dir:t}//[.:]/_}
+    local session=$(session_for $dir)
     tmux has-session -t "=$session" 2> /dev/null || tmux new-session -d -s $session -c $dir
     local window=$(tmux new-window -P -F '#{window_id}' -t "=$session:" -n "pr-$number" -c $dir \
       "gh pr checkout $number; exec zsh") && tmux switch-client -t $window

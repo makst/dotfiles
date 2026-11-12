@@ -142,6 +142,7 @@ so it reviews what's committed: `/ship` first, it says so when there are uncommi
 the Edit and Write tools, so it reports and doesn't change code; tell the agent what's worth fixing, while it
 still has the change in its context. Its conversation isn't one of the agent's: `agent_resume` doesn't list it.
 It runs on the default model (Opus) and effort; pass `--model` or `--effort` after the name.
+
 Fixing a pull request's CI
 ---
 ```sh
@@ -304,7 +305,7 @@ Keys
 | `shift+enter` | newline in Claude Code's prompt instead of sending it |
 | `jj` / `Esc` | normal mode in the prompt, then motions like `w`, `b`, `f`, `dd`, `ciw`; `i` back to typing ([vim-keys](vim-keys.md)) |
 | `shift+tab` | auto mode, see [Permissions](#permissions) |
-| `cmd+shift+j` (`C-a a`) | the overview of all agents: `j` / `k` down / up, `g` / `G` the first / last agent, `ctrl+d` / `ctrl+u` half a page, `/` filters, `Enter` jumps there, `q` or `Esc` closes it ([picker keys](tmux.md#picker-keys)) |
+| `cmd+shift+j` (`C-a a`) | the overview of all agents, `Enter` jumps there; the keys of every picker ([picker keys](tmux.md#picker-keys)) |
 | `cmd+shift+space` (`C-a A`) | the next agent that needs you, in any session: waiting ones first, then done ones (which turn idle as you see them); again for the one after; says so when none is left |
 | `cmd+shift+0` / `cmd+0` | back to the session / window you came from |
 
@@ -494,6 +495,12 @@ Decisions
 - **Subagents on Haiku**: in `/usage`, subagents on the main model were 40% of the usage.
   `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` stays off, so Claude can still choose a bigger one.
 - **Conversations kept a year, not 30 days**, so `agent_resume` and `claude -r` can still find old ones.
+- **The CI agent on a branch of its own, `worktree-ci-<number>`**: the pull request's branch is often
+  checked out in the clone already, and git checks a branch out in one place only. The price is the push
+  command, `git push origin HEAD:<branch>`, as a plain `git push` refuses a branch whose name differs.
+- **The CI agent reads the logs itself**: its prompt names the failing checks and the `gh run view` that prints
+  each log, rather than carrying the logs, which run to thousands of lines and would be typed into its window.
+  `gh run view` is allowed without asking in Claude Code's settings.
 - **`git commit` isn't blocked in auto mode**: a commit on a branch is easy to undo (`git reset HEAD~`).
 - **Hooks for the agents' state**: inside tmux, Claude Code keeps its terminal title still (`✳`, no spinner)
   and sends no progress bar, so neither can show the state.

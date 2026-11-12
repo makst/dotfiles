@@ -125,11 +125,7 @@ Commands
 | `ll`, `la` (`l`), `lt` | eza: long listing with git status and icons; with hidden files; tree two levels deep |
 | `gs` | git status in nvim (fugitive), see [git](git.md#staging-and-committing) |
 | `tm` | tmux session picker |
-| `agent <name> [prompt]` | Claude Code in a worktree and its own tmux window, see [claude-code](claude-code.md) |
-| `agent_review <name> [claude args]` | a read-only reviewer Claude beside the agent, running `/code-review` on its branch, see [claude-code](claude-code.md#reviewing-an-agent) |
-| `agent_land [--no-check] <name>` | rebases an agent's branch, runs the checks, merges it and finishes the agent, see [claude-code](claude-code.md#finishing-an-agent) |
-| `agent_done [--force] [name]` | lists the agents, or removes a finished one's worktree, branch and window, see [claude-code](claude-code.md#finishing-an-agent) |
-| `agent_resume [name \| id]` | picks an agent's conversation in fzf, or resumes one, in its worktree again after `agent_done`, see [claude-code](claude-code.md#going-back-to-an-agent) |
+| `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | Claude Code agents in worktrees and tmux windows of their own, see [claude-code](claude-code.md#commands) |
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |

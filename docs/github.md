@@ -107,16 +107,14 @@ Decisions
 - **Our own watcher, not gh-dash or gh-notify**: they're inboxes you open, and they don't tell you anything
   while closed. The watcher brings changes to you, the way the Claude Code agents' marks and notifications do,
   through the same terminal-notifier and the same status line ([design](design.md#one-tool-per-job)).
+- **The watcher calls terminal-notifier itself, not Claude Code's `notify.sh`**: `config/claude` is `~/.claude`
+  on any machine and stands alone, and its hook reads a Claude Code event and makes a click go to the
+  agent's pane; the watcher's click opens a URL. One notifier, two callers. Without terminal-notifier the
+  watcher only keeps the mark; the hook falls back to a plain notification.
 - **The list from the state file, not from GitHub**: the picker opens at once and costs no request; it
   is as fresh as the watcher's last run, a minute at most. Only the preview and the keys ask GitHub.
 - **`cmd+g`, though it's Ghostty's find next**: `cmd+f` already goes to tmux's search, which uses `n` and `N`,
   so Ghostty's own search keys do nothing here; g names GitHub, as j and k name the other pickers' lists.
-- **The CI agent on a branch of its own, `worktree-ci-<number>`**: the pull request's branch is often
-  checked out in the clone already, and git checks a branch out in one place only. The price is the push
-  command, `git push origin HEAD:<branch>`, as a plain `git push` refuses a branch whose name differs.
-- **The CI agent reads the logs itself**: its prompt names the failing checks and the `gh run view` that prints
-  each log, rather than carrying the logs, which run to thousands of lines and would be typed into its window.
-  `gh run view` is allowed without asking in Claude Code's settings.
 - **`R` and `f` both, not one**: a flaky test needs a rerun, not an agent; you decide which it is.
 - **launchd, not tmux's `#()`**: tmux reruns a `#()` command every status refresh and per client, and it would
   stop when tmux isn't running; the LaunchAgent runs once a minute either way.

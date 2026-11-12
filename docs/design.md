@@ -102,6 +102,11 @@ hand the job to it instead of doing it their own way.
 | Git: staging, committing, history, reviewing | git, with fugitive in nvim on top; delta and difftastic for diffs; gh for GitHub | `gs` and `,gs` (status), `;g` and `greview` (the branch's changes), nvim's `,go` / `,gp` / `,gn` through gh; git's pager and the pickers' previews are delta |
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
 | Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
+| Files to open | nvim-tree inside nvim, yazi in the shell, both on `,e` | one key, the tool depends on where you are ([neovim](neovim.md#decisions)) |
+| Formatting | the formatter the project configures (prettier, ruff, stylua, shfmt, gofmt, …) | conform in nvim on save, Claude Code's format hook after its edits; neither brings a style of its own |
+| Language versions | fnm for node, uv for python | `setup_node` and `setup_python`; fnm installs a project's pinned node on `cd` |
+| Containers | podman in its VM | `docker` and `docker compose` are podman ([podman](podman.md)) |
+| SSH keys | Secretive | git signs and pushes through its agent ([git](git.md)) |
 | Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |
 
 1. **Join before you add.** Before adding a tool, a plugin or a script, check whether the tools already here
@@ -166,8 +171,8 @@ has every check.
 | Principle | Checked | Not checked |
 |---|---|---|
 | Learn it once | each layer keeps to its modifier; Ghostty's `cmd` keys reach tmux bindings; `docs/vim-keys.md` agrees with nvim, VS Code and IdeaVim on the keys it lists and has an entry for every TUI in the Brewfile | that a tool's keys are vim's (only that it has an entry); that a new key joins its family in "Same key, every layer"; that every nvim key is in `docs/vim-keys.md` and in the other editors |
-| One search away | each file starts with a comment; every nvim key set with `vim.keymap.set` is in a `keymaps.lua` and has a desc; the links, paths and names in the docs exist; setup steps and symlinks agree with `docs/setup.md` | that the top comment names who uses the file; nvim keys a plugin takes as a table; that a tool's parts carry its name; that a thing is defined only once; that state has a list with a preview |
-| Same shape, every page | the order of a page's sections; the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions; that a change and its page are one commit |
+| One search away | each file starts with a comment; every picker is in `config/tmux/picker.zsh`'s list; every nvim key set with `vim.keymap.set` is in a `keymaps.lua` and has a desc; the links, paths and names in the docs exist; setup steps and symlinks agree with `docs/setup.md` | that the top comment names who uses the file; nvim keys a plugin takes as a table; that a tool's parts carry its name; that a thing is defined only once; that state has a list with a preview |
+| Same shape, every page | the order of a page's sections; a heading has an empty line above it; the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions; that a change and its page are one commit |
 | One tool per job | no zsh file runs `fzf` or `fzf-tmux` itself | lists in nvim; a second tool for any other job in the table; the seams |
 | Safe to try | the hook blocks the recursive `rm` forms in `checks/rm-hook.cases`; no code deletes recursively; every link the setup makes keeps a real file (`keep_real`); nvim's plugins are pinned; zsh, JSON, TOML, YAML, Lua, tmux, git, ssh, Ghostty, starship, fzf and AeroSpace config parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once); that what reports changes nothing; that a replacement has its own commit; `ideavimrc`, which nothing parses; secrets in git's history |
 | A rule has a check | `checks/mutate`, by hand, with the list of checks that have no break | that a new rule got a check; how long `check_dotfiles` takes; that a check's level follows item 3; that this table is complete |

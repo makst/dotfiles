@@ -1,6 +1,7 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
 # else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
-# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker, docs pages keep the
+# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker and are in its list,
+# headings stand apart from the text above, docs pages keep the
 # section order of docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns,
 # table rows have the header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
 # They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
@@ -72,6 +73,37 @@ check_picker() {
   grep -nE "$before(command[[:space:]]+)?fzf(-tmux)?([[:space:]]|\$)" -- $zsh |
     awk -F: '$3 !~ /^[[:space:]]*#/ { print $1 ":" $2 ": runs fzf; a list goes through picker (config/tmux/picker.zsh)" }'
   note=$(count $#zsh file)
+}
+
+# picker list: config/tmux/picker.zsh's top comment is the one list of the pickers (docs/design.md, "One
+# search away"; docs/tmux.md, "Pickers", is the docs' copy): each script and each function that calls
+# `picker` is named there. A helper (a name that starts with _) stands for the functions that call it.
+check_picker_list() {
+  local -a files=(${(f)"$(grep -lE '(^|[|(;&[:space:]])picker [a-z$]' -- ${${(f)"$(zsh_files)"}:#checks/*})"})
+  local head=$(awk 'NR > 1 && !/^#/ { exit } { print }' config/tmux/picker.zsh)
+  awk '
+    FNR == 1 { script = (FILENAME !~ /\.zsh$/); f = ""; if (script) { f = FILENAME; sub(/.*\//, "", f) } }
+    !script && /^(function )?[A-Za-z_][A-Za-z0-9_-]*[ ]?\(\)/ { f = $0; sub(/^function /, "", f); sub(/[ ]?\(.*/, "", f) }
+    /(^|[|(;&[:space:]])picker [a-z$]/ && !/^[[:space:]]*#/ && f != "" && f !~ /^_/ { print f "\t" FILENAME ":" FNR }
+  ' ${files:#config/tmux/picker.zsh} | while IFS=$'\t' read -r name where; do
+    [[ $head == *$name* ]] || print -r -- "$where: $name calls picker but isn't in config/tmux/picker.zsh's top comment"
+  done
+  note=$(count $(( $#files - 1 )) file)
+}
+
+# headings: a setext heading (a line with --- or === under it) has an empty line above it; without one,
+# Markdown takes the paragraph above as part of the heading
+check_headings() {
+  awk '
+    FNR == 1 { code = 0; prev = ""; before = ""; front = /^---$/ }
+    front { if (FNR > 1 && /^---$/) front = 0; next }  # front matter, as in a skill
+    /^[ \t]*(```|~~~)/ { code = !code }
+    !code && /^(---+|===+)$/ && FNR > 2 && prev != "" && prev !~ /^[|<]/ && before != "" {
+      print FILENAME ":" FNR - 1 ": the heading \"" prev "\" has text right above it; leave an empty line"
+    }
+    { before = prev; prev = $0 }
+  ' $md_files
+  note=$(count $#md_files file)
 }
 
 # docs pages: the top-level sections (setext, `---`) of each docs/<tool>.md come in the order of
@@ -231,6 +263,8 @@ check -w "colours are ANSI names, not hex" check_hex_colours
 check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
 check -w "each zsh function has a comment" check_function_comments
 check -w "lists go through the picker, not a bare fzf" check_picker
+check -w "every picker is in picker.zsh's list" check_picker_list
+check -w "headings have an empty line above them" check_headings
 check -w "docs pages keep the section order of docs/design.md" check_docs_shape
 check -w "each file says at the top who uses it" check_top_comments
 check -w "prose and comments wrap at about 110 columns" check_prose_width

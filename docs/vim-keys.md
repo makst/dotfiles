@@ -92,9 +92,8 @@ How each tool gets its vim keys:
   mappings, so no leader, `jj` or `;` pickers.
 - **zsh**: vi mode, `jj` leaves insert mode. In normal mode nvim's find keys work too: `;f` / `;a` files, `;g`
   changed files, `;r` grep, `;p` projects, `,gs` git status, `,e` yazi (see [zsh](zsh.md#vi-mode)).
-- **fzf pickers** (`cmd+k`, `cmd+j`, `cmd+shift+j`, `cmd+g`, `C-a P`, `C-r`, zsh's `;` keys, `gsw`, `gfix`,
-  `kctx`, `kns`, `klo`, `kex`, `agent_resume`, `mdv`, `change_theme`): a normal mode with `j`/`k`, `g`/`G`,
-  `/` to filter and `jj` back from typing (see [tmux](tmux.md#picker-keys)).
+- **fzf pickers** ([all of them](tmux.md#pickers)): a normal mode with `j`/`k`, `g`/`G`, `/` to filter and
+  `jj` back from typing (see [tmux](tmux.md#picker-keys)).
 - **Claude Code**: the prompt is in vim mode (`editorMode` in `config/claude/settings.json`), `jj` leaves
   insert mode (`vimInsertModeRemaps`). Motions, operators and text objects work; no other mappings. In
   normal mode, `j`/`k` at the first or last line go through earlier prompts, and `/` searches them.

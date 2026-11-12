@@ -60,14 +60,16 @@ session, window or pane.
 
 ### Pickers
 
-The fzf pickers, the session picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), GitHub
-(`cmd+g`), the paste buffers (`C-a P`), `agent_resume`, `mdv`, `change_theme`, the shell's history search
-(`C-r`, [zsh](zsh.md#searching-history)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)) share
-their keys and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
+The fzf pickers share their keys. This is the list of them, and the other pages point here: the session
+picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), GitHub (`cmd+g`), the paste buffers
+(`C-a P`), `agent_resume`, `mdv`, `zi`, `change_theme`, git's `gsw` and `gfix`, kubectl's `kctx`, `kns`, `klo`
+and `kex`, the shell's history search (`C-r`, [zsh](zsh.md#searching-history)), zsh's `;` keys
+([zsh](zsh.md#vi-mode)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)). They have the same keys
+and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
 `change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode. The
 filter box stays on screen in both modes, so the list doesn't jump when you start or stop typing; the prompt
-shows the mode: `session> ` while typing, `session: ` in normal mode, where an empty filter says `/ to filter`
-in grey. A picker appears with its list already in and closes as soon as you leave it.
+shows the mode: `session> ` while typing, `session: ` in normal mode, where an empty filter says `/ to
+filter` in grey. A picker appears with its list already in and closes as soon as you leave it.
 
 ### Status bar
 
@@ -196,6 +198,8 @@ Decisions
 - **`C-a` as the prefix**: with Caps Lock as Ctrl, it's a left-hand roll.
 - **No Cmd key for previous / next session**: too close to `cmd+[` / `cmd+]`, previous / next window.
 - **`C-a S` for the last session**: tmux's own `C-a L` resizes panes here, as `H/J/K/L` on the other layers.
+- **tmux's own tree stays on `C-a s`, next to the `cmd+j` tree**: it collapses sessions, kills (`x`) and
+  tags, which a list in the picker can't; `cmd+j` is for going somewhere, with the picker's keys and marks.
 - **The current window in bold, not underlined** as tmux 3.8 does by default.
 - **The `,tt` / `,tm` shells in a pane, not a popup**: a popup that keeps its shell running while hidden needs
   a tmux client nested inside it, and that holds every `Esc` for half a second.

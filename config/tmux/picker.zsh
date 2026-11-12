@@ -1,8 +1,8 @@
 # The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j),
 # config/github/inbox (cmd+g), buffers (C-a P), agent_resume, mdv, zi, change_theme, gsw, gfix and
-# kctx/kns/klo/kex (zsh/functions/), the history search (C-r) and the find keys (;f, ;r, … in zsh's normal
-# mode; find_file and fif in .fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys: the agent marks, nvim's
-# keys, and a list and preview that stay current while fzf is open.
+# kctx/kns/klo/kex (zsh/functions/), the history search (C-r, fzf-history-widget) and the find keys (;f, ;r, …
+# in zsh's normal mode; find_file and fif in .fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys: the
+# agent marks, nvim's keys, and a list and preview that stay current while fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")
 typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
@@ -19,6 +19,11 @@ typeset -g picker_help='normal   j/k down/up · g/G first/last · ctrl+d/u half 
 typing   jj back to normal mode, keeping the filter
 both     Enter pick · Esc clear the filter, then quit
          ctrl+n/p down/up · ctrl+/ preview · ctrl+alt+n/p scroll it · ctrl+y copy'
+
+# session_for <dir>: the name of a project directory's tmux session, the directory's own; tmux turns . and :
+# in session names into _ anyway. For the sessionizer, which makes the session, and whatever opens a window
+# in it (config/github/inbox).
+function session_for() { print -r -- ${${1:t}//[.:]/_} }
 
 # picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
 # "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below), j/k wrapping
