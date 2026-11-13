@@ -177,9 +177,9 @@ check_ghostty() {
 # starship: it warns about keys it doesn't know (a misspelt option is otherwise ignored), when installed. Its
 # cache is a fresh one: starship logs each warning once per session there and stays quiet about it after that.
 check_starship() {
-  note="config/starship.toml"
+  note="config/starship/starship.toml"
   (( $+commands[starship] )) || { print "starship not installed"; return 2 }
-  STARSHIP_CACHE=$tmp/starship STARSHIP_CONFIG=$repo/config/starship.toml STARSHIP_LOG=warn \
+  STARSHIP_CACHE=$tmp/starship STARSHIP_CONFIG=$repo/config/starship/starship.toml STARSHIP_LOG=warn \
     starship print-config > /dev/null 2> $err
   print -r -- ${"$(<$err)"//$'\e'\[[0-9;]#m/}
 }

@@ -184,7 +184,7 @@ The plugins are three Homebrew formulae, sourced from `$HOMEBREW_PREFIX/share` i
 
 | Tool | Config |
 |---|---|
-| starship | `config/starship.toml`, found through `STARSHIP_CONFIG` |
+| starship | `config/starship/starship.toml`, found through `STARSHIP_CONFIG` |
 | atuin | `config/atuin/config.toml` (linked to `~/.atuin/config.toml`); its list in fzf is `config/atuin/fzf-history`, the widget `fzf-history-widget` in `config/fzf/fzf.zsh` |
 | cached tool output, completion dump | `~/.cache/zsh` |
 

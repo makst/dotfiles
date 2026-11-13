@@ -115,7 +115,7 @@ config/glow/              mdv's Markdown style
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the pickers (sessions, windows, agents, paste buffers)
 config/nvim/              Neovim: one directory per plugin under lua/user/
-config/starship.toml      prompt
+config/starship/           starship: the prompt
 config/git/.gitconfig     git
 config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager

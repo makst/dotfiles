@@ -100,7 +100,7 @@ Config
 | `setup_gcloud` | `zsh/functions/gcloud.zsh` | installs the `gke-gcloud-auth-plugin` component kubectl runs to log in to GKE; without it kubectl fails and some tools (`argocd --core`) only time out. `check_mac` reports it missing |
 | PATH | `zsh/.exports` | adds `/opt/homebrew/share/google-cloud-sdk/bin`: components that `gcloud components install` adds, such as `gke-gcloud-auth-plugin`, live there |
 | Completion | `zsh/.zshdefault` | gcloud's own completion script, sourced after `compinit` when the cask is installed (~1 ms) |
-| Prompt | `config/starship.toml`, `_prompt_gcloud` in `zsh/.zshdefault` | the active project inside git repos; zsh reads it from gcloud's config files before each prompt, without starting a process |
+| Prompt | `config/starship/starship.toml`, `_prompt_gcloud` in `zsh/.zshdefault` | the active project inside git repos; zsh reads it from gcloud's config files before each prompt, without starting a process |
 | Claude Code | `config/claude/settings.json` | `deny` rules for commands that change things ([What Claude Code can do](#what-claude-code-can-do)) |
 | Claude Code, this Mac | `~/.config/dotfiles/claude.json` | the Viewer service account, as `CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT` |
 

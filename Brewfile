@@ -18,7 +18,7 @@ brew "fzf-tab"                     # zsh plugins, sourced in zsh/.zshdefault
 brew "zsh-autosuggestions"         # zsh plugin, zsh/.zshdefault
 brew "zsh-fast-syntax-highlighting" # zsh plugin, zsh/.zshdefault
 brew "atuin"                       # TUI: C-r history search, config/atuin
-brew "starship"                    # prompt, config/starship.toml
+brew "starship"                    # prompt, config/starship/starship.toml
 brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"                        # config/tmux, setup_tmux

@@ -30,7 +30,7 @@ m() { wants+=$1 descs+=$2 cmds+=$3 }
 m 'zsh files parse' 'an unclosed if in .aliases' "print 'if true; then' >> zsh/.aliases"
 m 'shellcheck' 'an unquoted \$1 in the bash script' "print '[ \$1 = x ] && echo y' >> prepare-zsh-install.sh"
 m 'JSON files parse' 'a stray comma in VS Code settings' "perl -0pi -e 's/\\{/{,/' config/vscode/settings.json"
-m 'TOML files parse' 'a key set twice in starship.toml' "print 'zz = 1\nzz = 2' >> config/starship.toml"
+m 'TOML files parse' 'a key set twice in starship.toml' "print 'zz = 1\nzz = 2' >> config/starship/starship.toml"
 m 'YAML files' 'broken YAML in the CI workflow' "print 'x: [' >> .github/workflows/check.yml"
 m 'YAML files' 'a skill without a description' "perl -ni -e 'print unless /^description:/' config/claude/skills/*/SKILL.md([1])"
 m "Lua files compile" 'a dangling local in keymaps.lua' "print 'local x =' >> config/nvim/lua/user/keymaps.lua"
@@ -49,7 +49,7 @@ m 'Brewfile package exists' 'a cask that does not exist' "print 'cask \"no-such-
 m 'Brewfile package exists' 'a package listed twice' "l=\$(command grep -m1 '^brew ' Brewfile); print -r -- \$l >> Brewfile"
 m 'fzfrc' 'an unknown fzf option' "print -- '--no-such-option' >> config/fzf/fzfrc"
 m 'Ghostty config' 'an unknown Ghostty key' "print 'no-such-key = 1' >> config/ghostty/config"
-m 'starship config' 'a misspelt top-level starship key' "perl -0pi -e 's/^/add_newlinee = true\n/' config/starship.toml"
+m 'starship config' 'a misspelt top-level starship key' "perl -0pi -e 's/^/add_newlinee = true\n/' config/starship/starship.toml"
 # AeroSpace: skipped in a worktree (it validates only the live config)
 # --- behaviour
 m 'zsh starts' 'a command that fails at start' "print 'no_such_command_zz' >> zsh/.aliases"

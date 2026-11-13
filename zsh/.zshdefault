@@ -132,11 +132,11 @@ ZSH_AUTOSUGGEST_STRATEGY=(history)
   source $HOMEBREW_PREFIX/share/zsh-fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 # -- prompt and navigation -------------------------------------------------------
-export STARSHIP_CONFIG="$real_script_dir/config/starship.toml"
+export STARSHIP_CONFIG="$real_script_dir/config/starship/starship.toml"
 cached_eval starship starship init zsh --print-full-init
 
-# _prompt_gcloud: precmd hook. Exports the active gcloud project for the prompt (config/starship.toml), only
-# inside a git repo, where it matters; a project with "prod" in its name goes in _PROMPT_GCLOUD_PROD instead,
+# _prompt_gcloud: precmd hook. Exports the active gcloud project for the prompt (config/starship/starship.toml),
+# only inside a git repo, where it matters; a project with "prod" in its name goes in _PROMPT_GCLOUD_PROD instead,
 # which the prompt shows in red. Reads gcloud's own files with builtins, so no process runs per prompt.
 function _prompt_gcloud() {
   unset _PROMPT_GCLOUD _PROMPT_GCLOUD_PROD
