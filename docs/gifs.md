@@ -74,7 +74,7 @@ The GIFs
 | `tmux-sessions` | [tmux](tmux.md#session-picker) | the session picker, the session tree, back to the last session |
 | `zsh-history` | [zsh](zsh.md#searching-history) | prefix search with the up arrow, grey suggestions, atuin |
 | `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
-| `nvim` | [neovim](neovim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
+| `nvim` | [nvim](nvim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
 | `git` | [git](git.md#staging-and-committing) | delta, difftastic, staging and committing in nvim (fugitive) |
 | `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
 

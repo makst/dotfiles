@@ -11,7 +11,7 @@
 .nvim/xcodebuild/
 buildServer.json
 
-# code tours (docs/neovim.md): the review comments for an agent (,n) and which tour is open; shared tours stay
+# code tours (docs/nvim.md): the review comments for an agent (,n) and which tour is open; shared tours stay
 .codetour/review.json
 .codetour/_active_tour.txt
 

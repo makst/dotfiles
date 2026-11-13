@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Shell functions for nvim (config/nvim, docs/neovim.md). Sourced by .zshrc with the rest of
+# Shell functions for nvim (config/nvim, docs/nvim.md). Sourced by .zshrc with the rest of
 # zsh/functions/*.zsh; each function's comment says what it does.
 
 # setup_nvim: links ~/.config/nvim, makes `vim` run nvim, installs the plugin versions in lazy-lock.json and

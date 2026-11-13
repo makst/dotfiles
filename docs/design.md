@@ -104,9 +104,9 @@ hand the job to it instead of doing it their own way.
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
 | Reading what has scrolled by | tmux's copy mode | `C-a Enter` or the mouse wheel enters it, `C-a /` (`cmd+f`) searches it; vi keys, `v` selects and `y` copies to the macOS clipboard ([tmux](tmux.md#decisions)) |
 | Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
-| Files to open | nvim-tree inside nvim, yazi in the shell, both on `,e` | one key, the tool depends on where you are ([neovim](neovim.md#decisions)) |
+| Files to open | nvim-tree inside nvim, yazi in the shell, both on `,e` | one key, the tool depends on where you are ([nvim](nvim.md#decisions)) |
 | Formatting | the formatter the project configures (prettier, ruff, stylua, shfmt, gofmt, …) | conform in nvim on save, Claude Code's format hook after its edits; neither brings a style of its own |
-| Language versions | fnm for node, uv for python | `setup_node` and `setup_python`; fnm installs a project's pinned node on `cd`; Homebrew's node, which nvim's language servers run on, stays off `PATH` ([neovim](neovim.md#decisions)) |
+| Language versions | fnm for node, uv for python | `setup_node` and `setup_python`; fnm installs a project's pinned node on `cd`; Homebrew's node, which nvim's language servers run on, stays off `PATH` ([nvim](nvim.md#decisions)) |
 | Containers | podman in its VM | `docker` and `docker compose` are podman ([podman](podman.md)) |
 | SSH keys | Secretive | git signs and pushes through its agent ([git](git.md)) |
 | Colours | the base16 theme, as the terminal's 16 ANSI colours | every tool that draws in the terminal ([theme](theme.md)) |

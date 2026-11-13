@@ -109,7 +109,7 @@ Normal mode has vim's motions and operators: `dw`, `cb`, `yy`, `p`, `.` repeats,
 | `C-r` | insert | history search (atuin's history in fzf) |
 | `/` | normal | the same |
 | `;f` / `;a` | normal | open a file in nvim: any but ignored ones / all (`find_file` in `.fzf.zsh`) |
-| `;g` | normal | the branch's changed files, to review in nvim (`greview`, see [neovim](neovim.md#reviewing-a-branch)) |
+| `;g` | normal | the branch's changed files, to review in nvim (`greview`, see [nvim](nvim.md#reviewing-a-branch)) |
 | `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
 | `;p` | normal | projects: the sessionizer (`tm`) |
 | `,gs` / `,e` | normal | git status in nvim (`gs`) / yazi |

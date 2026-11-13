@@ -17,7 +17,7 @@ What it is
 | [fzf-tab](https://github.com/Aloxaf/fzf-tab) | zsh's `Tab` completion menu replaced by fzf |
 
 - **One look everywhere**: every fzf, in the shell, in tmux popups and in nvim (fzf-lua,
-  [neovim](neovim.md#finding-things)), reads the same `config/fzf/fzfrc`. fzf takes 60 % of the screen below
+  [nvim](nvim.md#finding-things)), reads the same `config/fzf/fzfrc`. fzf takes 60 % of the screen below
   the command line instead of going full screen, with its prompt and best matches at the top. The prompt, the
   list and the preview each sit in a rounded box of their own, all the same width; a picker's header (its line
   of keys) sits at the top of the list's box, above a line. A bar marks the current line only. Previews show
@@ -52,7 +52,7 @@ Finding in files
 ---
 `fif [text]` (`;r` in normal mode) greps the project with rg as you type, starting from the text; the
 preview shows the match in its file, and Enter opens it in nvim at that line. In nvim it's the same key,
-`;r` (live grep), see [neovim](neovim.md#finding-things).
+`;r` (live grep), see [nvim](nvim.md#finding-things).
 
 Keys
 ---

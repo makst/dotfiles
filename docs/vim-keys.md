@@ -8,7 +8,7 @@ tmux and the TUIs use vim keys too.
 
 Adding a key
 ---
-1. Bind it in nvim, in the plugin's `keymaps.lua` under `config/nvim/lua/user/` (see [neovim](neovim.md)).
+1. Bind it in nvim, in the plugin's `keymaps.lua` under `config/nvim/lua/user/` (see [nvim](nvim.md)).
 2. In the same commit, add it to VS Code (`config/vscode/settings.json`, `vim.*`) and Android Studio
    (`config/ideavim/ideavimrc`) when the IDE has a matching action. In Android Studio, `:action` (or the
    IdeaVim icon in the status bar → Track Action IDs) shows the action ids.

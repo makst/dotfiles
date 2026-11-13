@@ -30,7 +30,7 @@ What it is
 - **Editor** is nvim and shows the diff below the commit message; `git difftool` and `git mergetool` open
   nvim's diff mode.
 - **In nvim**: changed lines are marked in the sign column (gitsigns), `,gb` shows blame and `,go` opens the
-  file on GitHub; `;g` lists the branch's changed files for a review. See [neovim](neovim.md#git).
+  file on GitHub; `;g` lists the branch's changed files for a review. See [nvim](nvim.md#git).
 
 ### Identity
 
@@ -162,7 +162,7 @@ Commands
 | `git go <branch>` | switch to the branch, creating it if needed |
 | `gsw [branch]` | the same with a name; without one, pick a branch (local or remote, newest first) in fzf, its log as the preview (`zsh/functions/git.zsh`) |
 | `gs` | git status in nvim (fugitive), alone in the window: [Staging and committing](#staging-and-committing) |
-| `greview` | the branch's changed files in nvim's `;g` picker, to review ([neovim](neovim.md#reviewing-a-branch)) |
+| `greview` | the branch's changed files in nvim's `;g` picker, to review ([nvim](nvim.md#reviewing-a-branch)) |
 | `gfix` | commit what's staged as `--fixup` of a commit picked from the branch's own, `git show` as the preview; `git rebase -i --autosquash` folds it in |
 | `git dft`, `git dlog`, `git dshow` | `diff`, `log -p`, `show` through difftastic |
 | `git get <branch>` | check out `origin/<branch>` as a tracking branch |
@@ -188,7 +188,7 @@ Config
 | `config/git/ignore` (linked to `~/.config/git/ignore`) | ignored in every repo |
 | `config/git/allowed_signers` | every Mac's signing key, for `git log --show-signature` |
 | `config/ssh/config` | included at the top of `~/.ssh/config`: Secretive's agent, the push key for GitHub and GitLab |
-| `config/nvim/lua/user/git/` | fugitive's keys and the `;g` review picker ([neovim](neovim.md#git)) |
+| `config/nvim/lua/user/git/` | fugitive's keys and the `;g` review picker ([nvim](nvim.md#git)) |
 
 To look out for
 ---
@@ -204,7 +204,7 @@ To look out for
 Decisions
 ---
 - **fugitive, not lazygit**: one place for git, inside nvim, with vim's keys in every list; see
-  [neovim](neovim.md#decisions).
+  [nvim](nvim.md#decisions).
 - **Secretive keys, not key files**: the private halves can't be copied. The price: no backups, so a new Mac
   means new keys, and they are ECDSA P-256 (the only kind the Secure Enclave makes), which GitHub and GitLab
   accept like ed25519.

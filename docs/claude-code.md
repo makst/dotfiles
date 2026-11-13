@@ -167,7 +167,7 @@ It refuses a pull request without failing checks, one from a fork (its branch is
 To review it yourself, committed or not, comment on the code in nvim and send the comments to the agent as one
 message:
 1. Open nvim in the agent's worktree and `;g` (or `greview`): the files its branch changes, committed or not;
-   `Enter` opens one beside its old side ([neovim](neovim.md#reviewing-a-branch)).
+   `Enter` opens one beside its old side ([nvim](nvim.md#reviewing-a-branch)).
 2. `,n` on a line opens a window below it to write the comment in, several lines if you like: `:w` saves it
    and it shows above the line, like a code tour's note; `q` closes without saving. `,n` on a line that has
    one opens it to change; saving it empty deletes it.

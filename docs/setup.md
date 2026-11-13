@@ -83,7 +83,7 @@ git pull && setup_dotfiles
 
 That installs and upgrades brew packages (the zsh plugins are among them), installs newly listed tmux plugins and
 restores nvim plugins to the versions in `lazy-lock.json`. Updating tmux plugins (`C-a U`) and nvim plugins
-are deliberate steps, see [tmux](tmux.md#updating-plugins) and [neovim](neovim.md#updating-plugins).
+are deliberate steps, see [tmux](tmux.md#updating-plugins) and [nvim](nvim.md#updating-plugins).
 
 A pull puts the new config on disk at once, through the links, but the programs already running keep what they
 started with: tmux, Ghostty and AeroSpace their config (a new tmux key does nothing yet), tmux's popups the

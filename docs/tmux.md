@@ -14,7 +14,7 @@ What it is
 - Closing the last window of a session switches to another session instead of closing the terminal.
 - **Shells that wait**: `,tt` and `,tm` (nvim, and zsh's normal mode) show a shell in a pane below, one each per
   directory; the same key hides it again, still running, into the session `_scratch`, which no picker lists.
-  It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([neovim](neovim.md)). nvim's Android keys
+  It is a real pane: `C-h/j/k/l`, zoom and `cmd+w` work on it ([nvim](nvim.md)). nvim's Android keys
   run Gradle and logcat in two more of these, at the project root ([mobile](mobile.md)).
 - **Moving between panes and nvim**: `C-h/j/k/l` work without the prefix: vim-tmux-navigator checks whether
   the pane runs nvim and, if so, lets nvim move between its own splits first. Inside nvim the same keys cross
@@ -70,7 +70,7 @@ The fzf pickers share their keys. This is the list of them, and the other pages 
 picker (`cmd+k`), the tree (`cmd+j`), the agents (`cmd+shift+j`), GitHub (`cmd+g`), the paste buffers
 (`C-a P`), `agent_resume`, `mdv`, `zi`, `change_theme`, git's `gsw` and `gfix`, kubectl's `kctx`, `kns`, `klo`
 and `kex`, the shell's history search (`C-r`, [zsh](zsh.md#searching-history)), zsh's `;` keys
-([zsh](zsh.md#vi-mode)) and nvim's `;` pickers ([neovim](neovim.md#finding-things)). They have the same keys
+([zsh](zsh.md#vi-mode)) and nvim's `;` pickers ([nvim](nvim.md#finding-things)). They have the same keys
 and work like nvim: a normal mode to move and an insert mode to type a filter. The session picker,
 `change_theme`, the history search and nvim's pickers open ready to type, the others in normal mode. The
 filter box stays on screen in both modes, so the list doesn't jump when you start or stop typing; the prompt
