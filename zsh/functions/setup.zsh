@@ -159,7 +159,7 @@ function setup_dotfiles() {
   local -a failed
   for step in setup_brew setup_gcloud setup_podman setup_fzf setup_atuin setup_btop setup_readline setup_node setup_python setup_ssh \
     setup_git setup_tmux setup_nvim setup_ghostty setup_claude setup_github setup_caps_lock setup_macos_defaults \
-    setup_window_management setup_vscode setup_ideavim; do
+    setup_aerospace setup_vscode setup_ideavim; do
     print -P "%F{blue}=> $step%f"
     $step || failed+=$step
   done

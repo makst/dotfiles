@@ -7,7 +7,7 @@ and the web: Go (through delve), Node and TypeScript, frontend code running in C
 apps are debugged in Xcode and Android Studio instead, see [mobile](mobile.md).
 
 VS Code isn't a second editor here: it opens on workspace 7, on the second display when there are two (see
-[window management](window-management.md#what-it-is)), and nvim's `,vo` takes you to the same line in it.
+[AeroSpace](aerospace.md#what-it-is)), and nvim's `,vo` takes you to the same line in it.
 
 Once per Mac
 ---

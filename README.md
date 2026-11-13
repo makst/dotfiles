@@ -34,7 +34,7 @@ git status in nvim, `cmd+j` shows every session.
 | GitHub | a watcher: notifications and a tmux mark for your pull requests' checks and reviews, mentions, comments | [github](docs/github.md) |
 | Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
-| Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [window-management](docs/window-management.md) |
+| Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [AeroSpace](docs/aerospace.md) |
 | GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
 | Design | the principles every key, file, page and change follows; which layer owns which modifier | [design](docs/design.md) |
 

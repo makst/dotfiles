@@ -25,7 +25,7 @@ What it is
 
 Once per Mac
 ---
-`setup_window_management` (part of `setup_dotfiles`) links the config and starts AeroSpace (from the
+`setup_aerospace` (part of `setup_dotfiles`) links the config and starts AeroSpace (from the
 Brewfile). It also turns on *Group windows by application* (Mission Control shows those off-screen windows
 too small otherwise) and lets `ctrl+cmd` and a drag anywhere in a window move it.
 

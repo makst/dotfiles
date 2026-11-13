@@ -88,7 +88,7 @@ brew "ktlint"                      # formats Kotlin where a project's .editorcon
 
 # --- Apps
 cask "ghostty"                     # the terminal, config/ghostty, setup_ghostty
-cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_window_management
+cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_aerospace
 cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key
 cask "font-source-code-pro"        # the font in Ghostty, config/ghostty/config
 cask "font-symbols-only-nerd-font" # Nerd Font icons in the GIFs, make_gifs

@@ -1,5 +1,5 @@
 # AeroSpace: tiling window manager with its own workspaces; works with SIP on. Linked to
-# ~/.config/aerospace/aerospace.toml by setup_window_management, see docs/window-management.md.
+# ~/.config/aerospace/aerospace.toml by setup_aerospace, see docs/aerospace.md.
 # Commands: https://nikitabobko.github.io/AeroSpace/commands (also `man aerospace-<command>`)
 
 config-version = 2

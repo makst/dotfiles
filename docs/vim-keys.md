@@ -99,7 +99,7 @@ How each tool gets its vim keys:
   normal mode, `j`/`k` at the first or last line go through earlier prompts, and `/` searches them.
 - **tmux**: copy mode uses vi keys, `v` selects, `y` copies (see [tmux](tmux.md)); `C-h/j/k/l` cross into
   nvim.
-- **AeroSpace**: `alt+h/j/k/l` move between windows (see [window management](window-management.md)).
+- **AeroSpace**: `alt+h/j/k/l` move between windows (see [AeroSpace](aerospace.md)).
 - **REPLs**: vi mode in everything that reads a line with GNU readline (bash, psql; `config/readline/inputrc`,
   with `jj`) or libedit (sqlite3, lldb, python; `config/readline/editrc`, Esc only: libedit can't wait for
   the second `j`, so a `j` before any other letter would be lost). Python runs its basic REPL
