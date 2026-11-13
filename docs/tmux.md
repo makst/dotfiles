@@ -56,7 +56,13 @@ session's window count and whether it's attached, window flags (`*` current, `-`
 windows that have more than one. Each line carries the mark of its most urgent agent and what its agents work
 on. It's fzf in a popup, so it has the [picker keys](#picker-keys); it opens on the current window, list and
 preview update while it's open, and the preview's label says which window it shows. `Enter` switches to the
-session, window or pane.
+session, window or pane. Two keys act on the line, in normal mode as in nvim's pickers (`alt-` the same letter
+while filtering):
+
+| Key | Action |
+|---|---|
+| `d` / `alt-d` | kill the session, window or pane: asks first, `y` kills, anything else keeps it |
+| `r` / `alt-r` | rename the session or window (a pane's line renames its window): the prompt has the current name |
 
 ### Pickers
 
@@ -120,7 +126,7 @@ Splitting, moving between and zooming panes, then a new window.
 | `C-a S` | `cmd+shift+0` | back to the last session (tmux's own key for it, `C-a L`, resizes panes here) |
 | `C-a z` | `cmd+shift+enter` | zoom pane |
 | `C-a f` | `cmd+k` | [session picker](#session-picker), ready to type ([picker keys](#picker-keys)) |
-| `C-a w` | `cmd+j` | [tree](#tree) of sessions and windows, with previews: the quickest way to switch to any of them |
+| `C-a w` | `cmd+j` | [tree](#tree) of sessions and windows, with previews: the quickest way to switch to any of them; `d` kills, `r` renames |
 | `C-a a` | `cmd+shift+j` | the Claude Code agents only, in a popup: most urgent first, each with its state and what it's working on, and a live preview of its screen. Opens in normal mode: `j`/`k` move, `/` filters ([picker keys](#picker-keys)) |
 | `C-a g` | `cmd+g` | your pull requests and GitHub notifications in a popup, most urgent first, with checks or the thread in the preview ([github](github.md#keys)) |
 | `C-a A` | `cmd+shift+space` | the next Claude Code agent that needs you, in any session: waiting ones first, then done ones; again for the one after; `cmd+0` back, or `cmd+shift+0` from another session |
@@ -188,8 +194,8 @@ To look out for
 - fzf has no timeout for the second `j`: `jj` in a filter always leaves typing.
 - After a change to `tmux.conf`, reload it (`C-a r`): a running server keeps the old config. One started before
   `@listed` (which hides `_scratch`) lists every session in the pickers, `_scratch` too.
-- The tree can't collapse sessions, kill (`x`) or tag as `choose-tree` does, and a filter matches the text of
-  each line, so a window matches by its own name, not its session's.
+- The tree can't collapse sessions, tag or run a command on the tagged ones as `choose-tree` does, and a
+  filter matches the text of each line, so a window matches by its own name, not its session's.
 - Remote hosts often lack the `tmux-256color` terminfo, so inside tmux the `ssh` alias connects with
   `TERM=xterm-256color`.
 
@@ -198,8 +204,11 @@ Decisions
 - **`C-a` as the prefix**: with Caps Lock as Ctrl, it's a left-hand roll.
 - **No Cmd key for previous / next session**: too close to `cmd+[` / `cmd+]`, previous / next window.
 - **`C-a S` for the last session**: tmux's own `C-a L` resizes panes here, as `H/J/K/L` on the other layers.
-- **tmux's own tree stays on `C-a s`, next to the `cmd+j` tree**: it collapses sessions, kills (`x`) and
-  tags, which a list in the picker can't; `cmd+j` is for going somewhere, with the picker's keys and marks.
+- **tmux's own tree stays on `C-a s`, next to the `cmd+j` tree**: it collapses sessions, tags and runs a
+  command on the tagged ones, which a list in the picker can't; `cmd+j` is for going somewhere and tidying up
+  on the way (`d` kills, `r` renames, nvim's picker keys), with the picker's marks.
+- **`d` in the tree asks first, unlike `alt-d` in nvim's buffers**: a window or session may hold an agent or a
+  server still running, and a killed one can't be brought back.
 - **The current window in bold, not underlined** as tmux 3.8 does by default.
 - **The `,tt` / `,tm` shells in a pane, not a popup**: a popup that keeps its shell running while hidden needs
   a tmux client nested inside it, and that holds every `Esc` for half a second.

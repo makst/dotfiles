@@ -25,22 +25,24 @@ both     Enter pick · Esc clear the filter, then quit
 # in it (config/github/inbox).
 function session_for() { print -r -- ${${1:t}//[.:]/_} }
 
-# picker <name> [--insert] [--live <command>] [fzf options…]: fzf over the lines on stdin, each
-# "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below), j/k wrapping
-# round at either end. It opens in normal mode, or with --insert ready to type.
+# picker <name> [--insert] [--live <command>] [--keys <key:presses,…>] [fzf options…]: fzf over the lines on
+# stdin, each "key<tab>what fzf shows", printing the chosen line, with the two modes of picker_modes (below),
+# j/k wrapping round at either end. It opens in normal mode, or with --insert ready to type. --keys gives the
+# picker's own normal-mode keys, as picker_modes takes them (d:alt-d), for the actions the caller binds.
 # --live <command> reprints the list every second, and the key is a tmux target (pane, window or session):
 # while fzf is open, the list follows the command's output and the preview the target's screen.
 function picker() {
-  local name=$1 start=normal live=
+  local name=$1 start=normal live= keys=
   shift
-  while [[ $1 == --insert || $1 == --live ]]; do
+  while [[ $1 == --insert || $1 == --live || $1 == --keys ]]; do
     case $1 in
       --insert) start=insert; shift ;;
       --live) live=$2; shift 2 ;;
+      --keys) keys=$2; shift 2 ;;
     esac
   done
   local -a reply
-  picker_modes $name $start
+  picker_modes $name $start $keys
   # --sync draws the picker once the list is in, not first an empty frame that fills a moment later
   local -a opts=(--sync --cycle --no-multi --no-sort --ansi --delimiter '\t' --with-nth 2 --track --id-nth 1 $reply)
 

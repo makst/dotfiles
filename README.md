@@ -79,7 +79,7 @@ Switching sessions and windows
 ---
 | Key | Action |
 |---|---|
-| `cmd+j` | every session and window as tmux's tree, in fzf with a live preview; `j`/`k` move, `/` filters, `Enter` switches |
+| `cmd+j` | every session and window as tmux's tree, in fzf with a live preview; `j`/`k` move, `/` filters, `Enter` switches, `d` kills, `r` renames |
 | `cmd+shift+j` | only the Claude Code agents, most urgent first: their state, what each works on, a live preview of its screen |
 | `cmd+g` | your pull requests and GitHub notifications, most urgent first: checks or the thread in the preview, Enter opens it |
 | `cmd+shift+space` | the next agent that needs you, in any session: waiting ones first, then done ones; again for the one after |

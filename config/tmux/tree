@@ -4,10 +4,38 @@
 # windows that have more than one. Each line has the agent mark of what's in it and what its agents work on;
 # the preview shows the screen of the pane, or the active one of the window or session, and its label which
 # window that is. List and preview refresh every second; Enter switches there. It opens on the current window.
-# Keys as in every picker (config/tmux/picker.zsh): normal mode, j/k move, / filters. Bound to prefix w
-# (cmd+j, config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.
-# `tree --list` prints the lines alone, for fzf's reload.
+# Keys as in every picker (config/tmux/picker.zsh): normal mode, j/k move, / filters; d (alt-d) kills the
+# session, window or pane after a y, r (alt-r) renames the session or window, as nvim's pickers delete and
+# reword. Bound to prefix w (cmd+j, config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill
+# the tmux popup. `tree --list` prints the lines alone, for fzf's reload; `tree --kill <id>` and
+# `tree --rename <id>` ask in the popup and do it, for d and r.
 source ${0:A:h}/picker.zsh
+
+# what the line of a session ($…), window (@…) or pane (%…) is, in the questions --kill and --rename ask
+typeset -A what=('$' 'session #S' '@' 'window #S:#I #W' '%' 'pane #S:#I.#P #{pane_current_command}')
+
+if [[ $1 == --kill ]]; then
+  # a y kills it, anything else keeps it: a window or session may hold an agent or a server still running
+  print -rn -- "kill $(tmux display -p -t $2 $what[${2[1]}])? [y/N] "
+  read -q || exit 0
+  case $2 in
+    \$*) tmux kill-session -t $2 ;;
+    @*) tmux kill-window -t $2 ;;
+    %*) tmux kill-pane -t $2 ;;
+  esac
+  exit 0
+fi
+
+if [[ $1 == --rename ]]; then
+  # a pane has no name of its own (its title is what the program in it sets), so r on a pane renames its window
+  target=$2
+  [[ $target == %* ]] && target=$(tmux display -p -t $target '#{window_id}')
+  [[ $target == \$* ]] && kind=session || kind=window
+  name=$(tmux display -p -t $target ${${kind/session/#S}/window/#W})
+  vared -p "rename $(tmux display -p -t $target $what[${target[1]}]) to: " name
+  [[ -n $name ]] && tmux rename-$kind -t $target -- $name
+  exit 0
+fi
 
 # each line is "key<tab>what fzf shows": the id of the session ($…), window (@…) or pane (%…), which
 # switch-client and capture-pane take as they are. One line per pane from tmux, sessions and windows in order;
@@ -45,8 +73,11 @@ list=$("$self" --list)
 # start on the current window: its line number among the keys
 # (not $TMUX_PANE's: a popup inherits one from the environment tmux started in)
 current=${${(f)list}[(i)$(env -u TMUX_PANE tmux display -p '#{window_id}')[[:blank:]]*]}
-choice=$(print -r -- $list | picker tree --live "$self --list" --reverse --bind "load:pos($current)+unbind(load)" \
-  --header 'j/k move · Enter switches · / filters, jj back · q quits · cmd+shift+j for the agents' \
+choice=$(print -r -- $list | picker tree --live "$self --list" --keys d:alt-d,r:alt-r --reverse \
+  --bind "load:pos($current)+unbind(load)" \
+  --bind "alt-d:execute('$self' --kill {1})+reload-sync('$self' --list)" \
+  --bind "alt-r:execute('$self' --rename {1})+reload-sync('$self' --list)" \
+  --header 'j/k move · Enter switches · d kills · r renames · / filters, jj back · q quits · cmd+shift+j agents' \
   --preview "$picker_screen" --preview-window "$picker_preview,follow" --bind $picker_label "$@")
 [[ -n $choice ]] && tmux switch-client -t "${choice%%$'\t'*}"
 exit 0

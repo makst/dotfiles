@@ -190,7 +190,7 @@ Every tool owns its own modifier, so the layers don't fight over keys:
 | `Cmd` | Ghostty, translated into tmux commands | `cmd+t` new window, `cmd+d` split, `cmd+k` session picker |
 | `C-a` | tmux prefix | `C-a f` session picker, `C-a w` session tree, `C-a z` zoom |
 | `C-h/j/k/l` | tmux panes *and* nvim splits, seamlessly | |
-| `Option` (Alt) | AeroSpace, globally; the few it leaves free reach the terminal, for keys inside a list (fzf: `alt-a` mark all, `ctrl-alt-n/p` scroll the preview; nvim's pickers: `alt-d` delete, `alt-r` reword, `alt-p` paste into the agent, `alt-n` / `alt-g` from `;g` to `;n` and back: alt plus the picker's letter) | `alt+h` focus window left, `alt+2` workspace 2 |
+| `Option` (Alt) | AeroSpace, globally; the few it leaves free reach the terminal, for keys inside a list (fzf: `alt-a` mark all, `ctrl-alt-n/p` scroll the preview; nvim's pickers and tmux's tree: `alt-d` delete, `alt-r` reword, `alt-p` paste into the agent, `alt-n` / `alt-g` from `;g` to `;n` and back: alt plus the picker's letter) | `alt+h` focus window left, `alt+2` workspace 2 |
 | `Caps Lock` | remapped to Ctrl | |
 | `,` | nvim leader, and zsh's normal mode for the same tools | `,e` file tree (zsh: yazi), `,gs` git status |
 | `;` | nvim pickers (fzf-lua, harpoon), and zsh's normal mode for the same lists | `;f` files, `;r` grep, `;b` open files |
@@ -213,7 +213,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 | `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
 | `Shift+Ctrl+h/j/k/l`: move it that way | `C-w H/J/K/L` (nvim's own) | – (not bound; tmux's own `C-a {` / `}` swap panes) | – (not bound) | `alt+ctrl+shift+h/j/k/l` (the window, through the layout) |
 | split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | `alt+e` (side by side / stacked; new windows tile themselves) |
-| close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own) | – (the app closes it: `cmd+w`) |
+| close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own); any window or session: `d` in the tree (`cmd+j`) | – (the app closes it: `cmd+w`) |
 
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim
 keys](vim-keys.md); VS Code goes to the previous editor group, as it doesn't track the last one).
