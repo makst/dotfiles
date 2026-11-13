@@ -215,3 +215,6 @@ Decisions
 - **Popups centred by the config**: tmux's own centring is a column and a row off.
 - **tmux 3.8's fixed shades mapped onto the ANSI colours**: it colours popups, menus and the prompt from a
   theme of fixed shades (a grey popup background, `skyblue3`, …), which wouldn't follow the theme.
+- **Scrollback is read in copy mode, not in nvim**: the text is already in the pane, with its colours, and
+  copy mode moves through it with vi keys. Sending it to nvim would take a key of its own and a temporary
+  file to show what `C-a Enter` shows in place.

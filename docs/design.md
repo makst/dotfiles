@@ -102,6 +102,7 @@ hand the job to it instead of doing it their own way.
 | Shell history | atuin | `C-r` in zsh, in the picker |
 | Git: staging, committing, history, reviewing | git, with fugitive in nvim on top; delta and difftastic for diffs; gh for GitHub | `gs` and `,gs` (status), `;g` and `greview` (the branch's changes), nvim's `,go` / `,gp` / `,gn` through gh; git's pager and the pickers' previews are delta |
 | Copying | the macOS clipboard | nvim (`unnamedplus`), tmux (`pbcopy`, OSC 52 over ssh), fzf (`ctrl-y`), VS Code and Android Studio |
+| Reading what has scrolled by | tmux's copy mode | `C-a Enter` or the mouse wheel enters it, `C-a /` (`cmd+f`) searches it; vi keys, `v` selects and `y` copies to the macOS clipboard ([tmux](tmux.md#decisions)) |
 | Telling you something happened elsewhere | a macOS notification (terminal-notifier) you can click, and a mark in tmux's status line | Claude Code's hooks for agents that wait or finish, the GitHub watcher for pull requests ([github](github.md)) |
 | Files to open | nvim-tree inside nvim, yazi in the shell, both on `,e` | one key, the tool depends on where you are ([neovim](neovim.md#decisions)) |
 | Formatting | the formatter the project configures (prettier, ruff, stylua, shfmt, gofmt, …) | conform in nvim on save, Claude Code's format hook after its edits; neither brings a style of its own |
