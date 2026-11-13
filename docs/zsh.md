@@ -75,8 +75,8 @@ Switching language versions
 - **node**: fnm. Entering a directory with `.nvmrc`, `.node-version` or a `package.json` `engines` field
   switches to that version (in subdirectories too), installing it first if it's missing; a version that can't
   be installed is reported in red, never skipped quietly. A new shell does the same where it opens. Elsewhere
-  the default version is used; it is on `PATH` everywhere, including for nvim's language servers. `fnm install
-  <v>`, `fnm default <v>`.
+  the default version is used; it is on `PATH` everywhere, and it is the only `node`, `npm` and `tsc` there.
+  `fnm install <v>`, `fnm default <v>`.
 - **python**: [uv](https://docs.astral.sh/uv/). `python` / `python3` are the latest version (from
   `setup_python`); in a project, `uv init`, `uv add <pkg>`, `uv run <script>` manage the virtualenv and
   `uv python pin <v>` its version. `uv tool install <pkg>` installs a CLI tool, `uvx <pkg>` runs one once.

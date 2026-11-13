@@ -360,6 +360,10 @@ To look out for
 Decisions
 ---
 - **Language servers from the Brewfile, not Mason**: like every other tool, so `brew upgrade` updates them.
+- **The language servers run on Homebrew's node, not fnm's**: the TypeScript, ESLint and YAML servers start
+  with Homebrew's node by its full path, so they work whichever node a project pins. fnm owns the `node` you
+  type (`docs/design.md`, "One tool per job"), so Homebrew's node and its TypeScript are installed but not
+  linked (`link: false` in the Brewfile) and never reach `PATH`.
 - **fzf-lua, not telescope**: it runs the real fzf, so nvim's pickers are the same as the shell's and tmux's
   (`docs/design.md`, "One tool per job").
 - **Code tour notes drawn by this config**: the plugin's own note is one line that runs off the window.

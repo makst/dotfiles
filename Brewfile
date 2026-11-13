@@ -40,6 +40,8 @@ brew "lua-language-server"         # Lua language server in nvim, lsp/lspconfig/
 brew "typescript-language-server"  # TypeScript/JavaScript language server in nvim, lsp/lspconfig/ts_ls.lua
 brew "vscode-langservers-extracted" # ESLint language server in nvim, lsp/lspconfig/eslint.lua
 brew "yaml-language-server"        # YAML language server in nvim, lsp/lspconfig/yamlls.lua
+brew "node", link: false           # what the three language servers above run on, and nothing else: not on PATH, fnm owns `node` (docs/zsh.md)
+brew "typescript", link: false     # comes with typescript-language-server; not on PATH, `tsc` is the one setup_node installs
 brew "gopls"                       # Go language server in nvim, lsp/lspconfig/gopls.lua
 brew "tree-sitter"                 # parser library for nvim treesitter
 brew "tree-sitter-cli"             # compiles the nvim treesitter parsers

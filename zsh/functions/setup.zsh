@@ -290,7 +290,10 @@ function check_mac() {
     [[ -d ~/.tmux/plugins/$name ]] || stale+=$name
   done
   (( $#stale )) && problems+="tmux plugins missing (${(j:, :)stale}): setup_tmux"
-  # fnm's default node, not Homebrew's (a dependency of the language servers)
+  # fnm's default node, not Homebrew's (a dependency of the language servers, which the Brewfile keeps
+  # unlinked so that the only node on PATH is fnm's)
+  [[ -e /opt/homebrew/bin/node || -e /opt/homebrew/bin/tsc ]] &&
+    problems+="Homebrew's node or tsc is on PATH next to fnm's: brew unlink node typescript"
   fnm exec --using=default -- tsc --version > /dev/null 2>&1 ||
     problems+="fnm has no default node with typescript: setup_node"
   [[ -x ~/.local/bin/python ]] || problems+="no ~/.local/bin/python: setup_python"

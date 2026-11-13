@@ -53,9 +53,10 @@ fi
 # gke-gcloud-auth-plugin for kubectl, live here; brew links only gcloud, bq and gsutil
 [[ -d /opt/homebrew/share/google-cloud-sdk/bin ]] && path+=(/opt/homebrew/share/google-cloud-sdk/bin)
 
-# node versions come from fnm: the default one is on PATH (also for nvim: mason, ts_ls). Not cached: it makes a
-# link per shell. Its own --use-on-cd hook fails on a version that isn't installed and leaves the last node
-# active without a word, so _node_use_pinned replaces it.
+# node versions come from fnm: the default one is on PATH, and it is the only node there (Homebrew's, which
+# the language servers run on by its full path, is not linked: Brewfile). Not cached: it makes a link per
+# shell. Its own --use-on-cd hook fails on a version that isn't installed and leaves the last node active
+# without a word, so _node_use_pinned replaces it.
 if command -v fnm > /dev/null; then
   eval "$(fnm env --version-file-strategy=recursive --resolve-engines --shell zsh)"
   # _node_use_pinned [fnm options]: chpwd hook, and once at start (a new pane can open inside a project), where

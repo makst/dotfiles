@@ -21,8 +21,8 @@ function zi() {
 }
 
 # setup_node: installs the latest node LTS with fnm (Brewfile, zsh/.exports), makes it the default and
-# installs the global npm packages into it. Through fnm exec: in a shell started before node had a default (a
-# new Mac's), `npm` is Homebrew's, a dependency of the language servers, which would install into /opt/homebrew.
+# installs the global npm packages into it. Through fnm exec: a shell started before node had a default (a
+# new Mac's) has no `npm` on PATH (Homebrew's node, which the language servers run on, isn't linked: Brewfile).
 function setup_node() {
   fnm install --lts || return
   fnm default lts-latest || return

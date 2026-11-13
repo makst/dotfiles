@@ -126,6 +126,7 @@ check_mac: 2 problems, each with what fixes it:
 | `brew bundle check`: every Brewfile package is installed | `setup_brew` |
 | nvim's plugins are at the commits in `lazy-lock.json`, tmux's plugins are installed | `setup_nvim`, `setup_tmux` |
 | fnm's default node has typescript, `~/.local/bin/python` exists, VS Code has the extensions | `setup_node`, `setup_python`, `setup_vscode` |
+| Homebrew's node and `tsc` aren't linked, so fnm's are the only ones on `PATH` | `brew unlink node typescript` (`setup_brew` does it) |
 | where gcloud is installed, it has `gke-gcloud-auth-plugin` | `setup_gcloud` |
 | where the Mac can run a VM, podman has one and no connection to one that's gone | `setup_podman` |
 | `~/.npm` has no files of another user (root's, from an npm run with `sudo`), which make npm fail with EPERM | `sudo chown -R $(id -u) ~/.npm` |
