@@ -51,7 +51,7 @@ zsh_definitions() {
         if (s ~ /^"/) { sub(/^"[^"]*"[[:space:]]*/, "", s) } else if (s ~ /^\047/) { sub(/^\047[^\047]*\047[[:space:]]*/, "", s) } else { sub(/^[^[:space:]]*[[:space:]]*/, "", s) }
       }
     }
-  ' .zshrc .fzf.zsh zsh/.* zsh/functions/*.zsh config/tmux/sessionizer 2> /dev/null
+  ' .zshrc config/fzf/fzf.zsh zsh/.* zsh/functions/*.zsh config/tmux/sessionizer 2> /dev/null
 }
 
 # md_index: one pass over the Markdown files: "H file slug" for every heading (GitHub's anchor for it, a

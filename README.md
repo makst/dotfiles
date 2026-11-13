@@ -110,8 +110,7 @@ zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dot
 config/atuin/             shell history search
 config/btop/              btop: vim keys, the terminal's colours
 config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for libedit)
-.fzf.zsh                  fzf and fzf-tab configuration, the zsh pickers
-config/fzf/               fzfrc: the look and keys every fzf reads
+config/fzf/               fzf.zsh: fzf and fzf-tab configuration, the zsh pickers; fzfrc: the look and keys every fzf reads
 config/glow/              mdv's Markdown style
 config/ghostty/           Ghostty config and the generated base16 theme
 config/tmux/              tmux.conf and the pickers (sessions, windows, agents, paste buffers)

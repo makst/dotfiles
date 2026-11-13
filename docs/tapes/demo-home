@@ -10,7 +10,6 @@ zmodload zsh/datetime
 mkdir -p $home/.config $home/.atuin $home/.tmux/plugins $home/.local/share $home/repos
 ln -s $repo $home/dotfiles
 ln -s $repo/.zshrc $home/.zshrc
-ln -s $repo/.fzf.zsh $home/.fzf.zsh
 ln -s $repo/config/git/.gitconfig $home/.gitconfig
 ln -s $repo/config/atuin/config.toml $home/.atuin/config.toml
 ln -s $repo/config/tmux $home/.config/tmux

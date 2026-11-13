@@ -65,10 +65,10 @@ check_function_comments() {
 
 # one picker: a list to choose from goes through `picker` (config/tmux/picker.zsh), so it has the same keys and
 # normal mode as every other; no zsh file runs fzf or fzf-tmux itself (after a pipe, a variable set for it,
-# `command` or xargs too), except the picker, .fzf.zsh, which sets fzf up, and checks/ (checks/mutate's break
-# does it on purpose). nvim's lists are fzf-lua's and aren't looked at.
+# `command` or xargs too), except the picker, config/fzf/fzf.zsh, which sets fzf up, and checks/
+# (checks/mutate's break does it on purpose). nvim's lists are fzf-lua's and aren't looked at.
 check_picker() {
-  local -a zsh=(${${${${(f)"$(zsh_files)"}:#config/tmux/picker.zsh}:#.fzf.zsh}:#checks/*})
+  local -a zsh=(${${${${(f)"$(zsh_files)"}:#config/tmux/picker.zsh}:#config/fzf/fzf.zsh}:#checks/*})
   local before='(^|[|;&({]|\$\(|then|do|else|xargs)[[:space:]]*([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]+)*'
   grep -nE "$before(command[[:space:]]+)?fzf(-tmux)?([[:space:]]|\$)" -- $zsh |
     awk -F: '$3 !~ /^[[:space:]]*#/ { print $1 ":" $2 ": runs fzf; a list goes through picker (config/tmux/picker.zsh)" }'
@@ -144,7 +144,7 @@ check_docs_shape() {
 check_top_comments() {
   local f first
   local -a files=(${(M)text_files:#(config|zsh|checks|.githooks|.github)/*})
-  files+=(${(M)text_files:#(.zshrc|.fzf.zsh|prepare-zsh-install.sh)})
+  files+=(${(M)text_files:#(.zshrc|prepare-zsh-install.sh)})
   files=(${files:#*.(json|md|tape|cases)})
   files=(${files:#(*/init.lua|*/themes/*|*/base16-vim.lua|*/allowed_signers|*/skills/*|*/lazy-lock*)})
   for f in $files; do

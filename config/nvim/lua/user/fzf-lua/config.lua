@@ -1,6 +1,6 @@
 -- fzf-lua: every picker in nvim (the ; keys in user/fzf-lua/keymaps, codetour's in user/codetour/picker,
 -- vim.ui.select, xcodebuild's) runs the real fzf, so it looks and behaves like the shell's and tmux's: fzf
--- reads config/fzf/fzfrc (FZF_DEFAULT_OPTS_FILE, from .fzf.zsh) for the borders, colours and keys, and the
+-- reads config/fzf/fzfrc (FZF_DEFAULT_OPTS_FILE, from config/fzf/fzf.zsh) for the borders, colours and keys, and the
 -- normal mode (jj, j/k, q) is the tmux pickers' (picker_modes in config/tmux/picker.zsh).
 local status, fzf = pcall(require, 'fzf-lua')
 if (not status) then return end

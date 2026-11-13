@@ -108,7 +108,7 @@ Normal mode has vim's motions and operators: `dw`, `cb`, `yy`, `p`, `.` repeats,
 | `C-k` / `C-j` | normal | the same as `↑` / `↓`, on the home row (outside tmux; inside tmux these keys move between panes) |
 | `C-r` | insert | history search (atuin's history in fzf) |
 | `/` | normal | the same |
-| `;f` / `;a` | normal | open a file in nvim: any but ignored ones / all (`find_file` in `.fzf.zsh`) |
+| `;f` / `;a` | normal | open a file in nvim: any but ignored ones / all (`find_file` in `config/fzf/fzf.zsh`) |
 | `;g` | normal | the branch's changed files, to review in nvim (`greview`, see [nvim](nvim.md#reviewing-a-branch)) |
 | `;r` | normal | grep the project as you type, open the match in nvim at its line (`fif`) |
 | `;p` | normal | projects: the sessionizer (`tm`) |
@@ -185,7 +185,7 @@ The plugins are three Homebrew formulae, sourced from `$HOMEBREW_PREFIX/share` i
 | Tool | Config |
 |---|---|
 | starship | `config/starship.toml`, found through `STARSHIP_CONFIG` |
-| atuin | `config/atuin/config.toml` (linked to `~/.atuin/config.toml`); its list in fzf is `config/atuin/fzf-history`, the widget `fzf-history-widget` in `.fzf.zsh` |
+| atuin | `config/atuin/config.toml` (linked to `~/.atuin/config.toml`); its list in fzf is `config/atuin/fzf-history`, the widget `fzf-history-widget` in `config/fzf/fzf.zsh` |
 | cached tool output, completion dump | `~/.cache/zsh` |
 
 To look out for

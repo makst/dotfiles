@@ -3,7 +3,7 @@
 # A shell in a tmux pane below the current one that keeps running while hidden, one per name and directory
 # (default: here). Run it again and the window's <name> pane leaves, still running; the next time it comes back
 # as you left it. Called by nvim's ,tt / ,tm (config/nvim/lua/user/tmux/keymaps.lua) and the same keys in zsh's
-# normal mode (.fzf.zsh), so the key that opens it hides it from inside too.
+# normal mode (config/fzf/fzf.zsh), so the key that opens it hides it from inside too.
 # --show only shows it, never hides it, leaves the focus where it was and prints the pane's id: for nvim to send
 # a command to (the Android Gradle and logcat shells, config/nvim/lua/user/android/config.lua). A <name> pane
 # of another directory in this window makes way for it. A real pane, not a popup: C-h/j/k/l,

@@ -1,5 +1,5 @@
 # fzf's default options, for every fzf: the shell's, fzf-tab's, the tmux pickers' and the ones in nvim's
-# terminal. .fzf.zsh and tmux.conf point FZF_DEFAULT_OPTS_FILE at it, in this checkout.
+# terminal. config/fzf/fzf.zsh and tmux.conf point FZF_DEFAULT_OPTS_FILE at it, in this checkout.
 # fzf reads this file each time it starts, so an edit shows in the next fzf, with no new shell or tmux server.
 # One or more options per line, quoted as in the shell; lines starting with # are comments.
 # https://betterprogramming.pub/boost-your-command-line-productivity-with-fuzzy-finder-985aa162ba5d

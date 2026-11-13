@@ -1,4 +1,6 @@
-# Symlinked to ~/.fzf.zsh by setup_fzf (zsh/functions/fzf.zsh), sourced after `bindkey -v` (zsh/.zshdefault).
+# Sourced by zsh/.zshdefault straight from the checkout ($real_script_dir/config/fzf/fzf.zsh, no link in ~), after
+# `bindkey -v`. The paths to its neighbours in config/ are worked out from this file's own location.
+typeset -g _fzf_dir=${${(%):-%x}:A:h}
 
 # fzf's own key bindings and completion: CTRL-T files, ALT-C cd, **<TAB> (CTRL-R is fzf-history-widget below)
 cached_eval fzf fzf --zsh
@@ -13,10 +15,10 @@ export FZF_ALT_C_COMMAND='fd --type d --hidden --follow --exclude .git'
 # its server at the same file, so the pickers in tmux popups match. It's this checkout's file, not a link setup
 # makes: fzf fails when the file is missing, so it works as soon as a pull brings it. A FZF_DEFAULT_OPTS left
 # over from before would be added on top of the file, so it goes.
-export FZF_DEFAULT_OPTS_FILE=${${(%):-%x}:A:h}/config/fzf/fzfrc
+export FZF_DEFAULT_OPTS_FILE=$_fzf_dir/fzfrc
 unset FZF_DEFAULT_OPTS
 
-typeset -g _fzf_picker=${${(%):-%x}:A:h}/config/tmux/picker.zsh
+typeset -g _fzf_picker=${_fzf_dir:h}/tmux/picker.zsh
 
 # find_file [command…]: pick a file from what the command lists (default: fd, every file but ignored ones),
 # with a preview, and print its path. The pickers of ;f, ;a and ;g below.
@@ -91,7 +93,7 @@ zle -N scratch-tm-widget
 # on the list's border: global, host, session, workspace (the git repo), directory. ? shows the whole command
 # with its directory and exit code. Enter puts the command on the command line to edit, as atuin's
 # enter_accept = false. atuin still records every command; config/atuin/fzf-history lists them.
-typeset -g _fzf_history=${${(%):-%x}:A:h}/config/atuin/fzf-history
+typeset -g _fzf_history=${_fzf_dir:h}/atuin/fzf-history
 fzf-history-widget() {
   source $_fzf_picker
   local cycle="case \$FZF_LIST_LABEL in

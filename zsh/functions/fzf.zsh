@@ -2,10 +2,17 @@
 # Shell functions for fzf and the Markdown viewer on it (config/fzf, docs/fzf.md). Sourced by .zshrc with the
 # rest of zsh/functions/*.zsh; each function's comment says what it does.
 
-# setup_fzf: links ~/.fzf.zsh, which zsh sources. fzf, eza (improved file/directory listing), bat (cat with
-# syntax highlighting) and lesspipe (display more with less) come from the Brewfile.
+# setup_fzf: moves the ~/.fzf.zsh link an earlier setup made to the Trash. zsh/.zshdefault sources
+# config/fzf/fzf.zsh from the checkout now, so nothing is linked; a ~/.fzf.zsh that is a real file, or a link
+# to anywhere else, is yours and stays. fzf, eza (improved file/directory listing), bat (cat with syntax
+# highlighting) and lesspipe (display more with less) come from the Brewfile.
 function setup_fzf() {
-  keep_real "$HOME/.fzf.zsh" && ln -sfn "$real_script_dir/.fzf.zsh" "$HOME/.fzf.zsh" || return
+  local old=$HOME/.fzf.zsh target
+  [[ -L $old ]] || return 0
+  target=$(readlink $old)
+  # the link's target is gone (the file moved), so compare the folder it pointed into
+  [[ ${target:h:A} == ${real_script_dir:A} ]] || return 0
+  mkdir -p ~/.Trash && mv $old ~/.Trash/fzf.zsh-$(date +%s) && print "=> $old was this repo's old link: moved to the Trash"
 }
 
 # mdv [dir|file]: pick a markdown file under dir (default: here) and read it rendered in glow's pager; a file

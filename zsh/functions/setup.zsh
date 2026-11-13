@@ -203,7 +203,7 @@ function reload_dotfiles() {
   fi
 
   if (( ! all )); then
-    (( $files[(I)(.zshrc|.fzf.zsh|zsh/*)] )) && todo+='zsh: `exec zsh` in the shells that are open'
+    (( $files[(I)(.zshrc|config/fzf/fzf.zsh|zsh/*)] )) && todo+='zsh: `exec zsh` in the shells that are open'
     (( $files[(I)config/nvim/^lazy-lock.json] )) && todo+='nvim: restart the ones that are open'
     (( $files[(I)config/nvim/lazy-lock.json] )) && todo+='nvim: `:Lazy restore` installs the pinned plugins'
     (( $files[(I)(Brewfile|config/machine/Brewfile)] )) && todo+='Brewfile: `setup_brew` installs what it added'

@@ -255,7 +255,7 @@ directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and
 | `setup_brew` | `brew bundle` with the [Brewfile](../Brewfile), then `fix_completion_dirs`: makes the completion directories under `/opt/homebrew` that zsh calls insecure writable only by you, since an install can leave one group-writable |
 | `setup_gcloud` | where gcloud is installed (work Macs), adds its `gke-gcloud-auth-plugin` component, which kubectl needs to log in to GKE (see [gcloud](gcloud.md#config)) |
 | `setup_podman` | links `~/bin/docker` to podman, makes podman's VM if it's missing and starts it, removes connections to a VM that's gone (see [podman](podman.md)) |
-| `setup_fzf` | links `~/.fzf.zsh` |
+| `setup_fzf` | moves the `~/.fzf.zsh` link an earlier setup made to the Trash; zsh sources `config/fzf/fzf.zsh` from the checkout, no link |
 | `setup_atuin` | links `~/.atuin/config.toml`, imports the zsh history the first time, if there is one |
 | `setup_btop` | links `~/.config/btop/btop.conf` |
 | `setup_readline` | links `~/.inputrc` and `~/.editrc`: vi mode in REPLs (see [vim-keys](vim-keys.md#config)) |
@@ -306,7 +306,6 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 |---|---|
 | `~/dotfiles` | the repo, wherever it's cloned (`~/.ssh/config` and `~/.gitconfig` use this path) |
 | `~/.zshrc` | `.zshrc` |
-| `~/.fzf.zsh` | `.fzf.zsh` |
 | `~/.atuin/config.toml` | `config/atuin/config.toml` |
 | `~/.config/btop/btop.conf` | `config/btop/btop.conf` |
 | `~/.inputrc`, `~/.editrc` | `config/readline/inputrc`, `config/readline/editrc` |

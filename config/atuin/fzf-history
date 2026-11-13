@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # Usage: fzf-history <filter mode>
-# atuin's history for the fzf history search (ctrl+r, fzf-history-widget in .fzf.zsh): newest first, each
+# atuin's history for the fzf history search (ctrl+r, fzf-history-widget in config/fzf/fzf.zsh): newest first, each
 # command once, as NUL-terminated records "shown<tab>directory<tab>exit<tab>command", so commands spanning
 # lines stay one record. "shown" is what atuin's own search shows before a command: how long it ran (red when
 # it failed) and how long ago, dimmed. The directory is shown as ~/…, the exit code as ? when atuin has none.

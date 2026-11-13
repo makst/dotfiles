@@ -90,13 +90,13 @@ Config
 ---
 | File | Contains |
 |---|---|
-| `.fzf.zsh` (linked to `~/.fzf.zsh`) | the shell's fzf keys and widgets, `FZF_DEFAULT_OPTS_FILE` for the shell |
-| `config/fzf/fzfrc` | the look and keys of every fzf; read each time fzf opens, through `FZF_DEFAULT_OPTS_FILE`, set by `.fzf.zsh` for the shell and by `tmux.conf` for the pickers in tmux popups |
+| `config/fzf/fzf.zsh` (sourced from the checkout by `zsh/.zshdefault`, no link) | the shell's fzf keys and widgets, `FZF_DEFAULT_OPTS_FILE` for the shell |
+| `config/fzf/fzfrc` | the look and keys of every fzf; read each time fzf opens, through `FZF_DEFAULT_OPTS_FILE`, set by `config/fzf/fzf.zsh` for the shell and by `tmux.conf` for the pickers in tmux popups |
 | `config/glow/ansi.json` | glow's style for `mdv`, in the terminal's 16 colours |
 
 To look out for
 ---
-- `.fzf.zsh` is loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
+- `config/fzf/fzf.zsh` is loaded by zsh after `bindkey -v`, which would otherwise reset its key bindings.
 - `C-t`, `Alt+C` and fzf-tab are plain fzf, not the [picker](tmux.md#picker-keys): no normal mode, so `jj` and
   `j`/`k` don't work there (type to filter, the arrow keys move); why is in [Decisions](#decisions).
 - In `mdv`, code blocks are plain: glow's highlighter only takes fixed colours.
