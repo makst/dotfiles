@@ -130,7 +130,7 @@ Commands
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
 | `npm_gh_token` | gives npm gh's token for GitHub's npm registry, after `gh auth refresh`; `check_mac` says when (`zsh/functions/zsh.zsh`) |
-| `k`, `kg`, `kd`, `kgpo`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
+| `k`, `kg`, `kd`, `kpf`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
 | `kctx`, `kns` | kubectl: switch the context / the namespace, given or picked in fzf (`zsh/functions/kubectl.zsh`) |
 | `klo`, `kex` | kubectl: follow a pod's logs / a shell in it (bash, else sh), the pod given or picked in fzf |
 | `copy_last_cmd` | copy the previous command to the clipboard |
