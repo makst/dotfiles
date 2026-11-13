@@ -28,8 +28,10 @@ What it is
   the current scope.
 - **Language servers** give definitions, references, rename and diagnostics. Diagnostics are shown as icons in
   the sign column and coloured line numbers, not as text at the end of the line. Each project's root is the
-  git root, so a monorepo gets one server instance rather than one per package. Swift and Objective-C use
-  `sourcekit-lsp` from Xcode; building and running iOS (`,i`) and Android (`,a`) apps is in [mobile](mobile.md).
+  git root, so a monorepo gets one server instance rather than one per package; TypeScript's is the nearest
+  folder with `node_modules/typescript`, so a project in a subfolder of its repo finds its TypeScript. Swift
+  and Objective-C use `sourcekit-lsp` from Xcode; building and running iOS (`,i`) and Android (`,a`) apps is
+  in [mobile](mobile.md).
 - **Completion** ([blink.cmp](https://github.com/saghen/blink.cmp)) comes from the language server, file
   paths, snippets ([friendly-snippets](https://github.com/rafamadriz/friendly-snippets), expanded by nvim's
   own `vim.snippet`; TypeScript also gets the JavaScript ones) and words in the buffer. The first match shows
@@ -348,8 +350,8 @@ To look out for
 - `,q` quits **without saving**.
 - `,re` reloads most of the config in place; plugin changes need a restart.
 - Language servers aren't enabled automatically: a new one has to be required in `lsp/lspconfig/init.lua`.
-- `ts_ls` uses the project's own TypeScript from `node_modules`, so a lone `.ts` file outside a project gets
-  no language server.
+- `ts_ls` uses the project's own TypeScript from `node_modules`, so a lone `.ts` file outside a project, or
+  a project before `npm install`, gets no language server (`:checkhealth vim.lsp` shows no `ts_ls` client).
 - Helm templates get syntax highlighting but no diagnostics, which would all be false alarms.
 - fzf has no two-key sequences, so closing a buffer in `;b` is `d`, not `dd`.
 - `C-Space` belongs to tmux, so completion opens with `Tab` and closes with `C-e`.
