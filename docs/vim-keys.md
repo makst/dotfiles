@@ -106,7 +106,7 @@ How each tool gets its vim keys:
   (`PYTHON_BASIC_REPL=1`, `zsh/.exports`).
 - **atuin** (`atuin search -i`; `C-r` is a picker): `keymap_mode = "auto"` in `config/atuin/config.toml`,
   vi keys starting in the mode the shell is in.
-- **glow** (`mdv`): its pager is `less` (glow's default, as nothing sets `PAGER`), so `j`/`k`, `/` and `q`.
+- **glow** (`mdv`): its pager is `less` (`PAGER` in `zsh/.exports`), so `j`/`k`, `/` and `q`.
 - **btop**: `vim_keys` in `config/btop/btop.conf`: `h/j/k/l`, `g`/`G` move in lists; help and kill move to
   `H` and `K`.
 - **fugitive** (`gs`, `,gs`): its status, blame and log are nvim buffers, so all of vim's keys; its own (`s`,

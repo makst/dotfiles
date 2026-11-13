@@ -9,6 +9,9 @@ if [[ -d /opt/homebrew ]]; then
   export INFOPATH=/opt/homebrew/share/info:${INFOPATH:-}
 fi
 
+# the pager is less, set here rather than left to each tool's default: delta (git's pager) and glow (mdv) hand
+# their output to it; man has its own, MANPAGER below
+export PAGER=less
 # lesspipe: set LESSOPEN
 cached_eval lesspipe.sh lesspipe.sh
 # syntax highlighting
