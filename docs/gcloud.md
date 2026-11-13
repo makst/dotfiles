@@ -63,7 +63,7 @@ gcloud iam service-accounts add-iam-policy-binding $sa --project <project> \
 ```
 
 Then add it to this Mac's Claude settings, `~/.config/dotfiles/claude.json`, which the `claude` wrapper merges
-in ([Claude Code](claude-code.md#this-machine)):
+in ([Claude Code](claude.md#this-machine)):
 
 ```json
 { "env": { "CLOUDSDK_AUTH_IMPERSONATE_SERVICE_ACCOUNT": "claude-viewer@<project>.iam.gserviceaccount.com" } }

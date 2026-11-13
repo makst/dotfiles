@@ -34,7 +34,7 @@ Once per Mac
    includes notifications.
 2. `setup_github` (part of `setup_dotfiles`) loads the watcher; the mark appears within a minute.
 3. The first notification asks whether terminal-notifier may send notifications: allow it (see
-   [claude-code](claude-code.md#to-look-out-for) if it was declined).
+   [claude](claude.md#to-look-out-for) if it was declined).
 
 Keys
 ---
@@ -50,7 +50,7 @@ waiting for review, changes requested). It opens in normal mode, with the keys o
 | `c` | check out the pull request: a new window `pr-<number>` in its repo's session runs `gh pr checkout`; the repo must be a clone zoxide knows |
 | `r` | mark the notification read on GitHub; it leaves the list at once and the status line's mark within seconds |
 | `R` | rerun the failed jobs of your pull request's last failed run |
-| `f` | start an agent that fixes your pull request's failing checks: `agent_ci` in the repo's clone ([claude-code](claude-code.md#fixing-a-pull-requests-ci)); what goes wrong shows in tmux's message line |
+| `f` | start an agent that fixes your pull request's failing checks: `agent_ci` in the repo's clone ([claude](claude.md#fixing-a-pull-requests-ci)); what goes wrong shows in tmux's message line |
 | `ctrl+/` | show / hide the preview: a pull request's checks and description, or the thread with its comments |
 
 Commands

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # Shell functions for Claude Code on this Mac: the claude wrapper, agents in worktrees (config/claude,
-# docs/claude-code.md). Sourced by .zshrc with the rest of zsh/functions/*.zsh; each function's comment says
+# docs/claude.md). Sourced by .zshrc with the rest of zsh/functions/*.zsh; each function's comment says
 # what it does.
 
 # claude [args…]: Claude Code with this Mac's settings on top of the shared config/claude/settings.json,

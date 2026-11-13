@@ -82,7 +82,7 @@ filter` in grey. A picker appears with its list already in and closes as soon as
 At the top. Left: the session name. Then the windows: current one in bold blue, a zoomed one with a fullscreen
 icon, and **a window that rang the bell in yellow with a bell icon** until you visit it. Programs ring the
 bell when they want attention. A window running Claude Code shows its agent's state instead: waiting 󰂞, done
-but not seen 󰄬, working 󰔟 (see [claude-code](claude-code.md#noticing-an-agent-that-waits)). Right: how many
+but not seen 󰄬, working 󰔟 (see [claude](claude.md#noticing-an-agent-that-waits)). Right: how many
 agents are in each state across all sessions, your pull requests and notifications on GitHub (see
 [github](github.md)), a `PREFIX` badge while the prefix is pressed, date, time, battery. Windows are two
 spaces apart, as the session name and the first window, and so are the groups on the right; the date, time and

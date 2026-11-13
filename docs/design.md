@@ -135,12 +135,12 @@ can be run again and a change can be taken back.
    ([setup](setup.md#to-look-out-for)).
 2. **Trash, don't delete.** Nothing here deletes for good: scripts move things to the Trash, a setup step
    moves a real file there before it links over it (`keep_real`), a hook stops Claude Code's recursive `rm`
-   ([claude-code](claude-code.md#hooks)), and a Brewfile package that is dropped stays commented out at the
+   ([claude](claude.md#hooks)), and a Brewfile package that is dropped stays commented out at the
    bottom.
 3. **Looking changes nothing.** What reports on state only reports: `check_dotfiles` and `check_mac` print
    each problem with the step that fixes it and leave the fixing to you, Claude Code reads AWS and Google
    Cloud but can't change them ([aws](aws.md), [gcloud](gcloud.md)), and `agent_done` removes a worktree only
-   when nothing would be lost ([claude-code](claude-code.md#finishing-an-agent)).
+   when nothing would be lost ([claude](claude.md#finishing-an-agent)).
 4. **One step back.** A change is made on a branch (an agent's in a worktree of its own), nvim's plugins are
    pinned (`lazy-lock.json`) so an update is a commit, and swapping something familiar for something new goes in a
    commit of its own, so `git revert` brings the old one back and keeps the rest. What isn't pinned is

@@ -11,7 +11,7 @@ hooks are in `config/claude`, see [Config](#config).
 `agent` starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, `cmd+j`
 jumps there, then merge and `agent_done`.
 
-![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/claude-code.gif)
+![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/claude.gif)
 
 </details>
 

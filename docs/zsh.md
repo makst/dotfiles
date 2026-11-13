@@ -125,7 +125,7 @@ Commands
 | `ll`, `la` (`l`), `lt` | eza: long listing with git status and icons; with hidden files; tree two levels deep |
 | `gs` | git status in nvim (fugitive), see [git](git.md#staging-and-committing) |
 | `tm` | tmux session picker |
-| `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | Claude Code agents in worktrees and tmux windows of their own, see [claude-code](claude-code.md#commands) |
+| `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | Claude Code agents in worktrees and tmux windows of their own, see [claude](claude.md#commands) |
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |

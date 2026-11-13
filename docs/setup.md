@@ -41,7 +41,7 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
 3. **Accessibility** (System Settings → Privacy & Security → Accessibility): Ghostty, for the global
    drop-down terminal; AeroSpace, which asks on its first start. If 1Password is installed, move its Quick
    Access shortcut off `cmd+shift+space` (1Password → Settings → General, e.g. to `cmd+shift+\`): Ghostty uses
-   that key for the next agent that needs you ([claude-code](claude-code.md#noticing-an-agent-that-waits)).
+   that key for the next agent that needs you ([claude](claude.md#noticing-an-agent-that-waits)).
 4. **SSH keys**, on every Mac, since Secure Enclave keys can't leave the Mac they were made on. Until then
    commits aren't signed and ssh to GitHub doesn't work. Open Secretive and let it start its agent at login,
    create the keys `push` (Require Authentication on) and `signing` (off), open a new shell (so
@@ -266,7 +266,7 @@ directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
-| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude-code](claude-code.md#config)) |
+| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md`, hooks, status line and each skill into `~/.claude` (see [claude](claude.md#config)) |
 | `setup_github` | a LaunchAgent that runs the GitHub watcher every minute: notifications and a tmux mark for your pull requests (see [github](github.md)) |
 | `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
@@ -294,7 +294,7 @@ overwrites them:
 | `gitconfig` | `~/.gitconfig`, included last | the work email in work repos, see [git](git.md#identity) |
 | `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
 | `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
-| `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude-code](claude-code.md#this-machine) |
+| `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude](claude.md#this-machine) |
 | `forbidden` | `check_dotfiles` | words that must never reach the repo from this Mac, one per line: the company, the work email's domain, work hosts. The checks fail on any of them, in any case, in the repo's files and in the messages of commits not yet pushed. The words stay on this Mac, so the list itself can't leak |
 
 Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared

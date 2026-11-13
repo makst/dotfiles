@@ -24,7 +24,7 @@ git status in nvim, `cmd+j` shows every session.
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, fzf-lua) | [nvim](docs/nvim.md) |
 | Version control | git, delta, difftastic, fugitive (in nvim), gh, Secretive (SSH keys) | [git](docs/git.md) |
-| AI agents | Claude Code in tmux windows and git worktrees | [claude-code](docs/claude-code.md) |
+| AI agents | Claude Code in tmux windows and git worktrees | [claude](docs/claude.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
 | AWS | aws CLI with SSO logins; Claude Code reads, can't change | [aws](docs/aws.md) |

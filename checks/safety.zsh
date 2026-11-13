@@ -1,6 +1,6 @@
 # Safety checks: nothing the repo publishes can hurt the user or a Mac that takes it: no secret (a token, a
 # private key), no real email address, the private files stay out of git, config/claude (~/.claude on any
-# machine, docs/claude-code.md) names nothing of this Mac or this repo, nothing reaches for Intel Homebrew or
+# machine, docs/claude.md) names nothing of this Mac or this repo, nothing reaches for Intel Homebrew or
 # Rosetta, no code deletes what can't be put back, and no setup step links over a real file. Sourced by
 # check_dotfiles; lib.zsh has the helpers.
 

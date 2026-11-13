@@ -1,8 +1,8 @@
 # An agent from start to finish: Claude Code in its own worktree and window, its window turning yellow when it
 # rings the bell (done, or needs an answer), cmd+j to get there, then agent_done. This is the real Claude Code
 # (docs/gifs.md), so its words differ on every render; the wait for it is hidden.
-# Render with `make_gifs claude-code`.
-Output docs/img/claude-code.gif
+# Render with `make_gifs claude`.
+Output docs/img/claude.gif
 
 Type "z api" Enter Sleep 800ms
 Type `agent greet-test "add a test for greet in greet.test.ts (don't run it), then commit it"` Enter

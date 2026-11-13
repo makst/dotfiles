@@ -102,7 +102,7 @@ Reviewing a branch
 2. `Enter` opens the file beside its old side (fugitive's diff, the old side on the left): `]c` / `[c` go
    to the next / previous change, `do` takes the old version of a change back into the file.
 3. `,n` on a line of the file's side writes a review comment ([Reviewing an
-   agent](claude-code.md#reviewing-an-agent)); the old side is a revision, so `,n` there says to comment on
+   agent](claude.md#reviewing-an-agent)); the old side is a revision, so `,n` there says to comment on
    the file instead.
 4. `;g` again for the next file: the counts show which ones you've covered. `M-n` (`n` in normal mode)
    switches to `;n`'s list of the comments, to change or drop some, and `M-g` there comes back: alt plus the
@@ -287,7 +287,7 @@ In normal and visual mode, so `vJJ` selects across nodes.
 | `:CodeTour toggle-notes` | hide / show the notes |
 | `:CodeTour close` | end the tour and restore the previous quickfix list |
 | `:CodeTour create <name>`, `:CodeTour add <note>` | start a tour, add the cursor line as a stop |
-| `,n` / `;n` | the review comment on this line, new or to change / the ones not sent yet: the tour `review`, sent to the Claude Code agent with `M-p` ([Reviewing an agent](claude-code.md#reviewing-an-agent)) |
+| `,n` / `;n` | the review comment on this line, new or to change / the ones not sent yet: the tour `review`, sent to the Claude Code agent with `M-p` ([Reviewing an agent](claude.md#reviewing-an-agent)) |
 
 A note is written in a window of its own (`,n`, `M-r`), a markdown buffer with vim's keys:
 

@@ -76,14 +76,14 @@ The GIFs
 | `fzf` | [fzf](fzf.md#shell-keys) | `C-t` and `**<Tab>` |
 | `nvim` | [nvim](nvim.md#keys) | finding a file, the file tree, crossing between nvim and tmux |
 | `git` | [git](git.md#staging-and-committing) | delta, difftastic, staging and committing in nvim (fugitive) |
-| `claude-code` | [claude-code](claude-code.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
+| `claude` | [claude](claude.md) | `agent` in a worktree and window, the yellow bell, `cmd+j`, `agent_done` |
 
 To look out for
 ---
 - Keep them short (around 15 s) and under ~1 MB, since every version stays in git.
 - VHS can't press `cmd` (it records a terminal in a browser, not Ghostty), so tapes type the tmux keys
   Ghostty would send: `Ctrl+a Type "|"` for `cmd+d`. A comment above each says which `cmd` key it is.
-- Rendering `claude-code` is a real (small) session on your plan.
+- Rendering `claude` is a real (small) session on your plan.
 
 Decisions
 ---
