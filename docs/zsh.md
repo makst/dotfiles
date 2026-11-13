@@ -223,3 +223,7 @@ Decisions
 - **fnm installs a pinned node on `cd`**: its own hook only switches, and on a version that isn't installed it
   failed and silently kept the last node, so a project built against the wrong major. Installing a set of
   majors wouldn't help: `.nvmrc` pins exact versions.
+- **`less` is the pager, nvim only for man pages**: delta and glow colour their output, which nvim can't
+  show without a terminal buffer, and delta's `n` / `N` between files work in `less`. A man page is a document
+  with links and sections, so it opens in nvim (`docs/design.md`, "One tool per job"). `less` has vim's keys
+  as it comes: `j`/`k`, `/`, `n`/`N`, `g`/`G`, `q`.
