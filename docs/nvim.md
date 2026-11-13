@@ -28,8 +28,9 @@ What it is
   the current scope.
 - **Language servers** give definitions, references, rename and diagnostics. Diagnostics are shown as icons in
   the sign column and coloured line numbers, not as text at the end of the line. Each project's root is the
-  git root, so a monorepo gets one server instance rather than one per package; TypeScript's is the nearest
-  folder with `node_modules/typescript`, so a project in a subfolder of its repo finds its TypeScript. Swift
+  git root, so a monorepo gets one server instance rather than one per package; TypeScript's and ESLint's
+  are the nearest folder with `node_modules/typescript` or `node_modules/eslint`, so a project in a subfolder
+  of its repo finds its own. Swift
   and Objective-C use `sourcekit-lsp` from Xcode; building and running iOS (`,i`) and Android (`,a`) apps is
   in [mobile](mobile.md).
 - **Completion** ([blink.cmp](https://github.com/saghen/blink.cmp)) comes from the language server, file
@@ -352,6 +353,8 @@ To look out for
 - Language servers aren't enabled automatically: a new one has to be required in `lsp/lspconfig/init.lua`.
 - `ts_ls` uses the project's own TypeScript from `node_modules`, so a lone `.ts` file outside a project, or
   a project before `npm install`, gets no language server (`:checkhealth vim.lsp` shows no `ts_ls` client).
+- `eslint` starts only where `node_modules/eslint` exists, so a project that doesn't use ESLint, or one
+  before `npm install`, gets no ESLint diagnostics or fixes on save, and no warning.
 - Helm templates get syntax highlighting but no diagnostics, which would all be false alarms.
 - fzf has no two-key sequences, so closing a buffer in `;b` is `d`, not `dd`.
 - `C-Space` belongs to tmux, so completion opens with `Tab` and closes with `C-e`.
