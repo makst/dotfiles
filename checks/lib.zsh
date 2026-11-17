@@ -260,8 +260,16 @@ tmux_index() {
       print -r -- "E"$'\t'"${line//$tmp\/tmux.conf/config/tmux/tmux.conf}"
     fi
   done
-  tmux -L $socket kill-server 2> /dev/null
+  tmux_drop $socket
   return 0
+}
+
+# tmux_drop <socket>: stops a check's throwaway tmux server (tmux -L <socket>) and removes its socket file,
+# which tmux leaves behind however its server ends, so each run would add one to ${TMUX_TMPDIR:-/tmp}/tmux-$UID.
+# Used by tmux_index and checks/behaviour.zsh's agents' state check.
+tmux_drop() {
+  tmux -L $1 kill-server 2> /dev/null
+  rm -f -- ${TMUX_TMPDIR:-/tmp}/tmux-$UID/$1
 }
 
 # build_indexes: builds every index at the same time, each into $tmp/<name>.out

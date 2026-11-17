@@ -597,7 +597,7 @@ exec $real -L $sock \"\$@\"" > $t/stubs/tmux
     [[ $(<$t/calls) == "display -c c no agent needs you" ]] ||
       print "next-agent with none waiting or done: '$(<$t/calls)', should say 'no agent needs you'"
   } always {
-    p kill-server 2> /dev/null
+    tmux_drop $sock
   }
 }
 
