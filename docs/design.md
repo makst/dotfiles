@@ -7,9 +7,10 @@ why.
 
 What it is
 ---
-Six principles, one per question: how the keys work (Learn it once), where a thing is (One search away),
-where on its page (Same shape, every page), which tool does it (One tool per job), what happens when it goes
-wrong (Safe to try) and what keeps a rule true (A rule has a check). One rule holds under all six.
+Seven principles, one per question: how the keys work (Learn it once), where a thing is (One search away),
+where on its page (Same shape, every page), which tool does it (One tool per job), how much a change has to
+know (Fits in one head), what happens when it goes wrong (Safe to try) and what keeps a rule true (A rule has
+a check). One rule holds under all seven.
 
 ### Exceptions say why
 Something that can't follow a principle says what it does instead and why, in the place where the rule would
@@ -21,6 +22,7 @@ be looked up, so the gap is a decision and not an accident.
 | One search away | the file's top comment, or its doc |
 | Same shape, every page | the page's Decisions |
 | One tool per job | the page's Decisions, as VS Code has for debugging ([debugging](debugging.md#decisions)) |
+| Fits in one head | the part's top comment, as zsh's widgets have in `config/fzf/fzf.zsh`: the key that runs one is its edge |
 | Safe to try | the page's "To look out for", next to what can't be run again or taken back |
 | A rule has a check | the "Not checked" column in [A rule has a check](#a-rule-has-a-check) |
 
@@ -125,6 +127,41 @@ hand the job to it instead of doing it their own way.
    crosses nvim splits and tmux panes, OSC 52 carries a copy through tmux and ssh, focus events reload files in
    nvim when you come back to its pane, `fzfrc` gives nvim's pickers the shell's look.
 
+### Fits in one head
+The design principle behind how a part is built and how much a change has to know: each part is used from its
+edge (how it is called, what it gives back, what it relies on), never from its inside, so a change, yours or a
+Claude Code agent's, holds one part in mind and not the whole setup. Claude Code does best what it can see
+whole: a part it can rewrite from its edge is new code to it, and checked on its own it needs no trust.
+
+| Part | Its edge |
+|---|---|
+| a zsh function | the usage line of the comment above it, its arguments, what it prints and returns |
+| a script (`config/tmux/`, `config/github/`, `config/claude/hooks/`) | its `Usage:` line and top comment, its arguments, its output |
+| an nvim plugin's folder | the keys in its `keymaps.lua` and the `M.` functions other files `require` |
+| a group of checks | the top comment of `checks/<group>.zsh` and the labels of its checks |
+| shared state: a tmux option (`@claude`), a state file (the GitHub watcher's), a line format another part splits | what it holds, in the top comment of the file that writes it |
+
+1. **Deep parts, narrow edges.** A part does a lot behind a short edge. A helper exists because it hides
+   something (where the repo is, how a worktree is made again), not to hand its arguments on; a new job gets a
+   deep part, not one more layer over an old one (Ousterhout, *A Philosophy of Software Design*).
+2. **The comment is the edge.** The comment above a function or at the top of a script starts with how to call
+   it, then says what it does and why, who uses it, and what it relies on or changes beyond its arguments: an
+   environment variable, a file, a tmux option, a tool it needs. That is enough to use it or replace it without
+   reading its inside or its callers.
+3. **Shared state is described where it's written.** What one part writes and another reads is described,
+   with its readers, in the top comment of the part that writes it, so a change of format starts in one place,
+   and a grep for its name finds the rest.
+4. **A part can be tried on its own.** A part has a way to show it works without the rest running: a check in
+   `checks/`, a run in `tmux -L probe`, a throwaway HOME (`checks/fresh_mac`). Then its inside can be rewritten
+   and checked by someone who doesn't know the rest.
+5. **Reading outside is a sign.** A change inside a part that needs another part's inside shows that an edge
+   is missing something, and the change adds it: to the comment, an argument, the note on the shared state.
+   Changing an edge is the bigger change: its users are found first (the top comment, a grep) and change with
+   it, in the same commit.
+6. **Someone else's inside, through one file.** Config that needs a plugin's or tool's internals, beyond what
+   it documents, reaches them from one file of its own, so an update that moves them breaks one place, and the
+   pinned version (`lazy-lock.json`) shows when.
+
 ### Safe to try
 The design principle behind every command and change here: trying something costs nothing, because a step
 can be run again and a change can be taken back.
@@ -176,6 +213,7 @@ has every check.
 | One search away | each file starts with a comment; every picker is in `config/tmux/picker.zsh`'s list; every nvim key set with `vim.keymap.set` is in a `keymaps.lua` and has a desc; the links, paths and names in the docs exist; setup steps and symlinks agree with `docs/setup.md` | that the top comment names who uses the file; nvim keys a plugin takes as a table; that a tool's parts carry its name; that a thing is defined only once; that state has a list with a preview |
 | Same shape, every page | the order of a page's sections; a heading has an empty line above it; the README links every page | one kind per section; that a page says what the config does, beyond the names it mentions; that a change and its page are one commit |
 | One tool per job | no zsh file runs `fzf` or `fzf-tmux` itself | lists in nvim; a second tool for any other job in the table; the seams |
+| Fits in one head | each zsh function's comment starts with how to call it (zle widgets excepted); no zsh function only hands its arguments to another; each file starts with a comment | that the comment is enough to use the part without its inside; that shared state is described where it's written; that a part can be tried on its own; that a change needed only its part; that a plugin's internals are reached from one file |
 | Safe to try | the hook blocks the recursive `rm` forms in `checks/rm-hook.cases`; no code deletes recursively; every link the setup makes keeps a real file (`keep_real`); nvim's plugins are pinned; zsh, JSON, TOML, YAML, Lua, tmux, git, ssh, Ghostty, starship, fzf and AeroSpace config parses or loads in its tool | that a setup step can be run twice (`checks/fresh_mac` runs each once); that what reports changes nothing; that a replacement has its own commit; `ideavimrc`, which nothing parses; secrets in git's history |
 | A rule has a check | `checks/mutate`, by hand, with the list of checks that have no break | that a new rule got a check; how long `check_dotfiles` takes; that a check's level follows item 3; that this table is complete |
 

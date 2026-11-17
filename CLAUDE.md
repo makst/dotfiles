@@ -54,6 +54,10 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   look up the job's owner in its table and hand the job to it (nvim in a tmux pane, `$EDITOR`, `picker`)
   rather than adding a second way to do it; a new job gets a row. A new list to choose from goes through
   `picker` in `config/tmux/picker.zsh`, not a bare `fzf`.
+- **Fits in one head**: every part follows `docs/design.md`, "Fits in one head": used from its edge (the
+  comment's usage line, what it relies on or changes), deep rather than one more layer, shared state described
+  in the file that writes it, a way to try it on its own. A change that needed another part's inside adds what
+  was missing to that part's edge.
 - **Safe to try**: every change follows `docs/design.md`, "Safe to try": a setup step can be run again, nothing
   deletes for good, what reports on state changes nothing, and a swap of something familiar goes in a commit
   of its own so it can be reverted.

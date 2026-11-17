@@ -49,10 +49,10 @@ fif() {
   nvim +$match[2] -- $match[1]
 }
 
-# The find keys in normal mode (bound in zsh/.zshdefault), nvim's in the shell: ;f files, ;a all files
-# (ignored ones too), ;g the branch's changed files (greview), ;r grep, ;p projects, and ,gs git status, ,e yazi,
-# ,tt / ,tm the shells. Each but the shells puts the command it runs on the command line and runs it, so it
-# lands in the history; what was typed comes back afterwards.
+# _find_run <command> / _find_open [command]: the find keys in normal mode (bound in zsh/.zshdefault), nvim's
+# in the shell: ;f files, ;a all files (ignored ones too), ;g the branch's changed files (greview), ;r grep, ;p
+# projects, and ,gs git status, ,e yazi, ,tt / ,tm the shells. Each but the shells puts the command it runs on
+# the command line and runs it, so it lands in the history; what was typed comes back afterwards.
 _find_run() {
   zle push-line
   BUFFER=$1

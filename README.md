@@ -55,7 +55,7 @@ only this Mac needs. [docs/setup.md](docs/setup.md) also lists what each step do
 
 How it is designed
 ---
-Six principles decide where every key, file, page and tool goes and how a change is made, so learning one
+Seven principles decide where every key, file, page and tool goes and how a change is made, so learning one
 part of the setup teaches the rest. [design](docs/design.md) defines them:
 
 - **Learn it once**: vim is the grammar, the key names the action and the modifier the layer, nvim is the
@@ -66,6 +66,8 @@ part of the setup teaches the rest. [design](docs/design.md) defines them:
   the config does, no less and no more.
 - **One tool per job**: each job (terminals, editing, lists, projects, git) has one tool that owns it, and the
   others hand it over instead of doing it their own way; every list is the same picker.
+- **Fits in one head**: each part is used from its edge (the comment that says how to call it, what it relies
+  on), so a change, or an agent, needs to know one part and not the whole setup.
 - **Safe to try**: a setup step can be run again, nothing deletes for good, and a change can be taken back.
 - **A rule has a check**: `check_dotfiles` checks a rule in about a second, or the rule is listed as not
   checked.

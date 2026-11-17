@@ -1,9 +1,9 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
 # else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
-# closed "Show GIF" toggle, each zsh function has a comment, lists go through the picker and are in its list,
-# headings stand apart from the text above, docs pages keep the
-# section order of docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns,
-# table rows have the header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
+# closed "Show GIF" toggle, each zsh function has a comment that says how to call it, lists go through the
+# picker and are in its list, headings stand apart from the text above, docs pages keep the section order of
+# docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns, table rows have the
+# header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
 # They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
 # lib.zsh has the helpers and indexes.
 
@@ -59,6 +59,39 @@ check_function_comments() {
       name = $0; sub(/^function +/, "", name); sub(/[ ({].*/, "", name)
       print FILENAME ":" FNR ": " name " has no comment above it"
     }
+  ' $zsh
+  note=$(count $#zsh file)
+}
+
+# function edges (docs/design.md, "Fits in one head"): the comment above a zsh function starts with how to call
+# it (`# name …` or `# Usage: name …`), and no function only hands its arguments to another (`f() { g "$@" }`),
+# a layer that hides nothing. zle widgets are left out: the key that runs one is its edge, and their group's
+# comment names the keys. A function after another with no blank line shares the first one's comment.
+check_function_edges() {
+  local -a zsh=(${${(f)"$(zsh_files)"}:#checks/*})
+  awk '
+    function name_of(line) { sub(/^function +/, "", line); sub(/[ ({].*/, "", line); return line }
+    function pass(body) {
+      return body ~ /^[[:space:]]*(command[[:space:]]+)?[A-Za-z_][A-Za-z0-9_:-]*[[:space:]]+"\$@"[[:space:]]*;?[[:space:]]*$/
+    }
+    FNR == 1 { n = 0; start = 0 }
+    start && /^\}/ {
+      if (lines == 1 && pass(body)) print where ": " fname " only hands its arguments to another; call that one"
+      start = 0; n = 0; next
+    }
+    start { if (!/^[[:space:]]*(#|$)/) { lines++; body = $0 }; next }
+    /^[[:space:]]*$/ { n = 0; next }
+    /^[[:space:]]*#/ { if (!n) first = $0; n++; next }
+    /^(function +[A-Za-z_][A-Za-z0-9_:-]*|[A-Za-z_][A-Za-z0-9_:-]* *\(\)) *(\(\))? *\{/ {
+      fname = name_of($0); where = FILENAME ":" FNR
+      if (n && fname !~ /-widget$/ && index(first, "# " fname) != 1 && index(first, "# Usage: " fname) != 1)
+        print where ": " fname "'"'"'s comment doesn'"'"'t start with how to call it (# " fname " …)"
+      if ($0 ~ /\} *$/) {
+        b = $0; sub(/^[^{]*\{/, "", b); sub(/\} *$/, "", b)
+        if (pass(b)) print where ": " fname " only hands its arguments to another; call that one"
+      } else { start = 1; lines = 0; body = "" }
+    }
+    { n = 0 }
   ' $zsh
   note=$(count $#zsh file)
 }
@@ -262,6 +295,7 @@ check -w "each Brewfile package says what uses it" check_brew_comments
 check -w "colours are ANSI names, not hex" check_hex_colours
 check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
 check -w "each zsh function has a comment" check_function_comments
+check -w "each zsh function's comment says how to call it, none only passes on" check_function_edges
 check -w "lists go through the picker, not a bare fzf" check_picker
 check -w "every picker is in picker.zsh's list" check_picker_list
 check -w "headings have an empty line above them" check_headings
