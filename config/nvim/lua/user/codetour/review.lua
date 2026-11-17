@@ -1,9 +1,11 @@
 -- Review comments for the Claude Code agent working in this repo: each comment is a stop of the code tour
 -- "review", so it shows above its line like any tour note and follows edits. ;n lists the ones not sent yet
 -- and sends them to the agent's tmux pane as one message. Used by user/codetour/keymaps (,n and ;n) and
--- user/git/changes (;g: the comment counts, M-p sends).
-local status, state = pcall(require, 'codetour.state')
+-- user/git/changes (;g: the comment counts, M-p sends). The tour itself goes through user/codetour/tour.
+local status, _ = pcall(require, 'codetour')
 if (not status) then return {} end
+
+local tour = require('user.codetour.tour')
 
 local keys = require('user.codetour.keymaps').picker_keys
 
@@ -11,44 +13,6 @@ local M = {}
 
 -- one per git root, so each agent's worktree has its own; ignored in every repo (config/git/ignore)
 local TOUR = 'review'
-
--- open_review(then_do): makes "review" the open tour, then calls then_do(). The plugin adds and lists stops
--- only in the open tour, and only one tour is open at a time (;o may have opened another). Three cases:
--- - already open: then_do() at once
--- - no review tour yet: created, which opens it without moving the cursor; then_do() at once
--- - there but not open (after a restart, or ;o): the plugin's open also jumps to the first stop and opens the
---   quickfix list, on the next tick. Commenting shouldn't move you, so after that jump the quickfix list is
---   closed and the window, buffer and view are put back, and only then then_do() runs: a callback, not a
---   return, so what comes next (a comment at the cursor, the ;n picker) sees the cursor where you left it.
-local function open_review(then_do)
-  state.ensure_loaded()
-  local active = state.data.active_tour
-  if active and active.name == TOUR then return then_do() end
-  if not vim.tbl_contains(state.list_tours(), TOUR) then
-    state.create(TOUR)
-    return then_do()
-  end
-  local win, buf, view = vim.api.nvim_get_current_win(), vim.api.nvim_get_current_buf(), vim.fn.winsaveview()
-  state.open(TOUR)
-  -- scheduled after the plugin's own cfirst + cwindow, so it runs after them
-  vim.schedule(function()
-    vim.cmd('cclose')
-    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_buf_is_valid(buf) then
-      vim.api.nvim_set_current_win(win)
-      vim.api.nvim_win_set_buf(win, buf)
-      vim.fn.winrestview(view)
-    end
-    then_do()
-  end)
-end
-
--- drop(): the review tour is done with (sent, or its last comment deleted): closed and its file deleted, as
--- :CodeTour delete does without asking
-local function drop()
-  state.close()
-  require('codetour.storage').write_active(nil)
-  require('codetour.storage').delete(TOUR)
-end
 
 -- comment(): the review comment on the cursor line in a window of its own (user/codetour/editor): a new one,
 -- or the one already there to change. Saving it empty deletes it. The tour is created on the first save, so
@@ -61,7 +25,7 @@ function M.comment()
     return vim.notify('codetour: comment on the file\'s side of the diff', vim.log.levels.WARN)
   end
   local win, lnum = vim.api.nvim_get_current_win(), vim.api.nvim_win_get_cursor(0)[1]
-  local file = require('codetour.util').canonical(name) or name
+  local file = tour.canonical(name) or name
   local title = string.format('review · %s:%d', vim.fn.fnamemodify(name, ':~:.'), lnum)
 
   local function edit(stop)
@@ -69,24 +33,24 @@ function M.comment()
       on_save = function(text)
         if stop == nil then
           if text == '' then return end
-          -- state.add takes the line from the current window's cursor
-          return open_review(function() vim.api.nvim_win_call(win, function() state.add(text) end) end)
+          -- tour.add takes the line from the current window's cursor
+          return tour.open_quietly(TOUR, function()
+            vim.api.nvim_win_call(win, function() tour.add(text) end)
+          end)
         end
-        local stops = vim.tbl_filter(function(other) return other.id ~= stop.id or text ~= '' end, state.stops())
-        if #stops == 0 then return drop() end
+        local stops = vim.tbl_filter(function(other) return other.id ~= stop.id or text ~= '' end, tour.stops())
+        if #stops == 0 then return tour.drop(TOUR) end
         stops = vim.tbl_map(function(other)
           return other.id == stop.id and vim.tbl_extend('force', other, { note = text }) or other
         end, stops)
-        state.replace_stops(stops)
+        tour.replace_stops(stops)
       end })
   end
 
-  state.ensure_loaded()
-  if not vim.tbl_contains(state.list_tours(), TOUR) then return edit(nil) end
-  open_review(function()
+  if not tour.exists(TOUR) then return edit(nil) end
+  tour.open_quietly(TOUR, function()
     -- where the stops are now, as edits move them
-    require('codetour.decoration').sync_positions(state.stops())
-    for _, stop in ipairs(state.stops()) do
+    for _, stop in ipairs(tour.stops_now()) do
       if stop.file == file and stop.lnum == lnum then return edit(stop) end
     end
     edit(nil)
@@ -97,8 +61,7 @@ end
 -- The comments as one prompt, in file and line order: path:line from the repo root, the line as it read when
 -- commented, the comment.
 local function message(stops)
-  local root = require('codetour.git').info()
-  root = root and root.root
+  local root = tour.repo_root()
   stops = vim.list_extend({}, stops)
   table.sort(stops, function(a, b)
     if a.file ~= b.file then return a.file < b.file end
@@ -158,17 +121,16 @@ end
 -- send(): every comment of the review to the agent, then off the tour; the tour goes once it's empty.
 -- With several agents here (agent_review's reviewer sits beside the author), it asks which one.
 local function send()
-  require('codetour.decoration').sync_positions(state.stops())
-  local stops = state.stops()
+  local stops = tour.stops_now()
   if #stops == 0 then return end
   local text = message(stops)
   -- the comments are in the agent's prompt and the tmux buffer now
   local function done()
-    drop()
+    tour.drop(TOUR)
     vim.notify(string.format('codetour: %d review %s sent', #stops, #stops == 1 and 'comment' or 'comments'))
   end
-  local info = require('codetour.git').info()
-  local panes = (vim.env.TMUX and info) and agent_panes(info.root) or {}
+  local root = tour.repo_root()
+  local panes = (vim.env.TMUX and root) and agent_panes(root) or {}
   if #panes == 0 then
     vim.fn.setreg('+', text)
     vim.notify('codetour: no Claude Code pane in this repo; the comments are on the clipboard',
@@ -184,30 +146,20 @@ end
 
 -- has_review() -> whether there are comments not sent yet; says so when there are none
 local function has_review()
-  state.ensure_loaded()
-  if vim.tbl_contains(state.list_tours(), TOUR) then return true end
+  if tour.exists(TOUR) then return true end
   vim.notify('codetour: no review comments here: ,n adds one', vim.log.levels.WARN)
 end
 
 -- send_all(): the comments to the agent from outside ;n (user/git/changes, ;g's M-p)
 function M.send_all()
-  if has_review() then open_review(send) end
+  if has_review() then tour.open_quietly(TOUR, send) end
 end
 
 -- counts() -> { [file] = n }: how many comments not sent yet each file has, by full path, without opening the
 -- tour (user/git/changes shows them next to each changed file)
 function M.counts()
-  state.ensure_loaded()
-  local active = state.data.active_tour
-  local stops
-  if active and active.name == TOUR then
-    stops = state.stops()
-  else
-    local tour = vim.tbl_contains(state.list_tours(), TOUR) and require('codetour.storage').load_tour(TOUR)
-    stops = tour and tour.stops or {}
-  end
   local counts = {}
-  for _, stop in ipairs(stops) do counts[stop.file] = (counts[stop.file] or 0) + 1 end
+  for _, stop in ipairs(tour.stops_of(TOUR)) do counts[stop.file] = (counts[stop.file] or 0) + 1 end
   return counts
 end
 
@@ -222,7 +174,7 @@ function M.pick(opts)
   actions[keys.to_changes] = { fn = function() require('user.git.changes').pick(opts) end, desc = 'changed-files' }
   -- Esc reaches fzf-lua as the action esc (picker_modes, user/fzf-lua/config)
   if opts.quit then actions.esc = function() vim.cmd('qall') end end
-  open_review(function()
+  tour.open_quietly(TOUR, function()
     require('user.codetour.picker').stops({ title = 'review', actions = actions, normal = keys.send_normal })
   end)
   return true

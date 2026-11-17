@@ -1,6 +1,7 @@
 -- A stop's note as a block above its line, on the page and in the picker's preview: a bar down the left,
 -- "stop 4 of 10 · tour" on top, then the whole note wrapped, on a shaded background. The plugin draws one
--- long line that runs off the window and reads like a diagnostic.
+-- long line that runs off the window and reads like a diagnostic. Used by user/codetour/config (setup) and
+-- user/codetour/picker (the preview); user/codetour/tour puts the block in the plugin's place.
 local M = {}
 
 local WIDTH = 100 -- the block's width at most, bar included
@@ -61,37 +62,15 @@ function M.virt_lines(note, idx, total, tour_name, indent, width)
 end
 
 -- M.setup()
--- Replaces the plugin's note drawing (codetour.notes.refresh) with the block above. It keeps the plugin's
--- namespace, its mark table and its show / hide switch, so :CodeTour toggle-notes and removing a stop
--- still work. Written against the version pinned in lazy-lock.json.
+-- The plugin draws each note as the block above from now on (user/codetour/tour, draw_notes), in colours
+-- that follow the theme.
 function M.setup()
-  local ok, notes = pcall(require, 'codetour.notes')
-  if not ok then return end
+  if not require('user.codetour.tour').draw_notes(M.virt_lines) then return end
   set_highlights()
   vim.api.nvim_create_autocmd('ColorScheme', {
     group = vim.api.nvim_create_augroup('user_codetour_notes', { clear = true }),
     callback = set_highlights,
   })
-
-  local namespace = vim.api.nvim_create_namespace('codetour_notes') -- the plugin's, same name same id
-  notes.refresh = function(bufnr, stops, tour_name)
-    bufnr = require('codetour.util').actual_bufnr(bufnr)
-    if not vim.api.nvim_buf_is_valid(bufnr) or not notes._visible then return end
-    vim.api.nvim_buf_clear_namespace(bufnr, namespace, 0, -1)
-    notes._buf_marks[bufnr] = {}
-    local anchor = require('codetour.anchor')
-    for idx, stop in ipairs(stops) do
-      local key = stop.id or idx
-      local row = anchor.row_of(bufnr, key)
-      if row ~= nil and (stop.note or '') ~= '' then
-        local line = vim.api.nvim_buf_get_lines(bufnr, row, row + 1, false)[1] or ''
-        notes._buf_marks[bufnr][key] = vim.api.nvim_buf_set_extmark(bufnr, namespace, row, 0, {
-          virt_lines = M.virt_lines(stop.note, idx, #stops, tour_name, line:match('^%s*')),
-          virt_lines_above = row > 0, -- nvim draws nothing above line 1; the plugin puts it below there too
-        })
-      end
-    end
-  end
 end
 
 return M

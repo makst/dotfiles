@@ -6,6 +6,8 @@
 --             lazy.nvim knows; it ignores the others silently, so `dependecies = …` would do nothing
 --   descs:    every key the config binds has a desc, so the keys picker (;?) shows it
 --   keymaps:  every key the config binds is bound in a keymaps.lua, so looking there finds it
+--   internals: a plugin's modules beyond what it documents are required from one file of lua/user/ at most,
+--             so an update that moves them breaks one place (docs/design.md, "Fits in one head", item 6)
 local repo = arg[1]
 local files = { unpack(arg, 2) }
 local config = repo .. '/config/nvim'
@@ -166,3 +168,45 @@ for _, file in ipairs(files) do
 end
 count('descs', keys)
 count('keymaps', keys)
+
+-- internals: for each plugin in lazy-lock.json, the files of lua/user/ that require one of its submodules
+-- (require('<module>.<sub>'), plainly or through pcall; the module is the plugin's name without .nvim or .lua).
+-- More than one such file is a problem. A require of a name built at runtime isn't seen. These submodules are
+-- public, as the plugins' docs show them, so any file may require them:
+--   fzf-lua.actions            README, "Default actions" (FzfLua.actions is the same module)
+--   fzf-lua.previewer.builtin  the fzf-lua wiki, "Advanced": a custom previewer extends its classes
+--   nvim-tree.api              :help nvim-tree-api
+--   conform.util               README, in formatters' options (root_file, find_executable)
+local public = {
+  ['fzf-lua.actions'] = true, ['fzf-lua.previewer.builtin'] = true, ['nvim-tree.api'] = true,
+  ['conform.util'] = true,
+}
+local roots = {}
+for name in pairs(lock) do table.insert(roots, (name:gsub('%.nvim$', ''):gsub('%.lua$', ''))) end
+local users, internal = {}, 0 -- users[root][file] = true
+for _, file in ipairs(files) do
+  if file:match('^config/nvim/lua/user/') and not file:match('/user/hidden/') then
+    local text = read(repo .. '/' .. file) or ''
+    for _, pattern in ipairs({ "require%s*%(?%s*['\"]([%w%._-]+)['\"]",
+      "pcall%(%s*require%s*,%s*['\"]([%w%._-]+)['\"]" }) do
+      for module in text:gmatch(pattern) do
+        for _, root in ipairs(roots) do
+          if module:sub(1, #root + 1) == root .. '.' and not public[module] then
+            internal = internal + 1
+            users[root] = users[root] or {}
+            users[root][file] = true
+          end
+        end
+      end
+    end
+  end
+end
+for root, by in pairs(users) do
+  local list = vim.tbl_keys(by)
+  table.sort(list)
+  if #list > 1 then
+    problem('internals', ("%s's internal modules are required from %d files (%s): reach them from one"):format(
+      root, #list, table.concat(list, ', ')))
+  end
+end
+count('internals', internal)

@@ -102,7 +102,7 @@ function M.pick(opts)
   local files = changes(root, rev)
   if #files == 0 then return vim.notify('git: nothing changed since ' .. name) end
 
-  local counts, canonical = require('user.codetour.review').counts(), require('codetour.util').canonical
+  local counts, canonical = require('user.codetour.review').counts(), require('user.codetour.tour').canonical
   local entries = {}
   for idx, file in ipairs(files) do
     local full = vim.fs.joinpath(root, file.path)

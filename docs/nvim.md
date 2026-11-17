@@ -361,6 +361,9 @@ To look out for
 - nvim asks once whether to trust each per-folder config and asks again when it changes, so a cloned repo
   can't run code you haven't seen. `:trust` / `:trust ++deny` change the answer later.
 - Code tours don't reopen on start: `:CodeTour open` reopens the last one.
+- The review comments and the tour pickers use codetour's internal modules, beyond what it documents, all
+  from `lua/user/codetour/tour.lua`: after a codetour update that breaks them, that file is the one to fix (a
+  check warns when another file requires them).
 
 Decisions
 ---

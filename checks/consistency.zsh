@@ -147,6 +147,12 @@ check_nvim_keymaps() {
   note+=" keys"
 }
 
+# nvim's internals: a plugin's modules beyond what it documents are required from one file of nvim's config
+check_nvim_internals() {
+  nvim_results internals || return
+  note+=" internal requires"
+}
+
 # GIFs: each tape renders a GIF that's in docs/img, each GIF there comes from a tape and is shown in a doc
 check_gifs() {
   local tape out gif kind file line target
@@ -350,6 +356,7 @@ check -w "this Mac's files are documented and read" check_machine_files
 check "nvim's plugins are pinned in lazy-lock.json" check_plugins
 check -w "every nvim key has a desc, for ;?" check_descs
 check -w "every nvim key is bound in a keymaps.lua" check_nvim_keymaps
+check -w "a plugin's internals are required from one nvim file" check_nvim_internals
 check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
 check -w "every GIF has its tape and its doc" check_gifs
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys

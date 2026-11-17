@@ -198,7 +198,7 @@ words_index() {
 }
 
 # nvim_index: checks/nvim.lua in a headless nvim without any config (Lua syntax, nvim's requires, plugins and
-# lazy-lock.json, key descs, keys outside keymaps.lua), when nvim is installed
+# lazy-lock.json, key descs, keys outside keymaps.lua, plugins' internals), when nvim is installed
 nvim_index() {
   (( $+commands[nvim] )) || return 0
   nvim --clean --headless -l checks/nvim.lua $repo ${(M)text_files:#config/nvim/*.lua} 2>&1
@@ -213,7 +213,7 @@ nvim_results() {
     case $line in
       ("count $1 "*) note=${line##* } ;;
       ("$1: "*) print -r -- ${line#$1: } ;;
-      (count\ *|syntax:\ *|requires:\ *|plugins:\ *|descs:\ *|keymaps:\ *) ;;
+      (count\ *|syntax:\ *|requires:\ *|plugins:\ *|descs:\ *|keymaps:\ *|internals:\ *) ;;
       (*) print -r -- $line ;; # nvim itself failed
     esac
   done

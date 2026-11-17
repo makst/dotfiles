@@ -11,8 +11,4 @@ codetour.setup({ auto_open_last_tour = false })
 -- :CodeTour open (with no name and none to reopen) and :CodeTour list use the fzf-lua pickers
 -- (user/codetour/picker)
 local pickers = require('user.codetour.picker')
-if pickers.tours then
-  local plugin_pickers = require('codetour.picker')
-  plugin_pickers.tours = pickers.tours
-  plugin_pickers.stops = pickers.stops
-end
+if pickers.tours then require('user.codetour.tour').use_pickers(pickers) end
