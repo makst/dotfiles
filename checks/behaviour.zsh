@@ -1,6 +1,10 @@
 # Behaviour checks: the scripts that run on their own (zsh's start, Claude Code's hooks and status line) do what
 # they should. Claude Code's run with only zsh, jq, git and gh on PATH besides the system's own tools, since
-# config/claude must work on any machine with just those. Sourced by check_dotfiles.
+# config/claude must work on any machine with just those. Also the parts that could lose work or break the setup
+# if rewritten from their edge, each tried on its own in a throwaway repo, HOME or tmux server: the agent
+# functions (agent_done, _agent_worktree, agent_land), the GitHub watcher with its inbox list, and the agents'
+# state with the order agents and next-agent show it in. Those take a few hundred milliseconds each, so `early`
+# starts them in the background and the checks collect them. Sourced by check_dotfiles.
 
 mkdir -p $tmp/bin
 for tool in zsh jq git gh; do
@@ -214,6 +218,403 @@ check_skill_links() {
   note="4 skills"
 }
 
+# early <name> <function>: runs the function in the background from now on, since the agent, GitHub and tmux
+# checks below each set up their own repo, state or server and take a few hundred milliseconds. Its output and
+# exit status wait in $tmp/early.<name>.* for early_result; disowned, so the `wait` of the checks above doesn't
+# block on it.
+early() {
+  local name=$1 fn=$2
+  (
+    local started=$EPOCHREALTIME
+    $fn > $tmp/early.$name 2>&1
+    local rc=$?
+    print -r -- "$(printf %.0f $(( (EPOCHREALTIME - started) * 1000 )))" > $tmp/early.$name.ms
+    print -r -- $rc > $tmp/early.$name.rc.new && mv $tmp/early.$name.rc.new $tmp/early.$name.rc
+  ) &!
+}
+
+# early_result <name> <what>: waits for the function early started, prints its problems and returns its status
+# (2 skips the check); sets `note` of the check that calls it to <what> and how long the background run took
+early_result() {
+  local i
+  for i in {1..1500}; do
+    [[ -e $tmp/early.$1.rc ]] && break
+    sleep 0.02
+  done
+  [[ -e $tmp/early.$1.rc ]] || { print "the background run of $1 never finished"; return 1 }
+  cat $tmp/early.$1
+  note="$2, $(<$tmp/early.$1.ms) ms in the background"
+  return $(<$tmp/early.$1.rc)
+}
+
+# agent_helpers: writes $tmp/agent-helpers.zsh, what the agent checks' scripts source: HOME, git identity and the
+# Trash in a throwaway $T/home, zsh/functions/claude.zsh, a repo $r (branch main, origin a bare repo with
+# origin/HEAD set) and the way `agent` makes a worktree, so each case needs only its own few lines. A case's
+# repo is its own, so the cases of a script run at the same time.
+agent_helpers() {
+  cat > $tmp/agent-helpers.zsh <<'EOF'
+unsetopt bg_nice  # a sandbox (Claude Code's) can't lower the priority of background jobs
+export HOME=$T/home
+unset TMUX
+mkdir -p $HOME/.Trash
+print -r -- $'[user]\n\tname = t\n\temail = t@t\n[commit]\n\tgpgsign = false' > $HOME/.gitconfig
+source $real_script_dir/zsh/functions/claude.zsh
+
+# bad <problem>: one problem line, named for the case
+bad() { print -r -- "$name: $*" }
+# mkrepo: $r with one commit on main, pushed to $t/origin.git
+mkrepo() {
+  git init -q --bare -b main $t/origin.git && git init -q -b main $r || return
+  print .env > $r/.gitignore
+  git -C $r add .gitignore && git -C $r commit -qm first &&
+    git -C $r remote add origin $t/origin.git && git -C $r push -q origin main &&
+    git -C $r remote set-head origin main > /dev/null
+}
+# mkagent <name>: a worktree the way `agent` makes it (claude -w): worktree-<name> from main
+mkagent() { git -C $r worktree add -q -b worktree-$1 $r/.claude/worktrees/$1 main }
+wt() { print -r -- $r/.claude/worktrees/$1 }
+tip_of() { git -C $1 rev-parse HEAD }
+# save <dir> <file> [text]: commits <file> in <dir> ("work on <file>")
+save() { print -r -- ${3:-$2} > $1/$2; git -C $1 add $2 && git -C $1 commit -qm "work on $2" }
+has_branch() { git -C $r rev-parse -q --verify refs/heads/worktree-$1 > /dev/null }
+saved_ref() { git -C $r rev-parse -q --verify refs/agents/$1 }
+# gone <agent>: problems if the agent's worktree, checkout or branch is still there
+gone() {
+  [[ -d $(wt $1) ]] && bad "the worktree's folder is still there"
+  git -C $r worktree list --porcelain | grep -q "$(wt $1)\$" && bad "git still lists the worktree"
+  has_branch $1 && bad "the branch is still there"
+  return 0
+}
+# runcases <case…>: each case_<name> in a repo of its own, all at once; their problems in order
+runcases() {
+  local c
+  for c in "$@"; do
+    ( name=$c t=$T/$c r=$T/$c/repo; mkdir -p $t; mkrepo && cd $r && case_$c || bad "couldn't make the test repo" ) \
+      > $T/out.$c 2>&1 &
+  done
+  wait
+  for c in "$@"; do cat $T/out.$c; done
+}
+EOF
+}
+
+# agent_done (zsh/functions/claude.zsh): removes a worktree only when nothing would be lost
+run_agent_done() {
+  local t=$tmp/agent-done
+  mkdir -p $t
+  cat > $t/run.zsh <<'EOF'
+source $H
+case_dirty() {
+  mkagent a; touch $(wt a)/new
+  agent_done a > /dev/null 2>&1; rc=$?
+  (( rc == 1 )) || bad "uncommitted changes: returns $rc, not 1"
+  [[ -d $(wt a) ]] && has_branch a || bad "uncommitted changes: the worktree or its branch is gone"
+  [[ -z $(git -C $r for-each-ref refs/agents) ]] || bad "uncommitted changes: refs/agents has an entry"
+}
+case_unmerged() {
+  mkagent a; save $(wt a) a.txt
+  err=$(agent_done a 2>&1 > /dev/null); rc=$?
+  (( rc == 1 )) || bad "an unmerged commit: returns $rc, not 1"
+  [[ $err == *'work on a.txt'* ]] || bad "an unmerged commit: stderr doesn't show its subject: $err"
+  [[ -d $(wt a) ]] && has_branch a || bad "an unmerged commit: the worktree or its branch is gone"
+  [[ -z $(git -C $r for-each-ref refs/agents) ]] || bad "an unmerged commit: refs/agents has an entry"
+}
+case_forced() {
+  mkagent a; save $(wt a) a.txt; tip=$(tip_of $(wt a))
+  agent_done --force a > /dev/null 2>&1 || bad "--force on an unmerged commit: returns $?"
+  gone a
+  [[ $(saved_ref a) == $tip ]] || bad "--force: refs/agents/a isn't the old tip"
+}
+case_merged() {
+  mkagent a; save $(wt a) a.txt; tip=$(tip_of $(wt a))
+  git -C $r merge -q --ff-only worktree-a
+  agent_done a > /dev/null 2>&1 || bad "a commit merged into main: returns $?"
+  gone a
+  [[ $(saved_ref a) == $tip ]] || bad "a merged commit: refs/agents/a isn't the tip"
+}
+case_pushed() {
+  mkagent a; save $(wt a) a.txt; tip=$(tip_of $(wt a))
+  git -C $(wt a) push -q origin HEAD:main
+  git -C $r merge-base --is-ancestor $tip main && bad "setup: local main has the commit"
+  agent_done a > /dev/null 2>&1 || bad "a commit only in origin/main: returns $?"
+  gone a
+  [[ $(saved_ref a) == $tip ]] || bad "a commit only in origin/main: refs/agents/a isn't the tip"
+}
+case_ignored() {
+  mkagent a; print secret > $(wt a)/.env
+  agent_done a > /dev/null 2>&1 || bad "a worktree with an ignored file: returns $?"
+  gone a
+  local -a kept=($HOME/.Trash/agent-a-*/.env(N))
+  [[ $#kept == 1 && $(<$kept[1]) == secret ]] || bad "the worktree isn't in the Trash with its .env"
+}
+case_list() {
+  mkagent fresh; mkagent dirty; touch $(wt dirty)/new
+  mkagent two; save $(wt two) a.txt; save $(wt two) b.txt
+  mkagent part; save $(wt part) c.txt; touch $(wt part)/new
+  local -a lines=(${(f)"$(agent_done)"})
+  local want
+  for want in "fresh  (worktree-fresh: merged)" \
+    "dirty  (worktree-dirty: merged, uncommitted changes)" \
+    "two  (worktree-two: 2 commits not in main)" \
+    "part  (worktree-part: 1 commit not in main, uncommitted changes)"; do
+    (( $lines[(Ie)$want] )) || bad "the list lacks '$want'; it has: ${(j:; :)lines}"
+  done
+}
+runcases dirty unmerged forced merged pushed ignored list
+EOF
+  H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
+}
+
+# _agent_worktree: brings back what agent_done left (docs/claude.md, "Going back to an agent")
+run_agent_resume() {
+  local t=$tmp/agent-resume
+  mkdir -p $t
+  cat > $t/run.zsh <<'EOF'
+source $H
+case_dropped() {
+  mkagent a; save $(wt a) a.txt; tip=$(tip_of $(wt a))
+  agent_done --force a > /dev/null 2>&1
+  _agent_worktree $r a > /dev/null 2>&1 || bad "returns $?"
+  [[ $(git -C $(wt a) branch --show-current 2> /dev/null) == worktree-a ]] || bad "not on worktree-a"
+  [[ $(tip_of $(wt a) 2> /dev/null) == $tip ]] || bad "after --force: not at the saved tip"
+}
+case_merged() {
+  mkagent a; save $(wt a) a.txt
+  git -C $r merge -q --ff-only worktree-a
+  agent_done a > /dev/null 2>&1
+  save $r later.txt
+  _agent_worktree $r a > /dev/null 2>&1 || bad "returns $?"
+  [[ $(git -C $(wt a) branch --show-current 2> /dev/null) == worktree-a ]] || bad "not on worktree-a"
+  [[ $(tip_of $(wt a) 2> /dev/null) == $(tip_of $r) ]] || bad "after a merge: not from main's tip"
+}
+case_kept() {
+  mkagent a; save $(wt a) a.txt; tip=$(tip_of $(wt a))
+  git -C $r worktree remove $(wt a)
+  _agent_worktree $r a > /dev/null 2>&1 || bad "returns $?"
+  [[ $(git -C $(wt a) branch --show-current 2> /dev/null) == worktree-a ]] || bad "not on worktree-a"
+  [[ $(tip_of $(wt a) 2> /dev/null) == $tip ]] || bad "with its branch still there: not at the branch's tip"
+}
+runcases dropped merged kept
+EOF
+  H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
+}
+
+# agent_land (zsh/functions/claude.zsh): lands only a clean, rebased, checked branch, and leaves the agent's
+# branch as it was when it can't
+run_agent_land() {
+  local t=$tmp/agent-land
+  mkdir -p $t
+  cat > $t/run.zsh <<'EOF'
+source $H
+case_lands() {
+  mkagent a; save $(wt a) f.txt; tip=$(tip_of $(wt a))
+  agent_land --no-check a > /dev/null 2>&1 || bad "--no-check on a clean branch: returns $?"
+  [[ $(tip_of $r) == $tip ]] || bad "main isn't fast-forwarded to the branch"
+  [[ -e $r/f.txt ]] || bad "the main checkout's files didn't move"
+  gone a
+}
+case_no_check_set() {
+  mkagent a; save $(wt a) f.txt; main=$(tip_of $r)
+  err=$(agent_land a 2>&1 > /dev/null); rc=$?
+  (( rc == 1 )) || bad "without agent.check: returns $rc, not 1"
+  [[ $err == *agent.check* ]] || bad "without agent.check: stderr doesn't say how to set it: $err"
+  [[ $(tip_of $r) == $main && -d $(wt a) ]] || bad "without agent.check: main moved or the worktree went"
+}
+case_check_fails() {
+  mkagent a; save $(wt a) f.txt; main=$(tip_of $r); git -C $r config agent.check false
+  agent_land a > /dev/null 2>&1; rc=$?
+  (( rc == 1 )) || bad "with a failing agent.check: returns $rc, not 1"
+  [[ $(tip_of $r) == $main && -d $(wt a) ]] || bad "with a failing agent.check: main moved or the worktree went"
+}
+case_check_runs_in_worktree() {
+  mkagent a; save $(wt a) f.txt; tip=$(tip_of $(wt a)); git -C $r config agent.check 'test -f f.txt'
+  agent_land a > /dev/null 2>&1 || bad "agent.check runs outside the agent's worktree: returns $?"
+  [[ $(tip_of $r) == $tip ]] || bad "a passing agent.check: main isn't at the branch"
+}
+case_conflict() {
+  mkagent a; save $(wt a) conf.txt theirs; tip=$(tip_of $(wt a)); save $r conf.txt ours
+  err=$(agent_land --no-check a 2>&1 > /dev/null); rc=$?
+  (( rc == 1 )) || bad "a conflict: returns $rc, not 1"
+  [[ $err == *conf.txt* ]] || bad "a conflict: stderr doesn't name the file: $err"
+  [[ $(tip_of $(wt a)) == $tip ]] || bad "a conflict: the agent's branch moved"
+  [[ -z $(git -C $(wt a) status --porcelain) ]] || bad "a conflict: the worktree isn't clean"
+  local gd=$(git -C $(wt a) rev-parse --absolute-git-dir)
+  [[ -e $gd/rebase-merge || -e $gd/rebase-apply ]] && bad "a conflict: the rebase is still in progress"
+  [[ $(git -C $(wt a) branch --show-current) == worktree-a ]] || bad "a conflict: the worktree is off its branch"
+}
+case_behind() {
+  mkagent p; save $(wt p) p.txt; git -C $(wt p) push -q origin HEAD:main
+  mkagent a; save $(wt a) f.txt; main=$(tip_of $r)
+  err=$(agent_land --no-check a 2>&1 > /dev/null); rc=$?
+  (( rc == 1 )) || bad "main behind origin/main: returns $rc, not 1"
+  [[ $err == *pull* ]] || bad "main behind origin/main: stderr doesn't say to pull: $err"
+  [[ $(tip_of $r) == $main && -d $(wt a) ]] || bad "main behind origin/main: main moved or the worktree went"
+}
+runcases lands no_check_set check_fails check_runs_in_worktree conflict behind
+EOF
+  H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
+}
+
+# config/github/watch: notices what changed since its last run and nothing else, and keeps its last good state
+# when GitHub can't be asked. gh is a stub that runs the --jq filter the watcher passes over a raw fixture, as
+# gh does, so the filters are tested too; terminal-notifier is a stub that logs its arguments; no tmux.
+run_github_watch() {
+  local t=$tmp/watch out
+  local state=$t/state/github/state.json
+  mkdir -p $t/stubs $t/home
+  cat > $t/stubs/gh <<'EOF'
+#!/bin/sh
+[ -e "$T/gh.fail" ] && { echo "gh: boom" >&2; exit 1; }
+filter= prev=
+for a in "$@"; do
+  [ "$prev" = --jq ] && filter=$a
+  prev=$a
+done
+case "$*" in
+  *graphql*) jq -c "$filter" "$T/graphql.json" ;;
+  *notifications*) jq -c "$filter" "$T/notifications.json" ;;
+  *) exit 1 ;;
+esac
+EOF
+  print -r -- $'#!/bin/sh\necho "$*" >> "$T/notified"' > $t/stubs/terminal-notifier
+  chmod +x $t/stubs/*
+  # pr <number> <checks state> [review decision]: a pull request as GitHub's GraphQL answers it
+  pr() {
+    jq -nc --arg n $1 --arg s $2 --arg r "${3:-}" '{number: ($n | tonumber), title: "pr \($n)",
+      url: "https://github.com/o/r/pull/\($n)", isDraft: false,
+      reviewDecision: (if $r == "" then null else $r end), headRefName: "b\($n)",
+      repository: {nameWithOwner: "o/r"}, commits: {nodes: [{commit: {statusCheckRollup: {state: $s}}}]}}'
+  }
+  # note <id> <reason>: an unread notification on issue <id>, as the REST API answers it
+  note() {
+    jq -nc --arg id $1 --arg r $2 '{id: $id, reason: $r, updated_at: "2026-01-01T00:00:00Z",
+      subject: {title: "thread \($id)", url: "https://api.github.com/repos/o/r/issues/\($id)"},
+      repository: {full_name: "o/r", url: "https://api.github.com/repos/o/r"}}'
+  }
+  # fixtures <mine prs> <asked prs> <notes>: each a comma-separated list of the above
+  fixtures() {
+    jq -nc --argjson m "[$1]" --argjson a "[$2]" \
+      '{data: {mine: {nodes: $m}, asked: {nodes: $a}}}' > $t/graphql.json
+    print -r -- "[$3]" > $t/notifications.json
+  }
+  # run_watch: one run, as the LaunchAgent does it; only the stubs and the system's tools on PATH
+  run_watch() { T=$t XDG_STATE_HOME=$t/state HOME=$t/home PATH=$t/stubs:$minimal_path config/github/watch }
+
+  fixtures "$(pr 1 SUCCESS)" "$(pr 3 PENDING)" "$(note 7 comment)"
+  run_watch || print "the first run exits $?, not 0"
+  [[ -e $t/notified ]] && print "the first run only records what's there, but it notified: $(<$t/notified)"
+  jq -e 'has("mine") and has("asked") and has("notes") and has("at")' $state > /dev/null 2>&1 ||
+    print "the state file lacks mine, asked, notes or at"
+  run_watch
+  [[ -e $t/notified ]] && print "nothing changed, but it notified: $(<$t/notified)"
+
+  fixtures "$(pr 1 FAILURE)" "$(pr 3 PENDING),$(pr 4 PENDING)" "$(note 7 comment),$(note 8 mention)"
+  run_watch
+  local -a sent=(${(f)"$(<$t/notified 2> /dev/null)"})
+  (( $#sent == 3 )) ||
+    print "a failed check, a new review request and a new note: $#sent notifications, not 3: ${(j: | :)sent}"
+  (( ${#${(M)sent:#*'-subtitle o/r#1 -message checks failed: '*}} )) || print "no 'checks failed' for o/r#1"
+  (( ${#${(M)sent:#*'-subtitle o/r#4 -message review requested: '*}} )) ||
+    print "no 'review requested' for o/r#4"
+  (( ${#${(M)sent:#*'-subtitle o/r#8 -message mentioned you: '*}} )) ||
+    print "no 'mentioned you' for the new note o/r#8"
+
+  cp $state $t/state.before
+  touch $t/gh.fail
+  run_watch
+  (( $? == 1 )) || print "with gh failing, the run doesn't exit 1"
+  [[ -s $t/state/github/error ]] || print "with gh failing, no error is left for check_mac"
+  cmp -s $state $t/state.before || print "with gh failing, the state file changed"
+  (( ${#${(f)"$(<$t/notified)"}} == 3 )) || print "with gh failing, it notified"
+  rm $t/gh.fail
+  run_watch
+  [[ -e $t/state/github/error ]] && print "after a good run, the error is still there"
+
+  # what the inbox lists from that state: failing checks, then asked of you, then notifications
+  out=$(T=$t XDG_STATE_HOME=$t/state PATH=$minimal_path config/github/inbox --list 2>&1)
+  local -a kinds=(${${(f)out}%%'|'*})
+  [[ ${(j: :)kinds} == "mine asked asked note note" ]] ||
+    print -r -- "inbox --list: the order isn't failing, asked, asked, notes: ${(j: :)kinds}"
+}
+
+# the hook's state of a Claude Code pane, and the order the agents list and next-agent put them in, in a
+# private tmux server pointed at with $TMUX (the scripts call plain `tmux`). @claude-agent and @listed are the
+# lines of config/tmux/tmux.conf, so a change to them is tested too.
+run_agent_state() {
+  (( $+commands[tmux] )) || { print "tmux isn't installed"; return 2 }
+  local t=$tmp/state sock=check-agents-$$ real=$commands[tmux] state pane got hidden
+  local -a ids order expected
+  mkdir -p $t/stubs
+  p() { tmux -L $sock "$@" }
+  grep -E '^set -g @(claude-agent|listed) ' config/tmux/tmux.conf > $t/tmux.conf
+  [[ -s $t/tmux.conf ]] || { print "config/tmux/tmux.conf no longer sets @claude-agent and @listed"; return 1 }
+  {
+    p -f /dev/null new-session -d -s main 2> $t/err || {
+      [[ -n $SANDBOX_RUNTIME ]] && { print "tmux can't make its socket in Claude Code's sandbox"; return 2 }
+      print -r -- "couldn't start a tmux server: $(<$t/err)"
+      return 1
+    }
+    p source-file $t/tmux.conf
+    p new-session -d -s _hidden
+    p split-window -d -t main: && p split-window -d -t main: && p split-window -d -t main:
+    ids=(${(f)"$(p list-panes -t main -F '#{pane_id}')"})
+    hidden=$(p list-panes -t _hidden -F '#{pane_id}')
+    (( $#ids == 4 )) || { print "setup: $#ids panes, not 4"; return 1 }
+    export TMUX=$(p display -p '#{socket_path}'),0,0
+
+    for state in working waiting done idle off; do
+      TMUX_PANE=$ids[1] config/claude/hooks/tmux-state.sh $state
+      got=$(p display -p -t $ids[1] '#{@claude}')
+      [[ $got == ${state/off/} ]] || print "tmux-state.sh $state: @claude is '$got'"
+    done
+
+    # the order of the lists: waiting, done, working, then idle; a pane in a _ session isn't listed
+    p set -p -t $ids[1] @claude idle
+    p set -p -t $ids[2] @claude working
+    p set -p -t $ids[3] @claude done
+    p set -p -t $ids[4] @claude waiting
+    p set -p -t $hidden @claude waiting
+    order=(${(f)"$(config/tmux/agents --list 2>&1 | cut -f1)"})
+    expected=($ids[4] $ids[3] $ids[2] $ids[1])
+    [[ $order == $expected ]] ||
+      print "agents --list: ${(j: :)order}; should be ${(j: :)expected} (waiting, done, working, idle)"
+
+    # next-agent needs a client: a tmux that logs switch-client and display, and forwards the rest
+    print -r -- "#!/bin/sh
+case \"\$1\" in switch-client|display) echo \"\$*\" >> $t/calls; exit 0 ;; esac
+exec $real -L $sock \"\$@\"" > $t/stubs/tmux
+    chmod +x $t/stubs/tmux
+    PATH=$t/stubs:$PATH config/tmux/next-agent c $ids[1]
+    [[ $(<$t/calls) == "switch-client -c c -t $ids[4]" ]] ||
+      print "next-agent from an idle pane: '$(<$t/calls)', should go to the waiting pane $ids[4]"
+    : > $t/calls
+    PATH=$t/stubs:$PATH config/tmux/next-agent c $ids[4]
+    [[ $(<$t/calls) == "switch-client -c c -t $ids[3]" ]] ||
+      print "next-agent from the waiting pane: '$(<$t/calls)', should go to the done pane $ids[3]"
+    : > $t/calls
+    for pane in $ids; do p set -p -t $pane @claude idle; done
+    PATH=$t/stubs:$PATH config/tmux/next-agent c $ids[1]
+    [[ $(<$t/calls) == "display -c c no agent needs you" ]] ||
+      print "next-agent with none waiting or done: '$(<$t/calls)', should say 'no agent needs you'"
+  } always {
+    p kill-server 2> /dev/null
+  }
+}
+
+# each early run's problems, as a check: the promise is the label below
+check_agent_done() { early_result agent_done "7 cases"; }
+check_agent_resume() { early_result agent_resume "3 cases"; }
+check_agent_land() { early_result agent_land "6 cases"; }
+check_github_watch() { early_result github_watch "4 runs and the inbox"; }
+check_agent_state() { early_result agent_state "hook, list, next-agent"; }
+
+agent_helpers
+early agent_done run_agent_done
+early agent_resume run_agent_resume
+early agent_land run_agent_land
+early github_watch run_github_watch
+early agent_state run_agent_state
+
 group "Behaviour: the scripts that run on their own do what they should"
 check "zsh starts without errors" check_zsh_start
 check "zsh's functions find the repo in Claude Code's shell" check_zsh_exports
@@ -223,3 +624,8 @@ check "the bell hook keeps quiet outside tmux" check_bell_hook
 check "the status line shows what the session reports" check_statusline
 check "new skills are linked into ~/.claude, removed ones unlinked" check_skill_links
 check "after a pull, the running programs reload what changed" check_reload
+check "agent_done removes a worktree only when nothing would be lost" check_agent_done
+check "_agent_worktree brings back what agent_done left" check_agent_resume
+check "agent_land lands only a clean, rebased, checked branch" check_agent_land
+check "the GitHub watcher notices what changed and nothing else" check_github_watch
+check "the agents' state and the order the lists show it in" check_agent_state
