@@ -2,7 +2,8 @@
 # Usage: agents [fzf options]
 # The Claude Code agents in every session, most urgent first: waiting, done, working, then the idle ones and
 # those without a state yet. Each line has the agent's mark, its window and what it's working on (Claude Code's
-# title for the pane, without its leading ✳); the preview shows its screen. List and preview refresh every
+# title for the pane, without its leading ✳); the states come from the hooks
+# (config/claude/hooks/tmux-state.sh); the preview shows its screen. List and preview refresh every
 # second, so states and order stay current while it's open; Enter switches there. Keys as in every picker
 # (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix a (cmd+shift+j,
 # config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup.

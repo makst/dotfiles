@@ -6,7 +6,7 @@
 # notification's thread with its comments, asked of gh each time. Enter opens it in the browser, c checks out
 # the pull request in a window of its repo's session, f starts an agent that fixes its failing checks
 # (agent_ci), r marks a notification read, R reruns a pull request's failed jobs. The list comes from the
-# watcher's state file, so it opens at once and follows each run. Keys as in every picker
+# watcher's state file (layout: config/github/watch, top comment), so it opens at once and follows each run. Keys as in every picker
 # (config/tmux/picker.zsh): it opens in normal mode, j/k move, / filters. Bound to prefix g (cmd+g,
 # config/tmux/tmux.conf); arguments go to fzf, e.g. --height=100% to fill the tmux popup. `inbox --list`
 # prints the lines alone, for fzf's reload; `inbox --preview <key>`, `inbox --read <key>`, `inbox --rerun

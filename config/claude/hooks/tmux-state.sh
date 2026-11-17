@@ -1,8 +1,28 @@
 #!/bin/zsh
 # Usage: tmux-state.sh working|waiting|done|idle|off
-# Records what Claude Code is doing in its tmux pane, as the pane option @claude, so tmux can show it on the
-# window, in the session tree and the picker (config/tmux/tmux.conf, "Claude Code agents"). A finished agent in a
-# window you're looking at is already seen, so it's idle rather than done. Outside tmux it does nothing.
+# Records what Claude Code is doing in its tmux pane, as the pane option @claude: the one place that says what
+# it holds. Outside tmux it does nothing.
+#   working  a prompt was sent (UserPromptSubmit) or a tool finished (PostToolUse); also set by watch_prompt
+#            below when you approve a permission prompt
+#   waiting  for a permission (PermissionRequest) or an answer (Notification, elicitation_dialog)
+#   done     finished (Stop), not seen yet; in a window you're looking at it is written as idle instead, and
+#            tmux turns done into idle itself when you switch to the window or session (@claude-seen,
+#            config/tmux/tmux.conf)
+#   idle     the session started (SessionStart), or you declined a prompt (watch_prompt); shows nothing
+#   off      (SessionEnd) unsets the option; shows nothing
+# The hook events are in config/claude/settings.json, "hooks". The urgency order is waiting, done, working
+# (idle and unset show nothing); each reader spells it out itself, as tmux formats can't share a variable:
+# @claude-*-state in tmux.conf, `rank` in agents, next-agent.
+# Readers, all in config/tmux unless named:
+#   tmux.conf, "Claude Code agents"  the most urgent state of each window (@claude-window-state, the window
+#                                    mark) and session (@claude-session-state), the counts in the status line
+#                                    (@claude-all-*, @claude-summary), @claude-seen, and @claude-agent (a pane
+#                                    that runs Claude, whatever its state)
+#   agents                           the cmd+shift+j overview: the panes ordered by state
+#   next-agent                       cmd+shift+space: the next waiting agent, then the done ones
+#   tree                             the mark of each session, window and pane
+#   sessionizer                      the mark of each session (@claude-session-state)
+#   nvim/lua/user/codetour/review.lua  finds the agent's pane through @claude-agent
 
 [[ -n $TMUX_PANE ]] && (( $+commands[tmux] )) || exit 0
 

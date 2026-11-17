@@ -7,6 +7,18 @@
 # the global option @github. Reviews asked of a team you're in are left out: they come by the hundred. The
 # first run, and the first after a day asleep, only records what's there, so you aren't flooded. Needs gh
 # (logged in) and jq; without terminal-notifier it shows no notifications, without tmux no mark.
+#
+# What it writes, under ${XDG_STATE_HOME:-~/.local/state}/github/, and who reads it:
+#   state.json  {at, mine, asked, notes}; at is the run's time in epoch seconds (a state older than a day makes
+#               the next run only record). mine and asked: [{key "owner/repo#N", title, url, draft, branch,
+#               review APPROVED|CHANGES_REQUESTED|REVIEW_REQUIRED|"", checks SUCCESS|FAILURE|ERROR|PENDING|
+#               EXPECTED|""}]; notes: [{id, reason, updated, title, repo, url}].
+#               Read by config/github/inbox (the picker's list and the keys' urls and branches).
+#   error       one line, "<date> <time> <reason>", there only while the last run failed. Read by check_mac
+#               (zsh/functions/setup.zsh).
+#   @github     tmux's global option, the status-line mark. Read by status-right in config/tmux/tmux.conf.
+# (watch.log, from the LaunchAgent that setup_github makes in zsh/functions/github.zsh, is launchd's, not
+# written by this script.)
 
 dir=${XDG_STATE_HOME:-$HOME/.local/state}/github
 state=$dir/state.json
