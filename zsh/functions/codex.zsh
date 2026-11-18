@@ -55,8 +55,10 @@ function _agent_codex_review() {
 # review (codex review, agent_review) isn't the agent's and is left out.
 function _agent_codex_sessions() {
   local root=$1/$_agent_worktrees f name title
-  [[ -d ~/.codex/sessions ]] || return 0  # rg without a path would wait for stdin
-  local -a files=(${(f)"$(rg -l --sortr modified -F "\"cwd\":\"$root/" -- ~/.codex/sessions 2> /dev/null)"})
+  # newest first (om), and grep -l keeps that order; plain grep, so it needs nothing beyond macOS
+  local -a files=(~/.codex/sessions/**/rollout-*.jsonl(N.om))
+  (( $#files )) || return 0  # grep without a file would wait for stdin
+  files=(${(f)"$(grep -lF -- "\"cwd\":\"$root/" $files 2> /dev/null)"})
   for f in $files; do
     # the unit separator, not a tab: a tab is whitespace to read, which would drop an empty name
     IFS=$'\x1f' read -r name title < <(jq -rn --arg root $root/ '[limit(300; inputs)] as $e
