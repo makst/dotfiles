@@ -1,7 +1,7 @@
 #!/bin/zsh
-# Usage: notify.sh [tool name]   (PermissionRequest, Notification on elicitation_dialog, Stop; the hook's JSON on
+# Usage: notify.sh [tool name]   (PermissionRequest, Notification on elicitation_dialog; the hook's JSON on
 # stdin). The tool name (default Claude Code) is the notification's title.
-# Sends a macOS notification when the agent waits for you or has finished, unless you're looking at it: its tmux
+# Sends a macOS notification when the agent waits for you, unless you're looking at it: its tmux
 # window is the active one of an attached session and that client's terminal app is the frontmost app.
 # With terminal-notifier, clicking it switches the client you used last to the agent's pane and brings its
 # terminal to the front; without it, or with its notifications turned off, osascript shows one that clicking
@@ -10,14 +10,12 @@
 name=${1:-Claude Code}
 [[ $OSTYPE == darwin* && -n $TMUX_PANE ]] && (( $+commands[tmux] && $+commands[lsappinfo] )) || exit 0
 
-input=$(jq -r '[.hook_event_name, .tool_name // "", .tool_input.description // .tool_input.command // "",
-  .last_assistant_message // ""] | map(gsub("\\s+"; " ")) | join("\t")' 2> /dev/null) && [[ -n $input ]] || exit 0
+input=$(jq -r '[.hook_event_name, .tool_name // "", .tool_input.description // .tool_input.command // ""] | map(gsub("\\s+"; " ")) | join("\t")' 2> /dev/null) && [[ -n $input ]] || exit 0
 event=${input%%$'\t'*} rest=${input#*$'\t'}
 tool=${rest%%$'\t'*} rest=${rest#*$'\t'}
-detail=${rest%%$'\t'*} last=${rest#*$'\t'}
-# an agent that agent_ask started hands its answer back at Stop (answer.sh); a permission or a question still
-# notifies, since only you can answer it
-[[ -n ${AGENT_ASK_DIR:-} && $event == Stop ]] && exit 0
+detail=$rest
+# finishing a turn shows only the bell and the green mark: a notification each time was too much
+[[ $event == Stop ]] && exit 0
 
 # app_of <pid>: the pid and path of the .app that <pid> runs in, e.g. Ghostty for a tmux client
 app_of() {
@@ -47,7 +45,7 @@ notify() {
   case $event in
     PermissionRequest) message="wants to use $tool${detail:+: $detail}" ;;
     Notification) message='has a question for you' ;;
-    *) message=${last:-finished its turn} ;;
+    *) return ;;
   esac
   (( $#message > 200 )) && message="${message[1,199]}…"
   [[ -z $title || $title == ($name|$HOST) ]] && title=$where || title="$title — $where"

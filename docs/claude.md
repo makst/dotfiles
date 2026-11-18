@@ -225,7 +225,7 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 | PostToolUse on Edit, Write | `format.sh` |
 | SessionStart, UserPromptSubmit, PostToolUse, PermissionRequest, Notification, Stop, SessionEnd | `tmux-state.sh working`, `waiting`, `done`, `idle` or `off`, as the event says |
 | Stop (listed first; Claude Code runs an event's hooks in parallel, so the order doesn't matter) | `answer.sh`: hands the answer back to the agent that asked, when `agent_ask` started this session; nothing otherwise |
-| PermissionRequest, Notification (a question), Stop | `bell.sh` (the bell: Notification and Stop), `notify.sh` |
+| PermissionRequest, Notification (a question), Stop | `bell.sh` (Notification and Stop), `notify.sh` (PermissionRequest and the question) |
 
 The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
 `"disableAllHooks": true` in `settings.json` turns them all off. The agents overview is `config/tmux/agents`,

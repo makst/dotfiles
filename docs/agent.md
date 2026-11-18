@@ -70,8 +70,8 @@ setting in `/config` is: if Ghostty is in the background, the Dock icon bounces 
 bell. Any other program that rings the bell turns its window yellow with a bell icon until you visit it.
 
 When you aren't looking at the agent, a macOS notification tells you too: when the agent asks for a permission
-(`wants to use Bash: <what the command does>`), asks you a question, or finishes its turn (the first 200
-characters of its last message). The title is the conversation's title and the agent's `session:window`.
+(`wants to use Bash: <what the command does>`) or asks you a question. Finishing a turn sends no notification,
+only the bell and the green mark. The title is the conversation's title and the agent's `session:window`.
 You're looking at it when its window is the active one of a session that a tmux client shows and that client's
 terminal (Ghostty) is the frontmost app; then nothing is sent. Clicking the notification switches the tmux
 client you used last to the agent's pane and brings Ghostty to the front. A newer notification from the same
@@ -164,7 +164,7 @@ checks.
    `worktree-ci-<number>`, then starts the tool in a window as `agent` does.
 2. The agent's first prompt names the failing checks, each with the `gh run view <run> --log-failed` that
    prints its log, and asks it to fix the cause and commit, not push, or to say when the failure looks flaky.
-3. When it's done (green mark, notification), look at its commit and push it to the pull request:
+3. When it's done (green mark), look at its commit and push it to the pull request:
    `git push origin HEAD:<branch>`, which the agent repeats at the end.
 4. `agent_done --force ci-<number>`: squash-merged pull requests leave the commit out of the default branch,
    so it doesn't count as merged. Not `agent_land`: the fix goes to the pull request, not into the default
@@ -400,8 +400,8 @@ Config
   | `no-recursive-rm.sh` | before a shell command: refuses deletes that can't be undone (`rm -r` / `rm -rf`, `find … -delete`, `git clean -f`) and tells the agent to move things to the trash instead (`git stash -u` for untracked files) |
   | `format.sh` | after the agent edits or writes a file: formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style). It reads Claude Code's Edit/Write input, so it is wired there only |
   | `bell.sh` | the agent needs input or has finished: rings the bell in its tmux pane, so the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
-  | `notify.sh [tool name]` | the agent asks for permission or a question, or has finished: a macOS notification titled with the tool's name (default Claude Code) unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
-  | `answer.sh` | on Stop: for a child started by `agent_ask` (it has `AGENT_ASK_DIR`), writes the turn's last message, the hook's `last_assistant_message`, to the child's state directory for `agent_ask` to print (each file written whole and moved into place); does nothing in any other session or for a state directory that is a symlink or outside `~/.local/state/agent-ask`. `bell.sh`, `notify.sh` and `tmux-state.sh` are quiet at Stop for such a child, so a child that has only answered doesn't ring the bell, notify or turn green: nobody is waiting for it but the agent that asked |
+  | `notify.sh [tool name]` | the agent asks for permission or a question: a macOS notification titled with the tool's name (default Claude Code) unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
+  | `answer.sh` | on Stop: for a child started by `agent_ask` (it has `AGENT_ASK_DIR`), writes the turn's last message, the hook's `last_assistant_message`, to the child's state directory for `agent_ask` to print (each file written whole and moved into place); does nothing in any other session or for a state directory that is a symlink or outside `~/.local/state/agent-ask`. `bell.sh` and `tmux-state.sh` are quiet at Stop for such a child, so a child that has only answered doesn't ring the bell or turn green: nobody is waiting for it but the agent that asked |
   | `tmux-state.sh <state>` | records the agent's state (working, waiting, done) in its tmux pane for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); for Claude Code it also watches the screen to see whether you approved a permission prompt (other tools stay waiting until their next hook) |
 - **`config/agent/skills/`**: the skills every tool gets, one folder with a `SKILL.md` each. `link_agent_skills
   <dir>` links them into a tool's skills directory (`setup_claude` and the `claude` wrapper do it for

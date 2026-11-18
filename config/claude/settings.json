@@ -225,10 +225,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/tmux-state.sh done"
-          },
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/notify.sh"
           }
         ]
       }

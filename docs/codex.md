@@ -85,7 +85,7 @@ Config
   | SessionStart, Interrupt | `tmux-state.sh idle` |
   | UserPromptSubmit, PostToolUse | `tmux-state.sh working` |
   | PermissionRequest | `tmux-state.sh waiting codex` (no approval watcher), `notify.sh Codex` |
-  | Stop | `answer.sh` (first), `bell.sh`, `tmux-state.sh done`, `notify.sh Codex` |
+  | Stop | `answer.sh` (first), `bell.sh`, `tmux-state.sh done` |
   | SessionEnd | `tmux-state.sh off` |
 
 - **`config/codex/rules/agent.rules`** → `~/.codex/rules/agent.rules`, a **copy**, not a link: Codex's command
