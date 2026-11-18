@@ -89,7 +89,7 @@ if [[ -n $top ]]; then
     marks+="⇣$behind"
   fi
   [[ -n $marks ]] && out+=" $yellow$marks$reset"
-  # a linked worktree (claude -w) has its own git dir apart from the shared one
+  # a linked worktree (an agent's) has its own git dir apart from the shared one
   local -a gitdirs=(${(f)"$(git -C $dir rev-parse --path-format=absolute --git-dir --git-common-dir 2> /dev/null)"})
   [[ $gitdirs[1] != $gitdirs[2] ]] && out+=" $cyan(worktree)$reset"
 fi

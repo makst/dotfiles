@@ -29,8 +29,8 @@ What it is
 - The tmux server is started from a login shell, so `claude` and everything it calls has the same `PATH` as
   your shell.
 - **Conversations stay**: Claude Code keeps every conversation as a file in `~/.claude/projects/`, one folder
-  per directory, here for a year. An agent's stays in its worktree's folder, or moves to the main checkout's
-  when Claude removed the worktree itself on exit.
+  per directory, here for a year. An agent's stays in its worktree's folder (an agent started with the
+  old `claude -w` moved to the main checkout's when Claude removed the worktree itself on exit; both are found).
 - **The global config**, `config/claude`, holds on any machine and in any project, with nothing about this
   Mac, its tools or this repo; what depends on the Mac comes from the `claude` wrapper ([This
   machine](#this-machine)).
@@ -122,9 +122,12 @@ agent fix-login
 agent fix-login "the login form rejects valid emails"
 ```
 
-`agent <name> [prompt]` runs `claude -w <name>`: Claude Code in a **git worktree** of its own, on a branch
-`worktree-<name>`. Inside tmux it opens in a **new window named `<name>`**, in the current directory; outside
-tmux it runs right there. Arguments after the name are passed on to `claude`.
+`agent <name> [prompt]` makes a **git worktree** `.claude/worktrees/<name>` on a branch `worktree-<name>`, from
+the repo's default branch (not from the checkout you're in), and starts Claude Code in it. Inside tmux it opens
+in a **new window named `<name>`**; outside tmux it runs right there. A name that already has a worktree reuses
+it, and one whose branch is still there checks that branch out; any other name starts fresh from the default
+branch. Arguments after the name are passed on to `claude`. The worktree is made by `agent` itself, not by
+`claude -w`, so any tool can run in it the same way; agents started with `claude -w` earlier still work.
 
 When Claude exits, the window stays open as a shell in the worktree. The worktrees live in
 `.claude/worktrees/`, which the global gitignore hides from `git status` in every repo.
@@ -216,9 +219,9 @@ changes, and without `--force` if the branch has commits that aren't in the defa
 merged when it's in the local default branch or in origin's, so an agent that pushed its work straight to
 `origin/main` can be finished without pulling first. Ignored files (`.env`, `node_modules`) are in no commit,
 so a worktree that has any goes to the Trash whole instead of being removed. It works from anywhere in the
-repo, the worktree itself included. Claude Code locks its worktree while it runs, so `agent_done` closes the
-window first, which ends
-Claude, and waits a moment for the lock to go. Before deleting the branch it saves the agent's last commit in
+repo, the worktree itself included. A tool that locks its worktree (`claude -w` did) holds the lock while it
+runs, so `agent_done` closes the window first, which ends the tool, and waits a moment for the lock to go.
+Before deleting the branch it saves the agent's last commit in
 `refs/agents/<name>`, and the conversation stays, so [`agent_resume`](#going-back-to-an-agent) can bring the
 agent back. Tab completes the names of the repo's agent worktrees.
 

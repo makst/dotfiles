@@ -3,7 +3,7 @@
 # macOS folder metadata
 .DS_Store
 
-# Claude Code: agent worktrees (claude -w, `agent`) and personal per-project settings
+# Claude Code: agent worktrees (`agent`, and earlier `claude -w`) and personal per-project settings
 .claude/worktrees/
 .claude/settings.local.json
 

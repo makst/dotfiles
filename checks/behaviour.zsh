@@ -270,7 +270,7 @@ mkrepo() {
     git -C $r remote add origin $t/origin.git && git -C $r push -q origin main &&
     git -C $r remote set-head origin main > /dev/null
 }
-# mkagent <name>: a worktree the way `agent` makes it (claude -w): worktree-<name> from main
+# mkagent <name>: a worktree the way `agent` makes it (_agent_worktree --new): worktree-<name> from main
 mkagent() { git -C $r worktree add -q -b worktree-$1 $r/.claude/worktrees/$1 main }
 wt() { print -r -- $r/.claude/worktrees/$1 }
 tip_of() { git -C $1 rev-parse HEAD }
@@ -394,7 +394,23 @@ case_kept() {
   [[ $(git -C $(wt a) branch --show-current 2> /dev/null) == worktree-a ]] || bad "not on worktree-a"
   [[ $(tip_of $(wt a) 2> /dev/null) == $tip ]] || bad "with its branch still there: not at the branch's tip"
 }
-runcases dropped merged kept
+case_new_is_fresh() {
+  # a saved, unmerged commit under refs/agents/x, no worktree and no branch: --new starts from main, not from it
+  mkagent x; save $(wt x) x.txt; saved=$(tip_of $(wt x))
+  agent_done --force x > /dev/null 2>&1
+  _agent_worktree --new $r x > /dev/null 2>&1 || bad "--new returns $?"
+  [[ $(git -C $(wt x) branch --show-current 2> /dev/null) == worktree-x ]] || bad "--new: not on worktree-x"
+  [[ $(tip_of $(wt x) 2> /dev/null) == $(tip_of $r) ]] || bad "--new: not at main's tip"
+  [[ $(tip_of $(wt x) 2> /dev/null) != $saved ]] || bad "--new: started from the saved commit"
+}
+case_new_reuses() {
+  _agent_worktree --new $r x > /dev/null 2>&1 || bad "--new returns $?"
+  tip=$(tip_of $(wt x)); save $(wt x) x.txt
+  _agent_worktree --new $r x > /dev/null 2>&1 || bad "--new on an existing worktree returns $?"
+  [[ $(tip_of $(wt x)) != $tip ]] || bad "--new on an existing worktree: it was reset"
+  (( $(git -C $r branch --list "worktree-*" | wc -l) == 1 )) || bad "--new on an existing worktree: new branch"
+}
+runcases dropped merged kept new_is_fresh new_reuses
 EOF
   H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
 }
@@ -603,7 +619,7 @@ exec $real -L $sock \"\$@\"" > $t/stubs/tmux
 
 # each early run's problems, as a check: the promise is the label below
 check_agent_done() { early_result agent_done "7 cases"; }
-check_agent_resume() { early_result agent_resume "3 cases"; }
+check_agent_resume() { early_result agent_resume "5 cases"; }
 check_agent_land() { early_result agent_land "6 cases"; }
 check_github_watch() { early_result github_watch "4 runs and the inbox"; }
 check_agent_state() { early_result agent_state "hook, list, next-agent"; }

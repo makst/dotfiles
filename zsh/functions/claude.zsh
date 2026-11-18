@@ -95,14 +95,19 @@ function claude_tokens() {
        "\n" + (total | row("all")))' | column -t -s $'\t'
 }
 
-# agent <name> [prompt]: Claude Code in its own git worktree (claude -w) and, inside tmux, in a new window
-# named after the task. The window stays a shell once Claude exits.
+# agent <name> [prompt]: Claude Code in its own git worktree, .claude/worktrees/<name> on a branch
+# worktree-<name> made from the default branch (not from the current checkout's HEAD), and, inside tmux, in a
+# new window named after the task. A name that has a worktree reuses it; the window stays a shell once Claude
+# exits. The worktree is made here (_agent_worktree --new), not by `claude -w`, so any tool can run in it.
 #   agent fix-login
 #   agent fix-login "the login form rejects valid emails"
 function agent() {
   local name=${1:?usage: agent <name> [claude args...]}
   shift
-  _agent_window $name $PWD claude -w $name "$@"
+  local main
+  main=$(_agent_main) || return
+  _agent_worktree --new $main $name || return
+  _agent_window $name $main/.claude/worktrees/$name claude "$@"
 }
 
 # agent_ci <number>: an agent that fixes the failing checks of pull request <number> of this repo, from the
@@ -185,8 +190,9 @@ function _agent_main() {
 
 # _agent_sessions <main>: the conversations of the agents of the repo at <main>, newest first, one per line:
 # transcript<tab>name<tab>last active<tab>title. Claude Code keeps a transcript per directory under
-# ~/.claude/projects: an agent's stays in its worktree's folder, or moves to the main checkout's when Claude
-# removes the worktree itself on exit, so both are searched for conversations that ran in .claude/worktrees/.
+# ~/.claude/projects: a new agent's stays in its worktree's folder; it moves to the main checkout's only for
+# agents started with `claude -w`, which removes the worktree itself on exit. Both are searched for
+# conversations that ran in .claude/worktrees/.
 # A reviewer's conversation (agent_review, its first prompt is /code-review) is left out: it isn't the agent's.
 function _agent_sessions() {
   local root=$1/.claude/worktrees f name title
@@ -207,10 +213,15 @@ function _agent_sessions() {
   done
 }
 
-# _agent_worktree <main> <name>: makes sure the agent's worktree exists, re-creating one agent_done removed: on
-# its branch if that's still there, else on a new worktree-<name> from what agent_done saved in
-# refs/agents/<name>, or from the default branch once that holds the saved work (it was merged).
+# _agent_worktree [--new] <main> <name>: makes sure the agent's worktree exists. Without --new it re-creates
+# one agent_done removed: on its branch if that's still there, else on a new worktree-<name> from what
+# agent_done saved in refs/agents/<name>, or from the default branch once that holds the saved work (it was
+# merged). With --new (`agent`: a new task) an existing worktree is reused, an existing branch worktree-<name>
+# is checked out, else worktree-<name> starts from the default branch, never from refs/agents/<name>: a reused
+# name starts fresh.
 function _agent_worktree() {
+  local fresh=0
+  [[ $1 == --new ]] && { fresh=1; shift }
   local main=$1 name=$2 wt=$1/.claude/worktrees/$2 branch=worktree-$2 saved=refs/agents/$2
   [[ -d $wt ]] && return
   if git -C $main rev-parse -q --verify refs/heads/$branch > /dev/null; then
@@ -218,11 +229,11 @@ function _agent_worktree() {
     return
   fi
   local base=$(_agent_default $main)
-  if git -C $main rev-parse -q --verify $saved > /dev/null &&
+  if (( ! fresh )) && git -C $main rev-parse -q --verify $saved > /dev/null &&
     ! git -C $main merge-base --is-ancestor $saved $base; then
     base=$saved
   fi
-  git -C $main worktree add -q -b $branch $wt $base && print "re-created $name's worktree on $branch from ${base#refs/}"
+  git -C $main worktree add -q -b $branch $wt $base && print "made $name's worktree on $branch from ${base#refs/}"
 }
 
 # _agent_default <main>: the default branch: origin's, else main or master when there is one, else the one
@@ -331,13 +342,13 @@ function agent_done() {
     return 1
   fi
 
-  # the window `agent` opened, unless it's the one running this. It goes first: closing it ends Claude Code,
-  # which locks its worktree for as long as it runs
+  # the window `agent` opened, unless it's the one running this. It goes first: closing it ends the tool,
+  # and one that locks its worktree (claude -w did) holds the lock for as long as it runs
   if [[ -n $TMUX ]]; then
     local window=$(tmux list-windows -F '#{window_id} #{window_name}' | awk -v n=$name '$2 == n { print $1; exit }')
     [[ -n $window && $window != $(tmux display-message -p '#{window_id}') ]] && tmux kill-window -t $window
   fi
-  # wait up to 2 s for Claude to unlock; a lock whose Claude no longer runs (pid in the reason) is lifted
+  # wait up to 2 s for the tool to unlock; a lock whose Claude no longer runs (pid in the reason) is lifted
   local lock i
   for i in {1..20}; do
     lock=$(git -C $main worktree list --porcelain | awk -v wt=$wt '
@@ -348,7 +359,7 @@ function agent_done() {
   if [[ -n $lock ]]; then
     local pid=${${lock#*pid }%% *}
     if [[ $pid == <-> ]] && kill -0 $pid 2> /dev/null; then
-      print -u2 "$name is still locked by a running Claude Code (pid $pid); quit it first"
+      print -u2 "$name is still locked by a running tool (pid $pid); quit it first"
       return 1
     fi
     git -C $main worktree unlock $wt
