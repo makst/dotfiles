@@ -87,6 +87,7 @@ cask "kotlin-lsp"                  # Kotlin language server (JetBrains) in nvim,
 brew "ktlint"                      # formats Kotlin where a project's .editorconfig sets up ktlint, conform in nvim
 
 # --- Apps
+cask "codex"                       # TUI: the second agent tool (agent --tool codex), zsh/functions/codex.zsh, setup_codex
 cask "ghostty"                     # the terminal, config/ghostty, setup_ghostty
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_aerospace
 cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key

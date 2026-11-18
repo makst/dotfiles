@@ -248,9 +248,9 @@ early_result() {
 }
 
 # agent_helpers: writes $tmp/agent-helpers.zsh, what the agent checks' scripts source: HOME, git identity and the
-# Trash in a throwaway $T/home, zsh/functions/agent.zsh and claude.zsh, a repo $r (branch main, origin a bare
-# repo with origin/HEAD set) and the way `agent` makes a worktree, so each case needs only its own few lines.
-# A case's repo is its own, so the cases of a script run at the same time.
+# Trash in a throwaway $T/home, zsh/functions/agent.zsh, claude.zsh and codex.zsh, a repo $r (branch main,
+# origin a bare repo with origin/HEAD set) and the way `agent` makes a worktree, so each case needs only its own
+# few lines. A case's repo is its own, so the cases of a script run at the same time.
 agent_helpers() {
   cat > $tmp/agent-helpers.zsh <<'EOF'
 unsetopt bg_nice  # a sandbox (Claude Code's) can't lower the priority of background jobs
@@ -260,6 +260,7 @@ mkdir -p $HOME/.Trash
 print -r -- $'[user]\n\tname = t\n\temail = t@t\n[commit]\n\tgpgsign = false' > $HOME/.gitconfig
 source $real_script_dir/zsh/functions/agent.zsh
 source $real_script_dir/zsh/functions/claude.zsh
+source $real_script_dir/zsh/functions/codex.zsh
 
 # bad <problem>: one problem line, named for the case
 bad() { print -r -- "$name: $*" }
@@ -443,6 +444,49 @@ case_config() {
   [[ $out == *"started"* ]] || bad "agent.tool stub isn't used: $out"
 }
 runcases flag unknown config
+EOF
+  H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
+}
+
+# _agent_codex_sessions and _agent_codex_resume (zsh/functions/codex.zsh): from rollouts in a throwaway HOME, in
+# the shape of Codex's (made-up content): one that ran in an agent's worktree is listed with its name and its
+# first real prompt (not the injected context); one that ran elsewhere, one of a review and one of another
+# repo's agent are not; resuming one names the id in its first line
+run_agent_codex() {
+  local t=$tmp/agent-codex
+  mkdir -p $t
+  cat > $t/run.zsh <<'EOF'
+source $H
+# rollout <id> <cwd> <source> <prompt>: a rollout in ~/.codex/sessions
+rollout() {
+  local d=$HOME/.codex/sessions/2026/11/18 id=$1
+  mkdir -p $d
+  {
+    jq -nc --arg id $id --arg cwd $2 --arg src $3 '{type: "session_meta", payload: {id: $id, cwd: $cwd, source: $src}}'
+    jq -nc '{type: "response_item", payload: {type: "message", role: "user", content: [{type: "input_text", text: "# AGENTS.md instructions for /x"}]}}'
+    jq -nc '{type: "response_item", payload: {type: "message", role: "user", content: [{type: "input_text", text: "<environment_context>\n  <cwd>/x</cwd>\n</environment_context>"}]}}'
+    jq -nc --arg p $4 '{type: "response_item", payload: {type: "message", role: "user", content: [{type: "input_text", text: $p}]}}'
+    jq -nc '{type: "response_item", payload: {type: "message", role: "assistant", content: [{type: "output_text", text: "done"}]}}'
+  } > $d/rollout-2026-11-18T10-00-00-$id.jsonl
+}
+case_sessions() {
+  rollout 019a0000-0000-7000-8000-000000000001 $r/.claude/worktrees/x/sub cli "fix  the   login
+form"
+  rollout 019a0000-0000-7000-8000-000000000002 /elsewhere/.claude/worktrees/x cli "other repo"
+  rollout 019a0000-0000-7000-8000-000000000004 $r/.claude/worktrees/rev review "review it"
+  local -a rows=(${(f)"$(_agent_codex_sessions $r)"})
+  (( $#rows == 1 )) || bad "$#rows rows, not 1: $rows"
+  local -a cols=("${(@ps:\t:)rows[1]}")
+  [[ $cols[2] == x && $cols[4] == "fix the login form" ]] || bad "the row has name '$cols[2]', title '$cols[4]'"
+  _agent_codex_resume $cols[1]
+  [[ $reply == "codex resume 019a0000-0000-7000-8000-000000000001" ]] || bad "resume: $reply"
+  local -a all=(${(f)"$(_agent_sessions $r)"})
+  [[ $all[1] == *$'\tcodex' ]] || bad "_agent_sessions doesn't tag the tool: $all[1]"
+}
+case_none() {
+  [[ -z $(_agent_codex_sessions $r) ]] || bad "rows without ~/.codex/sessions"
+}
+runcases sessions none
 EOF
   H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
 }
@@ -654,6 +698,7 @@ check_agent_done() { early_result agent_done "7 cases"; }
 check_agent_resume() { early_result agent_resume "5 cases"; }
 check_agent_land() { early_result agent_land "6 cases"; }
 check_agent_start() { early_result agent_start "3 cases"; }
+check_agent_codex() { early_result agent_codex "2 cases"; }
 check_github_watch() { early_result github_watch "4 runs and the inbox"; }
 check_agent_state() { early_result agent_state "hook, list, next-agent"; }
 
@@ -662,6 +707,7 @@ early agent_done run_agent_done
 early agent_resume run_agent_resume
 early agent_land run_agent_land
 early agent_start run_agent_start
+early agent_codex run_agent_codex
 early github_watch run_github_watch
 early agent_state run_agent_state
 
@@ -678,5 +724,6 @@ check "agent_done removes a worktree only when nothing would be lost" check_agen
 check "_agent_worktree brings back what agent_done left" check_agent_resume
 check "agent_land lands only a clean, rebased, checked branch" check_agent_land
 check "agent starts the chosen tool in a new worktree" check_agent_start
+check "Codex's conversations are listed, resumed and told from reviews" check_agent_codex
 check "the GitHub watcher notices what changed and nothing else" check_github_watch
 check "the agents' state and the order the lists show it in" check_agent_state

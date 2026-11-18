@@ -97,6 +97,10 @@ How each tool gets its vim keys:
 - **Claude Code**: the prompt is in vim mode (`editorMode` in `config/claude/settings.json`), `jj` leaves
   insert mode (`vimInsertModeRemaps`). Motions, operators and text objects work; no other mappings. In
   normal mode, `j`/`k` at the first or last line go through earlier prompts, and `/` searches them.
+- **Codex CLI**: the prompt has a vim mode, on at start (`tui.vim_mode_default` in the `codex` wrapper,
+  `zsh/functions/codex.zsh`) and toggled with `/vim`: motions, operators and text objects work. Leaving typing
+  is `Esc`; `jj` isn't set, since Codex's keymap (`tui.keymap.*`) names actions, not key sequences. Its
+  external-editor action opens `$EDITOR`, nvim.
 - **tmux**: copy mode uses vi keys, `v` selects, `y` copies (see [tmux](tmux.md)); `C-h/j/k/l` cross into
   nvim.
 - **AeroSpace**: `alt+h/j/k/l` move between windows (see [AeroSpace](aerospace.md)).

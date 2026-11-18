@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "SessionStart": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh idle"}]}],
+    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh working"}]}],
+    "PreToolUse": [{"matcher": "^Bash$", "hooks": [{"type": "command", "command": "~/.codex/hooks/no-recursive-rm.sh"}]}],
+    "PermissionRequest": [{"hooks": [
+      {"type": "command", "command": "~/.codex/hooks/tmux-state.sh waiting"},
+      {"type": "command", "command": "~/.codex/hooks/notify.sh Codex"}]}],
+    "PostToolUse": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh working"}]}],
+    "Stop": [{"hooks": [
+      {"type": "command", "command": "~/.codex/hooks/bell.sh"},
+      {"type": "command", "command": "~/.codex/hooks/tmux-state.sh done"},
+      {"type": "command", "command": "~/.codex/hooks/notify.sh Codex"}]}],
+    "Interrupt": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh idle"}]}],
+    "SessionEnd": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh off"}]}]
+  }
+}

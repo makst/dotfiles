@@ -3,7 +3,8 @@ Agents
 
 The terminal setup is built so several coding agents can run side by side without getting in each other's way,
 and so you notice when one of them needs you. The job, worktrees, windows, marks, review, resume and landing,
-belongs to this layer; the tool that does the coding is a plug-in, [Claude Code](claude.md) by default.
+belongs to this layer; the tool that does the coding is a plug-in, [Claude Code](claude.md) by default or
+[Codex CLI](codex.md).
 
 <details>
 <summary><b>Show GIF</b></summary>
@@ -48,7 +49,12 @@ the layer finds the tools as the functions `_agent_<tool>_start`. Each defines a
 | `_agent_<t>_preview` | sets `reply=(<glob of its transcripts> <jq filter>)`: the filter prints a transcript's prompts and replies for the `agent_resume` preview |
 | `_agent_<t>_hooks` | prints the repo path of the file that wires the tool's hooks |
 
-A check fails when a tool has only part of it. Claude Code is the first tool (`zsh/functions/claude.zsh`).
+A check fails when a tool has only part of it, or its hooks file doesn't run the `rm` guard. The tools:
+
+| Tool | Adapter | Its page |
+|---|---|---|
+| `claude` (default) | `zsh/functions/claude.zsh` | [claude](claude.md) |
+| `codex` | `zsh/functions/codex.zsh` | [codex](codex.md) |
 
 ### Noticing an agent that waits
 
@@ -104,8 +110,19 @@ git config agent.check 'npm test'                # e.g. a Node project
 It goes in the clone's `.git/config`, not into the project, so set it again in a new clone and on each Mac.
 Pick what's fast and local, the checks you'd run before a commit.
 
-The tool is `claude` unless `git config agent.tool <name>` says another (`git config --global` for every
-project, or per Mac in `~/.config/dotfiles/gitconfig`). One command can name it: `agent --tool <name> …`.
+Using another tool
+---
+```sh
+agent --tool codex fix-login "the login form rejects valid emails"   # this one agent
+git config --global agent.tool codex                                   # every agent from now on
+git config --global --unset agent.tool                                 # back to Claude Code
+```
+
+The tool is `claude` unless `git config agent.tool <name>` says another: `--global` for every project, no flag
+for this clone, or per Mac in `~/.config/dotfiles/gitconfig`. `--tool <name>` on `agent`, `agent_ci` and
+`agent_review` names it for one command. `agent_resume` needs no flag: it lists every tool's conversations and
+resumes one with the tool that had it. The tools are in [One layer, any tool](#one-layer-any-tool); each has
+its once-per-Mac steps on its page.
 
 Starting an agent
 ---
@@ -262,9 +279,23 @@ picks up the last conversation instead.
 Adding a skill
 ---
 1. Write `config/agent/skills/<name>/SKILL.md` (a `name` and a `description` in its front matter).
-2. Start a new `claude`: the wrapper links it into `~/.claude/skills` (a session that is already running may
-   need a restart).
+2. Start a new `claude` or `codex`: the wrapper links it into `~/.claude/skills` or `~/.agents/skills` (a
+   session that is already running may need a restart).
 3. Add it to the table in [claude](claude.md#skills) and commit.
+
+Adding a tool
+---
+1. Write `zsh/functions/<tool>.zsh` with the six functions of [One layer, any tool](#one-layer-any-tool),
+   each with a usage comment, and a wrapper for the tool's settings and a `setup_<tool>` if it has config
+   (`codex.zsh` is the shortest model; `setup_<tool>` goes into `setup_dotfiles` and [setup](setup.md)).
+2. Wire its hooks in a file in `config/<tool>/` that runs the scripts of `config/agent/hooks`, as
+   `config/codex/hooks.json` does: `no-recursive-rm.sh` before a shell command, and `tmux-state.sh` with
+   `idle`, `working`, `waiting`, `done` and `off`. `_agent_<tool>_hooks` prints that file.
+3. Add the tool's command name to the `@agent-pane` test in `config/tmux/tmux.conf`, one alternative per tool.
+4. Write `docs/<tool>.md` and add the tool to the table above, [README](../README.md) and
+   [vim keys](vim-keys.md) if it has a full-screen interface.
+5. `checks/check_dotfiles`: it fails for a missing function or hooks file and a hooks file without the `rm`
+   guard, and warns for a missing mark or an `@agent-pane` that doesn't name the tool.
 
 Keys
 ---
@@ -289,13 +320,13 @@ Config
 ---
 - **`zsh/functions/agent.zsh`**: the agent functions and the interface above; `_agent_tool` picks the tool.
 - **`config/tmux/tmux.conf`**, section "agents": the `@agent-pane` test (a pane the hooks marked, or one
-  running Claude Code), the state marks and their counts in the status bar; `config/tmux/agents` and
+  running an agent tool), the state marks and their counts in the status bar; `config/tmux/agents` and
   `next-agent` read them.
 - **`git config agent.tool`** (default `claude`) and **`git config agent.check`**: per clone, per Mac or
   global, never in a project.
 - **The worktrees** are `.claude/worktrees/<name>` in the main checkout, which the global gitignore hides.
-- **`config/agent/hooks/`**: the hook scripts every tool shares; `~/.claude/hooks` links here. The scripts
-  need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
+- **`config/agent/hooks/`**: the hook scripts every tool shares; `~/.claude/hooks` and `~/.codex/hooks` link
+  here. The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
 
   | Script | Does |
   |---|---|
@@ -306,13 +337,15 @@ Config
   | `tmux-state.sh <state>` | records the agent's state (working, waiting, done) in its tmux pane for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); for Claude Code it also watches the screen to see whether you approved a permission prompt (other tools stay waiting until their next hook) |
 - **`config/agent/skills/`**: the skills every tool gets, one folder with a `SKILL.md` each. `link_agent_skills
   <dir>` links them into a tool's skills directory (`setup_claude` and the `claude` wrapper do it for
-  `~/.claude/skills`, which stays a real directory because the skills claude.ai syncs live there too) and
-  removes the links of deleted ones, so a new skill is there from the next start. Which commands they are:
-  [claude](claude.md#skills).
+  `~/.claude/skills`, which stays a real directory because the skills claude.ai syncs live there too;
+  `setup_codex` and the `codex` wrapper for `~/.agents/skills`) and removes the links of deleted ones, so a new
+  skill is there from the next start. Which commands they are: [claude](claude.md#skills).
 - **`config/agent/AGENTS.md`**: the instructions for every project, for every tool: delete to the trash, work
   on a branch, merge and push only when asked; before you `/clear`, list what would be lost with the context
-  and where it gets saved. `~/.claude/AGENTS.md` links to it and Claude Code's `CLAUDE.md` imports it.
-- **Each tool's own files**: Claude Code's are in [claude](claude.md#config).
+  and where it gets saved. `~/.claude/AGENTS.md` and `~/.codex/AGENTS.md` link to it, and Claude Code's
+  `CLAUDE.md` imports it.
+- **Each tool's own files**: Claude Code's are in [claude](claude.md#config), Codex's in
+  [codex](codex.md#config).
 
 To look out for
 ---

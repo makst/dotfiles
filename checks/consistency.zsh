@@ -200,6 +200,51 @@ check_agent_tools() {
   note=$(count $#tools tool)
 }
 
+# agent_hook_files: "<tool> <hooks file>" for each agent tool, the file its _agent_<t>_hooks prints
+# (check_agent_tools checks that the functions and the file exist)
+agent_hook_files() {
+  local file tool
+  for file in zsh/functions/*.zsh; do
+    for tool in ${${(M)${(f)"$(grep -hoE '^function _agent_[a-z0-9]+_start\(' $file)"}:#*_start\(}}; do
+      tool=${${tool#function _agent_}%_start\(}
+      print -r -- "$tool $(zsh -fc "source $file 2> /dev/null; _agent_${tool}_hooks" 2> /dev/null)"
+    done
+  done
+}
+
+# the rm guard in every tool's hooks: the file _agent_<t>_hooks names runs no-recursive-rm.sh. This one fails:
+# without it that tool deletes for good, which "Safe to try" rules out ("One tool per job": the guard is shared
+# in config/agent/hooks, each tool only has to wire it)
+check_agent_rm_guard() {
+  local tool file
+  local -i n=0
+  while read -r tool file; do
+    n+=1
+    grep -q 'no-recursive-rm\.sh' -- $file 2> /dev/null ||
+      print -r -- "$file: the hooks of $tool don't run no-recursive-rm.sh, so it can delete for good"
+  done < <(agent_hook_files)
+  note=$(count $n tool)
+}
+
+# the marks and the pane test in every tool's setup: its hooks file calls tmux-state.sh with idle, working,
+# waiting, done and off, so the marks and counts (docs/agent.md, "Noticing an agent that waits") work, and
+# tmux.conf's @agent-pane names the tool, so a pane running it counts before its first hook. This one warns: a
+# tool that can't fire an event says why in its doc ("To look out for")
+check_agent_states() {
+  local tool file state pane
+  local -i n=0
+  pane=$(grep -E "^set -g @agent-pane " config/tmux/tmux.conf)
+  while read -r tool file; do
+    n+=1
+    for state in idle working waiting done off; do
+      grep -qE "tmux-state\.sh $state\b" -- $file 2> /dev/null ||
+        print -r -- "$file: the hooks of $tool never call tmux-state.sh $state"
+    done
+    [[ $pane == *$tool* ]] || print -r -- "config/tmux/tmux.conf: @agent-pane doesn't name $tool"
+  done < <(agent_hook_files)
+  note=$(count $n tool)
+}
+
 # keys_index: the keys each editor maps, "<editor> <key>", with , for the leader, <C-x> for control keys,
 # <Space> and <BS> for the space bar and Backspace:
 # nvim's keymap.set and map() calls (Lua), VS Code's vim.*KeyBindings (JSON), IdeaVim's map commands, plus what
@@ -383,6 +428,8 @@ check -w "a plugin's internals are required from one nvim file" check_nvim_inter
 check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
 check -w "every GIF has its tape and its doc" check_gifs
 check "every agent tool has the whole interface" check_agent_tools
+check "every agent tool's hooks run the rm guard" check_agent_rm_guard
+check -w "every agent tool's hooks set every mark, and tmux knows its pane" check_agent_states
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
 check "each layer keeps to its modifier" check_keyboard
 check "Ghostty's Cmd keys reach tmux bindings" check_ghostty_tmux

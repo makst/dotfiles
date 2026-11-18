@@ -9,14 +9,14 @@ zsh is the shell; the tools come from the `Brewfile` (`rg`, `fd`, `eza`, `bat`, 
 difftastic, `shellcheck`, `shfmt`, `ast-grep`, …). SSH keys are in Secretive: commits are signed through
 `SSH_AUTH_SOCK` without a prompt, pushing asks for Touch ID, so a push waits for the user.
 
-## config/claude and config/agent are global
-`config/claude` becomes `~/.claude` on any machine (`config/agent`, the hooks, skills and instructions every agent
-tool shares, is linked into each tool's home), so it stays free of anything specific to this Mac, its
-tools or this repo: no machine paths, no fonts, no hard dependency beyond zsh, jq, git and gh (anything else,
-like a formatter or tmux, is used when present and skipped otherwise). Machine-specific Claude settings go
-in the dotfiles (the `claude` wrapper in `zsh/functions/claude.zsh`), repo-specific ones in `.claude/settings.json`
-and this file. It also runs next to work projects' own Claude setups: never write into a project, and
-format only with what the project configures.
+## config/claude, config/agent and config/codex are global
+`config/claude` becomes `~/.claude` and `config/codex` `~/.codex` on any machine (`config/agent`, the hooks,
+skills and instructions every agent tool shares, is linked into each tool's home), so they stay free of
+anything specific to this Mac, its tools or this repo: no machine paths, no fonts, no hard dependency beyond
+zsh, jq, git and gh (anything else, like a formatter or tmux, is used when present and skipped otherwise).
+Machine-specific settings go in the dotfiles (the `claude` and `codex` wrappers in `zsh/functions/`),
+repo-specific Claude ones in `.claude/settings.json` and this file. They also run next to work projects' own
+agent setups: never write into a project, and format only with what the project configures.
 
 ## Several Macs
 The repo serves any number of Macs, each with a name and a kind (home-like or work-like). Shared config goes

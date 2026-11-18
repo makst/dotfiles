@@ -26,6 +26,7 @@ git status in nvim, `cmd+j` shows every session.
 | Version control | git, delta, difftastic, fugitive (in nvim), gh, Secretive (SSH keys) | [git](docs/git.md) |
 | AI agents | any coding CLI in its own tmux window and git worktree, Claude Code by default | [agent](docs/agent.md) |
 | Claude Code | the default agent tool: settings, hooks, status line, skills | [claude](docs/claude.md) |
+| Codex CLI | a second agent tool, `agent --tool codex`: hooks, skills and instructions shared with Claude Code | [codex](docs/codex.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
 | Vim keys everywhere | nvim's keys in VS Code (vim extension) and Android Studio (IdeaVim) | [vim-keys](docs/vim-keys.md) |
 | AWS | aws CLI with SSO logins; Claude Code reads, can't change | [aws](docs/aws.md) |
@@ -126,6 +127,7 @@ config/vscode/            VS Code, the debugger: settings (with nvim's keys) and
 config/ideavim/           nvim's keys in Android Studio (IdeaVim)
 config/agent/             shared by every agent tool: hooks, skills, global instructions (AGENTS.md)
 config/claude/            Claude Code: settings, global CLAUDE.md, status line
+config/codex/             Codex CLI: hooks.json (the scripts are in config/agent)
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
 .githooks/                reload the live setup after a pull, rebase or branch switch
