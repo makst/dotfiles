@@ -126,7 +126,8 @@ To look out for
   for every start belongs in `config/codex/config.toml`.
 - **`/statusline` and other settings saved in Codex** go into `~/.codex/config.toml`, which outranks this
   setup's file: to change the setup for every Mac, edit `config/codex/config.toml` and remove the key from
-  `~/.codex/config.toml`.
+  `~/.codex/config.toml`. `/statusline` saves `status_line = […]` and `status_line_use_colors = true` under
+  `[tui]`. `check_mac` lists each setting of the repo's file that `~/.codex/config.toml` overrides.
 
 Decisions
 ---

@@ -6,7 +6,7 @@
 # codex [args…]: Codex CLI as this setup runs it. Its settings come from config/codex/config.toml, which
 # Codex reads as /etc/codex/config.toml (setup_codex_system), not from -c: Codex started with -c runs without
 # its shared background server. Until that link is there (check_mac reports it), the same file is passed with
-# -c, one `section.key=value` for each line of it, so the sandbox and the rest hold on every Mac. In a git
+# -c, one for each of _codex_settings' lines, so the sandbox and the rest hold on every Mac. In a git
 # worktree (every agent's), commits write to the main checkout's .git, outside the workspace, so that
 # directory is added with --add-dir. Before it starts, link_agent_skills links any skill added to
 # config/agent/skills since the last start into ~/.agents/skills, where Codex reads user skills.
@@ -14,13 +14,21 @@ function codex() {
   link_agent_skills ~/.agents/skills
   local file=$real_script_dir/config/codex/config.toml
   local -a add
+  local setting
   [[ /etc/codex/config.toml -ef $file ]] ||
-    add=(${(f)"$(awk '/^\[/ { section = substr($0, 2, index($0, "]") - 2) "." }
-      /^[a-z_]+ = / { key = $1; sub(/^[^=]*= /, ""); print "-c"; print section key "=" $0 }' $file)"})
+    for setting in ${(f)"$(_codex_settings $file)"}; do add+=(-c $setting); done
   local common=$(git rev-parse --path-format=absolute --git-common-dir 2> /dev/null)
   [[ -n $common && $common != "$(git rev-parse --path-format=absolute --git-dir 2> /dev/null)" ]] &&
     add+=(--add-dir $common)
   command codex $add "$@"
+}
+
+# _codex_settings <config.toml>: each setting of a Codex config file as `section.key=value`, one per line
+# (`tui.vim_mode_default=true`), for `codex -c` and check_mac. Reads the one-line `key = value` form
+# config/codex/config.toml keeps to; a section header's quoted name (`[projects."/path"]`) comes out as it is.
+function _codex_settings() {
+  awk '/^\[/ { section = substr($0, 2, length($0) - 2) "." }
+    /^[A-Za-z_]+ = / { key = $1; sub(/^[^=]*= /, ""); print section key "=" $0 }' $1
 }
 
 
