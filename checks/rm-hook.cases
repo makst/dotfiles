@@ -1,4 +1,4 @@
-# What config/claude/hooks/no-recursive-rm.sh must block or allow, one Bash command per line: "block" or
+# What config/agent/hooks/no-recursive-rm.sh must block or allow, one Bash command per line: "block" or
 # "allow", a space, then the command, where \n stands for a newline. checks/behaviour.zsh runs each through the
 # hook as Claude Code would.
 

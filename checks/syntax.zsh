@@ -65,7 +65,7 @@ for path in sys.argv[1:]:
 # Claude Code never offers the skill
 check_yaml() {
   local f
-  local -a list=(${(M)text_files:#*.y(a|)ml}) skills=(${(M)text_files:#config/claude/skills/*/SKILL.md})
+  local -a list=(${(M)text_files:#*.y(a|)ml}) skills=(${(M)text_files:#config/agent/skills/*/SKILL.md})
   note="$(count $#list file), $(count $#skills skill)"
   (( $+commands[yq] )) || { print "yq not installed"; return 2 }
   for f in $list; do

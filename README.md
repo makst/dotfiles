@@ -124,7 +124,8 @@ config/ssh/config         ssh: Secretive agent, which key for which host
 config/aerospace/         window manager
 config/vscode/            VS Code, the debugger: settings (with nvim's keys) and the extensions to install
 config/ideavim/           nvim's keys in Android Studio (IdeaVim)
-config/claude/            Claude Code: settings, global CLAUDE.md, hooks, status line, skills
+config/agent/             shared by every agent tool: hooks, skills, global instructions (AGENTS.md)
+config/claude/            Claude Code: settings, global CLAUDE.md, status line
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
 .githooks/                reload the live setup after a pull, rebase or branch switch

@@ -137,7 +137,7 @@ whole: a part it can rewrite from its edge is new code to it, and checked on its
 | Part | Its edge |
 |---|---|
 | a zsh function | the usage line of the comment above it, its arguments, what it prints and returns |
-| a script (`config/tmux/`, `config/github/`, `config/claude/hooks/`) | its `Usage:` line and top comment, its arguments, its output |
+| a script (`config/tmux/`, `config/github/`, `config/agent/hooks/`) | its `Usage:` line and top comment, its arguments, its output |
 | an nvim plugin's folder | the keys in its `keymaps.lua` and the `M.` functions other files `require` |
 | a group of checks | the top comment of `checks/<group>.zsh` and the labels of its checks |
 | shared state: a tmux option (`@agent`), a state file (the GitHub watcher's), a line format another part splits | what it holds, in the top comment of the file that writes it |

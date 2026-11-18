@@ -2,7 +2,7 @@
 # Usage: tree [fzf options]
 # Every session and window as a tree, drawn as tmux's own tree (choose-tree) draws it, with the panes of
 # windows that have more than one. Each line has the agent mark of what's in it (the states come from
-# config/claude/hooks/tmux-state.sh) and what its agents work on; the preview
+# config/agent/hooks/tmux-state.sh) and what its agents work on; the preview
 # shows the screen of the pane, or the active one of the window or session, and its label which window that is.
 # List and preview refresh every second; Enter switches there. It opens on the current window.
 # Keys as in every picker (config/tmux/picker.zsh): normal mode, j/k move, / filters; d (alt-d) kills the

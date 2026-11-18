@@ -133,9 +133,10 @@ path_index() {
 
 # links_index: what the setup links, from the `ln -s` lines of zsh/functions/*.zsh and prepare-zsh-install.sh:
 # "~/link source file:line". A loop's variable takes each value of its word list or glob, a local variable its
-# value; a source in the repo starts with ./ (the repo itself is .), anything else is outside it.
+# value, a local set to the function's first argument ($1) the first argument any call of that function in
+# zsh/functions passes; a source in the repo starts with ./ (the repo itself is .), anything else is outside it.
 links_index() {
-  local file line loop v
+  local file line loop v fn arg
   local -i n at
   local -A vars
   local -a words values
@@ -155,8 +156,15 @@ links_index() {
       n+=1
       words=(${(Q)${(z)line}})
       case $words[1] in
-        (function) vars=() loop= ;;
-        (local) for v in ${(M)words[2,-1]:#*=*}; do vars[${v%%=*}]=${v#*=}; done ;;
+        (function) vars=() loop= fn=${words[2]%\(\)} ;;
+        (local)
+          for v in ${(M)words[2,-1]:#*=*}; do
+            vars[${v%%=*}]=${v#*=}
+            if [[ ${v#*=} == '$1' ]]; then
+              arg=$(grep -h "^[[:space:]]*$fn " zsh/functions/*.zsh | grep -v '^[[:space:]]*function' | head -1)
+              vars[${v%%=*}]=${${(z)arg}[2]}
+            fi
+          done ;;
         (for)
           loop=$words[2]
           values=(${words[4,-1]:#(\;|do)})

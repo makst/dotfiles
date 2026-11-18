@@ -454,4 +454,30 @@ function _agent_done() {
   esac
   _arguments $flag "1:agent:($main/$_agent_worktrees/*(N/:t))"
 }
-(( $+functions[compdef] )) && compdef _agent_resume agent_resume && compdef _agent_done agent_done agent_land agent_review
+# only once completion is set up (compdef exists before compinit has made _comps, e.g. in a script)
+if (( $+functions[compdef] && $+_comps )); then
+  compdef _agent_resume agent_resume
+  compdef _agent_done agent_done agent_land agent_review
+fi
+
+# link_agent_skills <dir>: links each skill in config/agent/skills into <dir>, where a tool looks for skills
+# (~/.claude/skills for Claude Code), and removes the links of skills the repo no longer has, also those that
+# point into where the skills were before they moved to config/agent. <dir> may also hold skills the tool
+# syncs itself (claude.ai's), so it stays a real directory and the skills are linked one by one; a real copy
+# in a skill's place goes to the Trash. The claude wrapper runs it on every start, so a skill added here,
+# pulled or not yet committed, is there without a setup step; with nothing to do it starts no process.
+function link_agent_skills() {
+  local dir=$1 skill link
+  [[ -d $dir ]] || mkdir -p $dir
+  for skill in $real_script_dir/config/agent/skills/*(N/); do
+    link=$dir/${skill:t}
+    [[ -L $link && $link -ef $skill ]] && continue
+    keep_real $link && ln -sfn $skill $dir/${skill:t}
+  done
+  # (-@): links whose target is gone; only the ones into this repo, the rest aren't ours to remove
+  for link in $dir/*(N-@); do
+    [[ $(readlink $link) == $real_script_dir/config/(agent|claude)/skills/* ]] && rm $link
+  done
+  return 0
+}
+

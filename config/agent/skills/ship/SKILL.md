@@ -1,6 +1,6 @@
 ---
 name: ship
-description: Finish the current work - check it against the project's own rules, run its checks, commit it on a branch and, with "pr", push and open a pull request. Use only when the user runs /ship.
+description: Finish the current work - check it against the project's own rules, run its checks, commit it on a branch and, with "pr", push and open a pull request. Use only when the user runs /ship (`$ship` in Codex).
 argument-hint: "[pr] [what the change is about]"
 disable-model-invocation: true
 ---
@@ -12,7 +12,7 @@ pull request only when the arguments contain `pr`. Arguments: $ARGUMENTS
    (`<type>/<short-name>`) and continue there. Never commit to the default branch.
 2. **Scope.** Read `git status` and the full diff, untracked files included. Ship only what belongs to this
    change; leave unrelated edits unstaged and say so. Stop and ask if you can't tell which is which.
-3. **Project rules.** Read the project's `CLAUDE.md` files and its contributing docs. If they ask for
+3. **Project rules.** Read the project's `CLAUDE.md` / `AGENTS.md` files and its contributing docs. If they ask for
    something alongside a change (docs, a changelog, a lock file, tests), check it is in the diff; add what is
    missing.
 4. **Checks.** Run the checks the project defines (its `CLAUDE.md`, README, Makefile, package.json scripts or

@@ -209,7 +209,7 @@ function reload_dotfiles() {
     (( $files[(I)(Brewfile|config/machine/Brewfile)] )) && todo+='Brewfile: `setup_brew` installs what it added'
     (( $files[(I)config/ideavim/*] )) && todo+='Android Studio: `:source ~/.ideavimrc`'
     # a link added or changed in a setup step (a line that starts with it: this one only mentions it)
-    # (skills aren't on the list: the claude wrapper links new ones when it starts)
+    # (skills aren't on the list: the claude wrapper links new ones when it starts, link_agent_skills)
     [[ -n $(git -C $real_script_dir diff $1 HEAD -G '^[[:space:]]*keep_real ' --name-only -- zsh/functions) ]] &&
       todo+='links: `setup_dotfiles` makes the new ones'
   fi

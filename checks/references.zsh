@@ -170,24 +170,31 @@ check_requires() {
   note+=" requires"
 }
 
-# Claude Code's settings: the hooks and the status line they run are in config/claude and executable
-check_claude_commands() {
+# Every agent tool's hooks: each file an _agent_<t>_hooks function names (the interface, zsh/functions/agent.zsh)
+# runs scripts that are executable files of config/agent/hooks, the hooks every tool shares; the status line
+# is Claude Code's own and stays in config/claude
+check_agent_hook_commands() {
   local -A link
   link_map
-  local dst command script
+  local dst command script file
   local -a words
   local -i n=0
-  for command in ${(f)"$(jq -r '[.. | objects | select(has("command")) | .command] | .[]' config/claude/settings.json)"}; do
-    words=(${(z)command})
-    script=$words[1]
-    n+=1
-    for dst in ${(k)link}; do
-      [[ $script == $dst/* || $script == $dst ]] || continue
-      script=${link[$dst]}${script#$dst}
-      break
+  for file in ${(u)${(f)"$(grep -hoE '_agent_[a-z]+_hooks\(\) \{ print [^ ]+' zsh/functions/*.zsh | awk '{ print $4 }')"}}; do
+    [[ -f $file ]] || { print -r -- "$file: a tool's hooks file that isn't there"; continue }
+    for command in ${(f)"$(jq -r '[.. | objects | select(has("command")) | .command] | .[]' $file)"}; do
+      words=(${(z)command})
+      script=$words[1]
+      n+=1
+      for dst in ${(k)link}; do
+        [[ $script == $dst/* || $script == $dst ]] || continue
+        script=${link[$dst]}${script#$dst}
+        break
+      done
+      [[ $script == '~/'* ]] && { print -r -- "$command: not a file the setup links into ~/.claude"; continue }
+      [[ $command == */hooks/* && $script != config/agent/hooks/* ]] &&
+        print -r -- "$command: a hook script must be in config/agent/hooks, shared by every tool"
+      [[ -x $script ]] || print -r -- "$command: $script isn't executable"
     done
-    [[ $script == '~/'* ]] && { print -r -- "$command: not a file the setup links into ~/.claude"; continue }
-    [[ -x $script ]] || print -r -- "$command: $script isn't executable"
   done
   note=$(count $n command)
 }
@@ -200,4 +207,4 @@ check "what the setup links from exists" check_link_sources
 check -w "functions and settings the docs name exist" check_names
 check -w "the docs' aliases and functions are defined" check_commands
 check "nvim's requires resolve and nothing is dead" check_requires
-check "Claude Code's hooks and status line are executable" check_claude_commands
+check "every agent tool's hooks run executable scripts of config/agent/hooks" check_agent_hook_commands

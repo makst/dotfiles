@@ -4,7 +4,7 @@
 # and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux. Arguments go to fzf, e.g.
 # --height=100% to fill the tmux popup. Sessions with Claude Code in them show their most urgent agent's
 # mark, as the tree does (config/tmux/tmux.conf, "agents (Claude Code or another tool)"; states from
-# config/claude/hooks/tmux-state.sh); the marks and the preview, a session's
+# config/agent/hooks/tmux-state.sh); the marks and the preview, a session's
 # screen or a directory's files, stay current while it's open. Keys as in every picker (config/tmux/picker.zsh),
 # but it opens ready to type: jj for j/k. `sessionizer --list` prints the lines alone, for fzf's reload.
 source ${0:A:h}/picker.zsh

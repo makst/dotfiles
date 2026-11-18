@@ -10,11 +10,11 @@
 # - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
 # - the project's .claude/settings.local.json enabledPlugins on top, because --settings outranks that file:
 #   without this a project couldn't switch off a plugin that claude.json turns on
-# Before it starts, link_claude_skills links any skill added to config/claude/skills since the last start.
+# Before it starts, link_agent_skills links any skill added to config/agent/skills since the last start.
 # Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
 # for the user does.
 function claude() {
-  link_claude_skills
+  link_agent_skills ~/.claude/skills
   local machine=~/.config/dotfiles/claude.json settings='{}' merged
   local root=${"$(git rev-parse --show-toplevel 2> /dev/null)":-$PWD}
   local project=$root/.claude/settings.local.json
@@ -152,34 +152,18 @@ function _agent_claude_preview() {
 # _agent_claude_hooks: the file that wires Claude Code's hooks, for the checks
 function _agent_claude_hooks() { print config/claude/settings.json }
 
-# setup_claude: links config/claude's settings, CLAUDE.md, hooks, status line and skills into ~/.claude; a real
-# file Claude Code made in their place goes to the Trash first.
+# setup_claude: links config/claude's settings, CLAUDE.md and status line, and the shared config/agent's hooks,
+# AGENTS.md and skills, into ~/.claude; a real file Claude Code made in their place goes to the Trash first.
 function setup_claude() {
   mkdir -p ~/.claude
   local item
-  for item in settings.json CLAUDE.md hooks statusline.sh; do
+  for item in settings.json CLAUDE.md statusline.sh; do
     # a copy Claude Code made itself goes to the Trash; the repo's version replaces it
     keep_real ~/.claude/$item && ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item || return
   done
-  link_claude_skills
-}
-
-# link_claude_skills: links each skill in config/claude/skills into ~/.claude/skills, where Claude Code looks,
-# and removes the links of skills the repo no longer has. ~/.claude/skills also holds the skills claude.ai
-# syncs, so it stays a real directory and the skills are linked one by one; a real copy in a skill's place
-# goes to the Trash. The claude wrapper runs it on every start, so a skill added here, pulled or not yet
-# committed, is there without a setup step; with nothing to do it starts no process.
-function link_claude_skills() {
-  local skill link
-  [[ -d ~/.claude/skills ]] || mkdir -p ~/.claude/skills
-  for skill in $real_script_dir/config/claude/skills/*(N/); do
-    link=~/.claude/skills/${skill:t}
-    [[ -L $link && $link -ef $skill ]] && continue
-    keep_real $link && ln -sfn $skill ~/.claude/skills/${skill:t}
-  done
-  # (-@): links whose target is gone; only the ones into this repo, the rest aren't ours to remove
-  for link in ~/.claude/skills/*(N-@); do
-    [[ $(readlink $link) == $real_script_dir/config/claude/skills/* ]] && rm $link
-  done
-  return 0
+  # the hook scripts are shared by every agent tool (docs/agent.md)
+  keep_real ~/.claude/hooks && ln -sfn "$real_script_dir/config/agent/hooks" ~/.claude/hooks || return
+  # the instructions every tool shares; CLAUDE.md imports them (@~/.claude/AGENTS.md)
+  keep_real ~/.claude/AGENTS.md && ln -sfn "$real_script_dir/config/agent/AGENTS.md" ~/.claude/AGENTS.md || return
+  link_agent_skills ~/.claude/skills
 }

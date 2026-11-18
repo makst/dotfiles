@@ -69,13 +69,6 @@ To keep a plugin from `claude.json` out of one project, set it to `false` in tha
 `.claude/settings.local.json` (`"enabledPlugins": { "some-plugin@my-company": false }`) and restart
 Claude Code. Plugins shared with your claude.ai organisation sync by themselves and touch no file.
 
-Adding a skill
----
-1. Write `config/claude/skills/<name>/SKILL.md`.
-2. Start a new `claude`: the wrapper links it into `~/.claude/skills` (a session that is already running may
-   need a restart).
-3. Add it to the table in [Skills](#skills) and commit.
-
 Checking token usage
 ---
 `claude_tokens [days]` shows what Claude Code used in the last few days (default 7), from the conversations in
@@ -106,7 +99,8 @@ Commands
 
 ### Skills
 
-Slash commands from `config/claude/skills` ([Config](#config)):
+Slash commands from `config/agent/skills`, shared with the other agent tools ([Config](#config)); a new one
+is added as in [agent](agent.md#adding-a-skill):
 
 | Command | Does |
 |---|---|
@@ -123,16 +117,14 @@ Config
   (`cleanupPeriodDays`). Subagents run on Haiku (`CLAUDE_CODE_SUBAGENT_MODEL`) unless Claude gives one a model
   when it starts it; `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is left off. The status line redraws every 60 seconds
   (`refreshInterval`).
-- **`CLAUDE.md`**: instructions for every project: delete to the trash, work on a branch, merge and push only
-  when asked; before you `/clear`, list what would be lost with the context and where it gets saved; pick a
-  model per subagent (Haiku for searching and reading, Sonnet or Opus for judgment) and suggest another model
-  for the conversation when one fits better. What a project or machine needs goes in that project's own
-  `CLAUDE.md` (this repo's names the Mac it sets up).
-- **`hooks/`**: the scripts the [hooks](#hooks) run.
-- **`skills/`**: the [skills](#skills) every project gets. `setup_claude` links each one into
-  `~/.claude/skills`, which stays a real directory because the skills claude.ai syncs live there too; the
-  `claude` wrapper does the same each time it starts, so a new skill is there from the next `claude` on and a
-  deleted one goes away.
+- **`CLAUDE.md`**: imports `~/.claude/AGENTS.md` (the instructions every agent tool shares, see
+  [agent](agent.md#config)) and adds what only Claude Code has: pick a model per subagent (Haiku for
+  searching and reading, Sonnet or Opus for judgment) and suggest another model for the conversation when one
+  fits better. What a project or machine needs goes in that project's own `CLAUDE.md` (this repo's names the
+  Mac it sets up).
+- **Shared with the other tools**, in `config/agent` and linked by `setup_claude`: `hooks/` (the scripts the
+  [hooks](#hooks) run), `skills/` (the [skills](#skills)) and `AGENTS.md`; each is described in
+  [agent](agent.md#config).
 - **`statusline.sh`**: the [status line](#status-line).
 
 Settings you change with `/config` or by installing a plugin are written through the link into the repo, so
@@ -162,8 +154,8 @@ Every command Claude runs in Bash runs in Claude Code's sandbox (macOS Seatbelt)
 under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandboxed`), because they can only:
 
 - **write** in the project, the temp directory, `~/.cache` and `~/.local/state` (shell and nvim state). Not
-  even there: Claude Code's own settings, hooks and `CLAUDE.md`, so Claude edits those with its Edit tool,
-  which asks.
+  even there: Claude Code's own settings, hooks (`config/agent/hooks`, which `~/.claude/hooks` links to) and
+  `CLAUDE.md`, so Claude edits those with its Edit tool, which asks.
 - **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, AWS credentials and caches, this
   repo's secrets).
 - **reach** GitHub, Homebrew's API, npm and PyPI without asking, any port on localhost (dev servers), and
@@ -195,7 +187,7 @@ The parts that depend on the Mac live in the dotfiles, not in `config/claude`. T
 - **The project's plugin choices**: `enabledPlugins` from the project's `.claude/settings.local.json`, put on
   top. Settings passed with `--settings` outrank that file, so without this a project couldn't switch off a
   plugin that `claude.json` turns on.
-- **New skills**: before it starts, it links any skill added to `config/claude/skills` and drops the links of
+- **New skills**: before it starts, it links any skill added to `config/agent/skills` and drops the links of
   deleted ones (see [Skills](#skills)).
 
 ### Work projects
@@ -214,13 +206,14 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 
 ### Hooks
 
-| When | Does |
+`settings.json`, "hooks", runs the scripts of `config/agent/hooks` (what each does: [agent](agent.md#config)):
+
+| Claude Code event | Script |
 |---|---|
-| before a shell command | refuses deletes that can't be undone (`rm -r` / `rm -rf`, `find … -delete`, `git clean -f`) and tells Claude to move things to the trash instead (`git stash -u` for untracked files) |
-| after Claude edits or writes a file | formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style) |
-| Claude needs input, or has finished | rings the bell in its tmux pane: here the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
-| Claude asks for permission or a question, or has finished | sends a macOS notification unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](agent.md#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
-| the session starts, a prompt is sent, a tool has run, Claude asks for permission or a question or has finished, the session ends | records the agent's state (working, waiting, done) in its tmux pane, for the marks in [Noticing an agent that waits](agent.md#noticing-an-agent-that-waits); does nothing outside tmux |
+| PreToolUse on Bash | `no-recursive-rm.sh` |
+| PostToolUse on Edit, Write | `format.sh` |
+| SessionStart, UserPromptSubmit, PostToolUse, PermissionRequest, Notification, Stop, SessionEnd | `tmux-state.sh working`, `waiting`, `done`, `idle` or `off`, as the event says |
+| PermissionRequest, Notification (a question), Stop | `bell.sh` (the bell: Notification and Stop), `notify.sh` |
 
 The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
 `"disableAllHooks": true` in `settings.json` turns them all off. The agents overview is `config/tmux/agents`,

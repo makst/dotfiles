@@ -1,6 +1,6 @@
 # Safety checks: nothing the repo publishes can hurt the user or a Mac that takes it: no secret (a token, a
-# private key), no real email address, the private files stay out of git, config/claude (~/.claude on any
-# machine, docs/claude.md) names nothing of this Mac or this repo, nothing reaches for Intel Homebrew or
+# private key), no real email address, the private files stay out of git, config/claude and config/agent (~/.claude
+# on any machine, docs/claude.md) names nothing of this Mac or this repo, nothing reaches for Intel Homebrew or
 # Rosetta, no code deletes what can't be put back, and no setup step links over a real file. Sourced by
 # check_dotfiles; lib.zsh has the helpers.
 
@@ -53,13 +53,15 @@ check_private() {
   note="zsh/.private, nvim's hidden/"
 }
 
-# config/claude is ~/.claude on every machine, next to work projects' own setups: it names no machine path
+# config/claude and config/agent are ~/.claude (and each other tool's home) on every machine, next to work
+# projects' own setups: they name no machine path
 # (/opt/homebrew, a home), nothing of this repo (real_script_dir, ~/.config/dotfiles, the repo's own path) and
-# no tool of this Mac beyond zsh, jq, git and gh that runs without a check (CLAUDE.md, "config/claude is global")
+# no tool of this Mac beyond zsh, jq, git and gh that runs without a check (CLAUDE.md, "config/claude and
+# config/agent are global")
 check_claude_global() {
-  local -a claude=(${(M)text_files:#config/claude/*})
+  local -a claude=(${(M)text_files:#config/(claude|agent)/*})
   grep -nE '/opt/homebrew|/usr/local|real_script_dir|DOTFILES|\.config/dotfiles|repos/dotfiles|/Users/|/home/' \
-    -- $claude | awk -F: '{ print $1 ":" $2 ": names this Mac or this repo; config/claude is ~/.claude anywhere" }'
+    -- $claude | awk -F: '{ print $1 ":" $2 ": names this Mac or this repo; config/claude and config/agent are in every home" }'
   note=$(count $#claude file)
 }
 
@@ -78,7 +80,7 @@ check_arm64() {
 # rm hook names them to refuse them, its cases list them; checks/mutate cleans its own throwaway worktree.
 # Comments are skipped.
 check_deletes() {
-  local -a code=(${${text_files:#*.md}:#(config/claude/hooks/no-recursive-rm.sh|checks/(rm-hook.cases|mutate|safety.zsh))})
+  local -a code=(${${text_files:#*.md}:#(config/agent/hooks/no-recursive-rm.sh|checks/(rm-hook.cases|mutate|safety.zsh))})
   local flags='([[:space:]]+-[A-Za-z-]+)*[[:space:]]+'
   grep -nE "(^|[^A-Za-z_-])rm$flags(-[A-Za-z]*[rR]|--recursive)|[[:space:]]-delete([[:space:]]|\$)|git[[:space:]]+clean$flags(-[A-Za-z]*f|--force)" \
     -- $code | awk -F: '$3 !~ /^[[:space:]]*(#|--|\/\/)/ { print $1 ":" $2 ": deletes for good; move it to the Trash" }'
@@ -104,7 +106,7 @@ check_links_keep() {
 check "no tokens or private keys" check_secrets
 check "only example and noreply email addresses" check_emails
 check "the private files are ignored and untracked" check_private
-check "config/claude names nothing of this Mac or repo" check_claude_global
+check "config/claude and config/agent name nothing of this Mac or repo" check_claude_global
 check "nothing reaches for Intel Homebrew or Rosetta" check_arm64
 check "no code deletes for good" check_deletes
 check "every link the setup makes keeps a real file" check_links_keep

@@ -1,6 +1,6 @@
 ---
 name: handoff
-description: Get ready for /clear - save what this conversation knows that nothing else records into memory, then print one line to paste after /clear to pick the work up again. Use only when the user runs /handoff.
+description: Get ready for /clear - save what this conversation knows that nothing else records into memory, then print one line to paste after /clear to pick the work up again. Use only when the user runs /handoff (`$handoff` in Codex).
 argument-hint: "[what to focus on]"
 disable-model-invocation: true
 ---

@@ -1,11 +1,13 @@
 #!/bin/zsh
-# Usage: notify.sh (PermissionRequest, Notification on elicitation_dialog, Stop; the hook's JSON on stdin)
-# Sends a macOS notification when Claude waits for you or has finished, unless you're looking at it: its tmux
+# Usage: notify.sh [tool name]   (PermissionRequest, Notification on elicitation_dialog, Stop; the hook's JSON on
+# stdin). The tool name (default Claude Code) is the notification's title.
+# Sends a macOS notification when the agent waits for you or has finished, unless you're looking at it: its tmux
 # window is the active one of an attached session and that client's terminal app is the frontmost app.
 # With terminal-notifier, clicking it switches the client you used last to the agent's pane and brings its
 # terminal to the front; without it, or with its notifications turned off, osascript shows one that clicking
 # doesn't jump from. Outside tmux or off macOS it does nothing.
 
+name=${1:-Claude Code}
 [[ $OSTYPE == darwin* && -n $TMUX_PANE ]] && (( $+commands[tmux] && $+commands[lsappinfo] )) || exit 0
 
 input=$(jq -r '[.hook_event_name, .tool_name // "", .tool_input.description // .tool_input.command // "",
@@ -45,7 +47,7 @@ notify() {
     *) message=${last:-finished its turn} ;;
   esac
   (( $#message > 200 )) && message="${message[1,199]}…"
-  [[ -z $title || $title == ('Claude Code'|$HOST) ]] && title=$where || title="$title — $where"
+  [[ -z $title || $title == ($name|$HOST) ]] && title=$where || title="$title — $where"
 
   if (( $+commands[terminal-notifier] )); then
     # the client you used last, and its terminal app, are where a click takes you
@@ -57,13 +59,13 @@ notify() {
 switch-client -c ${(q)client} -t ${(q)TMUX_PANE}${app:+; open -a ${(q)${app#* }}}")
     # it can't read a message that starts with one of these unless it's escaped
     [[ $message == [-\[\(\{\"\']* ]] && message="\\$message"
-    terminal-notifier -title 'Claude Code' -subtitle "$title" -message "$message" \
+    terminal-notifier -title "$name" -subtitle "$title" -message "$message" \
       -group "claude-${TMUX%%,*}-$TMUX_PANE" $click && return
     message=${message#\\}
   fi
   # terminal-notifier is missing, or its notifications are turned off
-  osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title "Claude Code" subtitle (item 2 of argv)' \
-    -e 'end run' "$message" "$title"
+  osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title (item 3 of argv) subtitle (item 2 of argv)' \
+    -e 'end run' "$message" "$title" "$name"
 }
 
 # in the background, with its output closed, so Claude Code doesn't wait for it

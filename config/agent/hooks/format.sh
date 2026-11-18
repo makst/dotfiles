@@ -1,8 +1,9 @@
 #!/bin/zsh
-# PostToolUse on Edit|Write: format the file Claude just changed with the language's usual formatter, if it's
+# PostToolUse on Edit|Write: format the file the agent just changed with the language's usual formatter, if it's
 # installed (on PATH or in the project's node_modules). Formatters with style options run only in projects
 # that configure them (prettier, ruff, stylua, shfmt through .editorconfig), so other people's projects keep
-# their own style; gofmt has none. Failures never block Claude.
+# their own style; gofmt has none. Failures never block the agent.
+# It reads Claude Code's Edit/Write input (Codex's apply_patch carries no file path), so it is wired only there.
 
 file=$(jq -r '.tool_response.filePath // .tool_input.file_path // empty')
 [[ -f $file ]] || exit 0

@@ -52,7 +52,8 @@ A check fails when a tool has only part of it. Claude Code is the first tool (`z
 
 ### Noticing an agent that waits
 
-Hooks tell tmux what each agent is doing (see [Hooks](claude.md#hooks) for Claude Code), and tmux marks it
+Hooks tell tmux what each agent is doing (the scripts are in [Config](#config); Claude Code's wiring in
+[claude](claude.md#hooks)), and tmux marks it
 wherever it lists windows or sessions:
 
 | Mark | State | Set when |
@@ -258,6 +259,13 @@ there:
 for good. After a reboot, the tool's own continue (Claude Code: `claude --continue`) in the agent's window
 picks up the last conversation instead.
 
+Adding a skill
+---
+1. Write `config/agent/skills/<name>/SKILL.md` (a `name` and a `description` in its front matter).
+2. Start a new `claude`: the wrapper links it into `~/.claude/skills` (a session that is already running may
+   need a restart).
+3. Add it to the table in [claude](claude.md#skills) and commit.
+
 Keys
 ---
 | Key | Action |
@@ -286,7 +294,25 @@ Config
 - **`git config agent.tool`** (default `claude`) and **`git config agent.check`**: per clone, per Mac or
   global, never in a project.
 - **The worktrees** are `.claude/worktrees/<name>` in the main checkout, which the global gitignore hides.
-- **Each tool's files**: Claude Code's are in [claude](claude.md#config).
+- **`config/agent/hooks/`**: the hook scripts every tool shares; `~/.claude/hooks` links here. The scripts
+  need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.
+
+  | Script | Does |
+  |---|---|
+  | `no-recursive-rm.sh` | before a shell command: refuses deletes that can't be undone (`rm -r` / `rm -rf`, `find … -delete`, `git clean -f`) and tells the agent to move things to the trash instead (`git stash -u` for untracked files) |
+  | `format.sh` | after the agent edits or writes a file: formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style). It reads Claude Code's Edit/Write input, so it is wired there only |
+  | `bell.sh` | the agent needs input or has finished: rings the bell in its tmux pane, so the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
+  | `notify.sh [tool name]` | the agent asks for permission or a question, or has finished: a macOS notification titled with the tool's name (default Claude Code) unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
+  | `tmux-state.sh <state>` | records the agent's state (working, waiting, done) in its tmux pane for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); for Claude Code it also watches the screen to see whether you approved a permission prompt (other tools stay waiting until their next hook) |
+- **`config/agent/skills/`**: the skills every tool gets, one folder with a `SKILL.md` each. `link_agent_skills
+  <dir>` links them into a tool's skills directory (`setup_claude` and the `claude` wrapper do it for
+  `~/.claude/skills`, which stays a real directory because the skills claude.ai syncs live there too) and
+  removes the links of deleted ones, so a new skill is there from the next start. Which commands they are:
+  [claude](claude.md#skills).
+- **`config/agent/AGENTS.md`**: the instructions for every project, for every tool: delete to the trash, work
+  on a branch, merge and push only when asked; before you `/clear`, list what would be lost with the context
+  and where it gets saved. `~/.claude/AGENTS.md` links to it and Claude Code's `CLAUDE.md` imports it.
+- **Each tool's own files**: Claude Code's are in [claude](claude.md#config).
 
 To look out for
 ---

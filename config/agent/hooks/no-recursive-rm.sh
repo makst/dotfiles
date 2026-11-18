@@ -1,5 +1,5 @@
 #!/bin/zsh
-# PreToolUse on Bash: refuse a delete that can't be undone (rm -r, find -delete, git clean -f) and point Claude
+# PreToolUse on Bash: refuse a delete that can't be undone (rm -r, find -delete, git clean -f) and point the agent
 # to the Trash instead, so whatever an agent deletes can be put back. The command is split into words by zsh's
 # own parser, so the delete is found as any command of a list, pipeline or later line, after its other options
 # (rm -f -r, git -C dir clean -fd), behind a path (/bin/rm, \rm) or a wrapper (sudo, env, xargs, nice, time,

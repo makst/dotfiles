@@ -48,7 +48,7 @@ check_rm_hook() {
     print -r -- $line > $tmp/rm.in.$(( ++i ))
   done
   for i in {1..$#commands}; do
-    PATH=$minimal_path config/claude/hooks/no-recursive-rm.sh < $tmp/rm.in.$i > $tmp/rm.$i 2>&1 &
+    PATH=$minimal_path config/agent/hooks/no-recursive-rm.sh < $tmp/rm.in.$i > $tmp/rm.$i 2>&1 &
   done
   wait
   local got out decision=
@@ -86,19 +86,19 @@ check_format_hook() {
   print -r -- $json > $project/x.json
   for file in x.sh x.json missing.txt; do
     out=$(jq -n --arg f $project/$file '{tool_input: {file_path: $f}}' |
-      PATH=$minimal_path config/claude/hooks/format.sh 2>&1) || print -r -- "$file: the hook failed"
+      PATH=$minimal_path config/agent/hooks/format.sh 2>&1) || print -r -- "$file: the hook failed"
     [[ -n $out ]] && print -r -- "$file: $out"
   done
   [[ $(<$project/x.sh) == $messy ]] || print "x.sh changed with no formatter on PATH"
-  out=$(jq -n --arg f $project/x.json '{tool_input: {file_path: $f}}' | config/claude/hooks/format.sh 2>&1)
+  out=$(jq -n --arg f $project/x.json '{tool_input: {file_path: $f}}' | config/agent/hooks/format.sh 2>&1)
   [[ -z $out && $(<$project/x.json) == $json ]] || print "x.json changed in a project without a prettier config"
   note="without formatters"
   (( $+commands[shfmt] )) || return 0
   mkdir -p $tmp/bare
   print -r -- $messy > $tmp/bare/x.sh
-  jq -n --arg f $tmp/bare/x.sh '{tool_response: {filePath: $f}}' | config/claude/hooks/format.sh
+  jq -n --arg f $tmp/bare/x.sh '{tool_response: {filePath: $f}}' | config/agent/hooks/format.sh
   [[ $(<$tmp/bare/x.sh) == $messy ]] || print "shfmt formatted x.sh in a project without an .editorconfig"
-  jq -n --arg f $project/x.sh '{tool_response: {filePath: $f}}' | config/claude/hooks/format.sh
+  jq -n --arg f $project/x.sh '{tool_response: {filePath: $f}}' | config/agent/hooks/format.sh
   [[ $(<$project/x.sh) == $'if true; then\n  echo hi\nfi' ]] ||
     print "shfmt didn't format x.sh in a project with an .editorconfig"
   note+=" and with shfmt"
@@ -107,10 +107,10 @@ check_format_hook() {
 # bell: outside tmux, or for a pane tmux doesn't know, it does nothing and says nothing
 check_bell_hook() {
   local out
-  out=$(env -u TMUX_PANE PATH=$minimal_path config/claude/hooks/bell.sh < /dev/null 2>&1) ||
+  out=$(env -u TMUX_PANE PATH=$minimal_path config/agent/hooks/bell.sh < /dev/null 2>&1) ||
     print "outside tmux: the hook failed"
   [[ -n $out ]] && print -r -- "outside tmux: $out"
-  out=$(TMUX_PANE=%999 PATH=$minimal_path config/claude/hooks/bell.sh < /dev/null 2>&1) ||
+  out=$(TMUX_PANE=%999 PATH=$minimal_path config/agent/hooks/bell.sh < /dev/null 2>&1) ||
     print "in an unknown pane: the hook failed"
   [[ -n $out ]] && print -r -- "in an unknown pane: $out"
   note="outside tmux, unknown pane"
@@ -199,18 +199,18 @@ ghostty() { print 'Ghostty 1.4.0' }" > $t/home/.zshenv
   [[ $(calls) == *'tmux source-file'* ]] || print "a merge didn't reload tmux"
 }
 
-# link_claude_skills, in a throwaway HOME and repo with two skills: a skill gets linked, a real copy in its
-# place goes to the Trash, the link of a skill the repo no longer has goes, and a dangling link to elsewhere
-# (a skill of the user's own) stays.
+# link_agent_skills, in a throwaway HOME and repo with two skills: a skill gets linked, a real copy in its
+# place goes to the Trash, the link of a skill the repo no longer has (or into where skills used to be)
+# goes, and a dangling link to elsewhere (a skill of the user's own) stays.
 check_skill_links() {
   local t=$tmp/skills s=$tmp/skills/home/.claude/skills
-  mkdir -p $t/repo/config/claude/skills/{new,copied}/ $t/home/.Trash $s/copied
-  ln -s $t/repo/config/claude/skills/gone $s/gone
+  mkdir -p $t/repo/config/agent/skills/{new,copied}/ $t/home/.Trash $s/copied
+  ln -s $t/repo/config/claude/skills/gone $s/gone  # a link made before the skills moved to config/agent
   ln -s $t/home/moved $s/own
   HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/functions/setup.zsh
-    source zsh/functions/agent.zsh; source zsh/functions/claude.zsh; link_claude_skills" > /dev/null ||
-    print "link_claude_skills failed"
-  [[ -L $s/new && $s/new -ef $t/repo/config/claude/skills/new ]] || print "a new skill wasn't linked"
+    source zsh/functions/agent.zsh; link_agent_skills $s" > /dev/null ||
+    print "link_agent_skills failed"
+  [[ -L $s/new && $s/new -ef $t/repo/config/agent/skills/new ]] || print "a new skill wasn't linked"
   [[ -L $s/copied ]] || print "a real copy in a skill's place wasn't replaced by the link"
   [[ -n $(print $t/home/.Trash/copied-*(N)) ]] || print "the real copy didn't go to the Trash"
   [[ -L $s/gone ]] && print "the link of a skill the repo no longer has is still there"
@@ -611,7 +611,7 @@ run_agent_state() {
     export TMUX=$(p display -p '#{socket_path}'),0,0
 
     for state in working waiting done idle off; do
-      TMUX_PANE=$ids[1] config/claude/hooks/tmux-state.sh $state
+      TMUX_PANE=$ids[1] config/agent/hooks/tmux-state.sh $state
       got=$(p display -p -t $ids[1] '#{@agent}')
       [[ $got == ${state/off/} ]] || print "tmux-state.sh $state: @agent is '$got'"
     done

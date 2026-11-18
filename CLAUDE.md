@@ -9,8 +9,9 @@ zsh is the shell; the tools come from the `Brewfile` (`rg`, `fd`, `eza`, `bat`, 
 difftastic, `shellcheck`, `shfmt`, `ast-grep`, …). SSH keys are in Secretive: commits are signed through
 `SSH_AUTH_SOCK` without a prompt, pushing asks for Touch ID, so a push waits for the user.
 
-## config/claude is global
-`config/claude` becomes `~/.claude` on any machine, so it stays free of anything specific to this Mac, its
+## config/claude and config/agent are global
+`config/claude` becomes `~/.claude` on any machine (`config/agent`, the hooks, skills and instructions every agent
+tool shares, is linked into each tool's home), so it stays free of anything specific to this Mac, its
 tools or this repo: no machine paths, no fonts, no hard dependency beyond zsh, jq, git and gh (anything else,
 like a formatter or tmux, is used when present and skipped otherwise). Machine-specific Claude settings go
 in the dotfiles (the `claude` wrapper in `zsh/functions/claude.zsh`), repo-specific ones in `.claude/settings.json`
@@ -111,7 +112,7 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   plugins and `lazy-lock.json`.
 - Git helpers: try them in a throwaway clone in the scratchpad, never on this repo's branches.
 - Claude Code's sandbox is on (`docs/claude.md`, "Sandbox"): Bash can't write `config/claude/settings.json`,
-  `config/claude/hooks/`, `config/claude/CLAUDE.md` or `.claude/settings.json` (use Edit), and run
+  `config/agent/hooks/`, `config/claude/CLAUDE.md` or `.claude/settings.json` (use Edit), and run
   `check_dotfiles` or `checks/…` on its own line, not after `cd …;` or piped, so it runs outside the sandbox
   (inside, the tmux checks are skipped).
 - `~/.Trash` can't be read from Claude Code's shell (macOS privacy), so moves there can't be checked.
