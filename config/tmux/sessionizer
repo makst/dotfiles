@@ -3,7 +3,7 @@
 # session of their own named after the directory. Bound to prefix f (config/tmux/tmux.conf)
 # and to `tm` in zsh (zsh/.aliases); attaches when run outside tmux. Arguments go to fzf, e.g.
 # --height=100% to fill the tmux popup. Sessions with Claude Code in them show their most urgent agent's
-# mark, as the tree does (config/tmux/tmux.conf, "Claude Code agents"; states from
+# mark, as the tree does (config/tmux/tmux.conf, "agents (Claude Code or another tool)"; states from
 # config/claude/hooks/tmux-state.sh); the marks and the preview, a session's
 # screen or a directory's files, stay current while it's open. Keys as in every picker (config/tmux/picker.zsh),
 # but it opens ready to type: jj for j/k. `sessionizer --list` prints the lines alone, for fzf's reload.
@@ -12,7 +12,7 @@ source ${0:A:h}/picker.zsh
 # each line is "key<tab>what fzf shows": a session's id (exact, unlike its name: tmux matches names by prefix)
 # with its name and agent's mark in ANSI colours, or a directory's path, shown as ~/… when under $HOME
 if [[ $1 == --list ]]; then
-  for line in ${(f)"$(tmux list-sessions -f '#{?@listed,#{E:@listed},1}' -F '#{session_id}'$'\t''#S'$'\t''#{E:@claude-session-state}' 2> /dev/null)"}; do
+  for line in ${(f)"$(tmux list-sessions -f '#{?@listed,#{E:@listed},1}' -F '#{session_id}'$'\t''#S'$'\t''#{E:@agent-session-state}' 2> /dev/null)"}; do
     fields=("${(@ps:\t:)line}")
     print -r -- "$fields[1]"$'\t'"$fields[2]${fields[3]:+ $picker_marks[$fields[3]]}"
   done

@@ -90,10 +90,10 @@ local function tmux(...)
 end
 
 -- agent_panes(root) -> { { id, label } }
--- The Claude Code panes working in root: tmux's @claude-agent (config/tmux/tmux.conf) picks the panes with
+-- The agent panes working in root: tmux's @agent-pane (config/tmux/tmux.conf) picks the panes with
 -- an agent, their directory the ones here. root's own agent worktrees (.claude/worktrees/) are other agents.
 local function agent_panes(root)
-  local out = tmux('list-panes', '-a', '-f', '#{E:@claude-agent}', '-F',
+  local out = tmux('list-panes', '-a', '-f', '#{E:@agent-pane}', '-F',
     '#{pane_id}\t#{pane_current_path}\t#{session_name}:#{window_name}  #{pane_title}')
   local panes = {}
   for _, line in ipairs(vim.split(out or '', '\n', { trimempty = true })) do
@@ -133,7 +133,7 @@ local function send()
   local panes = (vim.env.TMUX and root) and agent_panes(root) or {}
   if #panes == 0 then
     vim.fn.setreg('+', text)
-    vim.notify('codetour: no Claude Code pane in this repo; the comments are on the clipboard',
+    vim.notify('codetour: no agent pane in this repo; the comments are on the clipboard',
       vim.log.levels.WARN)
     done()
   elseif #panes == 1 then

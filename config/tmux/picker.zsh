@@ -4,7 +4,8 @@
 # in zsh's normal mode; find_file and fif in config/fzf/fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys:
 # the agent marks, nvim's keys, and a list and preview that stay current while fzf is open.
 
-# an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "Claude Code agents")
+# an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "agents (Claude Code
+# or another tool)")
 typeset -gA picker_marks=(waiting $'\e[33m󰂞\e[0m' done $'\e[32m󰄬\e[0m' working $'\e[36m󰔟\e[0m')
 # fzf's preview of the screen of the line's tmux target, without the empty lines below the last output: the
 # preview follows the bottom, which would show only those on a screen that isn't full

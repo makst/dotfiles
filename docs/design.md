@@ -139,7 +139,7 @@ whole: a part it can rewrite from its edge is new code to it, and checked on its
 | a script (`config/tmux/`, `config/github/`, `config/claude/hooks/`) | its `Usage:` line and top comment, its arguments, its output |
 | an nvim plugin's folder | the keys in its `keymaps.lua` and the `M.` functions other files `require` |
 | a group of checks | the top comment of `checks/<group>.zsh` and the labels of its checks |
-| shared state: a tmux option (`@claude`), a state file (the GitHub watcher's), a line format another part splits | what it holds, in the top comment of the file that writes it |
+| shared state: a tmux option (`@agent`), a state file (the GitHub watcher's), a line format another part splits | what it holds, in the top comment of the file that writes it |
 
 1. **Deep parts, narrow edges.** A part does a lot behind a short edge. A helper exists because it hides
    something (where the repo is, how a worktree is made again), not to hand its arguments on; a new job gets a

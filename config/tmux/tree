@@ -44,9 +44,9 @@ fi
 if [[ $1 == --list ]]; then
   title='#{s/^✳ //:pane_title}'
   rows=(${(f)"$(tmux list-panes -a -f '#{?@listed,#{E:@listed},1}' -F "$(print -rl -- '#{session_id}' '#S' '#{session_windows}' \
-    '#{?session_attached, (attached),}' '#{E:@claude-session-state}' '#{window_id}' '#I' '#W#{window_flags}' \
-    '#{window_end_flag}' '#{window_panes}' '#{E:@claude-window-state}' "#{P:#{?#{E:@claude-agent}, $title,}}" \
-    '#{pane_id}' '#P' '#{pane_current_command}#{?pane_active,*,}' '#{@claude}' "#{?#{E:@claude-agent}, $title,}" \
+    '#{?session_attached, (attached),}' '#{E:@agent-session-state}' '#{window_id}' '#I' '#W#{window_flags}' \
+    '#{window_end_flag}' '#{window_panes}' '#{E:@agent-window-state}' "#{P:#{?#{E:@agent-pane}, $title,}}" \
+    '#{pane_id}' '#P' '#{pane_current_command}#{?pane_active,*,}' '#{@agent}' "#{?#{E:@agent-pane}, $title,}" \
     | paste -sd $'\t' -)")"})
   session= window=
   for i in {1..$#rows}; do

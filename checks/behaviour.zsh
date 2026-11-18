@@ -538,7 +538,7 @@ EOF
 }
 
 # the hook's state of a Claude Code pane, and the order the agents list and next-agent put them in, in a
-# private tmux server pointed at with $TMUX (the scripts call plain `tmux`). @claude-agent and @listed are the
+# private tmux server pointed at with $TMUX (the scripts call plain `tmux`). @agent-pane and @listed are the
 # lines of config/tmux/tmux.conf, so a change to them is tested too.
 run_agent_state() {
   (( $+commands[tmux] )) || { print "tmux isn't installed"; return 2 }
@@ -546,8 +546,8 @@ run_agent_state() {
   local -a ids order expected
   mkdir -p $t/stubs
   p() { tmux -L $sock "$@" }
-  grep -E '^set -g @(claude-agent|listed) ' config/tmux/tmux.conf > $t/tmux.conf
-  [[ -s $t/tmux.conf ]] || { print "config/tmux/tmux.conf no longer sets @claude-agent and @listed"; return 1 }
+  grep -E '^set -g @(agent-pane|listed) ' config/tmux/tmux.conf > $t/tmux.conf
+  [[ -s $t/tmux.conf ]] || { print "config/tmux/tmux.conf no longer sets @agent-pane and @listed"; return 1 }
   {
     p -f /dev/null new-session -d -s main 2> $t/err || {
       [[ -n $SANDBOX_RUNTIME ]] && { print "tmux can't make its socket in Claude Code's sandbox"; return 2 }
@@ -564,16 +564,16 @@ run_agent_state() {
 
     for state in working waiting done idle off; do
       TMUX_PANE=$ids[1] config/claude/hooks/tmux-state.sh $state
-      got=$(p display -p -t $ids[1] '#{@claude}')
-      [[ $got == ${state/off/} ]] || print "tmux-state.sh $state: @claude is '$got'"
+      got=$(p display -p -t $ids[1] '#{@agent}')
+      [[ $got == ${state/off/} ]] || print "tmux-state.sh $state: @agent is '$got'"
     done
 
     # the order of the lists: waiting, done, working, then idle; a pane in a _ session isn't listed
-    p set -p -t $ids[1] @claude idle
-    p set -p -t $ids[2] @claude working
-    p set -p -t $ids[3] @claude done
-    p set -p -t $ids[4] @claude waiting
-    p set -p -t $hidden @claude waiting
+    p set -p -t $ids[1] @agent idle
+    p set -p -t $ids[2] @agent working
+    p set -p -t $ids[3] @agent done
+    p set -p -t $ids[4] @agent waiting
+    p set -p -t $hidden @agent waiting
     order=(${(f)"$(config/tmux/agents --list 2>&1 | cut -f1)"})
     expected=($ids[4] $ids[3] $ids[2] $ids[1])
     [[ $order == $expected ]] ||
@@ -592,7 +592,7 @@ exec $real -L $sock \"\$@\"" > $t/stubs/tmux
     [[ $(<$t/calls) == "switch-client -c c -t $ids[3]" ]] ||
       print "next-agent from the waiting pane: '$(<$t/calls)', should go to the done pane $ids[3]"
     : > $t/calls
-    for pane in $ids; do p set -p -t $pane @claude idle; done
+    for pane in $ids; do p set -p -t $pane @agent idle; done
     PATH=$t/stubs:$PATH config/tmux/next-agent c $ids[1]
     [[ $(<$t/calls) == "display -c c no agent needs you" ]] ||
       print "next-agent with none waiting or done: '$(<$t/calls)', should say 'no agent needs you'"
