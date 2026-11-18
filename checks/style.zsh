@@ -1,9 +1,9 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
 # else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, each zsh
 # function has a comment that says how to call it, lists go through the picker and are in its list, headings
-# stand apart from the text above, docs pages keep the section order of
-# docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns, table rows have the
-# header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
+# stand apart from the text above, docs pages keep the section order of docs/design.md, each file says at the
+# top who uses it, prose wraps at about 110 columns, table rows have the header's cells, $(…) inside ${…} is
+# quoted, scripts are zsh and executable.
 # They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
 # lib.zsh has the helpers and indexes.
 
@@ -156,7 +156,7 @@ check_top_comments() {
   local f first
   local -a files=(${(M)text_files:#(config|zsh|checks|.githooks|.github)/*})
   files+=(${(M)text_files:#(.zshrc|prepare-zsh-install.sh)})
-  files=(${files:#*.(json|mdcases)})
+  files=(${files:#*.(json|md|cases)})
   files=(${files:#(*/init.lua|*/themes/*|*/allowed_signers|*/skills/*|*/lazy-lock*)})
   for f in $files; do
     first=$(grep -vE '^(#!|[[:space:]]*$)' $f | head -n1)
@@ -167,8 +167,8 @@ check_top_comments() {
 
 # prose width: lines of prose in Markdown and comment lines in zsh files wrap at about 110 columns (CLAUDE.md,
 # "Style"; over 115 is flagged), so a page reads the same in a terminal, in nvim and in a diff. Left out:
-# tables, code blocks, HTML, images and lines with a URL, which can't be broken, and
-# links (the git hooks are one script). zsh, not awk: macOS's awk counts bytes, so – or é would count twice.
+# tables, code blocks, HTML, images and lines with a URL, which can't be broken, and links (the git hooks are
+# one script). zsh, not awk: macOS's awk counts bytes, so – or é would count twice.
 check_prose_width() {
   setopt local_options extended_glob
   local f line md code front
