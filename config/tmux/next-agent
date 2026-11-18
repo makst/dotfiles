@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # Usage: next-agent <client> <pane>
-# Jumps the client to the next Claude Code agent that needs you: the waiting ones first, then the done ones, in
+# Jumps the client to the next agent (any tool) that needs you: the waiting ones first, then the done ones, in
 # every session, cycling from the pane you're in. Bound to prefix A (cmd+shift+space, config/tmux/tmux.conf);
 # cmd+shift+0 goes back to the session you came from, cmd+0 to the window. The states come from the hooks
 # (config/agent/hooks/tmux-state.sh).

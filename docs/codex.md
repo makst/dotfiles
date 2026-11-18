@@ -79,8 +79,10 @@ To look out for
   changes it empties the list: read `~/.codex/sessions/**/rollout-*.jsonl` with `jq -c .` and fix
   `_agent_codex_sessions` in `zsh/functions/codex.zsh`. Whether a `codex review` leaves a rollout that the list
   should skip isn't checked yet.
-- **`tui.vim_mode_default`** is the setting name found in the binary, not confirmed in the docs; if the prompt
-  doesn't start in vim mode, `/vim` turns it on.
+- **The Interrupt hook isn't checked yet**: `config/codex/hooks.json` wires it to `tmux-state.sh idle`, but no
+  interrupted turn has been seen to fire it; if the window stays *working* after Esc, look at that event first.
+- **The prompt starts in vim mode** (`tui.vim_mode_default`, set by the wrapper): if a Codex release renames
+  the setting, the prompt starts in normal typing mode and `/vim` turns vim mode on.
 
 Decisions
 ---
