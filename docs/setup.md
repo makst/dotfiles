@@ -132,7 +132,7 @@ check_mac: 2 problems, each with what fixes it:
 | where the Mac can run a VM, podman has one and no connection to one that's gone | `setup_podman` |
 | `~/.npm` has no files of another user (root's, from an npm run with `sudo`), which make npm fail with EPERM | `sudo chown -R $(id -u) ~/.npm` |
 | `~/.codex/config.toml` sets none of the settings of `config/codex/config.toml` (a `/statusline` saved in Codex would) | copy the setting into `config/codex/config.toml`, delete it from `~/.codex/config.toml` ([codex](codex.md#to-look-out-for)) |
-| the repo's git hooks are on, `~/.ssh/config` includes the shared one, the login shell is Homebrew's zsh | `setup_git`, `setup_ssh`, `prepare-zsh-install.sh` |
+| the repo's git hooks are on, with `core.hooksPath` the relative `.githooks` (a full path would make an agent's worktree run the main checkout's hooks), `~/.ssh/config` includes the shared one, the login shell is Homebrew's zsh | `setup_git`, `setup_ssh`, `prepare-zsh-install.sh` |
 | a new zsh and nvim start without printing errors | the error says |
 | Secretive's agent runs, commits are signed with a key in `config/git/allowed_signers` | [A new Mac](#a-new-mac), step 4 |
 | gh's login is valid; npm accepts each registry token in `~/.npmrc` (not from Claude Code's sandbox, where every login looks invalid) | `gh auth refresh`; `npm_gh_token` for GitHub's registry, the registry's own login for others |

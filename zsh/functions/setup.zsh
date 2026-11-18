@@ -336,8 +336,14 @@ function check_mac() {
   fi
 
   # git, ssh and the shell
-  [[ $(git -C $repo config core.hooksPath) == .githooks ]] ||
+  # .githooks, relative: each worktree runs its own copy, which knows it isn't the live setup; a full path
+  # would run the main checkout's in an agent's worktree, and a switch there would reload the running setup
+  local hooks=$(git -C $repo config core.hooksPath)
+  if [[ -z $hooks ]]; then
     problems+="the repo's git hooks are off, so a pull doesn't reload anything: setup_git"
+  elif [[ $hooks != .githooks ]]; then
+    problems+="the repo's core.hooksPath is $hooks, not .githooks, so an agent's worktree runs the main checkout's hooks: setup_git"
+  fi
   # the steps done by hand: Secretive's agent, and the signing key secretive_key made
   if (( by_hand )); then
     [[ -S $SSH_AUTH_SOCK ]] || problems+="no ssh agent (Secretive's isn't running?): open Secretive"
