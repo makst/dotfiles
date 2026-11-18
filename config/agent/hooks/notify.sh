@@ -10,12 +10,22 @@
 name=${1:-Claude Code}
 [[ $OSTYPE == darwin* && -n $TMUX_PANE ]] && (( $+commands[tmux] && $+commands[lsappinfo] )) || exit 0
 
-input=$(jq -r '[.hook_event_name, .tool_name // "", .tool_input.description // .tool_input.command // ""] | map(gsub("\\s+"; " ")) | join("\t")' 2> /dev/null) && [[ -n $input ]] || exit 0
-event=${input%%$'\t'*} rest=${input#*$'\t'}
-tool=${rest%%$'\t'*} rest=${rest#*$'\t'}
-detail=$rest
-# finishing a turn shows only the bell and the green mark: a notification each time was too much
-[[ $event == Stop ]] && exit 0
+# event, tool and detail, one per line; a tool_input that isn't an object, or a field that isn't a string,
+# still gives the three lines, so a permission request always notifies
+input=$(jq -r '[.hook_event_name // "", .tool_name // "", (.tool_input | objects | .description // .command) // ""]
+  | map(tostring | gsub("\\s+"; " ")) | join("\n")' 2> /dev/null) || exit 0
+fields=("${(@f)input}")
+event=$fields[1] tool=$fields[2] detail=$fields[3]
+
+# only these two notify. Stop doesn't: finishing a turn shows the bell and the green mark, and a notification
+# each time was too much. The settings no longer send Stop here, but a Mac whose hook config is older still
+# does, so keep Stop out of this list even though nothing current reaches it.
+case $event in
+  PermissionRequest) message="wants to use $tool${detail:+: $detail}" ;;
+  Notification) message='has a question for you' ;;
+  *) exit 0 ;;
+esac
+(( $#message > 200 )) && message="${message[1,199]}…"
 
 # app_of <pid>: the pid and path of the .app that <pid> runs in, e.g. Ghostty for a tmux client
 app_of() {
@@ -41,13 +51,6 @@ notify() {
     done
   fi
 
-  local message
-  case $event in
-    PermissionRequest) message="wants to use $tool${detail:+: $detail}" ;;
-    Notification) message='has a question for you' ;;
-    *) return ;;
-  esac
-  (( $#message > 200 )) && message="${message[1,199]}…"
   [[ -z $title || $title == ($name|$HOST) ]] && title=$where || title="$title — $where"
 
   if (( $+commands[terminal-notifier] )); then

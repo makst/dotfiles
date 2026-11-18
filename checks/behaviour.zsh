@@ -116,6 +116,37 @@ check_bell_hook() {
   note="outside tmux, unknown pane"
 }
 
+# notify: which events send a notification and what it says, with stand-ins for tmux, lsappinfo and
+# terminal-notifier that write down what they're asked, so nothing is sent; the window is never on screen
+check_notify_hook() {
+  [[ $OSTYPE == darwin* ]] || { note="off macOS it does nothing"; return 0 }
+  local bin=$tmp/notify-bin log=$tmp/notify.log input want got i
+  mkdir -p $bin
+  print -r -- $'#!/bin/zsh\ncase $1 in display) print -r -- "0\tsess:win\ttitle" ;; esac' > $bin/tmux
+  print -r -- $'#!/bin/zsh\n[[ $1 == front ]] && print ASN:0x0 || print pid=1' > $bin/lsappinfo
+  print -r -- $'#!/bin/zsh\nprint -r -- "${argv[argv[(i)-message]+1]}" >> '$log > $bin/terminal-notifier
+  chmod +x $bin/*
+  local -A cases=(
+    '{hook_event_name: "Stop"}' ''
+    '{hook_event_name: "SessionStart"}' ''
+    '{hook_event_name: "Notification"}' 'has a question for you'
+    '{hook_event_name: "PermissionRequest", tool_name: "Bash", tool_input: {command: "ls\n  -la"}}'
+      'wants to use Bash: ls -la'
+    '{hook_event_name: "PermissionRequest", tool_name: "Bash", tool_input: "oops"}' 'wants to use Bash'
+    '{hook_event_name: "PermissionRequest", tool_name: "Edit", tool_input: {description: 7}}'
+      'wants to use Edit: 7'
+  )
+  for input want in "${(@kv)cases}"; do
+    : > $log
+    jq -n $input | TMUX_PANE=%1 PATH=$bin:$minimal_path config/agent/hooks/notify.sh
+    # it sends in the background: wait up to a second for it
+    for i in {1..20}; do [[ -s $log || -z $want ]] && break; sleep 0.05; done
+    got=$(<$log)
+    [[ $got == $want ]] || print -r -- "$input: sent '${got:-nothing}', expected '${want:-nothing}'"
+  done
+  note="stand-ins for tmux and terminal-notifier"
+}
+
 # status line: what it shows for a full session, a bare one and a heavy one (times relative to now, so the
 # resets and the cache's expiry always read the same), and the colours of the warnings
 check_statusline() {
@@ -830,6 +861,7 @@ check "zsh's functions find the repo in Claude Code's shell" check_zsh_exports
 check "no-recursive-rm blocks every recursive rm and nothing else" check_rm_hook
 check "the format hook formats only where the project asks for it" check_format_hook
 check "the bell hook keeps quiet outside tmux" check_bell_hook
+check "the notify hook notifies a permission or a question, never a finished turn" check_notify_hook
 check "the status line shows what the session reports" check_statusline
 check "new skills are linked into ~/.claude, removed ones unlinked" check_skill_links
 check "after a pull, the running programs reload what changed" check_reload
