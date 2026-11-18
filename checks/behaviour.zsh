@@ -208,7 +208,7 @@ check_skill_links() {
   ln -s $t/repo/config/claude/skills/gone $s/gone
   ln -s $t/home/moved $s/own
   HOME=$t/home zsh -c "real_script_dir=$t/repo; source zsh/functions/setup.zsh
-    source zsh/functions/claude.zsh; link_claude_skills" > /dev/null ||
+    source zsh/functions/agent.zsh; source zsh/functions/claude.zsh; link_claude_skills" > /dev/null ||
     print "link_claude_skills failed"
   [[ -L $s/new && $s/new -ef $t/repo/config/claude/skills/new ]] || print "a new skill wasn't linked"
   [[ -L $s/copied ]] || print "a real copy in a skill's place wasn't replaced by the link"
@@ -248,9 +248,9 @@ early_result() {
 }
 
 # agent_helpers: writes $tmp/agent-helpers.zsh, what the agent checks' scripts source: HOME, git identity and the
-# Trash in a throwaway $T/home, zsh/functions/claude.zsh, a repo $r (branch main, origin a bare repo with
-# origin/HEAD set) and the way `agent` makes a worktree, so each case needs only its own few lines. A case's
-# repo is its own, so the cases of a script run at the same time.
+# Trash in a throwaway $T/home, zsh/functions/agent.zsh and claude.zsh, a repo $r (branch main, origin a bare
+# repo with origin/HEAD set) and the way `agent` makes a worktree, so each case needs only its own few lines.
+# A case's repo is its own, so the cases of a script run at the same time.
 agent_helpers() {
   cat > $tmp/agent-helpers.zsh <<'EOF'
 unsetopt bg_nice  # a sandbox (Claude Code's) can't lower the priority of background jobs
@@ -258,6 +258,7 @@ export HOME=$T/home
 unset TMUX
 mkdir -p $HOME/.Trash
 print -r -- $'[user]\n\tname = t\n\temail = t@t\n[commit]\n\tgpgsign = false' > $HOME/.gitconfig
+source $real_script_dir/zsh/functions/agent.zsh
 source $real_script_dir/zsh/functions/claude.zsh
 
 # bad <problem>: one problem line, named for the case
@@ -298,7 +299,7 @@ runcases() {
 EOF
 }
 
-# agent_done (zsh/functions/claude.zsh): removes a worktree only when nothing would be lost
+# agent_done (zsh/functions/agent.zsh): removes a worktree only when nothing would be lost
 run_agent_done() {
   local t=$tmp/agent-done
   mkdir -p $t
@@ -365,7 +366,7 @@ EOF
   H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
 }
 
-# _agent_worktree: brings back what agent_done left (docs/claude.md, "Going back to an agent")
+# _agent_worktree: brings back what agent_done left (docs/agent.md, "Going back to an agent")
 run_agent_resume() {
   local t=$tmp/agent-resume
   mkdir -p $t
@@ -415,7 +416,38 @@ EOF
   H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
 }
 
-# agent_land (zsh/functions/claude.zsh): lands only a clean, rebased, checked branch, and leaves the agent's
+# agent --tool: starts the tool it is told to, the one `git config agent.tool` names, and fails for an unknown
+# one, in a new worktree. The tool is a stub that prints what it was started with (the interface of
+# zsh/functions/agent.zsh); no real agent runs.
+run_agent_start() {
+  local t=$tmp/agent-start
+  mkdir -p $t
+  cat > $t/run.zsh <<'EOF'
+source $H
+_agent_stub_start() { reply=(print -r -- started "$@") }
+case_flag() {
+  out=$(agent --tool stub x hello 2>&1) || bad "--tool stub returns $?"
+  [[ $out == *"started hello"* ]] || bad "--tool stub: the tool wasn't started with the prompt: $out"
+  [[ $(git -C $(wt x) branch --show-current 2> /dev/null) == worktree-x ]] || bad "the worktree isn't on worktree-x"
+}
+case_unknown() {
+  err=$(agent --tool nope y 2>&1 > /dev/null); rc=$?
+  (( rc )) || bad "--tool nope succeeds"
+  [[ $err == *stub* ]] || bad "--tool nope doesn't name the known tools: $err"
+  [[ -d $(wt y) ]] && bad "--tool nope made a worktree"
+  return 0
+}
+case_config() {
+  git -C $r config agent.tool stub
+  out=$(agent z 2>&1) || bad "with agent.tool: returns $?"
+  [[ $out == *"started"* ]] || bad "agent.tool stub isn't used: $out"
+}
+runcases flag unknown config
+EOF
+  H=$tmp/agent-helpers.zsh T=$t real_script_dir=$repo zsh -f $t/run.zsh
+}
+
+# agent_land (zsh/functions/agent.zsh): lands only a clean, rebased, checked branch, and leaves the agent's
 # branch as it was when it can't
 run_agent_land() {
   local t=$tmp/agent-land
@@ -621,6 +653,7 @@ exec $real -L $sock \"\$@\"" > $t/stubs/tmux
 check_agent_done() { early_result agent_done "7 cases"; }
 check_agent_resume() { early_result agent_resume "5 cases"; }
 check_agent_land() { early_result agent_land "6 cases"; }
+check_agent_start() { early_result agent_start "3 cases"; }
 check_github_watch() { early_result github_watch "4 runs and the inbox"; }
 check_agent_state() { early_result agent_state "hook, list, next-agent"; }
 
@@ -628,6 +661,7 @@ agent_helpers
 early agent_done run_agent_done
 early agent_resume run_agent_resume
 early agent_land run_agent_land
+early agent_start run_agent_start
 early github_watch run_github_watch
 early agent_state run_agent_state
 
@@ -643,5 +677,6 @@ check "after a pull, the running programs reload what changed" check_reload
 check "agent_done removes a worktree only when nothing would be lost" check_agent_done
 check "_agent_worktree brings back what agent_done left" check_agent_resume
 check "agent_land lands only a clean, rebased, checked branch" check_agent_land
+check "agent starts the chosen tool in a new worktree" check_agent_start
 check "the GitHub watcher notices what changed and nothing else" check_github_watch
 check "the agents' state and the order the lists show it in" check_agent_state

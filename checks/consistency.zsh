@@ -177,6 +177,29 @@ check_gifs() {
   note="$(count $#tapes tape), $(count $#gifs GIF)"
 }
 
+# agent tools: each zsh/functions/*.zsh that defines _agent_<t>_start defines the whole interface of the agent
+# layer (zsh/functions/agent.zsh, docs/agent.md): start, resume, review, sessions, preview and hooks, and the
+# file _agent_<t>_hooks prints is in the repo. This one fails: a tool missing a function breaks `agent`,
+# agent_resume or agent_review for it when it is chosen, and a hooks file that isn't there leaves the layer
+# without its marks and its rm guard ("Fits in one head": a part is used from its edge).
+check_agent_tools() {
+  local file tool fn hooks
+  local -a tools
+  for file in zsh/functions/*.zsh; do
+    for tool in ${${(M)${(f)"$(grep -hoE '^function _agent_[a-z0-9]+_start\(' $file)"}:#*_start\(}}; do
+      tool=${${tool#function _agent_}%_start\(}
+      tools+=$tool
+      for fn in start resume review sessions preview hooks; do
+        grep -qE "^function _agent_${tool}_$fn\(" $file || print -r -- "$file: _agent_${tool}_$fn isn't defined"
+      done
+      hooks=$(zsh -fc "source $file 2> /dev/null; _agent_${tool}_hooks" 2> /dev/null)
+      [[ -e $hooks ]] || print -r -- "$file: _agent_${tool}_hooks prints '$hooks', which isn't a file of the repo"
+    done
+  done
+  (( $#tools )) || print "no agent tool found"
+  note=$(count $#tools tool)
+}
+
 # keys_index: the keys each editor maps, "<editor> <key>", with , for the leader, <C-x> for control keys,
 # <Space> and <BS> for the space bar and Backspace:
 # nvim's keymap.set and map() calls (Lua), VS Code's vim.*KeyBindings (JSON), IdeaVim's map commands, plus what
@@ -359,6 +382,7 @@ check -w "every nvim key is bound in a keymaps.lua" check_nvim_keymaps
 check -w "a plugin's internals are required from one nvim file" check_nvim_internals
 check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
 check -w "every GIF has its tape and its doc" check_gifs
+check "every agent tool has the whole interface" check_agent_tools
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
 check "each layer keeps to its modifier" check_keyboard
 check "Ghostty's Cmd keys reach tmux bindings" check_ghostty_tmux

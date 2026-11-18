@@ -124,7 +124,7 @@ case $1 in
       "gh pr checkout $number; exec zsh") && tmux switch-client -t $window
     exit 0 ;;
   --fix)
-    # agent_ci (zsh/functions/claude.zsh) in the repo's clone, in an interactive zsh, which has the functions;
+    # agent_ci (zsh/functions/agent.zsh) in the repo's clone, in an interactive zsh, which has the functions;
     # it shows its progress here, then opens the agent's window. What went wrong goes to tmux's message line
     [[ $kind == mine ]] || { tmux display-message 'f fixes the checks of your own pull requests'; exit 0 }
     clone || exit 0

@@ -125,7 +125,7 @@ Commands
 | `ll`, `la` (`l`), `lt` | eza: long listing with git status and icons; with hidden files; tree two levels deep |
 | `gs` | git status in nvim (fugitive), see [git](git.md#staging-and-committing) |
 | `tm` | tmux session picker |
-| `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | Claude Code agents in worktrees and tmux windows of their own, see [claude](claude.md#commands) |
+| `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | coding agents in worktrees and tmux windows of their own, see [agent](agent.md#commands) |
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
 | `change_theme [dark\|light]` | pick the base16 scheme for macOS's dark or light mode, for nvim and Ghostty, see [theme](theme.md) |
@@ -167,7 +167,7 @@ Config
 | `zsh/.exports` | `PATH` (Homebrew, `~/bin`, `~/.local/bin`, the Android SDK's tools), fnm and its hook that switches node on `cd`, `DOCKER_HOST` (see [podman](podman.md)), pager and colour settings |
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide, vi mode and its keys |
 | `zsh/.aliases` | aliases |
-| `zsh/functions/<tool>.zsh` | shell functions, one file per tool, named like its `config/<tool>` or `docs/<tool>.md`: `claude.zsh` has the `claude` wrapper and agents, `setup.zsh` the whole install (`setup_dotfiles`) and the checks |
+| `zsh/functions/<tool>.zsh` | shell functions, one file per tool, named like its `config/<tool>` or `docs/<tool>.md`: `agent.zsh` has the agent layer, `claude.zsh` the `claude` wrapper and its agent adapter, `setup.zsh` the whole install (`setup_dotfiles`) and the checks |
 | `zsh/.private` | gitignored: tokens, if the file exists |
 | `~/.config/dotfiles/zshrc` | outside the repo: what only this Mac needs (see [setup](setup.md#several-macs)) |
 
