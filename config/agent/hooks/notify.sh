@@ -15,6 +15,9 @@ input=$(jq -r '[.hook_event_name, .tool_name // "", .tool_input.description // .
 event=${input%%$'\t'*} rest=${input#*$'\t'}
 tool=${rest%%$'\t'*} rest=${rest#*$'\t'}
 detail=${rest%%$'\t'*} last=${rest#*$'\t'}
+# an agent that agent_ask started hands its answer back at Stop (answer.sh); a permission or a question still
+# notifies, since only you can answer it
+[[ -n ${AGENT_ASK_DIR:-} && $event == Stop ]] && exit 0
 
 # app_of <pid>: the pid and path of the .app that <pid> runs in, e.g. Ghostty for a tmux client
 app_of() {

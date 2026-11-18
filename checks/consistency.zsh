@@ -178,7 +178,7 @@ check_gifs() {
 }
 
 # agent tools: each zsh/functions/*.zsh that defines _agent_<t>_start defines the whole interface of the agent
-# layer (zsh/functions/agent.zsh, docs/agent.md): start, resume, review, sessions, preview and hooks, and the
+# layer (zsh/functions/agent.zsh, docs/agent.md): start, ask, resume, review, sessions, preview and hooks, and the
 # file _agent_<t>_hooks prints is in the repo. This one fails: a tool missing a function breaks `agent`,
 # agent_resume or agent_review for it when it is chosen, and a hooks file that isn't there leaves the layer
 # without its marks and its rm guard ("Fits in one head": a part is used from its edge).
@@ -189,7 +189,7 @@ check_agent_tools() {
     for tool in ${${(M)${(f)"$(grep -hoE '^function _agent_[a-z0-9]+_start\(' $file)"}:#*_start\(}}; do
       tool=${${tool#function _agent_}%_start\(}
       tools+=$tool
-      for fn in start resume review sessions preview hooks; do
+      for fn in start ask resume review sessions preview hooks; do
         grep -qE "^function _agent_${tool}_$fn\(" $file || print -r -- "$file: _agent_${tool}_$fn isn't defined"
       done
       hooks=$(zsh -fc "source $file 2> /dev/null; _agent_${tool}_hooks" 2> /dev/null)
@@ -224,6 +224,52 @@ check_agent_rm_guard() {
       print -r -- "$file: the hooks of $tool don't run no-recursive-rm.sh, so it can delete for good"
   done < <(agent_hook_files)
   note=$(count $n tool)
+}
+
+# the answer in every tool's hooks: the file _agent_<t>_hooks names runs answer.sh at Stop, which hands an
+# agent_ask child's answer back, or mentions AGENT_ASK_DIR for a tool that writes the answer itself. This one
+# fails: without it agent_ask --tool <t> waits for an answer that never comes (docs/agent.md, "Asking another
+# agent")
+check_agent_answer() {
+  local tool file
+  local -i n=0
+  while read -r tool file; do
+    n+=1
+    grep -qE 'answer\.sh|AGENT_ASK_DIR' -- $file 2> /dev/null ||
+      print -r -- "$file: the hooks of $tool never run answer.sh, so agent_ask can't get its answers back"
+  done < <(agent_hook_files)
+  note=$(count $n tool)
+}
+
+# agent_ask's permissions: Claude Code runs it outside its sandbox (the tmux server starts the child), asks
+# before agent_ask_edit and lets plain questions through, and Codex's rules say the same
+# (config/codex/rules/agent.rules; `codex execpolicy check` runs when Codex is installed). This one fails:
+# without the exclusion agent_ask can't reach tmux, and without the ask rule an agent could start a
+# file-changing child unseen
+check_agent_ask_rules() {
+  local f=config/claude/settings.json out
+  local name
+  for name in agent_ask agent_ask_edit; do
+    jq -e --arg e "$name *" '.sandbox.excludedCommands | index($e)' $f > /dev/null ||
+      print -r -- "$f: sandbox.excludedCommands lacks $name *, so it can't reach tmux"
+  done
+  jq -e '.permissions.ask | index("Bash(agent_ask_edit *)")' $f > /dev/null ||
+    print -r -- "$f: permissions.ask lacks Bash(agent_ask_edit *)"
+  jq -e '.sandbox.filesystem.denyWrite | index("~/.local/state/agent-ask")' $f > /dev/null ||
+    print -r -- "$f: sandbox.filesystem.denyWrite lacks ~/.local/state/agent-ask, so a child could change its state"
+  jq -e '.permissions.allow | index("Bash(agent_ask *)")' $f > /dev/null ||
+    print -r -- "$f: permissions.allow lacks Bash(agent_ask *)"
+  if (( $+commands[codex] )); then
+    out=$($commands[codex] execpolicy check --rules config/codex/rules/agent.rules agent_ask --tool claude x 2> /dev/null |
+      grep '^{' | jq -r '.decision // empty' 2> /dev/null)
+    [[ $out == allow ]] || print -r -- "config/codex/rules/agent.rules: agent_ask --tool claude x is '$out', not allow"
+    out=$($commands[codex] execpolicy check --rules config/codex/rules/agent.rules agent_ask_edit --tool claude x 2> /dev/null |
+      grep '^{' | jq -r '.decision // empty' 2> /dev/null)
+    [[ $out == prompt ]] || print -r -- "config/codex/rules/agent.rules: agent_ask_edit … is '$out', not prompt"
+    note="Claude's settings and Codex's rules"
+  else
+    note="Claude's settings; Codex isn't installed"
+  fi
 }
 
 # the marks and the pane test in every tool's setup: its hooks file calls tmux-state.sh with idle, working,
@@ -449,6 +495,8 @@ check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_
 check -w "every GIF has its tape and its doc" check_gifs
 check "every agent tool has the whole interface" check_agent_tools
 check "every agent tool's hooks run the rm guard" check_agent_rm_guard
+check "every agent tool's hooks hand back agent_ask's answer" check_agent_answer
+check "agent_ask is outside the sandbox, and agent_ask_edit asks first" check_agent_ask_rules
 check -w "every agent tool's hooks set every mark, and tmux knows its pane" check_agent_states
 check -w "Codex knows every item of its status line" check_codex_status_line
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys

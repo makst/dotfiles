@@ -268,8 +268,9 @@ directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and
 | `setup_tmux` | links `~/.config/tmux`, installs tpm and the tmux plugins |
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
+| `setup_agent` | links `zsh/bin/agent_ask` as `~/.local/bin/agent_ask` and `~/.local/bin/agent_ask_edit` (one script, two names), on `PATH` for every agent tool's shell (see [agent](agent.md#asking-another-agent)) |
 | `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md` and status line, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.claude` (see [claude](claude.md#config)) |
-| `setup_codex` | links Codex's `hooks.json`, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.codex` and `~/.agents/skills`; then `/hooks` in Codex trusts the hooks (see [codex](codex.md#once-per-mac)) |
+| `setup_codex` | links Codex's `hooks.json`, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.codex` and `~/.agents/skills`, and copies `rules/agent.rules` to `~/.codex/rules/` (a copy: Codex skips a symlinked rules file); then `/hooks` in Codex trusts the hooks (see [codex](codex.md#once-per-mac)) |
 | `setup_github` | a LaunchAgent that runs the GitHub watcher every minute: notifications and a tmux mark for your pull requests (see [github](github.md)) |
 | `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
@@ -325,6 +326,8 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 | `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/statusline.sh` | `config/claude/…` |
 | `~/.claude/hooks/`, `~/.claude/AGENTS.md` | `config/agent/hooks/`, `config/agent/AGENTS.md` (shared by every agent tool) |
 | `~/.claude/skills/<name>/` | each skill in `config/agent/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory. The same skills are linked into `~/.agents/skills/<name>/` for Codex by `setup_codex` and `codex` |
+| `~/.local/bin/agent_ask` | `zsh/bin/agent_ask`, by `setup_agent` |
+| `~/.local/bin/agent_ask_edit` | `zsh/bin/agent_ask`, by `setup_agent` |
 | `~/.codex/hooks.json` | `config/codex/hooks.json` |
 | `/etc/codex/config.toml` | `config/codex/config.toml`, by `setup_codex_system` with `sudo` |
 | `~/.codex/hooks/`, `~/.codex/AGENTS.md` | `config/agent/hooks/`, `config/agent/AGENTS.md` (shared by every agent tool) |

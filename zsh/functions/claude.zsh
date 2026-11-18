@@ -10,11 +10,18 @@
 # - ~/.config/dotfiles/claude.json (setup_machine): plugins, marketplaces and anything else only this Mac uses
 # - the project's .claude/settings.local.json enabledPlugins on top, because --settings outranks that file:
 #   without this a project couldn't switch off a plugin that claude.json turns on
+# - with --read-only (first; agent_ask's read-only child, _agent_claude_ask): it can't change the project's
+#   files: the edit tools denied, Bash's sandbox denied writing the checkout and its .git, no command run
+#   outside the sandbox (allowUnsandboxedCommands; an allowed `git diff --output=<file>` would write anywhere,
+#   so that is denied too), and the default permission mode instead of auto mode. MCP tools and the network
+#   aren't covered: it is read-only for files, not cut off
 # Before it starts, link_agent_skills links any skill added to config/agent/skills since the last start.
 # Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
 # for the user does.
 function claude() {
   link_agent_skills ~/.claude/skills
+  local read_only=0
+  [[ $1 == --read-only ]] && { read_only=1; shift }
   local machine=~/.config/dotfiles/claude.json settings='{}' merged
   local root=${"$(git rev-parse --show-toplevel 2> /dev/null)":-$PWD}
   local project=$root/.claude/settings.local.json
@@ -27,6 +34,14 @@ function claude() {
   if [[ -r $project ]]; then
     merged=$(jq -c --argjson base $settings '$base * {enabledPlugins: (.enabledPlugins // {})}' $project) &&
       settings=$merged || print -u2 "$project isn't valid JSON, its plugins aren't applied"
+  fi
+  if (( read_only )); then
+    local common=${"$(git rev-parse --path-format=absolute --git-common-dir 2> /dev/null)":-$root}
+    settings=$(jq -c --arg root $root --arg common $common '.permissions.defaultMode = "default"
+      | .permissions.deny = (.permissions.deny // []) + ["Edit", "Write", "NotebookEdit", "Bash(git * --output*)"]
+      | .sandbox.allowUnsandboxedCommands = false
+      | .sandbox.filesystem.denyWrite = (.sandbox.filesystem.denyWrite // []) + ([$root, $common] | unique)' \
+      <<< $settings) || { print -u2 "claude --read-only: couldn't build its settings"; return 1 }
   fi
   command claude --settings "$settings" "$@"
   local exit_code=$?
@@ -112,6 +127,17 @@ function _agent_claude_review() {
   local name=$1 branch=$2
   shift 3
   reply=(claude "/code-review $branch" -n "review $name" "$@" --disallowedTools Edit Write NotebookEdit)
+}
+
+# _agent_claude_ask read|edit [model]: Claude Code for agent_ask (zsh/bin/agent_ask), with the word {prompt}
+# where the prompt goes. read: the wrapper's --read-only. Not plan mode: on a task-like prompt it stops at a
+# question or ExitPlanMode and never ends its turn. edit: as set up, in the worktree agent_ask made. The prompt
+# goes after --, so no option takes it for a value.
+function _agent_claude_ask() {
+  reply=(claude)
+  [[ $1 == read ]] && reply+=(--read-only)
+  [[ -n $2 ]] && reply+=(--model $2)
+  reply+=(-- '{prompt}')
 }
 
 # _agent_claude_sessions <main>: the Claude Code conversations of the agents of the repo at <main>, newest

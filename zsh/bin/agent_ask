@@ -1,0 +1,250 @@
+#!/bin/zsh
+# Usage: agent_ask --tool <t> [--model <m>] [--name <id>] [--timeout <s>] <prompt… | ->
+#        agent_ask_edit --tool <t> …          the same, but the child may change files (in a worktree of its own)
+#        agent_ask --to <id> [--timeout <s>] <prompt… | ->    a follow-up (agent_ask_edit --to for an edit child)
+#        agent_ask --wait <id> [--timeout <s>]                 the answer to the last prompt, once it's there
+#        agent_ask --list                                      the open ones
+#        agent_ask --close <id>                                closes its window (an edit worktree stays)
+#
+# Hands a task to another agent tool and prints its answer, the way a subagent works but across tools: Claude
+# Code asks Codex, Codex asks Claude Code, either asks any tool of the agent layer (docs/agent.md, "Asking
+# another agent"). Agents call it from their shell; you can too. The child is the tool itself, interactive, in a
+# background tmux window `ask-<id>` of the caller's session: the tmux server starts it, so it runs outside the
+# caller's sandbox and under its own sandbox and approvals, never with them turned off. Its marks, permission
+# prompts and notifications are those of any agent; you can watch it or answer its prompts there.
+#
+# Read-only as agent_ask: the child works in the caller's directory, started by its adapter so it can't change
+# files. As agent_ask_edit (the same script, linked under a second name) it works in its own worktree ask-<id>
+# on a branch worktree-ask-<id> (as `agent` makes them), commits and doesn't push; agent_review, agent_land and
+# agent_done take it from there. Two names, not a flag: the tools' permission rules match a command's name
+# reliably (a quoted '--edit' could slip past a rule on the arguments), so asking runs without a prompt and
+# editing, a follow-up to an edit child included, asks first.
+#
+# The tool's own flags never come from the caller: --tool must be a tool of the layer, --model a plain name,
+# and how the tool is started is its adapter's (_agent_<t>_ask). A follow-up is pasted with the control
+# characters taken out and a lead line first, so it can't type keys or start one of the tool's own commands
+# (/…, !…). A child can't ask further (AGENT_ASK_DEPTH; soft: an environment variable), and a tmux session
+# holds at most $max_open of them (counted by window name, so two callers at once can go one over).
+#
+# State, one directory per child, ${XDG_STATE_HOME:-~/.local/state}/agent-ask/<id>/ (mode 700), written here
+# unless named; Claude Code's sandbox keeps its sessions from writing there (config/claude/settings.json):
+#   prompt        the first prompt (the child's command line reads it, so it's never typed)
+#   task          the caller's own words of it, without what agent_ask adds (for --list)
+#   meta          tool, model, mode, pane id and directory, one `key=value` per line
+#   expect        the turn whose answer the caller waits for: one more than turn when a prompt is sent
+#   turn          how many turns the child has ended; answer.<n> is the n-th's last message
+#                 (config/agent/hooks/answer.sh writes both)
+#   exited        the tool's exit code, once it has exited (the window's command line writes it)
+#   lock/         while a follow-up is being sent
+# The child's pane carries @agent-ask=<id>, so a pane id tmux has since given to another pane isn't taken for
+# it. The directories stay after --close, like a conversation. Needs tmux (--list prints nothing outside it).
+# Exit codes: 0 answered, 1 error, 75 still working at the timeout (agent_ask --wait <id> picks it up).
+
+emulate -L zsh
+setopt extended_glob pipe_fail
+umask 077
+
+# the repo, from this script's real path (~/.local/bin/agent_ask links here), for the layer and its tools
+real_script_dir=${${0:A}:h:h:h}
+source $real_script_dir/zsh/functions/agent.zsh || exit 1
+# the tools: every zsh/functions file that defines an _agent_<t>_start, as the consistency check finds them
+for f in $real_script_dir/zsh/functions/*.zsh(N); do
+  [[ $f == */agent.zsh ]] && continue
+  grep -qE '^function _agent_[a-z0-9]+_start\(' $f && source $f
+done
+
+state=${XDG_STATE_HOME:-$HOME/.local/state}/agent-ask
+max_open=4
+timeout=540
+mode=read
+[[ ${0:t} == agent_ask_edit ]] && mode=edit
+
+# die <message>: the message on stderr, and exit 1
+die() { print -ru2 -- "agent_ask: $*"; exit 1 }
+
+# meta <dir> <key>: a value from the child's meta file
+meta() { local line; for line in "${(@f)$(<$1/meta)}"; do [[ $line == $2=* ]] && { print -r -- ${line#*=}; return } done }
+
+# count <file>: the number in a counter file, 0 when it isn't there yet
+count() { [[ -r $1 ]] && print -r -- $(<$1) || print 0 }
+
+# alive <dir>: the child's pane is still there: its pane id, tagged with its id (pane ids start again at %0
+# when the tmux server does)
+alive() { [[ $(tmux display -p -t "$(meta $1 pane)" '#{@agent-ask}' 2> /dev/null) == ${1:t} ]] }
+
+# read_prompt <args…>: the prompt from the arguments, or stdin for `-`; fails when empty
+read_prompt() {
+  local text
+  if [[ $# == 1 && $1 == - ]]; then text=$(cat) else text="$*"; fi
+  [[ -n ${text//[[:space:]]/} ]] || die "no prompt"
+  print -r -- $text
+}
+
+# child <id>: the state directory of an existing child
+child() {
+  [[ $1 == [a-z0-9][a-z0-9-]# ]] || die "bad id '$1'"
+  [[ -d $state/$1 && ! -L $state/$1 ]] || die "no child $1 (agent_ask --list shows the open ones)"
+  print -r -- $state/$1
+}
+
+# wait_answer <dir>: waits until the child has ended the turn the caller waits for (expect), then prints that
+# turn's last message with how to go on. Fails when the tool exits first (with the end of its window, where the
+# reason is), 75 at the timeout.
+wait_answer() {
+  local dir=$1 id=${1:t} deadline=$(( SECONDS + timeout )) told=0
+  local pane=$(meta $dir pane) expect=$(count $dir/expect)
+  while (( $(count $dir/turn) < expect )); do
+    if [[ -e $dir/exited ]] || ! alive $dir; then
+      print -ru2 -- "agent_ask: $id's $(meta $dir tool) exited without an answer; the end of its window:"
+      alive $dir && print -ru2 -- "${$(tmux capture-pane -p -t $pane -S -30 2> /dev/null)%%[[:space:]]#}"
+      exit 1
+    fi
+    if (( ! told )) && [[ $(tmux display -p -t $pane '#{@agent}' 2> /dev/null) == waiting ]]; then
+      print -ru2 -- "agent_ask: $id waits for an approval in tmux window ask-$id"
+      told=1
+    fi
+    if (( SECONDS >= deadline )); then
+      print -r -- "agent_ask: $id is still working after ${timeout}s; agent_ask --wait $id gets the answer"
+      exit 75
+    fi
+    sleep 1
+  done
+  local edit=${${(M)"$(meta $dir mode)":#edit}:+_edit}
+  print -r -- "agent_ask $id ($(meta $dir tool)${$(meta $dir model):+ $(meta $dir model)}, $(meta $dir mode)) answered:"
+  print
+  cat $dir/answer.$(count $dir/turn)
+  print
+  print -r -- "-- follow up: agent_ask$edit --to $id \"…\"  ·  done: agent_ask --close $id"
+  [[ -n $edit ]] && print -r -- "   its work: branch worktree-ask-$id (agent_review ask-$id, agent_land ask-$id)"
+  exit 0
+}
+
+# the tmux server must answer: inside a sandbox (Claude Code's, when the call isn't agent_ask alone: a pipe, a
+# `cd … &&`, a $(…) or backticks keep it in) its socket can't be reached, and every child would look closed
+if [[ -n ${TMUX:-} ]] && ! tmux display -p '#{pid}' > /dev/null 2>&1; then
+  die "can't reach the tmux server: run in a sandbox? Call agent_ask on its own, with no pipe, cd, \$(…) or backticks"
+fi
+
+# --- the subcommands that act on an existing child
+case ${1:-} in
+  --list)
+    [[ -n ${TMUX:-} ]] || exit 0
+    for d in $state/*(N/); do
+      [[ -e $d/meta ]] && alive $d || continue
+      print -r -- "${d:t}  $(meta $d tool) $(meta $d mode)  turns $(count $d/turn)/$(count $d/expect)  ${${"$(<$d/task)"%%$'\n'*}[1,60]}"
+    done
+    exit 0 ;;
+  --close)
+    dir=$(child ${2:-}) || exit 1
+    alive $dir && tmux kill-pane -t "$(meta $dir pane)"
+    print -r -- "closed ${dir:t}"
+    exit 0 ;;
+  --wait|--to)
+    cmd=$1 dir=$(child ${2:-}) || exit 1
+    shift 2
+    if [[ ${1:-} == --timeout ]]; then
+      (( $# >= 2 )) || die "--timeout needs seconds"
+      timeout=$2
+      shift 2
+    fi
+    [[ $timeout == <1-> ]] || die "--timeout takes seconds"
+    if [[ $cmd == --to ]]; then
+      [[ $(meta $dir mode) == read || $mode == edit ]] ||
+        die "${dir:t} changes files: a follow-up to it is agent_ask_edit --to ${dir:t}, which asks first"
+      alive $dir && [[ ! -e $dir/exited ]] || die "${dir:t} isn't open any more"
+      mkdir $dir/lock 2> /dev/null || die "a follow-up to ${dir:t} is being sent already"
+      trap "rmdir ${(q)dir}/lock 2> /dev/null" EXIT
+      (( $(count $dir/turn) >= $(count $dir/expect) )) || die "${dir:t} is still working: agent_ask --wait ${dir:t}"
+      # pasted into a dialog, the text would be keys: one letter answers a permission prompt
+      [[ $(tmux display -p -t "$(meta $dir pane)" '#{@agent}' 2> /dev/null) != waiting ]] ||
+        die "${dir:t} waits for an answer in its window ask-${dir:t}; answer it there first"
+      text=$(read_prompt "$@") || exit 1
+      # no control characters but newline and tab: an escape would end the bracketed paste early and the rest
+      # would arrive as keys. The lead line keeps it from starting a command of the tool's own (/…, !…).
+      text="Follow-up from the agent that asked you:"$'\n\n'${text//[$'\x01'-$'\x08'$'\x0b'-$'\x1f'$'\x7f']/}
+      # pasted (bracketed), never typed: typed text sets off the tools' own keys ($ opens Codex's skill list)
+      pane=$(meta $dir pane)
+      print $(( $(count $dir/turn) + 1 )) > $dir/expect
+      print -rn -- $text | tmux load-buffer -b agent-ask-${dir:t} - &&
+        tmux paste-buffer -p -d -b agent-ask-${dir:t} -t $pane || die "couldn't paste into $pane"
+      sleep 0.5
+      tmux send-keys -t $pane Enter
+      rmdir $dir/lock
+    fi
+    wait_answer $dir ;;
+esac
+
+# --- a new child
+tool= model= id=
+while [[ ${1:-} == --* && $1 != -- ]]; do
+  (( $# >= 2 )) || die "$1 needs a value"
+  case $1 in
+    --tool) tool=$2 ;;
+    --model) model=$2 ;;
+    --name) id=$2 ;;
+    --timeout) timeout=$2 ;;
+    --edit) die "a child that changes files is agent_ask_edit, not --edit" ;;
+    *) die "unknown option $1 (the tool's own flags aren't passed on)" ;;
+  esac
+  shift 2
+done
+[[ ${1:-} == -- ]] && shift
+
+[[ -z ${AGENT_ASK_DEPTH:-} ]] || die "this agent was started by agent_ask and can't ask further"
+[[ -n ${TMUX:-} ]] || die "needs tmux: the other agent runs in a tmux window"
+[[ -n $tool ]] || die "--tool <tool> is missing; known: ${(j:, :)${(f)"$(_agent_tools)"}}"
+(( $+functions[_agent_${tool}_ask] )) || die "unknown agent tool $tool; known: ${(j:, :)${(f)"$(_agent_tools)"}}"
+[[ -z $model || $model == [A-Za-z0-9][A-Za-z0-9._:-]# ]] || die "bad model name '$model'"
+[[ -z $id || $id == [a-z0-9][a-z0-9-](#c0,30) ]] || die "--name: lowercase letters, digits and -, at most 31"
+[[ $timeout == <1-> ]] || die "--timeout takes seconds"
+text=$(read_prompt "$@") || exit 1
+
+target=()
+[[ -n ${TMUX_PANE:-} ]] && target=(-t $TMUX_PANE)
+session=$(tmux display -p $target '#{session_id}' 2> /dev/null) || die "can't find this tmux session"
+open=${#${(M)${(f)"$(tmux list-windows -t $session -F '#{window_name}')"}:#ask-*}}
+(( open < max_open )) || die "$open children are open in this session (at most $max_open): agent_ask --close <id>"
+
+mkdir -p $state || die "can't make $state"
+if [[ -z $id ]]; then
+  id=$tool-$(date +%H%M%S) base=$tool-$(date +%H%M%S) n=2
+  while [[ -e $state/$id ]]; do id=$base-$n; (( n++ )); done
+fi
+dir=$state/$id
+[[ -e $dir ]] && die "$id is taken: another --name, or agent_ask --to $id for a follow-up"
+mkdir $dir || die "can't make $dir"
+
+# where it works, and what it's told about that; the rest of the prompt is the caller's
+if [[ $mode == edit ]]; then
+  main=$(_agent_main) || exit 1
+  _agent_worktree --new $main ask-$id > /dev/null || die "couldn't make the worktree ask-$id"
+  cwd=$main/$_agent_worktrees/ask-$id
+  intro="Another coding agent handed you this task through agent_ask. You work in your own git worktree, $cwd, \
+on the branch worktree-ask-$id. Make the change there and commit it; don't push. Your last message is passed \
+back to that agent as it is: end with what you changed and why, and anything left open."
+else
+  cwd=$PWD
+  intro="Another coding agent asked you this through agent_ask. Don't change any file: answer only (you're \
+read-only here). Your last message is passed back to that agent as it is, so end with the complete answer, \
+not a pointer to earlier messages."
+fi
+print -r -- "$intro"$'\n\n'"$text" > $dir/prompt
+print -r -- $text > $dir/task
+
+typeset -a reply
+_agent_${tool}_ask $mode ${model:-}
+(( $reply[(I){prompt}] )) || die "_agent_${tool}_ask gave no {prompt} word"
+# every word quoted, but {prompt}: the window's shell reads the prompt from its file, so it's never re-parsed
+cmdline=${(j: :)${${(qq)reply}/#\'\{prompt\}\'/\"\$(<\"\$AGENT_ASK_DIR/prompt\")\"}}
+# interactive, so the tool's wrapper (zsh/functions/<t>.zsh) is there; the exit code marks that it's gone, then
+# the window stays a shell
+inner="$cmdline; print -r -- \$? > \"\$AGENT_ASK_DIR/exited\"; exec zsh -i"
+
+print 1 > $dir/expect
+# -c is read as a tmux format, where # starts one: ## is a plain #
+pane=$(tmux new-window -d -P -F '#{pane_id}' -t "$session:" -n ask-$id -c "${cwd//\#/##}" \
+  -e AGENT_ASK_DIR=$dir -e AGENT_ASK_DEPTH=1 "zsh -ic ${(qq)inner}") || die "couldn't open a tmux window"
+tmux set -p -t $pane @agent-ask $id
+print -rl -- tool=$tool model=$model mode=$mode pane=$pane cwd=$cwd > $dir/meta
+print -ru2 -- "agent_ask: $id started ($tool, $mode) in tmux window ask-$id"
+wait_answer $dir

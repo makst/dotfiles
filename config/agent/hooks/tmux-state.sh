@@ -61,6 +61,8 @@ if [[ $state == off ]]; then
   tmux set -pu -t "$TMUX_PANE" @agent 2> /dev/null
   exit 0
 fi
+# an agent that agent_ask started (AGENT_ASK_DIR) hands its answer back (answer.sh): its done is nothing to see
+[[ $state == done && -n ${AGENT_ASK_DIR:-} ]] && state=idle
 if [[ $state == done ]] \
   && [[ $(tmux display -p -t "$TMUX_PANE" '#{&&:#{window_active},#{session_attached}}' 2> /dev/null) == 1 ]]; then
   state=idle

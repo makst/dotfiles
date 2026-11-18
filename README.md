@@ -24,7 +24,7 @@ git status in nvim, `cmd+j` shows every session.
 | Fuzzy finding | fzf, fzf-tab, fd, bat, eza | [fzf](docs/fzf.md) |
 | Editor | Neovim (lazy.nvim, LSP, treesitter, fzf-lua) | [nvim](docs/nvim.md) |
 | Version control | git, delta, difftastic, fugitive (in nvim), gh, Secretive (SSH keys) | [git](docs/git.md) |
-| AI agents | any coding CLI in its own tmux window and git worktree, Claude Code by default | [agent](docs/agent.md) |
+| AI agents | any coding CLI in its own tmux window and git worktree, Claude Code by default; one agent can ask another (`agent_ask`) | [agent](docs/agent.md) |
 | Claude Code | the default agent tool: settings, hooks, status line, skills | [claude](docs/claude.md) |
 | Codex CLI | a second agent tool, `agent --tool codex`: hooks, skills and instructions shared with Claude Code | [codex](docs/codex.md) |
 | iOS and Android apps | nvim (sourcekit-lsp, xcodebuild.nvim; kotlin-lsp, Gradle) next to Xcode and Android Studio | [mobile](docs/mobile.md) |
@@ -110,7 +110,7 @@ Repository layout
 Brewfile                  every package and app, commented by purpose
 prepare-zsh-install.sh    first-run bootstrap (bash, before zsh exists)
 .zshrc                    sources zsh/*; everything else is linked from config/
-zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dotfiles: functions/setup.zsh)
+zsh/                      shell config, aliases, functions/<tool>.zsh (setup_dotfiles: functions/setup.zsh), bin/ (agent_ask)
 config/atuin/             shell history search
 config/btop/              btop: vim keys, the terminal's colours
 config/readline/          vi mode in REPLs (inputrc for GNU readline, editrc for libedit)
@@ -127,7 +127,7 @@ config/vscode/            VS Code, the debugger: settings (with nvim's keys) and
 config/ideavim/           nvim's keys in Android Studio (IdeaVim)
 config/agent/             shared by every agent tool: hooks, skills, global instructions (AGENTS.md)
 config/claude/            Claude Code: settings, global CLAUDE.md, status line
-config/codex/             Codex CLI: hooks.json (the scripts are in config/agent)
+config/codex/             Codex CLI: hooks.json and command rules (the scripts are in config/agent)
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
 docs/                     this documentation; tapes/ and img/ are the GIFs in it
 .githooks/                reload the live setup after a pull, rebase or branch switch

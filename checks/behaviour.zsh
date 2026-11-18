@@ -693,6 +693,115 @@ exec $real -L $sock \"\$@\"" > $t/stubs/tmux
   }
 }
 
+# agent_ask (zsh/bin/agent_ask) end to end, in a throwaway repo that has agent.zsh, agent_ask and stub tools
+# (echo answers every prompt "echo <n>: <its last line>", a pasted one once its lines stop coming, quit exits
+# with 3, slow never answers), inside a pane of a private tmux server, since agent_ask needs $TMUX and
+# $TMUX_PANE: a script runs the cases there and leaves their outputs and exit codes in files, which this reads.
+# The tools are zsh -fc stand-ins that write $AGENT_ASK_DIR/answer.<n> and turn the way
+# config/agent/hooks/answer.sh does.
+run_agent_ask() {
+  (( $+commands[tmux] )) || { print "tmux isn't installed"; return 2 }
+  local t=$tmp/ask sock=check-ask-$$ i
+  local R=$t/repo O=$t/out
+  mkdir -p $R/zsh/{functions,bin} $O $t/home $t/state
+  : > $t/home/.zshrc  # an empty one: zsh -i in the windows would offer its new-user setup
+  cp zsh/functions/agent.zsh $R/zsh/functions/
+  cp zsh/bin/agent_ask $R/zsh/bin/
+  cat > $R/zsh/functions/echo.zsh <<'STUB'
+function _agent_echo_start() { reply=(true) }
+function _agent_echo_ask() { reply=(zsh -fc 'n=0 p=$1; while :; do (( n++ )); l=(${(f)p}); print -r -- "echo $n: $l[-1]" > $AGENT_ASK_DIR/answer.$n; print $n > $AGENT_ASK_DIR/turn; read -r p || exit; while read -r -t 1 x; do p+=$'"'"'\n'"'"'$x; done; done' _ '{prompt}') }
+function _agent_quit_start() { reply=(true) }
+function _agent_quit_ask() { reply=(zsh -fc 'print "it broke"; exit 3' _ '{prompt}') }
+function _agent_slow_start() { reply=(true) }
+function _agent_slow_ask() { reply=(zsh -fc 'sleep 30' _ '{prompt}') }
+STUB
+  cat > $t/cases.zsh <<'CASES'
+# the cases, run in a pane: each `run <name> <command…>` leaves $O/<name>.out and $O/<name>.rc
+A=$R/zsh/bin/agent_ask
+run() { local n=$1; shift; "$@" > $O/$n.out 2>&1 < /dev/null; print $? > $O/$n.rc }
+run ask $A --tool echo --name e1 --timeout 20 "hello"$'\n'"the last line"
+run to $A --to e1 --timeout 20 "second"
+run list $A --list
+run badmodel $A --tool echo --model 'x;rm' hi
+run badtool $A --tool nope hi
+run badopt $A --dangerously-x --tool echo hi
+run depth env AGENT_ASK_DEPTH=1 $A --tool echo hi
+run editflag $A --edit --tool echo hi
+run keys $A --to e1 --timeout 20 $'x\x1b[Zy'
+run quit $A --tool quit --name q1 --timeout 20 hi
+run quitclose $A --close q1
+run slow $A --tool slow --name s1 --timeout 2 hi
+run slowclose $A --close s1
+for n in e2 e3 e4; do run open$n $A --tool echo --name $n --timeout 20 hi; done
+run fifth $A --tool echo --name e5 --timeout 20 hi
+tmux list-windows -F '#{window_name}' > $O/windows.before
+run close $A --close e1
+tmux list-windows -F '#{window_name}' > $O/windows.after
+touch $O/done
+CASES
+  p() { tmux -L $sock "$@" }
+  {
+    # the cases are the session's command, so the pane has $TMUX and $TMUX_PANE; the server's HOME and
+    # XDG_STATE_HOME are the throwaway ones, which the windows agent_ask opens inherit
+    HOME=$t/home XDG_STATE_HOME=$t/state p -f /dev/null new-session -d -s main -x 200 -y 50 \
+      "R=$R O=$O zsh -f $t/cases.zsh" 2> $t/err || {
+      [[ -n $SANDBOX_RUNTIME ]] && { print "tmux can't make its socket in Claude Code's sandbox"; return 2 }
+      print -r -- "couldn't start a tmux server: $(<$t/err)"
+      return 1
+    }
+    for i in {1..120}; do
+      [[ -e $O/done ]] && break
+      sleep 0.5
+    done
+    [[ -e $O/done ]] || { print "the cases didn't finish in 60 s"; return 1 }
+
+    local out
+    rc() { print -r -- $(<$O/$1.rc) }
+    out() { print -r -- "$(<$O/$1.out)" }
+    [[ $(rc ask) == 0 && $(out ask) == *"echo 1: the last line"* ]] ||
+      print -r -- "ask: exit $(rc ask), '$(out ask)'"
+    [[ $(rc to) == 0 && $(out to) == *"echo 2: second"* ]] || print -r -- "--to: exit $(rc to), '$(out to)'"
+    [[ $(out list) == e1* ]] || print -r -- "--list doesn't show e1: '$(out list)'"
+    [[ $(rc badmodel) == 1 && $(out badmodel) == *"bad model"* ]] || print -r -- "--model 'x;rm' wasn't refused"
+    [[ $(rc badtool) == 1 && $(out badtool) == *"unknown agent tool"* ]] || print -r -- "--tool nope wasn't refused"
+    [[ $(rc badopt) == 1 && $(out badopt) == *"unknown option"* ]] || print -r -- "an unknown option wasn't refused"
+    [[ $(rc depth) == 1 && $(out depth) == *"can't ask further"* ]] || print -r -- "AGENT_ASK_DEPTH=1 wasn't refused"
+    [[ $(rc editflag) == 1 && $(out editflag) == *agent_ask_edit* ]] || print -r -- "--edit wasn't refused for agent_ask_edit"
+    [[ $(rc keys) == 0 && $(out keys) == *"echo 3: x[Zy"* ]] ||
+      print -r -- "a follow-up's escape wasn't taken out: exit $(rc keys), '$(out keys)'"
+    [[ $(rc quit) == 1 && $(out quit) == *"it broke"* ]] ||
+      print -r -- "a tool that exits: exit $(rc quit), '$(out quit)' (should be 1 with the end of its window)"
+    [[ $(rc slow) == 75 ]] || print -r -- "--timeout 2 on a tool that doesn't answer: exit $(rc slow), not 75"
+    [[ $(rc opene4) == 0 && $(rc fifth) == 1 && $(out fifth) == *"at most 4"* ]] ||
+      print -r -- "a 5th child: exit $(rc fifth), '$(out fifth)' (open e4: $(rc opene4))"
+    [[ -e $t/state/agent-ask/e5 ]] && print "the refused 5th child left a state directory"
+    [[ $(<$O/windows.before) == *ask-e1* ]] || print "ask-e1 has no window before --close"
+    [[ $(<$O/windows.after) == *ask-e1* ]] && print "--close left the window ask-e1"
+    return 0
+  } always {
+    tmux_drop $sock
+  }
+}
+
+# config/agent/hooks/answer.sh: with AGENT_ASK_DIR in agent_ask's state directory it writes the Stop message of
+# each turn to answer.<n> and n to turn; outside that directory, or without the variable, it writes nothing
+run_agent_answer() {
+  local t=$tmp/answer d got
+  d=$t/state/agent-ask/c1
+  mkdir -p $d $t/other/c1
+  local hook=$PWD/config/agent/hooks/answer.sh
+  print -r -- '{"last_assistant_message":"hi"}' | XDG_STATE_HOME=$t/state AGENT_ASK_DIR=$d PATH=$minimal_path $hook
+  [[ $(<$d/answer.1 2> /dev/null) == hi && $(<$d/turn 2> /dev/null) == 1 ]] ||
+    print "answer.sh: the first turn wrote answer.1 '$(<$d/answer.1 2> /dev/null)', turn '$(<$d/turn 2> /dev/null)'"
+  print -r -- '{"last_assistant_message":"again"}' | XDG_STATE_HOME=$t/state AGENT_ASK_DIR=$d PATH=$minimal_path $hook
+  [[ $(<$d/answer.2 2> /dev/null) == again && $(<$d/turn 2> /dev/null) == 2 ]] ||
+    print "answer.sh: the second turn wrote answer.2 '$(<$d/answer.2 2> /dev/null)', turn '$(<$d/turn 2> /dev/null)'"
+  print -r -- '{"last_assistant_message":"no"}' | XDG_STATE_HOME=$t/state AGENT_ASK_DIR=$t/other/c1 PATH=$minimal_path $hook
+  [[ -n $(print $t/other/c1/*(N)) ]] && print "answer.sh wrote into a directory outside the state directory"
+  print -r -- '{"last_assistant_message":"no"}' | XDG_STATE_HOME=$t/state PATH=$minimal_path $hook
+  [[ $(<$d/turn) == 2 ]] || print "answer.sh wrote without AGENT_ASK_DIR"
+}
+
 # each early run's problems, as a check: the promise is the label below
 check_agent_done() { early_result agent_done "7 cases"; }
 check_agent_resume() { early_result agent_resume "5 cases"; }
@@ -701,6 +810,8 @@ check_agent_start() { early_result agent_start "3 cases"; }
 check_agent_codex() { early_result agent_codex "2 cases"; }
 check_github_watch() { early_result github_watch "4 runs and the inbox"; }
 check_agent_state() { early_result agent_state "hook, list, next-agent"; }
+check_agent_ask() { early_result agent_ask "ask, follow-up, refusals, exits, limit, close"; }
+check_agent_answer_hook() { early_result agent_answer "2 turns, 2 refusals"; }
 
 agent_helpers
 early agent_done run_agent_done
@@ -710,6 +821,8 @@ early agent_start run_agent_start
 early agent_codex run_agent_codex
 early github_watch run_github_watch
 early agent_state run_agent_state
+early agent_ask run_agent_ask
+early agent_answer run_agent_answer
 
 group "Behaviour: the scripts that run on their own do what they should"
 check "zsh starts without errors" check_zsh_start
@@ -727,3 +840,5 @@ check "agent starts the chosen tool in a new worktree" check_agent_start
 check "Codex's conversations are listed, resumed and told from reviews" check_agent_codex
 check "the GitHub watcher notices what changed and nothing else" check_github_watch
 check "the agents' state and the order the lists show it in" check_agent_state
+check "agent_ask hands a task to another tool and brings the answer back" check_agent_ask
+check "answer.sh writes a child's answers only into agent_ask's state" check_agent_answer_hook

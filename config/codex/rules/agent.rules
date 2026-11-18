@@ -1,0 +1,23 @@
+# Codex's command rules for the agent layer, linked as ~/.codex/rules/agent.rules by setup_codex (docs/codex.md,
+# "Config"); Codex reads every *.rules file there and its own approvals go into default.rules. The strictest rule
+# that matches wins.
+#
+# agent_ask (zsh/bin/agent_ask, docs/agent.md, "Asking another agent") starts another agent tool in a tmux
+# window, so it has to reach the tmux server, outside Codex's sandbox. Asking runs without a prompt: the child
+# is read-only and runs under its own sandbox and approvals. agent_ask_edit, the same script under a name of its
+# own, asks you first: that child changes files, in a worktree of its own.
+
+prefix_rule(
+    pattern = ["agent_ask"],
+    decision = "allow",
+    justification = "hands a read-only question to another agent tool in a tmux window",
+    match = [["agent_ask", "--tool", "claude", "what does x do?"], ["agent_ask", "--to", "claude-1", "and y?"]],
+    not_match = [["agent_asks"], ["agent"]],
+)
+
+prefix_rule(
+    pattern = ["agent_ask_edit"],
+    decision = "prompt",
+    justification = "another agent tool will change files, in a worktree of its own",
+    match = [["agent_ask_edit", "--tool", "claude", "fix x"], ["agent_ask_edit", "--to", "claude-1", "and y"]],
+)

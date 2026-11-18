@@ -8,7 +8,7 @@ is Codex's own parts: how it plugs in, its hooks and its settings.
 What it is
 ---
 - **A tool of the agent layer**: `zsh/functions/codex.zsh` has its adapter (`_agent_codex_start`, `_resume`,
-  `_review`, `_sessions`, `_preview`, `_hooks`), so `agent`, `agent_review` and `agent_resume` run and read
+  `_review`, `_sessions`, `_preview`, `_hooks`, `_ask`), so `agent`, `agent_review` and `agent_resume` run and read
   Codex without the layer knowing more about it. `git config agent.tool codex` makes it the default
   ([agent](agent.md#using-another-tool)).
 - **Shared with Claude Code**, from `config/agent`: the hook scripts (state marks, bell, notifications and the
@@ -48,12 +48,13 @@ Once per Mac
 ---
 1. `setup_brew`: installs the `codex` cask.
 2. `codex login`: your account, your choice; nothing of it is in the repo.
-3. `setup_codex`: links the hooks, `AGENTS.md` and the skills ([Config](#config)).
+3. `setup_codex`: links the hooks, `AGENTS.md` and the skills, and copies the command rules ([Config](#config)).
 4. `setup_codex_system`: links the settings as `/etc/codex/config.toml`; asks for your password, so it isn't part
    of `setup_dotfiles`. Until then the `codex` wrapper passes the same file with `-c`, so the settings hold, but
-   Codex runs without its shared background server; `check_mac` reports the missing link.
+   Codex runs without its shared background server (`-c` forces that); `check_mac` reports the missing link.
 5. In Codex, `/hooks`: trust the hooks. Codex runs hooks only once they're trusted; it asks again when
-   `config/codex/hooks.json` changes.
+   `config/codex/hooks.json` changes, as it did when `answer.sh` came in (without it, an `agent_ask` of Codex
+   gets no answer).
 6. `exec zsh`, and in tmux `source-file ~/.config/tmux/tmux.conf`, to load the `codex` wrapper and `@agent-pane`.
 
 Commands
@@ -68,7 +69,8 @@ Commands
 | `setup_codex_system` | links `/etc/codex/config.toml` to `config/codex/config.toml`, with `sudo` |
 | `/hooks` | in Codex: list the hooks and trust them |
 | `/vim` | in Codex: turn the prompt's vim mode on or off |
-| `$ship`, `$handoff` | in Codex: the shared skills, which Claude Code calls `/ship` and `/handoff` ([claude](claude.md#skills)) |
+| `agent_ask --tool codex <prompt>` | from Claude Code or your shell: Codex answers in a tmux window, read-only for the project's files (`-s read-only`) ([agent](agent.md#asking-another-agent)) |
+| `$ship`, `$handoff`, `$ask` | in Codex: the shared skills, which Claude Code calls `/ship`, `/handoff` and `/ask` ([claude](claude.md#skills)); `$ask` runs `agent_ask` |
 
 Config
 ---
@@ -83,9 +85,20 @@ Config
   | SessionStart, Interrupt | `tmux-state.sh idle` |
   | UserPromptSubmit, PostToolUse | `tmux-state.sh working` |
   | PermissionRequest | `tmux-state.sh waiting codex` (no approval watcher), `notify.sh Codex` |
-  | Stop | `bell.sh`, `tmux-state.sh done`, `notify.sh Codex` |
+  | Stop | `answer.sh` (first), `bell.sh`, `tmux-state.sh done`, `notify.sh Codex` |
   | SessionEnd | `tmux-state.sh off` |
 
+- **`config/codex/rules/agent.rules`** → `~/.codex/rules/agent.rules`, a **copy**, not a link: Codex's command
+  rules for the agent layer. Codex skips a rules file that is a symlink (Codex 0.170.0: with the link, `agent_ask`
+  asked for approval; with a copy it didn't). `setup_codex` and the `codex` wrapper copy it when it is missing or
+  differs (`_codex_rules`), so an edit in the repo reaches the next start of Codex, which reads rules when it
+  starts. Codex reads every `*.rules` file there and keeps the approvals you save in `default.rules`; the
+  strictest matching rule wins. `agent_ask` is allowed without a prompt, and `agent_ask_edit` prompts. They
+  start another tool in a tmux window, which has to reach the tmux server from outside Codex's sandbox, so
+  without a rule every ask would stop for approval. An allowed rule only skips the approval: to run outside
+  its sandbox Codex must also call `agent_ask` with the escalation option (sandbox_permissions
+  "require_escalated") and a justification (the `ask` skill says so); without it `agent_ask` fails with
+  "can't reach the tmux server".
 - **`config/agent/hooks/`** → `~/.codex/hooks`, and **`config/agent/AGENTS.md`** → `~/.codex/AGENTS.md`: the
   scripts the table runs, and the instructions every tool shares.
 - **`config/agent/skills/<name>/`** → `~/.agents/skills/<name>/`, where Codex reads user skills; the `codex`
@@ -102,10 +115,18 @@ trusted projects Codex adds to `config.toml` stay in `~/.codex` and out of the r
 
 To look out for
 ---
+- **Asking Codex works (read-only, tried live)**: it needs `/hooks` to have trusted the changed
+  `config/codex/hooks.json` first (the Stop hook `answer.sh` returns the answer). `agent_ask` starts it with
+  `-s read-only`, and a command that needs more asks you in its window `ask-<id>`.
+- **A Codex child of `agent_ask_edit` isn't verified live**: in its worktree the `codex` wrapper adds the main
+  checkout's `.git` with `--add-dir`, so commits should work; nobody has tried it end to end.
+- **Codex asking Claude Code works too (read-only, tried live)**, with the escalated call above.
 - **In a tmux pane `codex` runs with `--no-daemon`**: Codex's shared background server, started once and shared
-  by every Codex, runs the hooks with its own environment, so they missed the pane's `TMUX_PANE`: the marks
-  and notifications didn't work. The cost: each Codex in tmux starts its own server. The
-  `/etc/codex/config.toml` link still holds the settings.
+  by every Codex, runs the hooks with its own environment, so they missed the pane's `TMUX_PANE` and
+  `AGENT_ASK_DIR`: the marks and notifications didn't work, and `agent_ask` never got Codex's answer. The cost:
+  each Codex in tmux starts its own server. The `/etc/codex/config.toml` link still holds the settings.
+- **`~/.codex/rules/default.rules` is Codex's own**: approvals you save go there; `agent.rules` is the repo's and
+  is copied beside it, so `~/.codex/rules` stays a real directory.
 - **No prompt watcher**: Claude Code's hook watches its screen to see whether you approved a permission, Codex's
   doesn't, so the mark stays *waiting* until the tool finishes or your next prompt.
 - **No format hook**: `format.sh` reads Claude Code's Edit and Write events, so Codex's edits aren't formatted.
@@ -127,7 +148,8 @@ To look out for
   change to the list, start `codex` and look at `f2`.
 - **`codex -c …` or `codex -p …`** runs without the shared background server ("Running without the shared
   background server" under `f2`): Codex runs its server inside the process then. It works, but a setting meant
-  for every start belongs in `config/codex/config.toml`.
+  for every start belongs in `config/codex/config.toml`. In tmux the wrapper does the same on purpose
+  (`--no-daemon`, above).
 - **`/statusline` and other settings saved in Codex** go into `~/.codex/config.toml`, which outranks this
   setup's file: to change the setup for every Mac, edit `config/codex/config.toml` and remove the key from
   `~/.codex/config.toml`. `/statusline` saves `status_line = […]` and `status_line_use_colors = true` under
@@ -137,7 +159,8 @@ Decisions
 ---
 - **The settings are linked as `/etc/codex/config.toml`, not `~/.codex/config.toml` or `-c`**: Codex writes
   each project's trust, a path of this Mac, into `~/.codex/config.toml`, so a linked file there would collect
-  machine paths in the repo; and Codex started with `-c` or `-p` runs without its shared background server.
+  machine paths in the repo; and Codex started with `-c` or `-p` runs without its shared background server
+  (a Codex in tmux does anyway, for its hooks' environment).
   The system layer is the one file left, at the cost of a `sudo` step. This is the "Exceptions say why" entry
   for a tool whose config isn't linked from its home.
 - **Codex's built-in status line items, not a second bar in tmux**: a tmux line fed by the rollout file
@@ -151,3 +174,9 @@ Decisions
   job"); only the wiring differs.
 - **`agent_review` runs `codex review`, which doesn't edit**: it prints the review and exits, so the reviewer
   needs no tool taken away, as Claude Code's does.
+- **Command rules in a file of their own, `rules/agent.rules`**: Codex writes the approvals you save into
+  `rules/default.rules`, so the repo's rules go beside it and a saved approval never ends up in the repo.
+- **The rules file is copied, not linked** (the "Exceptions say why" entry for a file Codex reads): Codex skips
+  a rules file that is a symlink, so `_codex_rules` keeps a copy current instead.
+- **`answer.sh` shared with Claude Code**: Codex's Stop hook input has `last_assistant_message` too, so
+  `agent_ask` reads a Codex child's answer the same way as a Claude Code one ([agent](agent.md#decisions)).

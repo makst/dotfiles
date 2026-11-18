@@ -6,6 +6,11 @@
     ]
   },
   "sandbox": {
+    "filesystem": {
+      "denyWrite": [
+        "./zsh"
+      ]
+    },
     "excludedCommands": [
       "check_dotfiles",
       "check_dotfiles *",

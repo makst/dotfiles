@@ -92,6 +92,7 @@ Commands
 ---
 | Command | Does |
 |---|---|
+| `claude [--read-only] [args]` | Claude Code with this setup's settings ([This machine](#this-machine)); `--read-only` (first) starts it unable to change the project's files: the Edit, Write and NotebookEdit tools denied, the checkout and its `.git` denied for writes in the sandbox, no command allowed to run outside the sandbox (`allowUnsandboxedCommands` off), `git * --output*` denied (an allowed `git diff --output=<file>` would write anywhere), the default permission mode instead of auto. MCP tools and the network aren't covered. It is how `agent_ask` starts a read-only child ([agent](agent.md#asking-another-agent)); plan mode isn't used because it stalls on a task-like prompt |
 | `claude_tokens [days]` | token usage and cost ([Checking token usage](#checking-token-usage)) |
 | `/hooks` | list the hooks |
 | `/sandbox` | the sandbox settings in effect |
@@ -106,6 +107,7 @@ is added as in [agent](agent.md#adding-a-skill):
 |---|---|
 | `/ship [pr] [about]` | finishes the work in this checkout: moves to a branch if on the default one, checks the diff against the project's `CLAUDE.md` (docs, lock files, tests that should come with it), runs the project's checks, commits in the project's style. With `pr` it also pushes and opens a pull request. Only you can start it; Claude doesn't run it by itself |
 | `/handoff [focus]` | gets a conversation ready for `/clear`: saves what only it knows (open items, the next step, ideas not taken, options you declined, gotchas, the state of the branch) into Claude's memory, updating the file that already covers a topic, lists each item with the file it went into so you can check it, and ends with one line to paste after `/clear` to carry on. It writes memory only, never commits. Only you can start it |
+| `/ask` | hands a question or task to another agent tool (Codex, or any tool of the layer) through `agent_ask` and brings back its answer ([agent](agent.md#asking-another-agent)); also `$ask` in Codex |
 
 Config
 ---
@@ -135,9 +137,15 @@ they show up in `git diff`.
 - **Allowed without asking**: read-only `git` (`status`, `diff`, `log`, `show`, `blame`, `worktree list`),
   read-only `gh pr` / `gh issue` / `gh run`. Claude Code already lets plain reads like `ls`, `cat` or `rg`
   through by itself.
+- **Asking another agent**: `agent_ask` is allowed without asking, and `agent_ask_edit` (a child that changes
+  files, in a worktree of its own; a follow-up to it too) asks first ([agent](agent.md#asking-another-agent)).
+  `/ask` is the skill that calls it. A read-only child is read-only for the project's files: MCP tools and
+  the network are outside that.
 - **Never allowed**: force pushes (`--force-with-lease` still asks) and reading private key files
   `~/.ssh/id_*`. In this repo also `zsh/.private` and `config/nvim/lua/user/hidden/`, which hold secrets
-  (`.claude/settings.json`, this repo's own project settings).
+  (`.claude/settings.json`, this repo's own project settings, which also denies sandboxed writes to `./zsh`:
+  `agent_ask` runs outside the sandbox and sources `zsh/functions`, so a sandboxed Claude must not plant code
+  there; it edits those files with its Edit tool).
 - **Google Cloud is read-only**: `gcloud`, `bq` and `gsutil` commands that create, change or delete
   resources or access, and `gcloud config set`, are denied (see [gcloud](gcloud.md#what-claude-code-can-do)).
 - **AWS is read-only**: `aws` commands that create, change or delete resources or access, `aws configure
@@ -155,7 +163,9 @@ under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandbox
 
 - **write** in the project, the temp directory, `~/.cache` and `~/.local/state` (shell and nvim state). Not
   even there: Claude Code's own settings, hooks (`config/agent/hooks`, which `~/.claude/hooks` links to) and
-  `CLAUDE.md`, so Claude edits those with its Edit tool, which asks.
+  `CLAUDE.md`, so Claude edits those with its Edit tool, which asks. Also not `~/.local/state/agent-ask`,
+  the state of `agent_ask` children, so a child can't tamper with it. In this repo (`.claude/settings.json`)
+  also not `./zsh`, which `agent_ask` sources outside the sandbox.
 - **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, AWS credentials and caches, this
   repo's secrets).
 - **reach** GitHub, Homebrew's API, npm and PyPI without asking, any port on localhost (dev servers), and
@@ -169,6 +179,7 @@ under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandbox
 | `aws` | needs the SSO token in `~/.aws/sso/cache`, which the sandbox can't read ([aws](aws.md#to-look-out-for)) |
 | `brew` | writes to `/opt/homebrew` |
 | `tmux` | needs its socket: `tmux -L probe` and the hooks' window state |
+| `agent_ask`, `agent_ask_edit` | start another agent in a tmux window through the tmux server's socket; the child runs under its own sandbox ([agent](agent.md#asking-another-agent)) |
 | `check_dotfiles`, `check_mac`, `checks/*` | in this repo only (`.claude/settings.json`): the tmux checks need a socket |
 
 These still go through the permission rules. A command the sandbox stops fails with "Operation not
@@ -213,6 +224,7 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 | PreToolUse on Bash | `no-recursive-rm.sh` |
 | PostToolUse on Edit, Write | `format.sh` |
 | SessionStart, UserPromptSubmit, PostToolUse, PermissionRequest, Notification, Stop, SessionEnd | `tmux-state.sh working`, `waiting`, `done`, `idle` or `off`, as the event says |
+| Stop (listed first; Claude Code runs an event's hooks in parallel, so the order doesn't matter) | `answer.sh`: hands the answer back to the agent that asked, when `agent_ask` started this session; nothing otherwise |
 | PermissionRequest, Notification (a question), Stop | `bell.sh` (the bell: Notification and Stop), `notify.sh` |
 
 The scripts need zsh and jq; a formatter, tmux or terminal-notifier that isn't there is skipped.

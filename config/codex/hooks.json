@@ -8,6 +8,7 @@
       {"type": "command", "command": "~/.codex/hooks/notify.sh Codex"}]}],
     "PostToolUse": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh working"}]}],
     "Stop": [{"hooks": [
+      {"type": "command", "command": "~/.codex/hooks/answer.sh"},
       {"type": "command", "command": "~/.codex/hooks/bell.sh"},
       {"type": "command", "command": "~/.codex/hooks/tmux-state.sh done"},
       {"type": "command", "command": "~/.codex/hooks/notify.sh Codex"}]}],

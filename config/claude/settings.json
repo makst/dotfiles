@@ -25,7 +25,11 @@
       "Bash(gh issue view*)",
       "Bash(gh issue list*)",
       "Bash(gh run view*)",
-      "Bash(gh run list*)"
+      "Bash(gh run list*)",
+      "Bash(agent_ask *)"
+    ],
+    "ask": [
+      "Bash(agent_ask_edit *)"
     ],
     "deny": [
       "Bash(git push --force *)",
@@ -212,6 +216,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "~/.claude/hooks/answer.sh"
+          },
+          {
+            "type": "command",
             "command": "~/.claude/hooks/bell.sh"
           },
           {
@@ -299,6 +307,9 @@
       "allowWrite": [
         "~/.cache",
         "~/.local/state"
+      ],
+      "denyWrite": [
+        "~/.local/state/agent-ask"
       ]
     },
     "excludedCommands": [
@@ -314,7 +325,9 @@
       "bq *",
       "gsutil *",
       "kubectl *",
-      "aws *"
+      "aws *",
+      "agent_ask *",
+      "agent_ask_edit *"
     ]
   },
   "modelSettings": {

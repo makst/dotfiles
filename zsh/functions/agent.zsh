@@ -5,7 +5,7 @@
 # comments (config/nvim/lua/user/codetour/review.lua) and the tmux marks through each tool's hooks.
 #
 # The tool is `--tool <t>`, else `git config agent.tool`, else claude. A tool <t> is a set of functions in
-# zsh/functions/<t>.zsh; the layer finds the tools as the functions _agent_*_start. All six are required (the
+# zsh/functions/<t>.zsh; the layer finds the tools as the functions _agent_*_start. All seven are required (the
 # consistency check "every agent tool has the whole interface"):
 #   _agent_<t>_start [args…]             sets `reply` to the command line that starts the tool interactively in
 #                                        the current directory; args are a prompt and/or the tool's own flags
@@ -20,6 +20,12 @@
 #                                        transcript's prompts (bold, "❯ ") and replies ("⏺ ") for the
 #                                        resume preview
 #   _agent_<t>_hooks                     prints the repo path of the file that wires the tool's hooks
+#   _agent_<t>_ask read|edit [model]     sets `reply` to the command line that starts the tool interactively for
+#                                        agent_ask (zsh/bin/agent_ask), with the word {prompt} where the prompt
+#                                        goes: read can't change files, edit works in the worktree agent_ask made.
+#                                        Its answer comes back through answer.sh, which the tool's hooks file
+#                                        runs at Stop (a tool without hooks writes $AGENT_ASK_DIR/answer.<n> and
+#                                        turn itself)
 
 # The directory every tool's worktrees live in, relative to the main checkout. Kept from `claude -w` so existing
 # agents and their conversations are still found; the reason is in docs/agent.md, Decisions.
@@ -459,6 +465,17 @@ if (( $+functions[compdef] && $+_comps )); then
   compdef _agent_resume agent_resume
   compdef _agent_done agent_done agent_land agent_review
 fi
+
+# setup_agent: links zsh/bin/agent_ask as ~/.local/bin/agent_ask and agent_ask_edit (the same script, which
+# reads its name), on PATH, so every agent tool's shell can run them: they don't load .zshrc, so they have none
+# of these functions. A real file in their place goes to the Trash.
+function setup_agent() {
+  mkdir -p ~/.local/bin
+  local name
+  for name in agent_ask agent_ask_edit; do
+    keep_real ~/.local/bin/$name && ln -sfn "$real_script_dir/zsh/bin/agent_ask" ~/.local/bin/$name || return
+  done
+}
 
 # link_agent_skills <dir>: links each skill in config/agent/skills into <dir>, where a tool looks for skills
 # (~/.claude/skills for Claude Code), and removes the links of skills the repo no longer has, also those that

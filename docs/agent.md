@@ -38,7 +38,7 @@ What it is
 
 `zsh/functions/agent.zsh` owns the agent job and runs whichever tool `git config agent.tool` names (`--tool
 <name>` on one command), `claude` when none is set. A tool is a set of functions in `zsh/functions/<tool>.zsh`;
-the layer finds the tools as the functions `_agent_<tool>_start`. Each defines all six:
+the layer finds the tools as the functions `_agent_<tool>_start`. Each defines all seven:
 
 | Function | Does |
 |---|---|
@@ -48,8 +48,11 @@ the layer finds the tools as the functions `_agent_<tool>_start`. Each defines a
 | `_agent_<t>_sessions <main>` | prints the tool's conversations that ran in the repo's agent worktrees, newest first: `transcript<TAB>name<TAB>YYYY-MM-DD HH:MM<TAB>title`; reviews left out |
 | `_agent_<t>_preview` | sets `reply=(<glob of its transcripts> <jq filter>)`: the filter prints a transcript's prompts and replies for the `agent_resume` preview |
 | `_agent_<t>_hooks` | prints the repo path of the file that wires the tool's hooks |
+| `_agent_<t>_ask read\|edit [model]` | sets `reply` to the command line that starts the tool for `agent_ask` ([Asking another agent](#asking-another-agent)), with the word `{prompt}` where the prompt goes; `read` must start it unable to change the project's files. Every word is quoted and `{prompt}` must be a whole word |
 
-A check fails when a tool has only part of it, or its hooks file doesn't run the `rm` guard. The tools:
+A tool's hooks file runs the `rm` guard, `tmux-state.sh` and `answer.sh` (on Stop, so the answer goes back to
+whoever asked); a tool without hooks writes the answer itself ([Adding a tool](#adding-a-tool)). A check fails
+when a tool has only part of the interface, or its hooks file lacks the guard or `answer.sh`. The tools:
 
 | Tool | Adapter | Its page |
 |---|---|---|
@@ -121,8 +124,8 @@ git config --global --unset agent.tool                                 # back to
 The tool is `claude` unless `git config agent.tool <name>` says another: `--global` for every project, no flag
 for this clone, or per Mac in `~/.config/dotfiles/gitconfig`. `--tool <name>` on `agent`, `agent_ci` and
 `agent_review` names it for one command. `agent_resume` needs no flag: it lists every tool's conversations and
-resumes one with the tool that had it. The tools are in [One layer, any tool](#one-layer-any-tool); each has
-its once-per-Mac steps on its page.
+resumes one with the tool that had it. `agent_ask --tool <name>` takes the same names. The tools are in
+[One layer, any tool](#one-layer-any-tool); each has its once-per-Mac steps on its page.
 
 Starting an agent
 ---
@@ -200,6 +203,68 @@ which. The comments are sent once: after `M-p` they're gone from the code, and t
 paste buffer `review` (`C-a P`) in case the prompt was cleared. Outside tmux, or with no agent here, the
 message goes to the clipboard.
 
+
+Asking another agent
+---
+```sh
+agent_ask --tool codex "why does the login test fail on CI but not here?"
+agent_ask --tool claude --model haiku "list the places that read FOO_URL"
+agent_ask --to codex-101530 "and where is it set?"      # a follow-up to the same child
+agent_ask_edit --tool codex --name fix-x "make the retry in client.ts exponential, commit it"
+agent_ask --list                                          # the open children
+agent_ask --close codex-101530
+```
+
+`agent_ask` hands a task to another agent tool and prints its answer, the way a subagent works but across
+tools: Claude Code asks Codex, Codex asks Claude Code, either asks any tool of the layer. Agents call it from
+their shell (`/ask` in Claude Code, `$ask` in Codex: the shared skill `config/agent/skills/ask/`); you can run
+it too. It needs tmux.
+
+1. It opens a **window `ask-<id>`** in the caller's tmux session, in the background, and starts the tool there,
+   interactive, with the prompt. You can switch to the window to watch it, or answer a permission prompt; its
+   marks and notifications are those of any agent ([Noticing an agent that waits](#noticing-an-agent-that-waits)).
+2. When the child finishes its turn, the Stop hook `answer.sh` writes its last message to the child's state
+   directory, and `agent_ask` prints it with how to go on. Exit code 0 is an answer, 1 an error (the tool
+   exited without one: the end of its window is printed), 75 still working at `--timeout` (540 s by default):
+   `agent_ask --wait <id>` picks it up later.
+3. `--to <id> "…"` sends a follow-up to the same child, which still has what it read. `--close <id>` closes the
+   window when you're done; an answered child stays open until then.
+
+| | `agent_ask` (read-only) | `agent_ask_edit` |
+|---|---|---|
+| Works in | the caller's directory | its own worktree `ask-<id>` on a branch `worktree-ask-<id>`, as `agent` makes them |
+| Can change files | not the project's (see below) | yes, commits there, doesn't push |
+| Claude Code | `claude --read-only` ([claude](claude.md#commands)) | as set up |
+| Codex | `-s read-only` | its usual sandbox, in the worktree; the `codex` wrapper adds the main checkout's `.git` with `--add-dir` so commits work (not verified live yet) |
+| Asks you first | no | yes: both tools' permission rules ask for `agent_ask_edit` |
+| Follow-up | `agent_ask --to <id>` | `agent_ask_edit --to <id>` (`agent_ask --to` refuses an edit child) |
+| Afterwards | `agent_ask --close` | `agent_review ask-<id>`, `agent_land ask-<id>`, as for any agent |
+
+The rules it keeps:
+- **Two names, not a flag.** `agent_ask_edit` is the same script, linked under a second name by `setup_agent`.
+  Permission rules match a command's name reliably; a quoted `'--edit'` could slip past a rule on the
+  arguments. `--edit` is refused. A follow-up to an edit child is `agent_ask_edit --to <id>`, so it asks too.
+- **Read-only means the project's files.** The child can't change them, but MCP tools and the network aren't
+  cut off: it is not a sandbox against everything.
+- **No flags of the tool pass through.** `--tool` must be a tool of the layer, `--model` a plain model name,
+  and how the tool starts read-only is the adapter's `_agent_<t>_ask`: the caller can't ask for a looser
+  sandbox or approvals.
+- **Follow-ups are plain text.** They are pasted with the control characters removed (newline and tab stay),
+  after the lead line "Follow-up from the agent that asked you:". The text can't send keys (an escape would end
+  the bracketed paste early) or start a command of the tool's own (`/…`, `!…`).
+- **No nesting, 4 children**: a child can't ask further, and at most 4 children are open per tmux session.
+  Both limits are soft: the depth is an environment variable (`AGENT_ASK_DEPTH`), and the 4 are counted by window
+  name, so two callers at once can go one over.
+- **The child's sandbox is its own.** It is the tool, started by the tmux server, never run with its sandbox or
+  approvals off.
+
+State is one directory per child, `~/.local/state/agent-ask/<id>/` (mode 700): `prompt`, `task` (the
+caller's words, for `--list`), `meta`, `expect` (the turn the caller waits for: one more than `turn` when a prompt
+is sent), `turn` and `answer.<n>`, `exited`, and `lock/` while a follow-up is sent; the top comment of
+`zsh/bin/agent_ask` lists them. The child's pane is tagged `@agent-ask=<id>`, so a reused pane id isn't taken
+for it. The directories stay after `--close`, like a conversation. Every Claude Code session's sandbox denies
+writing `~/.local/state/agent-ask` ([claude](claude.md#sandbox)), so a child can't tamper with its state, and
+`answer.sh` refuses a symlinked state directory.
 
 Finishing an agent
 ---
@@ -285,17 +350,27 @@ Adding a skill
 
 Adding a tool
 ---
-1. Write `zsh/functions/<tool>.zsh` with the six functions of [One layer, any tool](#one-layer-any-tool),
+1. Write `zsh/functions/<tool>.zsh` with the seven functions of [One layer, any tool](#one-layer-any-tool),
    each with a usage comment, and a wrapper for the tool's settings and a `setup_<tool>` if it has config
    (`codex.zsh` is the shortest model; `setup_<tool>` goes into `setup_dotfiles` and [setup](setup.md)).
 2. Wire its hooks in a file in `config/<tool>/` that runs the scripts of `config/agent/hooks`, as
-   `config/codex/hooks.json` does: `no-recursive-rm.sh` before a shell command, and `tmux-state.sh` with
-   `idle`, `working`, `waiting`, `done` and `off`. `_agent_<tool>_hooks` prints that file.
+   `config/codex/hooks.json` does: `no-recursive-rm.sh` before a shell command, `tmux-state.sh` with
+   `idle`, `working`, `waiting`, `done` and `off`, and `answer.sh` on Stop (listed first; Claude Code runs an
+   event's hooks in parallel, so the order doesn't
+   matter). `_agent_<tool>_hooks` prints that file. A tool that has no hooks
+   (a plain CLI, an open model's) can't use `answer.sh`. `_agent_<tool>_ask` quotes each reply word, and
+   `{prompt}` must be a whole word, so no shell syntax can be put in the command line: the tool's command is a
+   small script that runs the tool and writes `$AGENT_ASK_DIR/answer.<n>` and then `<n>` to
+   `$AGENT_ASK_DIR/turn` itself, like the stub in `checks/behaviour.zsh` (`run_agent_ask`). Follow-ups assume a
+   TUI that accepts a bracketed paste.
 3. Add the tool's command name to the `@agent-pane` test in `config/tmux/tmux.conf`, one alternative per tool.
 4. Write `docs/<tool>.md` and add the tool to the table above, [README](../README.md) and
    [vim keys](vim-keys.md) if it has a full-screen interface.
+   `_agent_<tool>_ask` must start `read` so the tool can't change the project's files (Claude Code: its
+   read-only wrapper option; Codex: its read-only sandbox), and put `{prompt}` where the prompt goes;
+   `agent_ask` finds the tool by that function, nothing else to register.
 5. `checks/check_dotfiles`: it fails for a missing function or hooks file and a hooks file without the `rm`
-   guard, and warns for a missing mark or an `@agent-pane` that doesn't name the tool.
+   guard or `answer.sh`, and warns for a missing mark or an `@agent-pane` that doesn't name the tool.
 
 Keys
 ---
@@ -313,12 +388,17 @@ Commands
 | `agent_review [--tool <t>] <name> [args]` | a read-only reviewer beside the agent, running `/code-review` on its branch ([Reviewing an agent](#reviewing-an-agent)) |
 | `agent_land [--no-check] <name>` | rebase, check, merge into the default branch and finish the agent ([Finishing an agent](#finishing-an-agent)) |
 | `agent_ci [--tool <t>] <number>` | an agent that fixes pull request `<number>`'s failing checks ([Fixing a pull request's CI](#fixing-a-pull-requests-ci)) |
+| `agent_ask[_edit] --tool <t> [--model <m>] <prompt>` | another tool answers a question, or with `agent_ask_edit` does a task in its own worktree; also `--to <id>`, `--wait <id>`, `--list`, `--close <id>` ([Asking another agent](#asking-another-agent)) |
 | `agent_done [--force] [name]` | list the agents, or finish one ([Finishing an agent](#finishing-an-agent)) |
 | `agent_resume [name \| id]` | pick or resume an agent's conversation ([Going back to an agent](#going-back-to-an-agent)) |
 
 Config
 ---
 - **`zsh/functions/agent.zsh`**: the agent functions and the interface above; `_agent_tool` picks the tool.
+- **`zsh/bin/agent_ask`** → `~/.local/bin/agent_ask`, linked by `setup_agent` (part of `setup_dotfiles`): a script
+  on `PATH`, not a function, because the tools' shells don't load `.zshrc`. It sources `agent.zsh` and the tool
+  adapters from the repo for the interface. `setup_agent` also links it as `~/.local/bin/agent_ask_edit`: the
+  script takes its mode from the name it is called by.
 - **`config/tmux/tmux.conf`**, section "agents": the `@agent-pane` test (a pane the hooks marked, or one
   running an agent tool), the state marks and their counts in the status bar; `config/tmux/agents` and
   `next-agent` read them.
@@ -334,6 +414,7 @@ Config
   | `format.sh` | after the agent edits or writes a file: formats it with the language's formatter, if installed and the project uses it: prettier, stylua and ruff only where the project has their config, `shfmt` where it has an `.editorconfig`, `goimports`/`gofmt` always (Go has one style). It reads Claude Code's Edit/Write input, so it is wired there only |
   | `bell.sh` | the agent needs input or has finished: rings the bell in its tmux pane, so the window turns yellow and Ghostty bounces in the Dock; does nothing outside tmux |
   | `notify.sh [tool name]` | the agent asks for permission or a question, or has finished: a macOS notification titled with the tool's name (default Claude Code) unless you're looking at the agent's tmux window; clicking it jumps there ([Noticing an agent that waits](#noticing-an-agent-that-waits)); does nothing outside tmux or off macOS |
+  | `answer.sh` | on Stop: for a child started by `agent_ask` (it has `AGENT_ASK_DIR`), writes the turn's last message, the hook's `last_assistant_message`, to the child's state directory for `agent_ask` to print (each file written whole and moved into place); does nothing in any other session or for a state directory that is a symlink or outside `~/.local/state/agent-ask`. `bell.sh`, `notify.sh` and `tmux-state.sh` are quiet at Stop for such a child, so a child that has only answered doesn't ring the bell, notify or turn green: nobody is waiting for it but the agent that asked |
   | `tmux-state.sh <state>` | records the agent's state (working, waiting, done) in its tmux pane for the marks in [Noticing an agent that waits](#noticing-an-agent-that-waits); for Claude Code it also watches the screen to see whether you approved a permission prompt (other tools stay waiting until their next hook) |
 - **`config/agent/skills/`**: the skills every tool gets, one folder with a `SKILL.md` each. `link_agent_skills
   <dir>` links them into a tool's skills directory (`setup_claude` and the `claude` wrapper do it for
@@ -356,6 +437,33 @@ To look out for
 - **Review comments are a code tour named `review`**: `,n` and `;n` open it, which closes another open tour
   (`;o` reopens that one). It lives in `.codetour/review.json`, which the global gitignore hides in every
   repo, so the agent doesn't commit it.
+- **An asked child waits for approvals like any agent**: in a read-only ask a permission prompt (the child
+  wants a command that isn't allowed) stops it until you answer in its window `ask-<id>`; `agent_ask` says so on
+  stderr and keeps waiting until the timeout. `agent_ask --to` refuses while the child waits on such a dialog
+  (its `@agent` is *waiting*): pasted text acts as keys there, and one letter answers it. This was seen live,
+  when a pasted message approved a command and saved a "don't ask again" rule.
+- **`agent_ask` checks first that the tmux server answers** and fails with "can't reach the tmux server"
+  otherwise. In Claude Code the call then wasn't `agent_ask` on its own (a pipe, `cd`, `$(…)` or backticks keep
+  it in the sandbox); in Codex the call has to ask for the escalation option (sandbox_permissions
+  "require_escalated") with a justification, which the `ask` skill says ([codex](codex.md#config)).
+- **The child is a whole session**: it costs what any session costs, reads the project's instructions and takes
+  a few seconds to start. For a one-line question, a quick look at the code does it faster.
+- **Follow-ups are pasted, not typed**: bracketed paste keeps the tools' own keys from firing (typing `$` opens
+  Codex's skill list), and the text has its control characters removed and a lead line before it, so it can't
+  send keys or start a command of the tool's own. A child that is still working refuses a follow-up:
+  `agent_ask --wait <id>` first.
+- **The limits on asking are soft**: a child's depth is an environment variable, which anything that starts a
+  process can set, and the cap of 4 is counted by window name, so two callers at once can go one over.
+- **Read-only covers the project's files, not MCP tools or the network**: a read-only child can still call an
+  MCP tool or fetch a page. Don't read "can't change files" as more than that.
+- **This repo's `zsh/` is closed to a sandboxed Claude**: `agent_ask` runs outside the sandbox and sources
+  `zsh/functions`, so Claude edits those files with its Edit tool ([claude](claude.md#sandbox)).
+- **A child's window shows in `cmd+j` and the overview** like any agent's; `agent_ask --close` removes it.
+- **Codex as a child works (read-only, tried live)**, and so does Codex asking Claude Code: Codex runs the Stop
+  hook only once `/hooks` has trusted `config/codex/hooks.json` ([codex](codex.md#once-per-mac)); until then an
+  ask of Codex gets no answer. In tmux the `codex` wrapper passes `--no-daemon`, or the shared server's hooks
+  would miss `AGENT_ASK_DIR` ([codex](codex.md#to-look-out-for)). A Codex child of `agent_ask_edit` isn't
+  verified.
 - **`agent_land` rebases the agent's branch under it**: when the agent is still working, let it finish its
   turn first, or its next edit lands on the rebased files.
 
@@ -373,3 +481,28 @@ Decisions
 - **The CI agent reads the logs itself**: its prompt names the failing checks and the `gh run view` that
   prints each log, rather than carrying the logs, which run to thousands of lines and would be typed into its
   window. `gh run view` is allowed without asking in Claude Code's settings.
+- **The child is interactive, in a tmux window, not headless** (`claude -p`, `codex exec`): its marks, permission
+  prompts and notifications work, you can watch it or take over, and it takes follow-ups. The price is a whole
+  session and a Stop hook to read the answer from.
+- **It runs outside the caller's sandbox because the tmux server starts it**: Codex can't write `~/.codex`
+  inside Claude Code's sandbox, and Seatbelt sandboxes don't nest, so a child started from the caller's shell
+  would fail or inherit the wrong limits. The child has its own sandbox and approvals instead: nothing is turned
+  off. This is why `agent_ask` and `agent_ask_edit` are in Claude Code's `sandbox.excludedCommands` and
+  Codex's rules cover both ([claude](claude.md#sandbox), [codex](codex.md#config)).
+- **The answer comes back through the Stop hook's `last_assistant_message`**, not by reading the screen or the
+  transcript: both tools give hooks the same field, so `answer.sh` is shared ("One tool per job").
+- **Read-only Claude Code isn't plan mode**: plan mode stalls on a task-like prompt at `AskUserQuestion` or
+  `ExitPlanMode` and never ends its turn, so the answer never comes. `claude --read-only` denies the edit tools,
+  denies writes to the checkout and its `.git` in the sandbox, lets no command run outside the sandbox, denies
+  `git * --output*` and keeps the default permission mode.
+- **Follow-ups are pasted with bracketed paste and cleaned**, as in "To look out for".
+- **Two command names for read and edit, not `--edit`**: the permission rules of both tools match a command's
+  name reliably and an argument not (a quoted `'--edit'` slips past), so the edit mode is `agent_ask_edit`, one
+  script linked twice, and asks first, follow-ups included.
+- **State is guarded from the child**: Claude Code's sandbox denies writing `~/.local/state/agent-ask`, the
+  pane is tagged with the child's id, and `answer.sh` refuses a symlinked directory.
+- **No flags pass through, no nesting, 4 children** (soft limits, see "To look out for"): the caller is an
+  agent that may have been told something by a file it read; it must not be able to start a child with a looser
+  sandbox, start a tree of them, or fill the session with windows.
+- **One `agent_ask` for every direction**, not a script per pair of tools: a tool is added by the interface
+  function and the hooks wiring, and every tool can ask and be asked ("One tool per job").

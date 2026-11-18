@@ -168,6 +168,7 @@ Config
 | `zsh/.zshdefault` | options, history, completion, plugins, prompt, zoxide, vi mode and its keys |
 | `zsh/.aliases` | aliases |
 | `zsh/functions/<tool>.zsh` | shell functions, one file per tool, named like its `config/<tool>` or `docs/<tool>.md`: `agent.zsh` has the agent layer, `claude.zsh` the `claude` wrapper and its agent adapter, `setup.zsh` the whole install (`setup_dotfiles`) and the checks |
+| `zsh/bin/agent_ask` | the one script behind `agent_ask` and `agent_ask_edit` (`setup_agent` links both names into `~/.local/bin`); it sources `zsh/functions`, so a sandboxed Claude can't write `./zsh` in this repo (`.claude/settings.json`, [claude](claude.md#sandbox)) |
 | `zsh/.private` | gitignored: tokens, if the file exists |
 | `~/.config/dotfiles/zshrc` | outside the repo: what only this Mac needs (see [setup](setup.md#several-macs)) |
 

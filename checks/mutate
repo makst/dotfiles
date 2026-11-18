@@ -76,6 +76,8 @@ m 'skills are linked' 'every dangling link is removed' "perl -pi -e 's/ == \\\$r
 m 'agent starts the chosen tool' 'the tool ignores agent.tool' "perl -pi -e 's/git config agent\\.tool 2/git config agent.nope 2/' zsh/functions/agent.zsh"
 m 'every agent tool has the whole interface' 'the Claude tool has no hooks function' "perl -pi -e 's/^function _agent_claude_hooks/function _agent_claude_hookz/' zsh/functions/claude.zsh"
 m "every agent tool's hooks run the rm guard" 'the Codex hooks lose the rm guard' "perl -pi -e 's/no-recursive-rm\\.sh/no-such-hook.sh/' config/codex/hooks.json"
+m "every agent tool's hooks hand back agent_ask's answer" 'the Codex hooks lose answer.sh' "perl -pi -e 's/answer\\.sh/no-such-hook.sh/' config/codex/hooks.json"
+m 'agent_ask is outside the sandbox' 'agent_ask leaves the sandbox exclusions' "perl -pi -e 's/\"agent_ask \\*\"/\"agent_zz *\"/' config/claude/settings.json"
 m "every agent tool's hooks set every mark" 'the Codex hooks never mark an agent done' "perl -pi -e 's/tmux-state\\.sh done/tmux-state.sh dome/' config/codex/hooks.json"
 m "every agent tool's hooks set every mark" 'the agent pane test names no Codex' "perl -pi -e 's/claude\\|codex/claude/' config/tmux/tmux.conf"
 m 'running programs reload' 'any mention of keep_real asks for setup_dotfiles' "perl -pi -e 's/-G .\\^\\[\\[:space:\\]\\]\\*keep_real ./-G \"keep_real\"/' zsh/functions/setup.zsh"

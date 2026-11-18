@@ -12,9 +12,10 @@
 # config/agent/skills since the last start into ~/.agents/skills, where Codex reads user skills.
 # In a tmux pane it runs without the shared background server (--no-daemon): that server, started once and
 # shared by every Codex, runs the hooks with its own environment, so they'd miss this pane's TMUX_PANE (the
-# marks, notifications).
+# marks, notifications) and AGENT_ASK_DIR (agent_ask's answer).
 function codex() {
   link_agent_skills ~/.agents/skills
+  _codex_rules
   local file=$real_script_dir/config/codex/config.toml
   local -a add
   local setting
@@ -61,6 +62,16 @@ function _agent_codex_review() {
   reply=(codex review --base $default "$@")
 }
 
+# _agent_codex_ask read|edit [model]: Codex for agent_ask (zsh/bin/agent_ask), with the word {prompt} where the
+# prompt goes. read: its read-only sandbox, so it can't change files; it can still ask you, in its window, for a
+# command that needs more. edit: as set up (workspace-write), in the worktree agent_ask made.
+function _agent_codex_ask() {
+  reply=(codex)
+  [[ $1 == read ]] && reply+=(-s read-only)
+  [[ -n $2 ]] && reply+=(--model $2)
+  reply+=('{prompt}')
+}
+
 # _agent_codex_sessions <main>: the Codex conversations of the agents of the repo at <main>, newest first, one
 # per line: rollout<tab>name<tab>last active<tab>title. The name is the first directory under
 # $_agent_worktrees/ in the cwd of the rollout's session_meta; the title is the first prompt that isn't
@@ -99,16 +110,29 @@ function _agent_codex_preview() {
 # _agent_codex_hooks: the file that wires Codex's hooks, for the checks
 function _agent_codex_hooks() { print config/codex/hooks.json }
 
+# _codex_rules: copies config/codex/rules/agent.rules to ~/.codex/rules/agent.rules when the copy is missing
+# or differs, a file of its own in rules/, where Codex also keeps the approvals you save (default.rules). A
+# copy, not a link: Codex skips a rules file that is a symlink (tried with 0.170.0: with the link, agent_ask
+# asked for approval; with a copy it didn't). setup_codex and the codex wrapper run it, so an edit in the repo
+# reaches the next start of Codex; Codex reads rules when it starts. Starts no process when nothing changed.
+function _codex_rules() {
+  local src=$real_script_dir/config/codex/rules/agent.rules dst=~/.codex/rules/agent.rules
+  [[ -f $dst && ! -L $dst ]] && [[ "$(<$dst)" == "$(<$src)" ]] && return 0
+  mkdir -p ${dst:h} && rm -f $dst && cp $src $dst
+}
+
 # setup_codex: links config/codex's hooks.json, and the shared config/agent's hooks, AGENTS.md and skills, into
-# ~/.codex and ~/.agents; a real file Codex made in their place goes to the Trash first. ~/.codex/config.toml
-# isn't linked: Codex writes each project's trust, a path of this Mac, into it; the settings are linked by
-# setup_codex_system instead. Afterwards `/hooks` in Codex trusts the hooks (docs/codex.md).
+# ~/.codex and ~/.agents; a real file Codex made in their place goes to the Trash first; and copies the
+# command rules (_codex_rules). ~/.codex/config.toml isn't linked: Codex writes each project's trust, a path
+# of this Mac, into it; the settings are linked by setup_codex_system instead. Afterwards `/hooks` in Codex
+# trusts the hooks (docs/codex.md).
 function setup_codex() {
   mkdir -p ~/.codex
   keep_real ~/.codex/hooks.json && ln -sfn "$real_script_dir/config/codex/hooks.json" ~/.codex/hooks.json || return
   # the hook scripts are shared by every agent tool (docs/agent.md)
   keep_real ~/.codex/hooks && ln -sfn "$real_script_dir/config/agent/hooks" ~/.codex/hooks || return
   keep_real ~/.codex/AGENTS.md && ln -sfn "$real_script_dir/config/agent/AGENTS.md" ~/.codex/AGENTS.md || return
+  _codex_rules || return
   link_agent_skills ~/.agents/skills
 }
 
