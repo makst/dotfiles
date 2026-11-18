@@ -232,10 +232,10 @@ sequenceDiagram
   C->>H: PreToolUse on Bash: no-recursive-rm.sh
   H-->>C: blocks a recursive rm, allows the rest
   C->>H: PostToolUse on Edit, Write: format.sh
-  C->>H: PermissionRequest: tmux-state.sh waiting, bell.sh, notify.sh
+  C->>H: PermissionRequest: tmux-state.sh waiting, notify.sh
   H->>T: marks the window waiting
   You->>C: allow
-  C->>H: Stop: tmux-state.sh done, answer.sh, bell.sh, notify.sh
+  C->>H: Stop: tmux-state.sh done, answer.sh, bell.sh
   H->>T: marks the window done
 ```
 
