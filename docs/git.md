@@ -51,15 +51,6 @@ the cursor; `=` opens its diff inline, where `s` on a hunk or on lines selected 
 <command>`, its output in a buffer. Interactive rebases (`git rebase -i`) open nvim on the todo list:
 reorder lines with `dd` / `p`, change `pick` to `fixup` with `cw`.
 
-<details>
-<summary><b>Show GIF</b></summary>
-
-`git diff` through delta, `git dft` through difftastic, then staging and committing in fugitive (`gs`).
-
-![git diff through delta, git dft through difftastic, then staging and committing in fugitive](img/git.gif)
-
-</details>
-
 ### Signing
 
 Commits and tags are signed with the SSH key in `user.signingkey` (`gpg.format = ssh`); no GPG needed. Each

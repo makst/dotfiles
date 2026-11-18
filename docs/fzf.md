@@ -58,15 +58,6 @@ Keys
 ---
 ### Shell keys
 
-<details>
-<summary><b>Show GIF</b></summary>
-
-`C-t` puts a picked file on the command line, `**<Tab>` completes a directory.
-
-![C-t puts a picked file on the command line, **<Tab> completes a directory](img/fzf.gif)
-
-</details>
-
 | Key | Action |
 |---|---|
 | `C-r` | search [atuin's history](zsh.md#searching-history), put the chosen command on the command line |

@@ -4,17 +4,6 @@ dotfiles
 A keyboard-driven macOS development setup for Apple silicon. Ghostty opens straight into tmux, tmux holds
 the shells, nvim sessions and Claude Code agents, and one base16 colour scheme is shared by all of them.
 
-<details>
-<summary><b>Show GIF</b></summary>
-
-A quick tour: `cmd+k` opens a project as a session, `git diff` through delta, `;f` finds a file in nvim,
-`cmd+d` puts a shell next to it, `C-h` and `C-l` cross between them, `cmd+w` closes the nvim pane, `gs` shows
-git status in nvim, `cmd+j` shows every session.
-
-![A quick tour: cmd+k opens a project as a session, git diff through delta, ;f finds a file in nvim, cmd+d puts a shell next to it, C-h and C-l cross between them, cmd+w closes the nvim pane, gs shows git status in nvim, cmd+j shows every session](docs/img/tour.gif)
-
-</details>
-
 | Layer | Tool | Docs |
 |---|---|---|
 | Install and update | Homebrew (`Brewfile`), `setup_dotfiles`, `check_dotfiles` (also CI), `check_mac` | [setup](docs/setup.md) |
@@ -37,7 +26,6 @@ git status in nvim, `cmd+j` shows every session.
 | Debugging | VS Code next to nvim (`,vo`), for backends and the web | [debugging](docs/debugging.md) |
 | Colours | base16 scheme for nvim, Ghostty and everything else | [theme](docs/theme.md) |
 | Window manager | AeroSpace (tiling, workspaces, SIP stays on) | [AeroSpace](docs/aerospace.md) |
-| GIFs in these docs | VHS tapes, rendered by `make_gifs` | [gifs](docs/gifs.md) |
 | Design | the principles every key, file, page and change follows; which layer owns which modifier | [design](docs/design.md) |
 
 Install from scratch
@@ -129,7 +117,7 @@ config/agent/             shared by every agent tool: hooks, skills, global inst
 config/claude/            Claude Code: settings, global CLAUDE.md, status line
 config/codex/             Codex CLI: hooks.json and command rules (the scripts are in config/agent)
 config/machine/           templates for this Mac's own files in ~/.config/dotfiles
-docs/                     this documentation; tapes/ and img/ are the GIFs in it
+docs/                     this documentation
 .githooks/                reload the live setup after a pull, rebase or branch switch
 .github/                  CI: check_dotfiles and the fresh-Mac rehearsal
 checks/                   check_dotfiles: the checks run before a commit and on CI; mutate tests them;

@@ -1,7 +1,7 @@
 # Style checks: the conventions CLAUDE.md, "When changing something", sets for every change, which nothing
-# else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, GIFs sit in a
-# closed "Show GIF" toggle, each zsh function has a comment that says how to call it, lists go through the
-# picker and are in its list, headings stand apart from the text above, docs pages keep the section order of
+# else would notice breaking: each Brewfile package says what uses it, colours are ANSI names, each zsh
+# function has a comment that says how to call it, lists go through the picker and are in its list, headings
+# stand apart from the text above, docs pages keep the section order of
 # docs/design.md, each file says at the top who uses it, prose wraps at about 110 columns, table rows have the
 # header's cells, $(…) inside ${…} is quoted, scripts are zsh and executable.
 # They only warn (check -w): a missed convention doesn't break the setup. Sourced by check_dotfiles;
@@ -22,28 +22,6 @@ check_hex_colours() {
   grep -nE '#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?([^0-9a-zA-Z_]|$)' -- $configs |
     awk -F: '{ print $1 ":" $2 ": a hex colour; an ANSI colour name follows the theme" }'
   note=$(count $#configs file)
-}
-
-# GIFs: each one in a Markdown file sits in a toggle that's closed by default, titled <b>Show GIF</b>, with one
-# line saying what it shows above the image (docs/gifs.md, "Adding one"). Code blocks are skipped.
-check_gif_toggles() {
-  awk '
-    FNR == 1 { n = 0; code = 0; want_close = 0 }
-    /^[ \t]*(```|~~~)/ { code = !code; next }
-    code || /^[ \t]*$/ { next }
-    want_close {
-      if ($0 != "</details>") print FILENAME ":" want_close ": the GIF'"'"'s toggle isn'"'"'t closed right after it"
-      want_close = 0
-    }
-    /^(!\[|<img).*\.gif/ {
-      # back over the caption (wrapped, it takes more than one line) to the summary
-      for (j = n; j > 0 && line[j] !~ /^</; j--);
-      if (j == n || j < 2 || line[j] != "<summary><b>Show GIF</b></summary>" || line[j - 1] != "<details>")
-        print FILENAME ":" FNR ": not in <details>, <summary><b>Show GIF</b></summary>, a line saying what it shows"
-      want_close = FNR
-    }
-    { line[++n] = $0 }
-  ' $md_files
 }
 
 # zsh functions: each one in the config has a comment above it saying what it does and why; a group of
@@ -178,7 +156,7 @@ check_top_comments() {
   local f first
   local -a files=(${(M)text_files:#(config|zsh|checks|.githooks|.github)/*})
   files+=(${(M)text_files:#(.zshrc|prepare-zsh-install.sh)})
-  files=(${files:#*.(json|md|tape|cases)})
+  files=(${files:#*.(json|mdcases)})
   files=(${files:#(*/init.lua|*/themes/*|*/allowed_signers|*/skills/*|*/lazy-lock*)})
   for f in $files; do
     first=$(grep -vE '^(#!|[[:space:]]*$)' $f | head -n1)
@@ -189,7 +167,7 @@ check_top_comments() {
 
 # prose width: lines of prose in Markdown and comment lines in zsh files wrap at about 110 columns (CLAUDE.md,
 # "Style"; over 115 is flagged), so a page reads the same in a terminal, in nvim and in a diff. Left out:
-# tables, code blocks, HTML (the GIF toggles), images and lines with a URL, which can't be broken, and
+# tables, code blocks, HTML, images and lines with a URL, which can't be broken, and
 # links (the git hooks are one script). zsh, not awk: macOS's awk counts bytes, so – or é would count twice.
 check_prose_width() {
   setopt local_options extended_glob
@@ -266,7 +244,7 @@ check_quoted_substitutions() {
 }
 
 # bash: the repo is zsh; only prepare-zsh-install.sh, which runs before zsh is set up, is bash (CLAUDE.md,
-# "Style"). Scripts in other languages (docs/tapes/keycast, Python) are fine.
+# "Style"). Scripts in other languages (Python) are fine.
 check_bash() {
   local f
   for f in ${(k)shebangs}; do
@@ -293,7 +271,6 @@ check_exec_bits() {
 group "Style: the conventions every change keeps to"
 check -w "each Brewfile package says what uses it" check_brew_comments
 check -w "colours are ANSI names, not hex" check_hex_colours
-check -w "GIFs sit in a closed Show GIF toggle" check_gif_toggles
 check -w "each zsh function has a comment" check_function_comments
 check -w "each zsh function's comment says how to call it, none only passes on" check_function_edges
 check -w "lists go through the picker, not a bare fzf" check_picker

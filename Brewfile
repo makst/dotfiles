@@ -23,7 +23,6 @@ brew "fnm"                         # node versions, zsh/.exports
 brew "vivid"                       # LS_COLORS for eza / completion, zsh/.exports
 brew "tmux"                        # config/tmux, setup_tmux
 brew "terminal-notifier"           # Claude Code notifications you can click, config/agent/hooks/notify.sh, config/github/watch
-brew "vhs"                         # records the GIFs in docs/ from docs/tapes, make_gifs
 brew "git-delta"                   # git pager (config/git/.gitconfig)
 brew "difftastic"                  # git dft / dlog / dshow
 brew "gh"                          # GitHub CLI; config/github/watch asks it what changed
@@ -65,7 +64,7 @@ brew "xh"                          # HTTP requests, httpie-compatible syntax
 brew "argocd"                      # Argo CD from the command line: deploys, health, sync (docs/argocd.md)
 brew "btop"                        # TUI: processes, CPU, memory, network; config/btop, setup_btop
 brew "yazi"                        # TUI: file manager with previews; ,e in zsh's normal mode (config/fzf/fzf.zsh)
-brew "chafa"                       # images and GIFs in the terminal, `img`
+brew "chafa"                       # images in the terminal, `img`
 brew "tlrc"                        # `tldr <cmd>`: short examples
 brew "dust"                        # what takes the disk space
 brew "exiftool"                    # reads and strips image metadata
@@ -92,7 +91,6 @@ cask "ghostty"                     # the terminal, config/ghostty, setup_ghostty
 cask "nikitabobko/tap/aerospace"   # tiling windows, config/aerospace, setup_aerospace
 cask "secretive"                   # ssh keys in the Secure Enclave, config/ssh/config, secretive_key
 cask "font-source-code-pro"        # the font in Ghostty, config/ghostty/config
-cask "font-symbols-only-nerd-font" # Nerd Font icons in the GIFs, make_gifs
 cask "google-chrome"               # browser
 cask "firefox@developer-edition"   # browser with dev tools
 cask "cyberduck"                   # SFTP, S3 and cloud storage browser
@@ -131,7 +129,8 @@ instance_eval(File.read(machine_brewfile), machine_brewfile) if File.exist?(mach
 # cask "evernote"
 # cask "skype"           # discontinued by Microsoft
 # cask "qownnotes"
-# cask "gifcapture"
+# brew "vhs"                         # GIFs dropped
+# cask "font-symbols-only-nerd-font" # GIFs dropped
 # brew "navi"            # cheatsheets on C-g; atuin, tldr and Claude Code cover it
 # brew "cmake"           # built telescope-fzf-native; fzf-lua, which replaced telescope, runs fzf itself
 # brew "lazygit"         # git TUI; fugitive in nvim (gs, ,gs) does the staging and committing, in vim buffers

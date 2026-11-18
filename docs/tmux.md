@@ -40,15 +40,6 @@ colours. The preview, below the list as in the tree and the agents picker, shows
 directory's files, and its label which one; the sessions' agent marks and the preview update while it's
 open. It opens ready to type; `jj` switches to moving with `j`/`k` ([picker keys](#picker-keys)).
 
-<details>
-<summary><b>Show GIF</b></summary>
-
-`cmd+k` opens a project as a session, `cmd+j` shows the tree, `cmd+shift+0` goes back to the last session.
-
-![cmd+k opens a project as a session, cmd+j shows the tree, cmd+shift+0 goes back to the last session](img/tmux-sessions.gif)
-
-</details>
-
 ### Tree
 
 `cmd+j` shows every session and window, drawn as tmux's own tree (`choose-tree`): `├─>` / `└─>` lines, a
@@ -103,15 +94,6 @@ Keys
 ---
 The prefix is `C-a`. Press it twice to send a literal `C-a` to the program. The `cmd` column is what Ghostty
 sends for you, see [ghostty](ghostty.md).
-
-<details>
-<summary><b>Show GIF</b></summary>
-
-Splitting, moving between and zooming panes, then a new window.
-
-![Splitting, moving between and zooming panes, then a new window](img/tmux-panes.gif)
-
-</details>
 
 | Key | cmd | Action |
 |---|---|---|

@@ -1,6 +1,6 @@
 # Consistency checks: the files that describe the same thing agree. The setup's steps and links and their
-# tables in docs/setup.md, the docs and the README, nvim's plugins and lazy-lock.json, the GIFs and their tapes,
-# each key in nvim, VS Code, Android Studio and docs/vim-keys.md, and the keyboard split between Ghostty, tmux,
+# tables in docs/setup.md, the docs and the README, nvim's plugins and lazy-lock.json, each key in nvim,
+# VS Code, Android Studio and docs/vim-keys.md, and the keyboard split between Ghostty, tmux,
 # AeroSpace and nvim. The ones that compare a doc or a convention with the config only warn (check -w); the
 # pinned plugins, the keys and the keyboard split fail, since there a mismatch is a real bug. Sourced by
 # check_dotfiles; lib.zsh has the helpers and indexes.
@@ -151,30 +151,6 @@ check_nvim_keymaps() {
 check_nvim_internals() {
   nvim_results internals || return
   note+=" internal requires"
-}
-
-# GIFs: each tape renders a GIF that's in docs/img, each GIF there comes from a tape and is shown in a doc
-check_gifs() {
-  local tape out gif kind file line target
-  local -A made shown
-  local -a tapes=(${(M)text_files:#docs/tapes/*.tape}) gifs=(${(M)files:#docs/img/*.gif})
-  for tape in $tapes; do
-    out=${${(M)${(f)"$(<$tape)"}:#Output *}#Output }
-    if [[ -z $out ]]; then
-      print -r -- "$tape: no Output line"
-    elif [[ ! -e $out ]]; then
-      print -r -- "$tape: renders $out, which isn't in the repo (make_gifs ${tape:t:r})"
-    fi
-    made[$out]=1
-  done
-  while IFS=$'\t' read -r kind file line target; do
-    [[ $kind == L && $target == *.gif ]] && shown[${target:t}]=1
-  done < $tmp/md.out
-  for gif in $gifs; do
-    (( $+made[$gif] )) || print -r -- "$gif: no tape in docs/tapes renders it"
-    (( $+shown[${gif:t}] )) || print -r -- "$gif: no doc shows it"
-  done
-  note="$(count $#tapes tape), $(count $#gifs GIF)"
 }
 
 # agent tools: each zsh/functions/*.zsh that defines _agent_<t>_start defines the whole interface of the agent
@@ -492,7 +468,6 @@ check -w "every nvim key has a desc, for ;?" check_descs
 check -w "every nvim key is bound in a keymaps.lua" check_nvim_keymaps
 check -w "a plugin's internals are required from one nvim file" check_nvim_internals
 check -w "every TUI in the Brewfile has its vim keys in docs/vim-keys.md" check_tui_keys
-check -w "every GIF has its tape and its doc" check_gifs
 check "every agent tool has the whole interface" check_agent_tools
 check "every agent tool's hooks run the rm guard" check_agent_rm_guard
 check "every agent tool's hooks hand back agent_ask's answer" check_agent_answer

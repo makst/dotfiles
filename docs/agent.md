@@ -6,19 +6,6 @@ and so you notice when one of them needs you. The job, worktrees, windows, marks
 belongs to this layer; the tool that does the coding is a plug-in, [Claude Code](claude.md) by default or
 [Codex CLI](codex.md).
 
-<details>
-<summary><b>Show GIF</b></summary>
-
-`agent` starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, `cmd+j`
-jumps there, then merge and `agent_done`.
-
-![agent starts Claude Code in a worktree and window, the window turns yellow when it needs an answer, cmd+j jumps there, then merge and agent_done](img/agent.gif)
-
-</details>
-
-The GIF is recorded with the real Claude Code in a made-up project (see [gifs](gifs.md#what-it-is)), so
-its words differ each time it's rendered.
-
 What it is
 ---
 - **One worktree per agent**: `agent` starts the tool in a git worktree of its own, in a tmux window of its

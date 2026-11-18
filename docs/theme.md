@@ -67,7 +67,6 @@ To look out for
 - An nvim started in light mode can show the dark scheme for a moment, until the terminal's answer comes in.
 - nvim over SSH, or in a terminal that doesn't report theme changes, keeps the scheme it started with.
 - Nothing may set `'background'` in nvim's config: setting it by hand turns nvim's own detection off.
-- The GIFs (`make_gifs`) always use the dark theme, so they look the same whichever mode macOS is in.
 
 Decisions
 ---

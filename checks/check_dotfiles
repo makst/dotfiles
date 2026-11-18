@@ -19,14 +19,14 @@ verbose=0
 reset=$'\e[0m' bold=$'\e[1m' green=$'\e[32m' red=$'\e[31m' yellow=$'\e[33m'
 tmp=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles.XXXXXX) && tmp=${tmp:A} || exit 1
 
-# every file of the repo: the tracked ones and new ones not yet added, never ignored ones; text_files without
-# the GIFs, md_files the Markdown ones, shebangs[file] each text file's #! line
+# every file of the repo: the tracked ones and new ones not yet added, never ignored ones; md_files the Markdown
+# ones, shebangs[file] each text file's #! line
 typeset -a files text_files md_files
 typeset -A shebangs
 for f in ${(f)"$(git ls-files --cached --others --exclude-standard)"}; do
   [[ -f $f ]] && files+=$f
 done
-text_files=(${files:#*.gif})
+text_files=($files)
 md_files=(${(M)text_files:#*.md})
 for f in $text_files; do
   line=

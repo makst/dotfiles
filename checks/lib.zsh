@@ -245,7 +245,7 @@ brew_index() {
 # tmux_index: tmux.conf executed in a throwaway tmux server, which also catches the unknown options and values
 # that parsing alone misses: "E error" for each error, then "K table key" for every key binding it ends up
 # with. Its run and if-shell lines would start tpm and the plugins (tmux-continuum restores sessions), so
-# they're only parsed, like the GIFs' demo.tmux.conf. Claude Code's sandbox (SANDBOX_RUNTIME) doesn't let tmux
+# they're only parsed. Claude Code's sandbox (SANDBOX_RUNTIME) doesn't let tmux
 # make its socket, wherever it is; then the index is just "S", and the checks that read it are skipped.
 tmux_index() {
   (( $+commands[tmux] )) || return 0
@@ -258,7 +258,7 @@ tmux_index() {
     return 0
   fi
   for line in ${(f)"$(tmux -L $socket -f /dev/null start-server \; \
-    source-file -n config/tmux/tmux.conf docs/tapes/demo.tmux.conf \; source-file $tmp/tmux.conf \; \
+    source-file -n config/tmux/tmux.conf \; source-file $tmp/tmux.conf \; \
     list-keys 2>&1)"}; do
     if [[ $line == bind-key\ * ]]; then
       # bind-key [-r] -T <table> <key> <command…>

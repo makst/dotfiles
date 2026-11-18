@@ -43,15 +43,6 @@ What it is
 
 Searching history
 ---
-<details>
-<summary><b>Show GIF</b></summary>
-
-The up arrow searches by prefix, grey suggestions come from history, `C-r` searches atuin's history in fzf.
-
-![The up arrow searches by prefix, grey suggestions come from history, C-r opens atuin](img/zsh-history.gif)
-
-</details>
-
 - Type the start of a command and press `↑`: only entries starting with it come up. A grey suggestion from
   history appears as you type; `→` or `End` accepts it.
 - `C-r` (`/` in normal mode) opens atuin's history in fzf: newest first, each command once, with how long it
@@ -148,7 +139,7 @@ From the Brewfile, worth knowing about:
 | `xh` | HTTP requests with httpie's syntax: `xh POST api.example.com name=x`, `xh -d <url>` downloads |
 | `btop` | processes, CPU, memory, disks and network; vim keys (`j`/`k`, `g`/`G`; help and kill on `H`/`K`), the terminal's colours. Settings go in `config/btop/btop.conf`: btop's menu changes them only until it quits |
 | `yazi` | file manager with previews; `q` quits, `?` lists keys |
-| `img <file>` | chafa: shows a photo or plays a GIF in the terminal, sized to the pane; `ctrl-c` stops a GIF |
+| `img <file>` | chafa: shows an image in the terminal, sized to the pane |
 | `tldr <cmd>` | short, practical examples instead of the man page |
 | `dust` | what takes the space in a directory tree |
 | `hyperfine '<cmd>'` | benchmarks a command, compares several |

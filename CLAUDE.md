@@ -77,9 +77,6 @@ session (`config/claude/settings.json`). Keep the config valid at every step; ch
   editor: a key added or changed in nvim also goes into VS Code (`config/vscode/settings.json`) and Android
   Studio (`config/ideavim/ideavimrc`) where they have a matching action, and into the table in
   `docs/vim-keys.md`.
-- **GIFs** in any Markdown file sit in a `<details>` toggle, closed by default, where they belong on the page.
-  The `<summary>` is always `<b>Show GIF</b>`; inside, one short line says what the GIF shows, then the image.
-  Format in `docs/gifs.md`, "Adding one".
 - **Colours**: ANSI colour names, never hex, so starship, the Claude status line, tmux etc. follow the base16
   theme (`docs/theme.md`).
 - **Secrets** never go in the repo: `zsh/.private` and `config/nvim/lua/user/hidden/` are gitignored and
