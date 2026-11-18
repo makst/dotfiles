@@ -4,9 +4,12 @@
 # Reload with cmd+shift+, ; list options with `ghostty +show-config --default --docs`.
 
 # -- look -----------------------------------------------------------------------
-# themes/base16 is the base16 scheme nvim uses (base16-onedark); `change_theme` switches both.
+# Follows macOS light and dark mode: themes/base16-dark and base16-light are the base16 schemes nvim uses
+# (base16-onedark in both until a light one is picked), written by `change_theme dark|light`, which switches
+# nvim too. Ghostty tells the programs inside about each switch (DEC mode 2031), so nvim changes along
+# (docs/theme.md).
 # Ghostty's own themes: `ghostty +list-themes`
-theme = base16
+theme = light:base16-light,dark:base16-dark
 
 # Source Code Pro 18, carried over from the old iTerm profile.
 # Nerd Font icons (eza, starship, nvim) come from Ghostty's built-in symbol fallback.

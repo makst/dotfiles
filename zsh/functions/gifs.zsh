@@ -20,7 +20,7 @@ function make_gifs() {
   while IFS=' =' read -r key value; do
     [[ $key == palette ]] && key=${value%%=*} value=${value#*=}
     c[$key]=$value
-  done < <(grep -v '^#' $repo/config/ghostty/themes/base16)
+  done < <(grep -v '^#' $repo/config/ghostty/themes/base16-dark)
   local -a names=(black red green yellow blue magenta cyan white)
   local theme="{\"name\":\"base16\",\"background\":\"$c[background]\",\"foreground\":\"$c[foreground]\""
   theme+=",\"cursor\":\"$c[cursor-color]\",\"selection\":\"$c[selection-background]\""

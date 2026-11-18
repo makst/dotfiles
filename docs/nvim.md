@@ -55,7 +55,8 @@ What it is
   above it, is loaded after this config (`exrc`). A file meant for one folder only checks `vim.fn.getcwd()`.
 - **tmux**: `C-h/j/k/l` cross between nvim splits and tmux panes; true colour and undercurls work inside
   tmux; focus events trigger the reload of changed files.
-- **Theme**: a base16 scheme shared with Ghostty, switched with `change_theme` ([theme](theme.md)).
+- **Theme**: a base16 scheme shared with Ghostty, one for macOS's dark mode and one for light mode, switched
+  along with macOS; `change_theme` picks them ([theme](theme.md)).
 - **Debugging**: `,vo` opens the current file and line in VS Code, in the project's window, to set
   breakpoints and debug there ([debugging](debugging.md)). Xcode (`,io`) and Android Studio (`,ao`) do the
   same for apps ([mobile](mobile.md)).

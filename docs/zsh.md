@@ -128,7 +128,7 @@ Commands
 | `agent`, `agent_review`, `agent_land`, `agent_ci`, `agent_done`, `agent_resume` | Claude Code agents in worktrees and tmux windows of their own, see [claude](claude.md#commands) |
 | `mdv [dir]` / `mds [dir]` | markdown files: rendered in the terminal / as a local site in the browser, see [fzf](fzf.md#reading-markdown-mdv) |
 | `fif <text>` | files containing the text, with a preview of the matches |
-| `change_theme` | pick a base16 scheme for nvim and Ghostty, see [theme](theme.md) |
+| `change_theme [dark\|light]` | pick the base16 scheme for macOS's dark or light mode, for nvim and Ghostty, see [theme](theme.md) |
 | `npm_gh_token` | gives npm gh's token for GitHub's npm registry, after `gh auth refresh`; `check_mac` says when (`zsh/functions/zsh.zsh`) |
 | `k`, `kg`, `kd`, `kpf`, … | kubectl: `k` + verb (+ resource), the full list is at the end of `zsh/.aliases` |
 | `kctx`, `kns` | kubectl: switch the context / the namespace, given or picked in fzf (`zsh/functions/kubectl.zsh`) |

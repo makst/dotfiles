@@ -173,13 +173,13 @@ check_docs_shape() {
 
 # top comments: the first line of a config or script file (after a #! line) is a comment saying who loads or
 # calls it (docs/design.md, "One search away"). Left out: nvim's init.lua (only require lines), files that
-# can't hold a comment (JSON, Markdown, allowed_signers) or whose tool writes them (base16-vim.lua, themes).
+# can't hold a comment (JSON, Markdown, allowed_signers) or whose tool writes them (Ghostty's themes).
 check_top_comments() {
   local f first
   local -a files=(${(M)text_files:#(config|zsh|checks|.githooks|.github)/*})
   files+=(${(M)text_files:#(.zshrc|prepare-zsh-install.sh)})
   files=(${files:#*.(json|md|tape|cases)})
-  files=(${files:#(*/init.lua|*/themes/*|*/base16-vim.lua|*/allowed_signers|*/skills/*|*/lazy-lock*)})
+  files=(${files:#(*/init.lua|*/themes/*|*/allowed_signers|*/skills/*|*/lazy-lock*)})
   for f in $files; do
     first=$(grep -vE '^(#!|[[:space:]]*$)' $f | head -n1)
     [[ $first == (\#|--|\"|\;|//)* ]] || print -r -- "$f: no comment at the top saying who uses it"

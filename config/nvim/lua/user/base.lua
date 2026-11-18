@@ -40,7 +40,8 @@ vim.opt.termguicolors = true
 vim.opt.winblend = 0
 vim.opt.wildoptions = 'pum'
 vim.opt.pumblend = 5
-vim.opt.background = 'dark'
+-- no 'background' here: nvim sets it from the terminal's colours, and lua/user/base16-vim/config.lua loads the
+-- scheme for it
 
 -- display hidden characters
 -- turn it on with ':set list', turn it off with ':set nolist'
