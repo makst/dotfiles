@@ -1,8 +1,10 @@
 dotfiles
 ===
 
-A keyboard-driven macOS development setup for Apple silicon. Ghostty opens straight into tmux, tmux holds
-the shells, nvim sessions and Claude Code agents, and one base16 colour scheme is shared by all of them.
+A keyboard-driven macOS development setup for Apple silicon, built for working alongside coding agents.
+Ghostty opens straight into tmux, tmux holds the shells, nvim sessions and agents (Claude Code, Codex, each in
+its own window and git worktree), and one base16 colour scheme is shared by all of them. Around the agents sits
+a harness layer they all share: instructions, hooks, skills, a sandbox and checks they run on their own work.
 
 ```mermaid
 flowchart TB
