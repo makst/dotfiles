@@ -1,0 +1,15 @@
+# Codex CLI's settings for every Mac, read as /etc/codex/config.toml, the system layer below
+# ~/.codex/config.toml (setup_codex_system links it; docs/codex.md, "Config"). Not ~/.codex/config.toml itself:
+# Codex writes each project's trust, a path of this Mac, into that one. Not passed with -c either: Codex
+# started with -c or -p runs without its shared background server.
+
+# commands run in a sandbox that can write the project; Codex asks before one that needs more
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+
+[tui]
+# the prompt starts in vim mode (docs/vim-keys.md); /vim toggles it
+vim_mode_default = true
+# the line below the prompt, Claude Code's status line as near as Codex's built-in items go (docs/codex.md,
+# "Status line"); checks/consistency.zsh looks for each item in the Codex binary
+status_line = ["current-dir", "git-branch", "branch-changes", "model-with-reasoning", "context-used", "used-tokens", "five-hour-limit", "weekly-limit"]

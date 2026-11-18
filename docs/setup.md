@@ -55,7 +55,8 @@ In this order; the steps that aren't scripted can't be, or shouldn't be.
    count as yours and show as Verified), work plugins in `claude.json`, work hosts in `~/.ssh/config` below
    the include line, and the company's name, email domain and hosts in `forbidden`.
 6. **`check_mac`** lists anything still missing, each with the step that makes it.
-7. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once). Secrets in
+7. **Optional**: `setup_touch_id_sudo` (Touch ID for `sudo`, asks for your password once), and for Codex
+   `setup_codex_system` (its settings, asks for your password too). Secrets in
    `zsh/.private` or `~/.config/dotfiles/zshrc`, nvim settings in `config/nvim/lua/user/hidden/init.lua`;
    none of them is in git, each is loaded if it exists.
    For iOS work, Xcode from the App Store, then `sudo xcode-select -s /Applications/Xcode.app`; for Android
@@ -280,6 +281,9 @@ Not part of `setup_dotfiles`:
 - `setup_touch_id_sudo`: `sudo` accepts Touch ID, inside tmux too (pam-reattach). It writes
   `/etc/pam.d/sudo_local`, which survives macOS updates, and asks for your password to do so. A file that
   already says something else is copied to the Trash first; one that says the same is left alone.
+- `setup_codex_system`: links `/etc/codex/config.toml`, Codex's system layer, to `config/codex/config.toml`
+  with `sudo` (see [codex](codex.md#config)). A real file there is copied to the Trash first; the link already
+  there is left alone. `check_mac` reports it missing; `checks/fresh_mac` leaves it out.
 
 Config
 ---
@@ -321,6 +325,7 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 | `~/.claude/hooks/`, `~/.claude/AGENTS.md` | `config/agent/hooks/`, `config/agent/AGENTS.md` (shared by every agent tool) |
 | `~/.claude/skills/<name>/` | each skill in `config/agent/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory. The same skills are linked into `~/.agents/skills/<name>/` for Codex by `setup_codex` and `codex` |
 | `~/.codex/hooks.json` | `config/codex/hooks.json` |
+| `/etc/codex/config.toml` | `config/codex/config.toml`, by `setup_codex_system` with `sudo` |
 | `~/.codex/hooks/`, `~/.codex/AGENTS.md` | `config/agent/hooks/`, `config/agent/AGENTS.md` (shared by every agent tool) |
 | `~/.ideavimrc` | `config/ideavim/ideavimrc` |
 | `~/Library/Application Support/Code/User/settings.json` | `config/vscode/settings.json` |

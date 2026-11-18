@@ -3,27 +3,24 @@
 # layer (config/codex, docs/codex.md; the layer itself is in agent.zsh, claude.zsh has the first tool). Sourced
 # by .zshrc with the rest of zsh/functions/*.zsh; each function's comment says what it does.
 
-# codex [args…]: Codex CLI with this setup's settings, passed with -c (before the arguments, so a subcommand
-# like `codex resume` gets them too) and not from a linked config.toml, because Codex writes each project's
-# trust (a path of this Mac) into ~/.codex/config.toml:
-# - sandbox_mode workspace-write and approval_policy on-request: commands run in a sandbox that can write the
-#   project, and Codex asks before one that needs more
-# - tui.vim_mode_default: the prompt starts in vim mode (docs/vim-keys.md); `/vim` toggles it
-# - tui.status_line: the line below the prompt, Claude Code's status line as near as Codex's built-in items go
-#   (docs/codex.md, "Status line"); checks/consistency.zsh looks for each item in the Codex binary
-# In a git worktree (every agent's), commits write to the main checkout's .git, outside the workspace, so that
+# codex [args…]: Codex CLI as this setup runs it. Its settings come from config/codex/config.toml, which
+# Codex reads as /etc/codex/config.toml (setup_codex_system), not from -c: Codex started with -c runs without
+# its shared background server. Until that link is there (check_mac reports it), the same file is passed with
+# -c, one `section.key=value` for each line of it, so the sandbox and the rest hold on every Mac. In a git
+# worktree (every agent's), commits write to the main checkout's .git, outside the workspace, so that
 # directory is added with --add-dir. Before it starts, link_agent_skills links any skill added to
 # config/agent/skills since the last start into ~/.agents/skills, where Codex reads user skills.
 function codex() {
   link_agent_skills ~/.agents/skills
-  local common=$(git rev-parse --path-format=absolute --git-common-dir 2> /dev/null)
+  local file=$real_script_dir/config/codex/config.toml
   local -a add
+  [[ /etc/codex/config.toml -ef $file ]] ||
+    add=(${(f)"$(awk '/^\[/ { section = substr($0, 2, index($0, "]") - 2) "." }
+      /^[a-z_]+ = / { key = $1; sub(/^[^=]*= /, ""); print "-c"; print section key "=" $0 }' $file)"})
+  local common=$(git rev-parse --path-format=absolute --git-common-dir 2> /dev/null)
   [[ -n $common && $common != "$(git rev-parse --path-format=absolute --git-dir 2> /dev/null)" ]] &&
-    add=(--add-dir $common)
-  command codex -c 'sandbox_mode="workspace-write"' -c 'approval_policy="on-request"' \
-    -c 'tui.vim_mode_default=true' \
-    -c 'tui.status_line=["current-dir","git-branch","branch-changes","model-with-reasoning","context-used","used-tokens","five-hour-limit","weekly-limit"]' \
-    $add "$@"
+    add+=(--add-dir $common)
+  command codex $add "$@"
 }
 
 
@@ -91,8 +88,9 @@ function _agent_codex_preview() {
 function _agent_codex_hooks() { print config/codex/hooks.json }
 
 # setup_codex: links config/codex's hooks.json, and the shared config/agent's hooks, AGENTS.md and skills, into
-# ~/.codex and ~/.agents; a real file Codex made in their place goes to the Trash first. config.toml isn't
-# linked (see the codex wrapper). Afterwards `/hooks` in Codex trusts the hooks (docs/codex.md).
+# ~/.codex and ~/.agents; a real file Codex made in their place goes to the Trash first. ~/.codex/config.toml
+# isn't linked: Codex writes each project's trust, a path of this Mac, into it; the settings are linked by
+# setup_codex_system instead. Afterwards `/hooks` in Codex trusts the hooks (docs/codex.md).
 function setup_codex() {
   mkdir -p ~/.codex
   keep_real ~/.codex/hooks.json && ln -sfn "$real_script_dir/config/codex/hooks.json" ~/.codex/hooks.json || return
@@ -100,4 +98,18 @@ function setup_codex() {
   keep_real ~/.codex/hooks && ln -sfn "$real_script_dir/config/agent/hooks" ~/.codex/hooks || return
   keep_real ~/.codex/AGENTS.md && ln -sfn "$real_script_dir/config/agent/AGENTS.md" ~/.codex/AGENTS.md || return
   link_agent_skills ~/.agents/skills
+}
+
+# setup_codex_system: links /etc/codex/config.toml, Codex's system layer, to config/codex/config.toml, so every
+# start of Codex gets this setup's settings without -c (see the codex wrapper). Uses sudo, so it isn't part of
+# setup_dotfiles, like setup_touch_id_sudo. Does nothing when the link is already there; a real file in its
+# place is copied to the Trash first.
+function setup_codex_system() {
+  local file=/etc/codex/config.toml
+  [[ -L $file && $file -ef $real_script_dir/config/codex/config.toml ]] && return 0
+  if [[ -e $file && ! -L $file ]]; then
+    mkdir -p ~/.Trash && cp $file ~/.Trash/codex-config.toml-$(date +%s) || return
+    print "=> $file wasn't a link: copied to the Trash"
+  fi
+  sudo mkdir -p ${file:h} && sudo ln -sfn "$real_script_dir/config/codex/config.toml" $file
 }

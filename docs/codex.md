@@ -15,7 +15,8 @@ What it is
   guard against `rm -r`), the skills and the global instructions (`AGENTS.md`). Only the wiring is Codex's:
   `config/codex/hooks.json` names which script runs on which event ([Config](#config)).
 - **A sandbox and approvals on request**: Codex runs commands in a sandbox that can write the project
-  (`workspace-write`) and asks before one that needs more. The wrapper sets both ([Commands](#commands)).
+  (`workspace-write`) and asks before one that needs more. `config/codex/config.toml` sets both
+  ([Config](#config)).
 - **A native binary**, installed as a Homebrew cask, so tmux sees `codex` as the pane's command, which is how
   `@agent-pane` knows a pane before its first hook has fired.
 
@@ -27,8 +28,8 @@ What it is
 
 The line below the prompt, as close to [Claude Code's](claude.md#status-line) as Codex's built-in items get.
 Codex can't run a script for its status line yet (the feature for it, `[features] tui_extensions_statusline =
-true`, is "under development" in 0.170.0), so the `codex` wrapper picks items from the list `/statusline`
-shows:
+true`, is "under development" in 0.170.0), so `config/codex/config.toml` picks items from the list
+`/statusline` shows:
 
 | Claude Code's status line | Codex item | Shows |
 |---|---|---|
@@ -48,19 +49,23 @@ Once per Mac
 1. `setup_brew`: installs the `codex` cask.
 2. `codex login`: your account, your choice; nothing of it is in the repo.
 3. `setup_codex`: links the hooks, `AGENTS.md` and the skills ([Config](#config)).
-4. In Codex, `/hooks`: trust the hooks. Codex runs hooks only once they're trusted; it asks again when
+4. `setup_codex_system`: links the settings as `/etc/codex/config.toml`; asks for your password, so it isn't part
+   of `setup_dotfiles`. Until then the `codex` wrapper passes the same file with `-c`, so the settings hold, but
+   Codex runs without its shared background server; `check_mac` reports the missing link.
+5. In Codex, `/hooks`: trust the hooks. Codex runs hooks only once they're trusted; it asks again when
    `config/codex/hooks.json` changes.
-5. `exec zsh`, and in tmux `source-file ~/.config/tmux/tmux.conf`, to load the `codex` wrapper and `@agent-pane`.
+6. `exec zsh`, and in tmux `source-file ~/.config/tmux/tmux.conf`, to load the `codex` wrapper and `@agent-pane`.
 
 Commands
 ---
 | Command | Does |
 |---|---|
-| `codex [args]` | Codex with this setup's settings: `workspace-write` sandbox, approvals on request, the prompt in vim mode, the [status line](#status-line), and in a git worktree the main checkout's `.git` writable (commits go there) |
+| `codex [args]` | Codex with this setup's settings (`workspace-write` sandbox, approvals on request, the prompt in vim mode, the [status line](#status-line), from [Config](#config)), and in a git worktree the main checkout's `.git` writable (commits go there); passes the settings with `-c` while `/etc/codex/config.toml` isn't linked |
 | `agent --tool codex <name> [prompt]` | Codex in a worktree and window of its own ([agent](agent.md#starting-an-agent)) |
 | `agent_review --tool codex <name>` | `codex review --base <default branch>` in a pane beside the agent: prints the review and exits, edits nothing |
 | `agent_resume` | lists Codex's conversations with Claude Code's; resumes with `codex resume <id>` |
-| `setup_codex` | the links in [Config](#config) |
+| `setup_codex` | the links in [Config](#config) into `~/.codex` and `~/.agents` |
+| `setup_codex_system` | links `/etc/codex/config.toml` to `config/codex/config.toml`, with `sudo` |
 | `/hooks` | in Codex: list the hooks and trust them |
 | `/vim` | in Codex: turn the prompt's vim mode on or off |
 | `$ship`, `$handoff` | in Codex: the shared skills, which Claude Code calls `/ship` and `/handoff` ([claude](claude.md#skills)) |
@@ -85,9 +90,12 @@ Config
   scripts the table runs, and the instructions every tool shares.
 - **`config/agent/skills/<name>/`** → `~/.agents/skills/<name>/`, where Codex reads user skills; the `codex`
   wrapper links a new one when it starts. `~/.agents/skills` itself stays a real directory.
-- **Not linked: `~/.codex/config.toml`.** Settings go through `-c` in the `codex` wrapper:
-  `sandbox_mode="workspace-write"`, `approval_policy="on-request"`, `tui.vim_mode_default=true` and
-  `tui.status_line` ([Status line](#status-line)).
+- **`config/codex/config.toml`** → `/etc/codex/config.toml`, linked by `setup_codex_system`: the settings.
+  `sandbox_mode = "workspace-write"` and `approval_policy = "on-request"`; under `[tui]`, `vim_mode_default =
+  true` and `status_line` ([Status line](#status-line)). Codex reads `/etc/codex/config.toml` first and
+  `~/.codex/config.toml` on top of it, so a setting in your own file (one `/statusline` saves, say) wins;
+  `/debug-config` in Codex lists the layers.
+- **Not linked: `~/.codex/config.toml`**, Codex's own: it writes each project's trust there.
 
 The `codex` login, its conversations (`~/.codex/sessions/`, one `rollout-*.jsonl` per conversation) and the
 trusted projects Codex adds to `config.toml` stay in `~/.codex` and out of the repo.
@@ -106,21 +114,27 @@ To look out for
   should skip isn't checked yet.
 - **The Interrupt hook isn't checked yet**: `config/codex/hooks.json` wires it to `tmux-state.sh idle`, but no
   interrupted turn has been seen to fire it; if the window stays *working* after Esc, look at that event first.
-- **The prompt starts in vim mode** (`tui.vim_mode_default`, set by the wrapper): if a Codex release renames
+- **The prompt starts in vim mode** (`vim_mode_default` in `config/codex/config.toml`): if a Codex release renames
   the setting, the prompt starts in normal typing mode and `/vim` turns vim mode on.
 - **A status line item Codex doesn't know is left out**, with "Ignored invalid status line item" under
   `⚠ warnings · f2 to view`. `check_dotfiles` warns when an item's name isn't in the installed Codex binary
   (a release renamed or dropped it), but a name the binary has can still be refused: `monthly-limit` is in the
   `/statusline` list and is refused, while `five-hour-limit` and `weekly-limit` show the monthly window. After a
   change to the list, start `codex` and look at `f2`.
-- **"Running without the shared background server"**, the other `f2` warning, comes from the wrapper's `-c`
-  settings: with them Codex runs its server inside the process instead of sharing one. It does no harm.
+- **`codex -c …` or `codex -p …`** runs without the shared background server ("Running without the shared
+  background server" under `f2`): Codex runs its server inside the process then. It works, but a setting meant
+  for every start belongs in `config/codex/config.toml`.
+- **`/statusline` and other settings saved in Codex** go into `~/.codex/config.toml`, which outranks this
+  setup's file: to change the setup for every Mac, edit `config/codex/config.toml` and remove the key from
+  `~/.codex/config.toml`.
 
 Decisions
 ---
-- **`config.toml` isn't linked, settings go through `-c`**: Codex writes each project's trust, a path of this Mac,
-  into `~/.codex/config.toml`, so a linked file would collect machine paths in the repo. This is the "Exceptions
-  say why" entry for a tool whose config isn't in `config/<tool>/` whole.
+- **The settings are linked as `/etc/codex/config.toml`, not `~/.codex/config.toml` or `-c`**: Codex writes
+  each project's trust, a path of this Mac, into `~/.codex/config.toml`, so a linked file there would collect
+  machine paths in the repo; and Codex started with `-c` or `-p` runs without its shared background server.
+  The system layer is the one file left, at the cost of a `sudo` step. This is the "Exceptions say why" entry
+  for a tool whose config isn't linked from its home.
 - **Codex's built-in status line items, not a second bar in tmux**: a tmux line fed by the rollout file
   could copy Claude Code's whole line, but it would be a second status line for one job ("One tool per job")
   and would read a format Codex doesn't promise. When `tui_extensions_statusline = true` is released, the line

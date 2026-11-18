@@ -297,22 +297,22 @@ key_spans() {
   done
 }
 
-# Codex's status line: each item the codex wrapper (zsh/functions/codex.zsh) puts in tui.status_line is a
-# name the installed Codex binary has, so a release that renames or drops one shows here and not only as a
+# Codex's status line: each item of tui.status_line in config/codex/config.toml is a name the installed Codex
+# binary has, so a release that renames or drops one shows here and not only as a
 # warning at Codex's start (docs/codex.md, "Status line"). It warns: Codex leaves an unknown item out and starts
 # anyway. A name Codex has but this account can't show (monthly-limit) still passes: only starting Codex shows that
 check_codex_status_line() {
   (( $+commands[codex] )) || { print "codex not installed"; return 2 }
-  local line=$(grep -o "tui.status_line=\[[^]]*\]" zsh/functions/codex.zsh)
-  local -a items=(${(s:,:)${${line#*\[}%\]}//\"/})
-  (( $#items )) || { print -r -- "zsh/functions/codex.zsh: no tui.status_line in the codex wrapper"; return }
+  local line=$(grep -o '^status_line = \[[^]]*\]' config/codex/config.toml)
+  local -a items=(${(s:,:)${${${line#*\[}%\]}//\"/}// /})
+  (( $#items )) || { print -r -- "config/codex/config.toml: no tui.status_line"; return }
   # the names the binary (~280 MB) has, read once by perl: macOS grep takes 12 s for it, perl 0.3 s
   local -a found=(${(f)"$(ITEMS=${(j: :)items} perl -0777 -ne '
     for $i (split / /, $ENV{ITEMS}) { print "$i\n" if index($_, $i) >= 0 }' ${commands[codex]:A})"})
   local item
   for item in $items; do
     (( $found[(Ie)$item] )) ||
-      print -r -- "zsh/functions/codex.zsh: Codex ${$(command codex --version 2> /dev/null)##* } has no status line item $item"
+      print -r -- "config/codex/config.toml: Codex ${$(command codex --version 2> /dev/null)##* } has no status line item $item"
   done
   note=$(count $#items item)
 }

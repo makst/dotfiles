@@ -251,6 +251,8 @@ function check_mac() {
   while IFS=$'\t' read -r dst src where; do
     (( $+seen[$dst] )) && continue
     seen[$dst]=1
+    # a link outside the home (/etc/codex) is made with sudo, by hand, so --scripted leaves it out
+    (( ! by_hand )) && [[ $dst != \~* ]] && continue
     link=${dst/#\~/$HOME}
     target=${${src/#./$repo}/#$repo\//$repo/}
     [[ -L $link && -e $link && $link -ef $target ]] && continue
