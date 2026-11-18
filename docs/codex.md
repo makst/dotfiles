@@ -102,6 +102,10 @@ trusted projects Codex adds to `config.toml` stay in `~/.codex` and out of the r
 
 To look out for
 ---
+- **In a tmux pane `codex` runs with `--no-daemon`**: Codex's shared background server, started once and shared
+  by every Codex, runs the hooks with its own environment, so they missed the pane's `TMUX_PANE`: the marks
+  and notifications didn't work. The cost: each Codex in tmux starts its own server. The
+  `/etc/codex/config.toml` link still holds the settings.
 - **No prompt watcher**: Claude Code's hook watches its screen to see whether you approved a permission, Codex's
   doesn't, so the mark stays *waiting* until the tool finishes or your next prompt.
 - **No format hook**: `format.sh` reads Claude Code's Edit and Write events, so Codex's edits aren't formatted.

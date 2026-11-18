@@ -10,11 +10,15 @@
 # worktree (every agent's), commits write to the main checkout's .git, outside the workspace, so that
 # directory is added with --add-dir. Before it starts, link_agent_skills links any skill added to
 # config/agent/skills since the last start into ~/.agents/skills, where Codex reads user skills.
+# In a tmux pane it runs without the shared background server (--no-daemon): that server, started once and
+# shared by every Codex, runs the hooks with its own environment, so they'd miss this pane's TMUX_PANE (the
+# marks, notifications).
 function codex() {
   link_agent_skills ~/.agents/skills
   local file=$real_script_dir/config/codex/config.toml
   local -a add
   local setting
+  [[ -n $TMUX_PANE ]] && add+=(--no-daemon)
   [[ /etc/codex/config.toml -ef $file ]] ||
     for setting in ${(f)"$(_codex_settings $file)"}; do add+=(-c $setting); done
   local common=$(git rev-parse --path-format=absolute --git-common-dir 2> /dev/null)
