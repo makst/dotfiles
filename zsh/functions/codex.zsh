@@ -9,6 +9,8 @@
 # - sandbox_mode workspace-write and approval_policy on-request: commands run in a sandbox that can write the
 #   project, and Codex asks before one that needs more
 # - tui.vim_mode_default: the prompt starts in vim mode (docs/vim-keys.md); `/vim` toggles it
+# - tui.status_line: the line below the prompt, Claude Code's status line as near as Codex's built-in items go
+#   (docs/codex.md, "Status line"); checks/consistency.zsh looks for each item in the Codex binary
 # In a git worktree (every agent's), commits write to the main checkout's .git, outside the workspace, so that
 # directory is added with --add-dir. Before it starts, link_agent_skills links any skill added to
 # config/agent/skills since the last start into ~/.agents/skills, where Codex reads user skills.
@@ -19,7 +21,9 @@ function codex() {
   [[ -n $common && $common != "$(git rev-parse --path-format=absolute --git-dir 2> /dev/null)" ]] &&
     add=(--add-dir $common)
   command codex -c 'sandbox_mode="workspace-write"' -c 'approval_policy="on-request"' \
-    -c 'tui.vim_mode_default=true' $add "$@"
+    -c 'tui.vim_mode_default=true' \
+    -c 'tui.status_line=["current-dir","git-branch","branch-changes","model-with-reasoning","context-used","used-tokens","five-hour-limit","weekly-limit"]' \
+    $add "$@"
 }
 
 

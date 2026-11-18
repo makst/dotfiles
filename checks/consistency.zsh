@@ -297,6 +297,26 @@ key_spans() {
   done
 }
 
+# Codex's status line: each item the codex wrapper (zsh/functions/codex.zsh) puts in tui.status_line is a
+# name the installed Codex binary has, so a release that renames or drops one shows here and not only as a
+# warning at Codex's start (docs/codex.md, "Status line"). It warns: Codex leaves an unknown item out and starts
+# anyway. A name Codex has but this account can't show (monthly-limit) still passes: only starting Codex shows that
+check_codex_status_line() {
+  (( $+commands[codex] )) || { print "codex not installed"; return 2 }
+  local line=$(grep -o "tui.status_line=\[[^]]*\]" zsh/functions/codex.zsh)
+  local -a items=(${(s:,:)${${line#*\[}%\]}//\"/})
+  (( $#items )) || { print -r -- "zsh/functions/codex.zsh: no tui.status_line in the codex wrapper"; return }
+  # the names the binary (~280 MB) has, read once by perl: macOS grep takes 12 s for it, perl 0.3 s
+  local -a found=(${(f)"$(ITEMS=${(j: :)items} perl -0777 -ne '
+    for $i (split / /, $ENV{ITEMS}) { print "$i\n" if index($_, $i) >= 0 }' ${commands[codex]:A})"})
+  local item
+  for item in $items; do
+    (( $found[(Ie)$item] )) ||
+      print -r -- "zsh/functions/codex.zsh: Codex ${$(command codex --version 2> /dev/null)##* } has no status line item $item"
+  done
+  note=$(count $#items item)
+}
+
 # keys: docs/vim-keys.md's tables match the configs. A ✓ (or a plugin's name) means the editor maps the key,
 # – means it doesn't, · that it's the editor's own. Each key VS Code or Android Studio maps is in the doc, so a
 # key added to one of them gets documented. The leader is , in all three.
@@ -430,6 +450,7 @@ check -w "every GIF has its tape and its doc" check_gifs
 check "every agent tool has the whole interface" check_agent_tools
 check "every agent tool's hooks run the rm guard" check_agent_rm_guard
 check -w "every agent tool's hooks set every mark, and tmux knows its pane" check_agent_states
+check -w "Codex knows every item of its status line" check_codex_status_line
 check "docs/vim-keys.md matches nvim, VS Code and IdeaVim" check_keys
 check "each layer keeps to its modifier" check_keyboard
 check "Ghostty's Cmd keys reach tmux bindings" check_ghostty_tmux

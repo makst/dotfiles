@@ -19,6 +19,30 @@ What it is
 - **A native binary**, installed as a Homebrew cask, so tmux sees `codex` as the pane's command, which is how
   `@agent-pane` knows a pane before its first hook has fired.
 
+### Status line
+
+```
+~/repos/dotfiles · feat/codex-status-line · No changes · GPT-6-Luna default · Context 1% used · 15.2K used · monthly 99% left
+```
+
+The line below the prompt, as close to [Claude Code's](claude.md#status-line) as Codex's built-in items get.
+Codex can't run a script for its status line yet (the feature for it, `[features] tui_extensions_statusline =
+true`, is "under development" in 0.170.0), so the `codex` wrapper picks items from the list `/statusline`
+shows:
+
+| Claude Code's status line | Codex item | Shows |
+|---|---|---|
+| directory from the repo root | `current-dir` | the directory, with `~` for home |
+| branch | `git-branch` | the branch |
+| git marks (`!+?⇡⇣`) | `branch-changes` | only what's committed against the default branch (`No changes`), not the work tree |
+| model and effort | `model-with-reasoning` | the model and its reasoning level |
+| ctx % and tokens | `context-used`, `used-tokens` | how full the context window is, and the session's tokens |
+| 5h and 7d limits | `five-hour-limit`, `weekly-limit` | what is **left** of the plan's limits, not what's used; each appears only for the windows your plan has (on a plan with a monthly limit, `monthly 99% left`) |
+
+What Claude Code's has and this lacks: the `(worktree)` tag and the work tree's marks (the shell prompt and the
+agent window's mark have them), the cache timer and the cost (Codex shows a cost only on Enterprise
+workspaces), and the green, yellow and red by level: the items take the colours of `/theme`.
+
 Once per Mac
 ---
 1. `setup_brew`: installs the `codex` cask.
@@ -32,7 +56,7 @@ Commands
 ---
 | Command | Does |
 |---|---|
-| `codex [args]` | Codex with this setup's settings: `workspace-write` sandbox, approvals on request, the prompt in vim mode, and in a git worktree the main checkout's `.git` writable (commits go there) |
+| `codex [args]` | Codex with this setup's settings: `workspace-write` sandbox, approvals on request, the prompt in vim mode, the [status line](#status-line), and in a git worktree the main checkout's `.git` writable (commits go there) |
 | `agent --tool codex <name> [prompt]` | Codex in a worktree and window of its own ([agent](agent.md#starting-an-agent)) |
 | `agent_review --tool codex <name>` | `codex review --base <default branch>` in a pane beside the agent: prints the review and exits, edits nothing |
 | `agent_resume` | lists Codex's conversations with Claude Code's; resumes with `codex resume <id>` |
@@ -62,7 +86,8 @@ Config
 - **`config/agent/skills/<name>/`** → `~/.agents/skills/<name>/`, where Codex reads user skills; the `codex`
   wrapper links a new one when it starts. `~/.agents/skills` itself stays a real directory.
 - **Not linked: `~/.codex/config.toml`.** Settings go through `-c` in the `codex` wrapper:
-  `sandbox_mode="workspace-write"`, `approval_policy="on-request"` and `tui.vim_mode_default=true`.
+  `sandbox_mode="workspace-write"`, `approval_policy="on-request"`, `tui.vim_mode_default=true` and
+  `tui.status_line` ([Status line](#status-line)).
 
 The `codex` login, its conversations (`~/.codex/sessions/`, one `rollout-*.jsonl` per conversation) and the
 trusted projects Codex adds to `config.toml` stay in `~/.codex` and out of the repo.
@@ -83,12 +108,23 @@ To look out for
   interrupted turn has been seen to fire it; if the window stays *working* after Esc, look at that event first.
 - **The prompt starts in vim mode** (`tui.vim_mode_default`, set by the wrapper): if a Codex release renames
   the setting, the prompt starts in normal typing mode and `/vim` turns vim mode on.
+- **A status line item Codex doesn't know is left out**, with "Ignored invalid status line item" under
+  `⚠ warnings · f2 to view`. `check_dotfiles` warns when an item's name isn't in the installed Codex binary
+  (a release renamed or dropped it), but a name the binary has can still be refused: `monthly-limit` is in the
+  `/statusline` list and is refused, while `five-hour-limit` and `weekly-limit` show the monthly window. After a
+  change to the list, start `codex` and look at `f2`.
+- **"Running without the shared background server"**, the other `f2` warning, comes from the wrapper's `-c`
+  settings: with them Codex runs its server inside the process instead of sharing one. It does no harm.
 
 Decisions
 ---
 - **`config.toml` isn't linked, settings go through `-c`**: Codex writes each project's trust, a path of this Mac,
   into `~/.codex/config.toml`, so a linked file would collect machine paths in the repo. This is the "Exceptions
   say why" entry for a tool whose config isn't in `config/<tool>/` whole.
+- **Codex's built-in status line items, not a second bar in tmux**: a tmux line fed by the rollout file
+  could copy Claude Code's whole line, but it would be a second status line for one job ("One tool per job")
+  and would read a format Codex doesn't promise. When `tui_extensions_statusline = true` is released, the line
+  can come from a script as Claude Code's does.
 - **The Homebrew cask, not npm**: a native binary with nothing else to install, and tmux sees `codex` as the
   pane's command.
 - **The hook scripts are shared, not copied**: Codex's hook input has the same fields the scripts read
