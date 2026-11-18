@@ -5,7 +5,7 @@
 
 # -- look -----------------------------------------------------------------------
 # Follows macOS light and dark mode: themes/base16-dark and base16-light are the base16 schemes nvim uses
-# (base16-onedark in both until a light one is picked), written by `change_theme dark|light`, which switches
+# (base16-everforest-dark-medium in both until a light one is picked), written by `change_theme dark|light`, which switches
 # nvim too. Ghostty tells the programs inside about each switch (DEC mode 2031), so nvim changes along
 # (docs/theme.md).
 # Ghostty's own themes: `ghostty +list-themes`

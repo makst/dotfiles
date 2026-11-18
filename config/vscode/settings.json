@@ -1,5 +1,8 @@
 {
-  "workbench.colorTheme": "One Dark Pro",
+  "workbench.colorTheme": "Everforest Dark",
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Everforest Dark",
+  "workbench.preferredLightColorTheme": "Everforest Dark",
   "workbench.startupEditor": "none",
   "editor.fontFamily": "Source Code Pro",
   "terminal.integrated.fontFamily": "Source Code Pro",

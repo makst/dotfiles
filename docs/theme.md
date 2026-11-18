@@ -3,8 +3,8 @@ Theme
 
 [base16](https://github.com/tinted-theming/home) colour schemes drive everything, so the editor, terminal,
 prompt and tools always match. There are two, one for each macOS appearance, and everything switches when
-macOS does (System Settings → Appearance, or Auto at sunset). Both are `base16-onedark` for now: no light
-scheme has been picked yet, so light mode looks like dark mode (`change_theme light` picks one).
+macOS does (System Settings → Appearance, or Auto at sunset). Both are `base16-everforest-dark-medium` for
+now: no light scheme has been picked yet, so light mode looks like dark mode (`change_theme light` picks one).
 
 What it is
 ---

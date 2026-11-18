@@ -16,7 +16,7 @@ Nothing beyond `setup_dotfiles`, which does the following.
 - **VS Code** and **delve** (the Go debugger) from the Brewfile.
 - `setup_vscode` (part of `setup_dotfiles`) links `config/vscode/settings.json` into VS Code and installs the
   extensions in `config/vscode/extensions.txt`: Go, Python and its debugger, vim keys (set up like nvim's,
-  see [vim-keys](vim-keys.md)), the One Dark Pro theme.
+  see [vim-keys](vim-keys.md)), the Everforest Dark theme.
   JavaScript and TypeScript debugging, in Node and in Chrome, is built in.
 
 Once per project
@@ -86,8 +86,10 @@ To look out for
 - **Edit in one place at a time.** VS Code saves when you leave it and nvim reloads changed files when you
   come back, but a file with unsaved changes in both still means one side's changes get lost.
 - **Breakpoints in VS Code don't move when nvim edits the file.** After a big edit, check them.
-- **Colours**: VS Code can't use the terminal's ANSI colours, so it has its own theme, One Dark Pro, close to
-  the base16 scheme; `change_theme` doesn't switch it.
+- **Colours**: VS Code can't use the terminal's ANSI colours, so it has its own theme, Everforest (extension
+  `sainnhe.everforest`), the same as the base16 scheme; `change_theme` doesn't switch it. It follows macOS's
+  light and dark mode like Ghostty (`window.autoDetectColorScheme`), with Everforest Dark in both for now
+  ([theme](theme.md)).
 - **Settings changed in VS Code's UI** land in `config/vscode/settings.json` in this repo: commit them or
   undo them. **A new extension** goes in `config/vscode/extensions.txt` too, so `setup_vscode` installs it
   on every Mac.
@@ -103,5 +105,5 @@ Decisions
 ---
 - **VS Code next to nvim, not a second editor**: it opens on its own workspace and `,vo` jumps to the same
   line, so editing stays in nvim and VS Code only debugs.
-- **One Dark Pro in VS Code**: it can't use the terminal's ANSI colours, so it gets the theme closest to the
+- **Everforest in VS Code**: it can't use the terminal's ANSI colours, so it gets the theme closest to the
   base16 scheme.
