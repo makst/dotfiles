@@ -121,7 +121,7 @@ docs/                     this documentation
 .githooks/                reload the live setup after a pull, rebase or branch switch
 .github/                  CI: check_dotfiles and the fresh-Mac rehearsal
 checks/                   check_dotfiles: the checks run before a commit and on CI; mutate tests them;
-                          fresh_mac rehearses a new Mac
+                          fresh_mac rehearses a new Mac; links_diagram draws the links in docs/setup.md
 CLAUDE.md                 instructions for Claude Code working on this repo
 ```
 

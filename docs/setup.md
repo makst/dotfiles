@@ -150,11 +150,11 @@ Checks
 check_dotfiles
 ```
 
-Runs the checks in `checks/` before a commit, in about a second. Each check prints what it found wrong and
-`check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with `ok`, `FAILED`,
-`warn` or `skip` and its time. The checks that only compare the docs or a convention with the config (setup
-tables, README links, the names the docs mention, nvim key descs, the style group)
-`warn`: their problems are printed in yellow, but they don't fail the run, on a Mac or on CI. A stale doc
+`check_dotfiles` runs the checks in `checks/` before a commit, in about a second. Each check prints what it
+found wrong and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with
+`ok`, `FAILED`, `warn` or `skip` and its time. The checks that only compare the docs or a convention with
+the config (setup tables, README links, the names the docs mention, nvim key descs, the style group) `warn`:
+their problems are printed in yellow, but they don't fail the run, on a Mac or on CI. A stale doc
 table is worth fixing, but it doesn't break the setup. A check whose tool isn't installed (Ghostty, AeroSpace,
 starship, nvim, tmux, yq, shellcheck, Python 3.11 for TOML) is skipped and says why. Claude Code runs them
 outside its sandbox (this repo's `.claude/settings.json`), since the tmux checks need a socket; a command line
@@ -169,7 +169,7 @@ Homebrew leaves group-writable directories, and zsh would stop to ask about them
 | Syntax | `checks/syntax.zsh` | every zsh, bash, JSON, TOML, YAML and Lua file parses; tmux.conf, gitconfig, ssh config, Brewfile, Ghostty, starship and AeroSpace configs load in their own tool |
 | Behaviour | `checks/behaviour.zsh` | zsh starts without errors, and its functions find the repo in a shell that hasn't read `.zshrc` (Claude Code's); Claude Code's hooks (deletes that can't be undone, format, bell, and which events notify and what they say) and status line do what they should, with only zsh, jq, git and gh on PATH; the parts that could lose work or break the setup work on their own, in throwaway repos, HOME and tmux server: `agent_done` removes a worktree only when nothing would be lost (uncommitted, unmerged, merged locally or in `origin`, ignored files to the Trash, the list), `_agent_worktree` brings back what it left, `agent_land` lands only a clean, rebased, checked branch and undoes a conflicting rebase, the GitHub watcher notifies each change once and keeps its last good state, and the agents' state hook and the order of `agents` and `next-agent` follow it (skipped where tmux can't run, as in Claude Code's sandbox). Not tried: a locked agent worktree, which would wait 2 s |
 | References | `checks/references.zsh` | Markdown links and anchors, paths, setup links, function and alias names in the docs, nvim's requires and Claude Code's hook commands all exist |
-| Consistency | `checks/consistency.zsh` | every step `setup_dotfiles` runs is defined; setup steps and symlinks match this page; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; a plugin's internal modules are required from one nvim file; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier; the installed Codex knows every item of the `codex` wrapper's status line (warns) |
+| Consistency | `checks/consistency.zsh` | every step `setup_dotfiles` runs is defined; setup steps and symlinks match this page; the links diagram in [Symlinks](#symlinks) is what the setup links; the README links every doc; plugins are pinned; every nvim key has a desc and is bound in a `keymaps.lua`; a plugin's internal modules are required from one nvim file; `docs/vim-keys.md` matches nvim, VS Code and IdeaVim and has every TUI the Brewfile marks; each layer keeps to its modifier; the installed Codex knows every item of the `codex` wrapper's status line (warns) |
 | Portability | `checks/portability.zsh` | nothing belongs to one Mac: no path into a user's home (`/Users/<name>/…`), nothing names this Mac (its hostname or `setup_machine` name, except in `allowed_signers`) or a word in its `~/.config/dotfiles/forbidden`; commits not yet pushed use the email of `config/git/.gitconfig` and their messages name neither |
 | Safety | `checks/safety.zsh` | nothing published can hurt: no token or private key in the files as they are now (it says which kind, never the secret), no email address but GitHub's noreply ones, `git@github.com` and made-up ones (`example.com`, `.local`, …), `zsh/.private` and nvim's `hidden/` ignored and untracked, `config/claude` and `config/agent` name no machine path and nothing of this repo, no code reaches for `/usr/local`, x86_64 or Rosetta, none deletes for good (`rm -r`, `find -delete`, `git clean -f`), and every link a setup step makes comes after `keep_real` |
 | Commits | `checks/commits.zsh` | the commits a push would publish (on CI, those the push brought): a `type(scope): summary` subject, a body besides the trailers, no "Generated with" line, signed with a key in `config/git/allowed_signers` |
@@ -241,6 +241,8 @@ Commands
 - `timezsh` benchmarks the shell start with hyperfine: check after adding plugins.
 - `check_mac` checks this Mac against the repo, see [Is this Mac up to date?](#is-this-mac-up-to-date).
 - `reload_dotfiles` reloads tmux, Ghostty and AeroSpace, see [Staying up to date](#staying-up-to-date).
+- `checks/links_diagram -w` writes the diagram in [Symlinks](#symlinks) from the links the setup steps make;
+  without `-w` it prints it. Run it after a step links something new; `check_dotfiles` warns while it is behind.
 - `keep_real <path>` and `load_launch_agent <label> <plist>` are what the setup steps share: the first moves
   a real file to the Trash before a link takes its place, the second loads a LaunchAgent only when its plist
   changed.
@@ -308,6 +310,78 @@ Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that
 `config/ssh/config`. Rename the Mac or change its kind with `setup_machine <name> <home|work>`.
 
 ### Symlinks
+
+Which folder of the repo is linked where, one arrow for each; the table below has every link.
+
+<!-- links_diagram: made by checks/links_diagram -w; check_dotfiles warns when it is behind -->
+```mermaid
+flowchart LR
+  subgraph repo ["this repo"]
+    r1[".zshrc"]
+    r2["config/aerospace"]
+    r3["config/agent"]
+    r4["config/atuin"]
+    r5["config/btop"]
+    r6["config/claude"]
+    r7["config/codex"]
+    r8["config/ghostty"]
+    r9["config/git"]
+    r10["config/github"]
+    r11["config/ideavim"]
+    r12["config/nvim"]
+    r13["config/readline"]
+    r14["config/tmux"]
+    r15["config/vscode"]
+    r16["the whole repo"]
+    r17["zsh/bin"]
+  end
+  subgraph home ["this Mac"]
+    h18["/etc/codex"]
+    h19["~/.atuin"]
+    h20["~/.claude"]
+    h21["~/.codex"]
+    h22["~/.config/aerospace"]
+    h23["~/.config/btop"]
+    h24["~/.config/ghostty"]
+    h25["~/.config/git"]
+    h26["~/.config/github"]
+    h27["~/.config/nvim"]
+    h28["~/.config/tmux"]
+    h29["~/.editrc"]
+    h30["~/.gitconfig"]
+    h31["~/.ideavimrc"]
+    h32["~/.inputrc"]
+    h33["~/.local/bin"]
+    h34["~/.zshrc"]
+    h35["~/bin"]
+    h36["~/dotfiles"]
+    h37["~/Library/Application Support/Code/User"]
+  end
+  o38["/opt/homebrew/bin"]
+  r1 --> h34
+  o38 --> h35
+  r2 --> h22
+  r3 --> h20
+  r3 --> h21
+  r4 --> h19
+  r5 --> h23
+  r6 --> h20
+  r7 --> h18
+  r7 --> h21
+  r8 --> h24
+  r9 --> h25
+  r9 --> h30
+  r10 --> h26
+  r11 --> h31
+  r12 --> h27
+  r13 --> h29
+  r13 --> h32
+  r14 --> h28
+  r15 --> h37
+  r16 --> h36
+  r17 --> h33
+```
+<!-- end links_diagram -->
 
 | In `$HOME` | Points to |
 |---|---|

@@ -197,6 +197,68 @@ link_map() {
   done < $tmp/links.out
 }
 
+# links_diagram: the Mermaid diagram of what the setup links, from links_index ($tmp/links.out), as the fenced
+# block docs/setup.md, "Symlinks", has between its links_diagram marker comments: one box for each folder of
+# the repo (config/<tool>, zsh/bin) and for each place it is linked into (~/.config/<tool>, ~/.claude, /etc/codex),
+# an arrow for each pair. checks/links_diagram -w writes it into the page, check_links_diagram compares.
+links_diagram() {
+  local dst src rest rel from to edge sep=$'\t'
+  local -A edges
+  local -a repo_boxes outside_boxes home_boxes
+  local -A id
+  while IFS=$'\t' read -r dst src rest; do
+    rel=${src#./}
+    case $src in
+      (.) from='the whole repo' ;;
+      (./config/*) from=config/${${src#./config/}%%/*} ;;
+      (./*/*) from=${rel:h} ;;
+      (./*) from=$rel ;;
+      (*) from=${src:h} ;;
+    esac
+    case $dst in
+      ('~/.config/'*/*|'~/.config/'*) to='~/.config/'${${dst#\~/.config/}%%/*} ;;
+      ('~/Library/'*|'~/.local/'*|/*) to=${dst:h} ;;
+      ('~/'*/*) to='~/'${${dst#\~/}%%/*} ;;
+      (*) to=$dst ;;
+    esac
+    edges[$from$sep$to]=1
+  done < $tmp/links.out
+  for edge in ${(ko)edges}; do
+    from=${edge%%$sep*} to=${edge#*$sep}
+    if [[ $from == (config/*|zsh/*|.*|the whole repo) ]]; then
+      repo_boxes+=($from)
+    else
+      outside_boxes+=($from)
+    fi
+    home_boxes+=($to)
+  done
+  repo_boxes=(${(ou)repo_boxes}) outside_boxes=(${(ou)outside_boxes}) home_boxes=(${(ou)home_boxes})
+  local -i n=0
+  local box
+  print -r -- '```mermaid'
+  print -r -- 'flowchart LR'
+  print -r -- '  subgraph repo ["this repo"]'
+  for box in $repo_boxes; do id[$box]=r$((++n)); print -r -- "    $id[$box][\"$box\"]"; done
+  print -r -- '  end'
+  print -r -- '  subgraph home ["this Mac"]'
+  for box in $home_boxes; do id[$box]=h$((++n)); print -r -- "    $id[$box][\"$box\"]"; done
+  print -r -- '  end'
+  for box in $outside_boxes; do id[$box]=o$((++n)); print -r -- "  $id[$box][\"$box\"]"; done
+  for edge in ${(ko)edges}; do
+    print -r -- "  $id[${edge%%$sep*}] --> $id[${edge#*$sep}]"
+  done
+  print -r -- '```'
+}
+
+# links_diagram_place: sets the caller's `lines` to docs/setup.md's lines and `start` / `end` to its two
+# links_diagram marker comments, the diagram being the lines between them; returns 1 when they are missing
+links_diagram_place() {
+  local mark='<!-- links_diagram:'
+  lines=("${(@f)$(<docs/setup.md)}")
+  start=${lines[(i)${(b)mark}*]} end=${lines[(ie)<!-- end links_diagram -->]}
+  (( end <= $#lines && start < end ))
+}
+
 # words_index: every name with an underscore in it (setup_python, used_percentage) in the code, the comments
 # and the configs, one per line; not the Brewfiles' own, which check_names checks against these, nor
 # checks/mutate's, whose breaks name missing functions on purpose

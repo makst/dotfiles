@@ -1,0 +1,27 @@
+#!/bin/zsh
+# links_diagram [-w]: prints the Mermaid diagram of what the setup links, from the `ln -s` lines of the setup
+# steps (links_diagram in checks/lib.zsh); -w writes it into docs/setup.md, "Symlinks", between its two
+# links_diagram marker comments. Run it after a setup step links something new or stops linking it;
+# check_dotfiles warns while the page is behind (check_links_diagram in checks/consistency.zsh).
+
+setopt extended_glob
+repo=${0:A:h:h}
+cd $repo || exit 1
+tmp=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles.XXXXXX) && tmp=${tmp:A} || exit 1
+source checks/lib.zsh
+links_index > $tmp/links.out
+diagram=$(links_diagram)
+rm -f -- $tmp/links.out && rmdir -- $tmp
+
+if [[ $1 != -w ]]; then
+  print -r -- $diagram
+  exit 0
+fi
+typeset -a lines
+typeset -i start end
+if ! links_diagram_place; then
+  print -r -- "links_diagram: docs/setup.md has no <!-- links_diagram: … --> and <!-- end links_diagram --> lines" >&2
+  exit 1
+fi
+print -rl -- "${(@)lines[1,start]}" "$diagram" "${(@)lines[end,-1]}" > docs/setup.md
+print -r -- "links_diagram: wrote the diagram into docs/setup.md"

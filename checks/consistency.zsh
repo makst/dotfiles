@@ -86,6 +86,19 @@ check_symlinks() {
   note=$(count $#rows link)
 }
 
+# links diagram: the diagram in docs/setup.md, "Symlinks", is the one checks/links_diagram makes from what the
+# setup links now
+check_links_diagram() {
+  local -a lines
+  local -i start end
+  if ! links_diagram_place; then
+    print -r -- "docs/setup.md: no <!-- links_diagram: … --> and <!-- end links_diagram --> lines around the diagram"
+    return
+  fi
+  [[ ${(F)lines[start+1,end-1]} == "$(links_diagram)" ]] ||
+    print -r -- "docs/setup.md: the links diagram is behind what the setup links: run checks/links_diagram -w"
+}
+
 # README: every page in docs/ is linked from the README
 check_readme() {
   local kind file line target
@@ -461,6 +474,7 @@ group "Consistency: the files that describe the same thing agree"
 check "the steps setup_dotfiles runs are defined" check_steps_defined
 check -w "setup_dotfiles' steps match docs/setup.md" check_setup_steps
 check -w "every symlink is in docs/setup.md, and only those" check_symlinks
+check -w "docs/setup.md's links diagram is what the setup links" check_links_diagram
 check -w "the README links every page in docs/" check_readme
 check -w "this Mac's files are documented and read" check_machine_files
 check "nvim's plugins are pinned in lazy-lock.json" check_plugins
