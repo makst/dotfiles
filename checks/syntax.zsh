@@ -201,6 +201,14 @@ check_aerospace() {
   aerospace reload-config --dry-run --warnings-as-errors 2>&1
 }
 
+# mermaid: the one mistake GitHub's Mermaid shows as an error box that a check can see without mermaid-cli: a
+# `;` in a diagram's line, which Mermaid reads as the end of a statement, so the rest of the line breaks it
+check_mermaid() {
+  local -i blocks=$(cat $md_files | grep -c '^```mermaid')
+  note=$(count $blocks diagram)
+  awk '/^```mermaid/ { on = 1; next } /^```/ { on = 0 } on && /;/ { print FILENAME ":" FNR ": a ; ends a Mermaid statement: " $0 }' $md_files
+}
+
 group "Syntax: each file parses in the tool that reads it"
 check "zsh files parse" check_zsh
 check "bash scripts pass shellcheck" check_bash
@@ -217,3 +225,4 @@ check "Ghostty config is valid" check_ghostty
 check "starship config has only known keys" check_starship
 check "fzfrc has only options fzf knows" check_fzf
 check "AeroSpace config is valid" check_aerospace
+check "Mermaid diagrams have no ; in a line" check_mermaid

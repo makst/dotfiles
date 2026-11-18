@@ -214,7 +214,7 @@ sequenceDiagram
   participant C as the child, in window ask-id
   A->>Q: agent_ask --tool codex "…"
   Q->>C: opens the window in the caller's session, starts the tool read-only with the prompt
-  Note over C: works; you can switch to it to watch or answer a prompt
+  Note over C: works, and you can switch to it to watch or answer a prompt
   C->>Q: Stop hook answer.sh writes its last message
   Q->>A: prints the answer, exit 0
   A->>Q: agent_ask --to id "…"
