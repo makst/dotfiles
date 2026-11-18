@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Usage: tmux-state.sh working|waiting|done|idle|off
+# Usage: tmux-state.sh working|waiting|done|idle|off [tool]
 # Records what the agent in its tmux pane is doing, as the pane option @agent: the one place that says what it
 # holds. Claude Code's hooks call it; any other tool that runs in a pane can call it or set @agent the same
 # way. Outside tmux it does nothing.
@@ -66,11 +66,11 @@ if [[ $state == done ]] \
   state=idle
 fi
 tmux set -p -t "$TMUX_PANE" @agent "$state" 2> /dev/null
-# watch_prompt's screen patterns are Claude Code's, so only a Claude pane gets it; for other tools the state
-# stays waiting until the tool's next hook. In the background, with its output closed, so the tool doesn't
-# wait for it.
-if [[ $state == waiting ]] &&
-  [[ $(tmux display -p -t "$TMUX_PANE" '#{pane_current_command}' 2> /dev/null) == claude ]]; then
+# watch_prompt's screen patterns are Claude Code's, so only Claude's hooks get it: they pass no [tool], the
+# other tools' hooks name theirs (config/codex/hooks.json) and their state stays waiting until the next hook.
+# Not pane_current_command: Claude Code's process shows as its version (2.1.325), not as claude. In the
+# background, with its output closed, so the tool doesn't wait for it.
+if [[ $state == waiting && -z $2 ]]; then
   watch_prompt < /dev/null > /dev/null 2>&1 &!
 fi
 exit 0

@@ -53,7 +53,7 @@ Config
   | PreToolUse on Bash | `no-recursive-rm.sh` |
   | SessionStart, Interrupt | `tmux-state.sh idle` |
   | UserPromptSubmit, PostToolUse | `tmux-state.sh working` |
-  | PermissionRequest | `tmux-state.sh waiting`, `notify.sh Codex` |
+  | PermissionRequest | `tmux-state.sh waiting codex` (no approval watcher), `notify.sh Codex` |
   | Stop | `bell.sh`, `tmux-state.sh done`, `notify.sh Codex` |
   | SessionEnd | `tmux-state.sh off` |
 
@@ -75,9 +75,10 @@ To look out for
 - **Skills are `$ship` and `$handoff`**, not `/ship`: in Codex `/` starts its own commands.
 - **Hooks need trust**: after `setup_codex` or a change to `config/codex/hooks.json`, Codex runs no hook until
   `/hooks` has trusted it; the marks and the `rm` guard are off until then.
-- **The conversation list is built on Codex's documented rollout format**, not yet checked against a real
-  file: if `agent_resume` lists no Codex conversation, read `~/.codex/sessions/**/rollout-*.jsonl` with `jq -c .`
-  and fix `_agent_codex_sessions` in `zsh/functions/codex.zsh`.
+- **The conversation list reads Codex's rollout files**, in the format of Codex 0.170.0; a release that
+  changes it empties the list: read `~/.codex/sessions/**/rollout-*.jsonl` with `jq -c .` and fix
+  `_agent_codex_sessions` in `zsh/functions/codex.zsh`. Whether a `codex review` leaves a rollout that the list
+  should skip isn't checked yet.
 - **`tui.vim_mode_default`** is the setting name found in the binary, not confirmed in the docs; if the prompt
   doesn't start in vim mode, `/vim` turns it on.
 

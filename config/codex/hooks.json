@@ -4,7 +4,7 @@
     "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh working"}]}],
     "PreToolUse": [{"matcher": "^Bash$", "hooks": [{"type": "command", "command": "~/.codex/hooks/no-recursive-rm.sh"}]}],
     "PermissionRequest": [{"hooks": [
-      {"type": "command", "command": "~/.codex/hooks/tmux-state.sh waiting"},
+      {"type": "command", "command": "~/.codex/hooks/tmux-state.sh waiting codex"},
       {"type": "command", "command": "~/.codex/hooks/notify.sh Codex"}]}],
     "PostToolUse": [{"hooks": [{"type": "command", "command": "~/.codex/hooks/tmux-state.sh working"}]}],
     "Stop": [{"hooks": [

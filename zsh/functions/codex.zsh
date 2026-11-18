@@ -28,8 +28,8 @@ function codex() {
 # the first is {"type":"session_meta","payload":{"id":…,"cwd":…,"source":…}}, then
 # {"type":"response_item","payload":{"type":"message","role":"user"|"assistant","content":[{"type":
 # "input_text"|"output_text","text":…}]}}; Codex's own context (AGENTS.md, <environment_context>) comes as
-# user messages that start with "# AGENTS" or "<". Shape from Codex docs, not yet checked against a real
-# rollout (docs/codex.md, "To look out for").
+# user messages that start with "# AGENTS" or "<". Checked against a Codex 0.170.0
+# rollout; the "# AGENTS" prefix and telling a review's rollout apart aren't yet (docs/codex.md).
 
 # _agent_codex_start [args…]: starts Codex, with a prompt and/or its own flags. It goes through the codex
 # wrapper above: send-keys types the command into an interactive zsh, which has it.
