@@ -217,7 +217,29 @@ The global config is meant to sit unnoticed next to a team's own Claude Code set
 
 ### Hooks
 
-`settings.json`, "hooks", runs the scripts of `config/agent/hooks` (what each does: [agent](agent.md#config)):
+`settings.json`, "hooks", runs the scripts of `config/agent/hooks` (what each does: [agent](agent.md#config)).
+One turn, from your prompt to the answer:
+
+```mermaid
+sequenceDiagram
+  actor You
+  participant C as Claude Code
+  participant H as config/agent/hooks
+  participant T as tmux
+  You->>C: a prompt
+  C->>H: UserPromptSubmit: tmux-state.sh working
+  H->>T: marks the window working
+  C->>H: PreToolUse on Bash: no-recursive-rm.sh
+  H-->>C: blocks a recursive rm, allows the rest
+  C->>H: PostToolUse on Edit, Write: format.sh
+  C->>H: PermissionRequest: tmux-state.sh waiting, bell.sh, notify.sh
+  H->>T: marks the window waiting
+  You->>C: allow
+  C->>H: Stop: tmux-state.sh done, answer.sh, bell.sh, notify.sh
+  H->>T: marks the window done
+```
+
+Every hook, by event:
 
 | Claude Code event | Script |
 |---|---|

@@ -207,6 +207,24 @@ tools: Claude Code asks Codex, Codex asks Claude Code, either asks any tool of t
 their shell (`/ask` in Claude Code, `$ask` in Codex: the shared skill `config/agent/skills/ask/`); you can run
 it too. It needs tmux.
 
+```mermaid
+sequenceDiagram
+  participant A as the agent that asks
+  participant Q as agent_ask
+  participant C as the child, in window ask-id
+  A->>Q: agent_ask --tool codex "…"
+  Q->>C: opens the window in the caller's session, starts the tool read-only with the prompt
+  Note over C: works; you can switch to it to watch or answer a prompt
+  C->>Q: Stop hook answer.sh writes its last message
+  Q->>A: prints the answer, exit 0
+  A->>Q: agent_ask --to id "…"
+  Q->>C: pastes the follow-up
+  C->>Q: the next answer
+  Q->>A: prints it
+  A->>Q: agent_ask --close id
+  Q->>C: closes the window
+```
+
 1. It opens a **window `ask-<id>`** in the caller's tmux session, in the background, and starts the tool there,
    interactive, with the prompt. You can switch to the window to watch it, or answer a permission prompt; its
    marks and notifications are those of any agent ([Noticing an agent that waits](#noticing-an-agent-that-waits)).

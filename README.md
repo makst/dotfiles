@@ -4,6 +4,22 @@ dotfiles
 A keyboard-driven macOS development setup for Apple silicon. Ghostty opens straight into tmux, tmux holds
 the shells, nvim sessions and Claude Code agents, and one base16 colour scheme is shared by all of them.
 
+```mermaid
+flowchart TB
+  subgraph aerospace ["AeroSpace: windows and workspaces"]
+    subgraph ghostty ["Ghostty: the terminal"]
+      subgraph tmux ["tmux: sessions, windows, panes and the pickers"]
+        zsh["zsh: the shell"]
+        nvim["nvim: the editor"]
+        agents["agents: Claude Code, Codex, each in its own window and worktree"]
+      end
+    end
+    ides["VS Code, Android Studio: nvim's keys"]
+  end
+  theme[("base16 theme")] -.-> ghostty & tmux & nvim
+  nvim -. "the same keys" .-> ides
+```
+
 | Layer | Tool | Docs |
 |---|---|---|
 | Install and update | Homebrew (`Brewfile`), `setup_dotfiles`, `check_dotfiles` (also CI), `check_mac` | [setup](docs/setup.md) |

@@ -150,6 +150,25 @@ Checks
 check_dotfiles
 ```
 
+Where each check runs, from a change on one Mac to the next Mac that pulls it:
+
+```mermaid
+sequenceDiagram
+  actor You
+  participant M as this Mac
+  participant G as GitHub
+  participant O as another Mac
+  You->>M: a change, on a branch
+  M->>M: check_dotfiles
+  You->>M: git commit, git push
+  M->>G: the push
+  G->>G: check.yml: checks/check_dotfiles -v on a macOS runner
+  Note over G: fresh-mac.yml, every Monday: a new Mac of each kind
+  O->>G: git pull
+  O->>O: .githooks: reload_dotfiles
+  O->>O: setup_dotfiles, then check_mac
+```
+
 `check_dotfiles` runs the checks in `checks/` before a commit, in about a second. Each check prints what it
 found wrong and `check_dotfiles` returns 1 if any fails; `check_dotfiles -v` also lists every check with
 `ok`, `FAILED`, `warn` or `skip` and its time. The checks that only compare the docs or a convention with
