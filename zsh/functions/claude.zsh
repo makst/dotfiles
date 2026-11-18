@@ -154,7 +154,13 @@ function _agent_claude_hooks() { print config/claude/settings.json }
 
 # setup_claude: links config/claude's settings, CLAUDE.md and status line, and the shared config/agent's hooks,
 # AGENTS.md and skills, into ~/.claude; a real file Claude Code made in their place goes to the Trash first.
+# It refuses to run inside Claude Code (CLAUDECODE is set): a running session removes a ~/.claude/hooks that
+# wasn't there when it started, so the hooks would be gone again after the next command.
 function setup_claude() {
+  if [[ -n $CLAUDECODE ]]; then
+    print -u2 "setup_claude: run it in a plain terminal with Claude Code closed; a running session removes ~/.claude/hooks"
+    return 1
+  fi
   mkdir -p ~/.claude
   local item
   for item in settings.json CLAUDE.md statusline.sh; do

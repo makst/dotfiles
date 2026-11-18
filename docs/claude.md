@@ -223,6 +223,10 @@ To look out for
 ---
 - If `ls -l ~/.claude/settings.json` ever shows a plain file instead of a link, copy the changes into
   `config/claude/settings.json` and run `setup_claude` again.
+- Run `setup_claude` in a plain terminal with every Claude Code session closed, then start Claude. A running
+  session deletes a `~/.claude/hooks` that wasn't there when it started, so every hook fails (the `rm` guard
+  too) and the sandbox stops protecting `config/agent/hooks`. `setup_claude` refuses to run inside Claude Code;
+  `check_mac` reports the missing link.
 - `/plugin install` with the default scope (*user*) writes into the shared `settings.json`. When a session
   ends, the `claude` function checks for that and says so; move the entries to `claude.json`, or commit them
   if every Mac should have them.
