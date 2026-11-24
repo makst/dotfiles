@@ -26,14 +26,16 @@ What it is
   workspaces under it. It opens from any app in a small Ghostty window floating over the workspace you're on,
   the cursor on the window you came from (✓): `j/k` move, `/` filters, Enter goes to that window, workspace
   or display, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace (or display),
-  `t` arranges the chosen workspace in a layout, `d` closes the chosen window, `q` back to where you were.
+  `t` arranges the chosen workspace in a layout, `a` lists the saved arrangements, `d` closes the chosen
+  window, `q` back to where you were.
 - **Layouts** (`t` in `alt+w`): a list of layouts with a drawing of each, for the workspace of the line
   you're on: side by side, stacked, one big window on the left (60%) with the others stacked on the right,
   in columns of two, or one at a time (the accordion). It goes to that workspace and arranges its tiled
   windows in the order they're in now; floating ones stay as they are.
 - **Saved arrangements**: which apps go on which workspace, which workspace on which display and in what
   shape, saved per number of displays: Ghostty on the big display and Slack on the laptop's with two, both on
-  one workspace one at a time with one. See [Saved arrangements](#saved-arrangements).
+  one workspace one at a time with one. `a` in `alt+w` lists them: Enter applies one, `n` saves what's on
+  screen. See [Saved arrangements](#saved-arrangements).
 - **Keys** are all on `Option` (Alt), captured system-wide, so they don't reach other apps: Alt+h/j/k/l in
   nvim or zsh, for instance, are handled by AeroSpace.
 
@@ -74,6 +76,20 @@ to its display, arranges each in its shape and shows it, ending on the first lin
 it doesn't name stay where they are; an app with no window is left out and named. It refuses an arrangement
 made for another number of displays. `check_dotfiles` checks the file (`windows --check <file>` on its own).
 
+`a` in `alt+w` lists them, with each one's displays, workspaces, shapes and apps in the preview; the ones made
+for another number of displays are dimmed, and Enter on one says so instead of applying it.
+
+| Key | Action |
+|---|---|
+| Enter | apply it (`windows --apply <name>`) |
+| `n` | save what's on screen now under a name you type (`windows --save <name>`); a name in use asks before replacing |
+| `r` | rename it (`windows --rename <name> <new name>`) |
+| `d` | delete it, after a `y` (`windows --delete <name>`) |
+| `q` | back to where you were |
+
+Saving writes, for each workspace with windows, its display, its shape and its apps in their order; an app on
+two workspaces goes with the first. Each change keeps the file as it was in `arrangements.prev` next to it.
+
 Making an app float
 ---
 1. `aerospace list-windows --all` shows every window with its app id.
@@ -93,7 +109,7 @@ Keys
 | `alt+t` | float the window (toggle) |
 | `alt+z` | fill the workspace with the window (toggle), as `C-a z` zooms a tmux pane |
 | `alt+=` | make all windows equal size |
-| `alt+w` | every window by display and workspace, in a picker: Enter goes there, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace or display, `t` arranges the chosen workspace in a layout, `d` closes the chosen window, `q` back (see [same key, every layer](design.md#same-key-every-layer)) |
+| `alt+w` | every window by display and workspace, in a picker: Enter goes there, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace or display, `t` arranges the chosen workspace in a layout, `a` the saved arrangements, `d` closes the chosen window, `q` back (see [same key, every layer](design.md#same-key-every-layer)) |
 | `alt+1`…`9` | go to workspace 1…9 |
 | `alt+0` | back to the previous workspace |
 | `alt+[` / `alt+]` | previous / next workspace with windows on this display, cycling: see [same key, every layer](design.md#same-key-every-layer) |
@@ -142,6 +158,10 @@ To look out for
 - **A layout came out different**: `t` flattens the workspace first and then joins and moves windows by
   their order, so a window that was minimised, or that AeroSpace lists in another order, can land
   elsewhere. `t` again, or `shift+alt+;` then `r` to put every window back in one row.
+- **A saved shape isn't the one on screen**: AeroSpace only tells how a workspace's windows are split at the
+  top (side by side, stacked, one at a time), so saving uses the shape `t` last gave the workspace while that
+  still fits, and otherwise side by side, stacked or one at a time. Arranged by hand, a main + stack is saved
+  as side by side: `t` it once, or change the line in the file.
 - **An app in an arrangement isn't moved**: the name must be the one AeroSpace shows
   (`aerospace list-apps`), e.g. `Brave Browser`, not `Brave`.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.

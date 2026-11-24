@@ -14,6 +14,11 @@ source ${0:A:h}/../tmux/picker.zsh
 # letters, when it lines up the columns
 [[ -n $LANG ]] || export LANG=en_US.UTF-8
 self=${0:A}
+# this Mac's arrangements (config/machine/arrangements has the format), and the shape t last gave each
+# workspace, "workspace shape" a line, which saving an arrangement reads: AeroSpace can't say how a workspace
+# is split, only its root layout
+arrangement_file=~/.config/dotfiles/arrangements
+shape_file=${XDG_STATE_HOME:-$HOME/.local/state}/aerospace-shapes
 
 # focus_state: the focused window and workspace, to tell whether a switch held
 function focus_state() {
@@ -267,6 +272,9 @@ if [[ $1 == --arrange ]]; then
     width=${width%.*}
     [[ $width == <-> ]] && aerospace resize --window-id $ids[1] width $(( width * 6 / 10 ))
   fi
+  mkdir -p ${shape_file:h}
+  { awk -v w=$workspace '$1 != w' $shape_file 2> /dev/null; print -r -- "$workspace $layout" } > $shape_file.new &&
+    mv $shape_file.new $shape_file
   exit 0
 fi
 
@@ -322,7 +330,7 @@ fi
 # order, and each display showing its workspace, the first line's with the focus. Refuses one made for another
 # number of displays; says which apps had no window.
 if [[ $1 == --apply ]]; then
-  file=~/.config/dotfiles/arrangements tab=$'\t'
+  file=$arrangement_file tab=$'\t'
   lines=(${(M)${(f)"$(arrangements $file)"}:#<->$tab$2$tab*})
   if (( ! $#lines )); then
     print -u2 -r -- "no arrangement '$2' in $file"
@@ -362,6 +370,177 @@ if [[ $1 == --apply ]]; then
   exit 0
 fi
 
+# rewrite <name> [line…]: replaces the arrangement's lines in the file with these, where its first line was
+# or at the end; none deletes it. The file as it was is kept as arrangements.prev, so a change can be undone.
+function rewrite() {
+  local name=$1
+  shift
+  [[ -e $arrangement_file ]] || : > $arrangement_file
+  cp $arrangement_file $arrangement_file.prev
+  NEW="$(print -rl -- $@)" awk -v name=$name '
+    !/^[[:space:]]*#/ && $1 == name { if (!done && ENVIRON["NEW"] != "") print ENVIRON["NEW"]; done = 1; next }
+    { print }
+    END { if (!done && ENVIRON["NEW"] != "") print ENVIRON["NEW"] }' $arrangement_file.prev > $arrangement_file
+}
+
+# arrangement <name>: the arrangement's lines, as arrangements prints them
+function arrangement() {
+  local tab=$'\t'
+  [[ -r $arrangement_file ]] && print -rl -- ${(M)${(f)"$(arrangements $arrangement_file)"}:#<->$tab$1$tab*}
+}
+
+# what each shape is called in the lists
+typeset -A shape_names=(tiles 'side by side' rows stacked main 'main + stack' grid 'columns of two'
+  accordion 'one at a time')
+
+# --save <name>: saves what's on screen now as the arrangement, replacing one of that name: for each workspace
+# with windows, its display (main or secondary), its shape and its apps in their order. An app goes with the
+# first workspace it's on (in an arrangement every window of an app goes to one workspace). The shape is the
+# one t last gave the workspace if its root layout still fits it, else what the root layout says: side by
+# side, stacked or one at a time.
+if [[ $1 == --save ]]; then
+  if [[ -z $2 || $2 == *[^[:alnum:]_-]* ]]; then
+    print -u2 -r -- "an arrangement's name is letters, digits, - and _: '$2'"
+    exit 1
+  fi
+  typeset -A role shape root seen apps display
+  for line in ${(f)"$(aerospace list-monitors --format '%{monitor-id}'$'\t''%{monitor-is-main}')"}; do
+    [[ ${line#*$'\t'} == true ]] && role[${line%%$'\t'*}]=main || role[${line%%$'\t'*}]=secondary
+  done
+  [[ -r $shape_file ]] && for line in ${(f)"$(<$shape_file)"}; do shape[${line%% *}]=${line#* }; done
+  for line in ${(f)"$(aerospace list-workspaces --all --format '%{workspace}'$'\t''%{workspace-root-container-layout}')"}; do
+    root[${line%%$'\t'*}]=${line#*$'\t'}
+  done
+  order=()
+  for row in ${(f)"$(rows)"}; do
+    r=("${(@ps:\t:)row}")
+    [[ -n $seen[$r[4]] ]] && continue
+    seen[$r[4]]=1
+    [[ -n $display[$r[2]] ]] || { order+=$r[2]; display[$r[2]]=$role[$r[1]] }
+    apps[$r[2]]+="${apps[$r[2]]:+, }$r[4]"
+  done
+  count=$(aerospace list-monitors --count)
+  lines=()
+  for kind in main secondary; do
+    for workspace in $order; do
+      [[ $display[$workspace] == $kind ]] || continue
+      case $root[$workspace] in
+        *accordion) fits=accordion ;;
+        v_tiles) fits=rows ;;
+        *) fits=tiles ;;
+      esac
+      case $shape[$workspace] in
+        accordion|rows) [[ $shape[$workspace] == $fits ]] && fits=$shape[$workspace] ;;
+        main|grid) [[ $fits == tiles ]] && fits=$shape[$workspace] ;;
+      esac
+      lines+=("$(printf '%-7s %s  %-9s  %-2s %-9s  %s' $2 $count $kind $workspace $fits $apps[$workspace])")
+    done
+  done
+  rewrite $2 $lines
+  exit 0
+fi
+
+# --rename <name> <new name> and --delete <name>: change this Mac's arrangements file (a copy of it as it was
+# stays in arrangements.prev)
+if [[ $1 == --rename ]]; then
+  if [[ -z $3 || $3 == *[^[:alnum:]_-]* ]]; then
+    print -u2 -r -- "an arrangement's name is letters, digits, - and _: '$3'"
+    exit 1
+  fi
+  if [[ -n "$(arrangement $3)" ]]; then
+    print -u2 -r -- "there is an arrangement called $3 already"
+    exit 1
+  fi
+  lines=()
+  for line in ${(f)"$(awk -v name=$2 '!/^[[:space:]]*#/ && $1 == name' $arrangement_file)"}; do
+    # the name as wide as --save makes it, so the columns stay lined up
+    read -r first rest <<< $line
+    lines+=("$(printf '%-7s %s' $3 $rest)")
+  done
+  rewrite $2 $lines
+  exit 0
+fi
+if [[ $1 == --delete ]]; then
+  rewrite $2
+  exit 0
+fi
+
+# --arrangement-list: the arrangements, a line each, "name<tab>what fzf shows<tab>number of displays": its
+# workspaces and apps, dimmed when it's for another number of displays than there are now
+if [[ $1 == --arrangement-list ]]; then
+  [[ -r $arrangement_file ]] || exit 0
+  count=$(aerospace list-monitors --count)
+  typeset -A displays text
+  names=()
+  for line in ${(f)"$(arrangements $arrangement_file)"}; do
+    f=("${(@ps:\t:)line}")
+    [[ -n $displays[$f[2]] ]] || names+=$f[2]
+    displays[$f[2]]=$f[3]
+    text[$f[2]]+="${text[$f[2]]:+  }$f[5]: ${f[7]//,/, }"
+  done
+  for name in $names; do
+    (( displays[$name] == count )) && dim= || dim=$'\e[2m'
+    print -r -- "$name"$'\t'"$dim${(r:12:)name} ${(r:11:)${:-$displays[$name] display${${displays[$name]:#1}:+s}}} "$'\e[2m'"$text[$name]"$'\e[0m'$'\t'"$displays[$name]"
+  done
+  exit 0
+fi
+
+# --show <name>: the arrangement, display by display, for the preview of a's list
+if [[ $1 == --show ]]; then
+  for kind in main secondary; do
+    header=
+    for line in ${(f)"$(arrangement $2)"}; do
+      f=("${(@ps:\t:)line}")
+      [[ $f[4] == $kind ]] || continue
+      [[ -n $header ]] || { header=1; print -r -- $'\e[1m'"$kind display"$'\e[0m' }
+      print -r -- "  $f[5]  ${(r:14:)shape_names[$f[6]]}  ${f[7]//,/, }"
+    done
+    [[ -n $header ]] && print
+  done
+  exit 0
+fi
+
+# --ask-save, --ask-rename <name>, --ask-delete <name>: n, r and d in a's list, asking in the picker's window
+if [[ $1 == --ask-save ]]; then
+  name=
+  vared -p "save what's on screen as: " name
+  [[ -n $name ]] || exit 0
+  if [[ -n "$(arrangement $name)" ]]; then
+    print -rn -- "replace $name? [y/N] "
+    read -q || exit 0
+  fi
+  "$self" --save $name || read -k1 '?press a key'
+  exit 0
+fi
+if [[ $1 == --ask-rename ]]; then
+  name=$2
+  vared -p "rename $2 to: " name
+  [[ -n $name && $name != $2 ]] || exit 0
+  "$self" --rename $2 $name || read -k1 '?press a key'
+  exit 0
+fi
+if [[ $1 == --ask-delete ]]; then
+  print -rn -- "delete $2? [y/N] "
+  read -q && "$self" --delete $2
+  exit 0
+fi
+
+# --arrangements: a's list, in the picker's window; prints "arrangement <name>" for the one chosen, nothing
+# on q. Enter on one made for another number of displays says so instead.
+if [[ $1 == --arrangements ]]; then
+  count=$(aerospace list-monitors --count)
+  list="'$self' --arrangement-list"
+  choice=$(eval $list | picker arrangement --keys n:alt-n,r:alt-r,d:alt-d \
+    --header "Enter apply · n save current · r rename · d delete · q back" \
+    --preview "'$self' --show {1}" --preview-window nohidden,right,50% \
+    --bind "enter:transform:[ {3} = $count ] && echo accept || echo 'change-header(that one is for {3} display(s), not $count: n saves the current one)'" \
+    --bind "alt-n:execute('$self' --ask-save)+reload-sync($list)" \
+    --bind "alt-r:execute('$self' --ask-rename {1})+reload-sync($list)" \
+    --bind "alt-d:execute('$self' --ask-delete {1})+reload-sync($list)")
+  [[ -n $choice ]] && print -r -- "arrangement ${choice%%$'\t'*}"
+  exit 0
+fi
+
 back= result=
 while [[ $1 == --back || $1 == --result ]]; do
   case $1 in
@@ -386,7 +565,7 @@ if [[ -n $back ]]; then
   lines=(${(f)list}) tab=$'\t'
   pos=${lines[(i)$back$tab*]}
 fi
-keys=m:alt-m,d:alt-d,t:alt-t
+keys=m:alt-m,d:alt-d,t:alt-t,a:alt-a
 binds=()
 for n in {1..9}; do
   keys+=,${n}:alt-$n
@@ -394,10 +573,11 @@ for n in {1..9}; do
 done
 # d closes a window, not a whole workspace or display: on their lines it does nothing
 choice=$(print -r -- $list | picker window --keys $keys \
-  --header 'Enter go · 1-9 workspace · m move yours there · t layout · d close · / filter · q back' \
+  --header 'Enter go · 1-9 workspace · m move yours there · t layout · a arrangements · d close · q back' \
   --bind "load:pos(${pos:-1})+unbind(load)" $binds \
   --bind "alt-m:become(echo move {1} {3})" \
   --bind "alt-t:become('$self' --layout {3})" \
+  --bind "alt-a:become('$self' --arrangements)" \
   --bind "alt-d:execute-silent(case {1} in *[!0-9]*) ;; *) aerospace close --window-id {1} ;; esac)+reload-sync('$self' --list $back)" "$@")
 # the command that switches, and what --open does again if macOS undoes it (moving the window again isn't
 # needed, nor arranging the workspace again)
@@ -409,6 +589,8 @@ case $choice in
     ${${choice#move monitor:}%% *}) again=(aerospace focus --window-id $back) ;;
   move\ *) [[ -n $back && -n ${choice##* } ]] && action=(aerospace move-node-to-workspace --window-id $back
     --focus-follows-window ${choice##* }) again=(aerospace focus --window-id $back) ;;
+  arrangement\ *) first=("${(@ps:\t:)$(arrangement ${choice#* })[(f)1]}")
+    action=("$self" --apply ${choice#* }) again=(aerospace workspace $first[5]) ;;
   layout\ *) words=(${=choice}) action=("$self" --arrange $words[2] $words[3]) again=(aerospace workspace $words[3]) ;;
   workspace:*) action=(aerospace workspace ${choice#*:}) ;;
   monitor:*) action=(aerospace focus-monitor ${choice#*:}) ;;
