@@ -27,9 +27,10 @@ fail on a path into a home, this Mac's name, a word in `~/.config/dotfiles/forbi
 with another email.
 
 ## This is the live setup
-`~/.zshrc`, `~/.config/nvim`, `~/.config/tmux`, `~/.gitconfig`, `~/.claude/settings.json` and others are
-symlinks into this repo, so an edit here changes the running setup immediately, including this Claude Code
-session (`config/claude/settings.json`). Keep the config valid at every step; check JSON with `jq -e .`.
+`~/.zshrc`, `~/.config/nvim`, `~/.config/tmux`, `~/.gitconfig`, `~/.claude/CLAUDE.md` and others are
+symlinks into this repo, so an edit here changes the running setup immediately. `config/claude/settings.json`
+is the exception: it is merged into Claude Code's own `~/.claude/settings.json` when `claude` starts, so an
+edit reaches the next session, not this one. Keep the config valid at every step; check JSON with `jq -e .`.
 
 ## When changing something
 - **Docs move with the config** (`docs/design.md`, "Same shape, every page"): every change updates

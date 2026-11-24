@@ -48,7 +48,8 @@ Where a plugin is turned on decides who gets it:
 | Plugin for | Turn it on in | Reaches |
 |---|---|---|
 | every Mac | `config/claude/settings.json`, committed | all Macs, after `git pull` |
-| this Mac only (e.g. work plugins on the work Mac) | `~/.config/dotfiles/claude.json` | only this Mac, all projects |
+| this Mac, kept with its setup | `~/.config/dotfiles/claude.json` | only this Mac, all projects |
+| this Mac, quickly | `/plugin install` (scope *user*), which writes `~/.claude/settings.json` | only this Mac, until the repo sets the same plugin |
 | one project, for you | the project's `.claude/settings.local.json` (`/plugin` → scope *local*) | only you, ignored by git everywhere |
 | one project, for the whole team | the project's `.claude/settings.json` (scope *project*) | everyone working on it |
 
@@ -111,7 +112,8 @@ is added as in [agent](agent.md#adding-a-skill):
 
 Config
 ---
-`config/claude` is the **global** part. `setup_claude` links it into `~/.claude`:
+`config/claude` is the **global** part. `setup_claude` links it into `~/.claude`, except `settings.json`,
+which is merged (see [How settings.json is merged](#how-settingsjson-is-merged)):
 
 - **`settings.json`**: model (Opus) and effort, permissions, sandbox, hooks, voice dictation (hold space),
   vim keys in the prompt (`editorMode`, `vimInsertModeRemaps`). Commits made by Claude carry only the
@@ -129,8 +131,22 @@ Config
   [agent](agent.md#config).
 - **`statusline.sh`**: the [status line](#status-line).
 
-Settings you change with `/config` or by installing a plugin are written through the link into the repo, so
-they show up in `git diff`.
+### How settings.json is merged
+
+`~/.claude/settings.json` is Claude Code's own file, not a link: what it writes there (`/model`, `/config`,
+`/plugin install`, the order of the keys) stays on this Mac and out of `git diff`. Each `claude` start and
+`setup_claude` merge the repo's `config/claude/settings.json` into it (`claude_settings_merge`):
+
+| The key is | After the merge |
+|---|---|
+| set in the repo | the repo's value, even if this Mac had changed it; an array is replaced whole |
+| only in the local file | kept |
+| dropped from the repo since the last merge | dropped here too, unless it was changed locally |
+
+Every local value it replaces or drops is listed when `claude` starts, and the file from before the merge is
+kept as `~/.claude/settings.json.prev`. What the repo had at the last merge is in
+`~/.claude/settings.dotfiles.json`, which is how a key dropped from the repo is told apart from one only this
+Mac has. `check_mac` reports a `settings.json` that is missing some of the repo's settings.
 
 ### Permissions
 
@@ -165,7 +181,8 @@ under `sandbox`. Inside it, commands run without asking (`autoAllowBashIfSandbox
   even there: Claude Code's own settings, hooks (`config/agent/hooks`, which `~/.claude/hooks` links to) and
   `CLAUDE.md`, so Claude edits those with its Edit tool, which asks. Also not `~/.local/state/agent-ask`,
   the state of `agent_ask` children, so a child can't tamper with it. In this repo (`.claude/settings.json`)
-  also not `./zsh`, which `agent_ask` sources outside the sandbox.
+  also not `./zsh`, which `agent_ask` sources outside the sandbox, and not `config/claude/settings.json`,
+  which the next `claude` start merges into Claude Code's settings.
 - **read** everywhere except the files the permissions deny (`~/.ssh/id_*`, AWS credentials and caches, this
   repo's secrets).
 - **reach** GitHub, Homebrew's API, npm and PyPI without asking, any port on localhost (dev servers), and
@@ -255,15 +272,16 @@ the jump to the next agent `config/tmux/next-agent`.
 
 To look out for
 ---
-- If `ls -l ~/.claude/settings.json` ever shows a plain file instead of a link, copy the changes into
-  `config/claude/settings.json` and run `setup_claude` again.
 - Run `setup_claude` in a plain terminal with every Claude Code session closed, then start Claude. A running
   session deletes a `~/.claude/hooks` that wasn't there when it started, so every hook fails (the `rm` guard
   too) and the sandbox stops protecting `config/agent/hooks`. `setup_claude` refuses to run inside Claude Code;
   `check_mac` reports the missing link.
-- `/plugin install` with the default scope (*user*) writes into the shared `settings.json`. When a session
-  ends, the `claude` function checks for that and says so; move the entries to `claude.json`, or commit them
-  if every Mac should have them.
+- A change to `config/claude/settings.json` reaches the next `claude` start, not the sessions already
+  running. Claude Code started from the desktop app or an IDE reads the file as the last `claude` start left
+  it.
+- `/model`, `/plugin install` and the like write `~/.claude/settings.json`, which stays on this Mac. A value
+  the repo sets wins at the next start, which lists what it replaced; to keep it, change it in the repo (every
+  Mac) or `claude.json` (this Mac).
 - Plugins your organisation turns on through managed settings can't be switched off per project; managed
   settings outrank everything.
 - Claude Code started some other way, from the desktop app or an IDE, gets none of the wrapper's settings
@@ -296,6 +314,9 @@ Decisions
 - **Opus without `[1m]`**: it has a 1M-token context of its own.
 - **Subagents on Haiku**: in `/usage`, subagents on the main model were 40% of the usage.
   `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` stays off, so Claude can still choose a bigger one.
+- **settings.json merged, not linked**: linked, every `/model` or plugin install left the repo with an
+  uncommitted change. The repo wins over the local file, rather than only where it changed since the last
+  merge, so the Macs can't drift apart without it showing.
 - **Conversations kept a year, not 30 days**, so `agent_resume` and `claude -r` can still find old ones.
 - **`git commit` isn't blocked in auto mode**: a commit on a branch is easy to undo (`git reset HEAD~`).
 - **Hooks for the agents' state**: inside tmux, Claude Code keeps its terminal title still (`✳`, no spinner)

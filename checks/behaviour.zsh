@@ -249,6 +249,27 @@ check_skill_links() {
   note="4 skills"
 }
 
+# claude_settings_merge, on throwaway files: the repo's value wins, a key only the local file has stays, a key
+# the repo dropped goes unless it was changed locally, a second merge changes nothing and says nothing, and a
+# link (how settings.json used to be set up) becomes a real file.
+check_settings_merge() {
+  local t=$tmp/settings-merge
+  mkdir -p $t
+  print '{"model":"opus","a":{"x":1,"y":2},"gone":1,"kept":1}' > $t/last.json
+  print '{"model":"opus","a":{"x":1,"y":3},"new":1}' > $t/repo.json
+  print '{"model":"haiku","a":{"x":1,"y":2},"gone":1,"kept":2,"mine":1}' > $t/local.json
+  ln -s $t/repo.json $t/link.json
+  zsh -fc "source zsh/functions/claude.zsh; claude_settings_merge $t/repo.json $t/local.json $t/last.json
+    claude_settings_merge $t/repo.json $t/local.json $t/last.json 2> $t/second
+    claude_settings_merge $t/repo.json $t/link.json $t/last2.json" 2> /dev/null || print "claude_settings_merge failed"
+  [[ $(jq -cS . $t/local.json) == '{"a":{"x":1,"y":3},"kept":2,"mine":1,"model":"opus","new":1}' ]] ||
+    print "the merge gave $(jq -cS . $t/local.json)"
+  [[ -s $t/second ]] && print "a second merge reported changes: $(<$t/second)"
+  [[ $(jq -c .model $t/local.json.prev) == '"haiku"' ]] || print "the file before the merge wasn't kept as .prev"
+  [[ -f $t/link.json && ! -L $t/link.json ]] || print "a link wasn't replaced by a real file"
+  note="6 cases"
+}
+
 # early <name> <function>: runs the function in the background from now on, since the agent, GitHub and tmux
 # checks below each set up their own repo, state or server and take a few hundred milliseconds. Its output and
 # exit status wait in $tmp/early.<name>.* for early_result; disowned, so the `wait` of the checks above doesn't
@@ -864,6 +885,7 @@ check "the bell hook keeps quiet outside tmux" check_bell_hook
 check "the notify hook notifies a permission or a question, never a finished turn" check_notify_hook
 check "the status line shows what the session reports" check_statusline
 check "new skills are linked into ~/.claude, removed ones unlinked" check_skill_links
+check "the repo's Claude settings merge into Claude Code's own" check_settings_merge
 check "after a pull, the running programs reload what changed" check_reload
 check "agent_done removes a worktree only when nothing would be lost" check_agent_done
 check "_agent_worktree brings back what agent_done left" check_agent_resume

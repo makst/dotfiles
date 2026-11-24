@@ -231,9 +231,10 @@ function check_dotfiles() {
 # check_mac [--scripted]: whether this Mac is set up as the repo says, after a pull or on a Mac that hasn't
 # been used for a while; check_dotfiles checks the repo, this the Mac it runs on. Checks every link the setup
 # makes, this Mac's files in ~/.config/dotfiles, the Brewfile's packages, nvim's plugins against
-# lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, podman's VM, npm's cache, a Codex
-# setting of the repo's that ~/.codex/config.toml overrides, the repo's git hooks, the ssh include, the login
-# shell, that a new zsh and nvim start without errors, and the steps of
+# lazy-lock.json, tmux's plugins, node and python, VS Code's extensions, podman's VM, npm's cache, that
+# Claude Code's settings.json has the repo's merged in, a Codex setting of the repo's that
+# ~/.codex/config.toml overrides, the repo's git hooks, the ssh include, the login shell, that a new zsh and
+# nvim start without errors, and the steps of
 # "A new Mac" done by hand: the ssh agent, commit signing, on a work Mac signed in to gcloud, Claude's Viewer
 # service account (docs/gcloud.md), the logins of gh and npm's registries, and that the GitHub watcher runs
 # and works. --scripted leaves those out, for checks/fresh_mac, which can only run the scripts. Changes
@@ -324,6 +325,15 @@ function check_mac() {
   # an npm once run with sudo leaves root's files in its cache, and every npm ci then fails with EPERM
   [[ -z $(find ~/.npm ! -user $UID -print -quit 2> /dev/null) ]] ||
     problems+="~/.npm has files that aren't yours, so npm fails with EPERM: sudo chown -R \$(id -u) ~/.npm"
+
+  # Claude Code: its settings.json is its own file with the repo's settings merged in (claude_settings_merge);
+  # a repo change since the last `claude` start shows here until the next one
+  if [[ -L ~/.claude/settings.json || ! -f ~/.claude/settings.json ]]; then
+    problems+="~/.claude/settings.json isn't a file of its own: setup_claude"
+  elif ! jq -e --slurpfile repo $repo/config/claude/settings.json '. * $repo[0] == .' ~/.claude/settings.json \
+    > /dev/null 2>&1; then
+    problems+="~/.claude/settings.json lacks some of config/claude/settings.json: start claude, or setup_claude"
+  fi
 
   # Codex: a setting saved inside Codex (/statusline, say) goes into ~/.codex/config.toml, which outranks the
   # repo's file there, so this Mac keeps its own value and a change in the repo stops reaching it

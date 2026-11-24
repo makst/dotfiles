@@ -290,7 +290,7 @@ directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and
 | `setup_nvim` | links `~/.config/nvim`, makes `vim` run nvim, installs the plugin versions pinned in `lazy-lock.json` and the treesitter parsers; fails when nvim reports an error on start, such as a broken config |
 | `setup_ghostty` | links the Ghostty config and themes |
 | `setup_agent` | links `zsh/bin/agent_ask` as `~/.local/bin/agent_ask` and `~/.local/bin/agent_ask_edit` (one script, two names), on `PATH` for every agent tool's shell (see [agent](agent.md#asking-another-agent)) |
-| `setup_claude` | links Claude Code's `settings.json`, global `CLAUDE.md` and status line, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.claude` (see [claude](claude.md#config)) |
+| `setup_claude` | merges `config/claude/settings.json` into Claude Code's own `~/.claude/settings.json` (as the `claude` function does on every start), links the global `CLAUDE.md` and status line, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.claude` (see [claude](claude.md#config)) |
 | `setup_codex` | links Codex's `hooks.json`, and the shared hooks, `AGENTS.md` and each skill of `config/agent`, into `~/.codex` and `~/.agents/skills`, and copies `rules/agent.rules` to `~/.codex/rules/` (a copy: Codex skips a symlinked rules file); then `/hooks` in Codex trusts the hooks (see [codex](codex.md#once-per-mac)) |
 | `setup_github` | a LaunchAgent that runs the GitHub watcher every minute: notifications and a tmux mark for your pull requests (see [github](github.md)) |
 | `setup_caps_lock` | Caps Lock → Ctrl, now and at every login (a LaunchAgent) |
@@ -416,7 +416,7 @@ flowchart LR
 | `~/.config/nvim/` | `config/nvim/` |
 | `~/.config/ghostty/config`, `~/.config/ghostty/themes/` | `config/ghostty/…` |
 | `~/.config/aerospace/aerospace.toml` | `config/aerospace/aerospace.toml` |
-| `~/.claude/settings.json`, `~/.claude/CLAUDE.md`, `~/.claude/statusline.sh` | `config/claude/…` |
+| `~/.claude/CLAUDE.md`, `~/.claude/statusline.sh` | `config/claude/…` (`~/.claude/settings.json` is no link: the repo's settings are merged into it, see [claude](claude.md#config)) |
 | `~/.claude/hooks/`, `~/.claude/AGENTS.md` | `config/agent/hooks/`, `config/agent/AGENTS.md` (shared by every agent tool) |
 | `~/.claude/skills/<name>/` | each skill in `config/agent/skills/`, linked again by `claude` on every start; `~/.claude/skills` itself stays a real directory. The same skills are linked into `~/.agents/skills/<name>/` for Codex by `setup_codex` and `codex` |
 | `~/.local/bin/agent_ask` | `zsh/bin/agent_ask`, by `setup_agent` |

@@ -15,10 +15,10 @@
 #   outside the sandbox (allowUnsandboxedCommands; an allowed `git diff --output=<file>` would write anywhere,
 #   so that is denied too), and the default permission mode instead of auto mode. MCP tools and the network
 #   aren't covered: it is read-only for files, not cut off
-# Before it starts, link_agent_skills links any skill added to config/agent/skills since the last start.
-# Afterwards it warns if Claude Code wrote plugins into the shared settings.json, which installing a plugin
-# for the user does.
+# Before it starts, claude_settings_merge brings ~/.claude/settings.json up to the repo's settings, and
+# link_agent_skills links any skill added to config/agent/skills since the last start.
 function claude() {
+  claude_settings_merge
   link_agent_skills ~/.claude/skills
   local read_only=0
   [[ $1 == --read-only ]] && { read_only=1; shift }
@@ -44,23 +44,48 @@ function claude() {
       <<< $settings) || { print -u2 "claude --read-only: couldn't build its settings"; return 1 }
   fi
   command claude --settings "$settings" "$@"
-  local exit_code=$?
-  claude_plugins_check
-  return $exit_code
 }
 
-# claude_plugins_check: warn when the shared config/claude/settings.json has plugins or marketplaces that
-# aren't committed. Installing a plugin "for you" writes it there, through the ~/.claude link, and from there
-# it would reach every Mac with the next commit.
-function claude_plugins_check() {
-  local filter='[.enabledPlugins // {}, .extraKnownMarketplaces // {}]'
-  local now=$(jq -cS $filter $real_script_dir/config/claude/settings.json 2> /dev/null)
-  local committed=$(git -C $real_script_dir show HEAD:config/claude/settings.json 2> /dev/null | jq -cS $filter)
-  [[ $now == $committed ]] && return 0
-  print -u2 "Claude Code added plugins to the shared config/claude/settings.json (see git diff). Move them to" \
-    "~/.config/dotfiles/claude.json for this Mac only, or to a project's .claude/settings.local.json;" \
-    "commit only what every Mac should get."
-  return 1
+# claude_settings_merge [repo local last]: merges the repo's settings (config/claude/settings.json) into
+# Claude Code's own ~/.claude/settings.json, so what Claude Code writes there (/model, /plugin install, its own
+# fields) stays out of the repo. The repo wins: every key it sets replaces the local value; a key only the
+# local file has stays. A key the repo had last time (<last>, ~/.claude/settings.dotfiles.json, the repo's
+# file as this last merged it) and has since dropped is dropped locally too, unless it was changed locally.
+# Arrays are replaced whole. Each local value it replaces or drops is printed, and the file before the merge
+# is kept as <local>.prev. A <local> that is still a link (into the repo, from before) becomes a real file.
+# The arguments are for trying it on other files.
+function claude_settings_merge() {
+  local repo=${1:-$real_script_dir/config/claude/settings.json} local_file=${2:-~/.claude/settings.json}
+  local last=${3:-~/.claude/settings.dotfiles.json} current='{}' previous='{}' out
+  jq -e 'type == "object"' $repo > /dev/null 2>&1 ||
+    { print -u2 "claude_settings_merge: $repo isn't a JSON object, $local_file left as it is"; return 1 }
+  if [[ -e $local_file ]]; then
+    current=$(jq -c . $local_file 2> /dev/null) && [[ $current == \{* ]] ||
+      { print -u2 "claude_settings_merge: $local_file isn't a JSON object, fix it by hand"; return 1 }
+  fi
+  [[ -r $last ]] && previous=$(jq -c . $last 2> /dev/null) && [[ $previous == \{* ]] || previous='{}'
+  # paths to every value that isn't an object, through object keys only (an array is one value)
+  out=$(jq -c --argjson local $current --argjson last $previous '
+    def leaves: [paths(type != "object") | select(all(.[]; type == "string"))];
+    def at($p): try getpath($p) catch null;
+    def show: if . == null then "(dropped)" else tojson | .[:60] end;
+    leaves as $now
+    | [$last | leaves | .[] | select(. as $p | any($now[]; . == $p) | not)
+       | select(. as $p | ($local | at($p)) == ($last | at($p)))] as $dropped
+    | (($local | delpaths($dropped)) * .) as $merged
+    | {merged: $merged,
+       changes: [$local | leaves | .[] | . as $p | select(($merged | at($p)) != ($local | at($p)))
+         | "\(join(".")): \($local | at($p) | show) → \($merged | at($p) | show)"]}
+    ' $repo) || { print -u2 "claude_settings_merge: couldn't merge $repo into $local_file"; return 1 }
+  local -a changes=(${(f)"$(jq -r '.changes[]' <<< $out)"})
+  if (( $#changes )) && [[ -e $local_file ]]; then
+    cp $local_file $local_file.prev
+    print -u2 "claude: the repo's settings replaced these in $local_file (before: $local_file.prev):"
+    print -u2 -l -- "  "$^changes
+  fi
+  mkdir -p ${local_file:h} &&
+    jq '.merged' <<< $out > $local_file.tmp.$$ && mv -f $local_file.tmp.$$ $local_file &&
+    jq . $repo > $last.tmp.$$ && mv -f $last.tmp.$$ $last
 }
 
 # claude_tokens [days]: what Claude Code used in the last <days> days (default 7), read from the conversations
@@ -178,8 +203,9 @@ function _agent_claude_preview() {
 # _agent_claude_hooks: the file that wires Claude Code's hooks, for the checks
 function _agent_claude_hooks() { print config/claude/settings.json }
 
-# setup_claude: links config/claude's settings, CLAUDE.md and status line, and the shared config/agent's hooks,
-# AGENTS.md and skills, into ~/.claude; a real file Claude Code made in their place goes to the Trash first.
+# setup_claude: merges config/claude/settings.json into ~/.claude/settings.json (claude_settings_merge) and
+# links config/claude's CLAUDE.md and status line, and the shared config/agent's hooks, AGENTS.md and skills,
+# into ~/.claude; a real file Claude Code made in a link's place goes to the Trash first.
 # It refuses to run inside Claude Code (CLAUDECODE is set): a running session removes a ~/.claude/hooks that
 # wasn't there when it started, so the hooks would be gone again after the next command.
 function setup_claude() {
@@ -189,7 +215,9 @@ function setup_claude() {
   fi
   mkdir -p ~/.claude
   local item
-  for item in settings.json CLAUDE.md statusline.sh; do
+  # settings.json is a real file Claude Code may write to, with the repo's settings merged in
+  claude_settings_merge || return
+  for item in CLAUDE.md statusline.sh; do
     # a copy Claude Code made itself goes to the Trash; the repo's version replaces it
     keep_real ~/.claude/$item && ln -sfn "$real_script_dir/config/claude/$item" ~/.claude/$item || return
   done
