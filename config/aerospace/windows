@@ -19,6 +19,10 @@ self=${0:A}
 # is split, only its root layout
 arrangement_file=~/.config/dotfiles/arrangements
 shape_file=${XDG_STATE_HOME:-$HOME/.local/state}/aerospace-shapes
+# the arrangement applied last for each number of displays, "displays name" a line (--apply writes it, --watch
+# applies it again), and the number of displays --watch saw last
+applied_file=${XDG_STATE_HOME:-$HOME/.local/state}/aerospace-arrangement
+displays_file=${XDG_STATE_HOME:-$HOME/.local/state}/aerospace-displays
 
 # focus_state: the focused window and workspace, to tell whether a switch held
 function focus_state() {
@@ -295,6 +299,12 @@ function arrangements() {
   done < $1
 }
 
+# arrangement <name>: the arrangement's lines, as arrangements prints them
+function arrangement() {
+  local tab=$'\t'
+  [[ -r $arrangement_file ]] && print -rl -- ${(M)${(f)"$(arrangements $arrangement_file)"}:#<->$tab$1$tab*}
+}
+
 # --check <file>: what's wrong with an arrangements file, a line each; nothing when it's right. check_dotfiles
 # runs it on config/machine/arrangements and on this Mac's copy.
 if [[ $1 == --check ]]; then
@@ -366,7 +376,40 @@ if [[ $1 == --apply ]]; then
     f=("${(@ps:\t:)line}")
     aerospace workspace $f[5]
   done
+  mkdir -p ${applied_file:h}
+  { awk -v n=$have '$1 != n' $applied_file 2> /dev/null; print -r -- "$have $2" } > $applied_file.new &&
+    mv $applied_file.new $applied_file
   (( $#skipped )) && print -r -- "no windows of ${(j:, :)skipped}: left out"
+  exit 0
+fi
+
+# --watch: when the number of displays has changed since its last run, applies the arrangement used last for
+# the new number (or the first one made for it), and says so in a notification. Run every 5 s by a LaunchAgent
+# (setup_aerospace): AeroSpace has no event for a display coming or going. Its first run only notes the
+# number, so setting it up rearranges nothing.
+if [[ $1 == --watch ]]; then
+  count=$(aerospace list-monitors --count 2> /dev/null)
+  [[ $count == <1-> ]] || exit 0
+  last=
+  [[ -r $displays_file ]] && last=$(<$displays_file)
+  [[ $count == $last ]] && exit 0
+  # macOS adds or drops a display in steps: wait until the number holds
+  sleep 2
+  [[ $(aerospace list-monitors --count) == $count ]] || exit 0
+  mkdir -p ${displays_file:h}
+  print -r -- $count > $displays_file
+  [[ -n $last ]] || exit 0
+  name=$(awk -v n=$count '$1 == n { print $2 }' $applied_file 2> /dev/null)
+  [[ -n $name && -n "$(arrangement $name)" ]] ||
+    name=$(arrangements $arrangement_file 2> /dev/null | awk -F '\t' -v n=$count '$3 == n { print $2; exit }')
+  [[ -n $name ]] || exit 0
+  out=$("$self" --apply $name 2>&1)
+  message="$count display${${count:#1}:+s}: arranged as $name${out:+ ($out)}"
+  if (( $+commands[terminal-notifier] )); then
+    terminal-notifier -title AeroSpace -message $message -group aerospace-arrangement > /dev/null
+  else
+    osascript -e 'on run argv' -e 'display notification (item 1 of argv) with title "AeroSpace"' -e 'end run' $message
+  fi
   exit 0
 fi
 
@@ -381,12 +424,6 @@ function rewrite() {
     !/^[[:space:]]*#/ && $1 == name { if (!done && ENVIRON["NEW"] != "") print ENVIRON["NEW"]; done = 1; next }
     { print }
     END { if (!done && ENVIRON["NEW"] != "") print ENVIRON["NEW"] }' $arrangement_file.prev > $arrangement_file
-}
-
-# arrangement <name>: the arrangement's lines, as arrangements prints them
-function arrangement() {
-  local tab=$'\t'
-  [[ -r $arrangement_file ]] && print -rl -- ${(M)${(f)"$(arrangements $arrangement_file)"}:#<->$tab$1$tab*}
 }
 
 # what each shape is called in the lists

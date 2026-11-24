@@ -35,7 +35,8 @@ What it is
 - **Saved arrangements**: which apps go on which workspace, which workspace on which display and in what
   shape, saved per number of displays: Ghostty on the big display and Slack on the laptop's with two, both on
   one workspace one at a time with one. `a` in `alt+w` lists them: Enter applies one, `n` saves what's on
-  screen. See [Saved arrangements](#saved-arrangements).
+  screen. When a display comes or goes, the one used last for the new number of displays is applied by itself.
+  See [Saved arrangements](#saved-arrangements).
 - **Keys** are all on `Option` (Alt), captured system-wide, so they don't reach other apps: Alt+h/j/k/l in
   nvim or zsh, for instance, are handled by AeroSpace.
 
@@ -86,6 +87,12 @@ for another number of displays are dimmed, and Enter on one says so instead of a
 | `r` | rename it (`windows --rename <name> <new name>`) |
 | `d` | delete it, after a `y` (`windows --delete <name>`) |
 | `q` | back to where you were |
+
+**When a display comes or goes**, the arrangement used last for the new number of displays (or the first one
+made for it) is applied by itself within about 7 seconds, and a notification says which. A LaunchAgent that
+`setup_aerospace` loads runs `windows --watch` every 5 seconds, since AeroSpace has no event for a display
+being plugged in or out; it only reads the number of displays, and its errors go to
+`~/.local/state/aerospace-displays.log`. With no arrangement for that number nothing moves.
 
 Saving writes, for each workspace with windows, its display, its shape and its apps in their order; an app on
 two workspaces goes with the first. Each change keeps the file as it was in `arrangements.prev` next to it.

@@ -297,7 +297,7 @@ directory in the link's place (not a link) to the Trash, as `<name>-<time>`, and
 | `setup_macos_defaults` | fastest key repeat; a held key repeats in Ghostty instead of offering accents (log out and in, restart Ghostty) |
 | `setup_vscode` | links VS Code's `settings.json`, installs the extensions in `config/vscode/extensions.txt` that are missing (see [debugging](debugging.md)) |
 | `setup_ideavim` | links `~/.ideavimrc`, installs the IdeaVim and AceJump plugins into Android Studio when missing (see [vim-keys](vim-keys.md)) |
-| `setup_aerospace` | links the AeroSpace config and its window picker (`alt+w`) and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows (see [AeroSpace](aerospace.md)) |
+| `setup_aerospace` | links the AeroSpace config and its window picker (`alt+w`) and starts it, groups Mission Control by app, ctrl+cmd-drag moves windows, and loads the LaunchAgent that applies the saved arrangement when a display comes or goes (see [AeroSpace](aerospace.md#saved-arrangements)) |
 
 Not part of `setup_dotfiles`:
 
