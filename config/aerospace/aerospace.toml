@@ -54,12 +54,9 @@ on-window-detected = [
 [exec.env-vars]
 PATH = '/opt/homebrew/bin:${PATH}'
 
-# 7, 8 and 9 stay on the display that isn't the main one (System Settings → Displays → "Use as"), with two
-# displays; with one, there is nowhere else for them
-[workspace-to-monitor-force-assignment]
-7 = 'secondary'
-8 = 'secondary'
-9 = 'secondary'
+# Which workspace goes on which display isn't set here: this Mac's arrangements say it, per number of displays
+# (~/.config/dotfiles/arrangements, applied by alt-w's a and when a display comes or goes; docs/aerospace.md,
+# "Saved arrangements"). A workspace assigned here couldn't be moved by them.
 
 # All on Option (Alt), as with yabai before. AeroSpace takes these system-wide, so Alt+h/j/k/l and Alt+digit
 # don't reach nvim or zsh.

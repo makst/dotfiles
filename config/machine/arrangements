@@ -9,4 +9,7 @@
 # shape puts them. Every window of an app goes to its workspace; windows of apps not named stay where they are.
 desk    2  main       1  tiles      Ghostty
 desk    2  secondary  2  accordion  Slack
+desk    2  secondary  7  tiles      Code
+desk    2  secondary  8  tiles      Xcode, Simulator
+desk    2  secondary  9  tiles      Android Studio, qemu-system-aarch64
 laptop  1  main       1  accordion  Ghostty, Slack

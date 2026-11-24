@@ -133,8 +133,8 @@ Homebrew's `tmux` and `aerospace` through `[exec.env-vars]`, as AeroSpace starts
 `PATH`. It starts a Ghostty of its own (`open -na Ghostty` with its own size, position and title), which the
 `on-window-detected` rule for the title `aerospace-windows` floats. `~/.config/aerospace/windows --list`
 prints the list alone; errors from `alt+w` go to `$TMPDIR/aerospace-windows.log`.
-Floating apps are in `on-window-detected`, the IDE workspaces' display in
-`[workspace-to-monitor-force-assignment]`.
+Floating apps are in `on-window-detected`; which display a workspace is on, this Mac's arrangements say
+([Saved arrangements](#saved-arrangements)), not the config.
 
 To look out for
 ---
@@ -151,8 +151,11 @@ To look out for
   floats it.
 - **The IDE opened on another workspace**: the rules only act on new windows. A window that was open
   before AeroSpace started stays where it was: `shift+alt+7`…`9` moves it.
-- **The IDE should be on the main display**: change `'secondary'` to `'main'` under
-  `[workspace-to-monitor-force-assignment]` in the config.
+- **The IDE should be on the main display**: change `secondary` to `main` on its line in
+  `~/.config/dotfiles/arrangements`, or arrange it so and save with `n` in `alt+w`'s `a`.
+- **An IDE opened after the arrangement landed on the main display**: an arrangement moves the windows open
+  when it's applied; a workspace that was empty then appears where AeroSpace puts it. Enter on the
+  arrangement in `alt+w`'s `a` applies it again.
 - **A pick takes ~0.2 s**: the picker's Ghostty quitting hands focus back to the app you came from, up to
   ~200 ms later, so `alt+w` waits that out and then switches once (switching straight away flickered: there,
   back, there again). Should a hand-back come later, it switches again, for a second after the pick.
