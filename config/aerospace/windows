@@ -221,8 +221,9 @@ if [[ $1 == --layout ]]; then
   exit 0
 fi
 
-# --arrange <layout> <workspace>: goes to the workspace and arranges its tiled windows (not the floating
-# ones) in the layout, in the order they're in now: first every window in one row, then the layout's steps
+# --arrange <layout> <workspace> [window id…]: goes to the workspace and arranges its tiled windows (not the
+# floating ones) in the layout, the windows given first, in that order, then the others in the order they're
+# in now: first every window in one row, then the layout's steps
 if [[ $1 == --arrange ]]; then
   layout=$2 workspace=$3
   ids=(${(f)"$(aerospace list-windows --workspace $workspace --format '%{window-id}'$'\t''%{window-layout}' |
@@ -235,6 +236,18 @@ if [[ $1 == --arrange ]]; then
     accordion) aerospace layout --window-id $ids[1] h_accordion ;;
     *) aerospace layout --window-id $ids[1] h_tiles ;;
   esac
+  # in one row now: each window given swapped back to its place, one neighbour at a time
+  i=0
+  for id in ${@[4,-1]}; do
+    j=${ids[(i)$id]}
+    (( j <= $#ids )) || continue
+    (( i++ ))
+    while (( j > i )); do
+      aerospace swap --window-id $id dfs-prev
+      ids[j]=$ids[j-1] ids[j-1]=$id
+      (( j-- ))
+    done
+  done
   case $layout in
     # 2 and 3 joined in a column, then 4 and the others moved into it
     main) if (( $#ids > 2 )); then
@@ -254,6 +267,98 @@ if [[ $1 == --arrange ]]; then
     width=${width%.*}
     [[ $width == <-> ]] && aerospace resize --window-id $ids[1] width $(( width * 6 / 10 ))
   fi
+  exit 0
+fi
+
+# arrangements <file>: the arrangements file's lines (config/machine/arrangements has the format), without
+# comments and blank lines, as "line number<tab>name<tab>displays<tab>display<tab>workspace<tab>shape<tab>apps",
+# the apps joined by commas without the spaces around them
+function arrangements() {
+  setopt local_options extended_glob
+  local n=0 line name displays display workspace shape apps
+  local -a list
+  while IFS= read -r line; do
+    (( n++ ))
+    line=${line%%\#*}
+    [[ $line == *[^[:space:]]* ]] || continue
+    read -r name displays display workspace shape apps <<< $line
+    list=(${${${(s:,:)apps}##[[:space:]]#}%%[[:space:]]#})
+    print -r -- "$n"$'\t'"$name"$'\t'"$displays"$'\t'"$display"$'\t'"$workspace"$'\t'"$shape"$'\t'"${(j:,:)list}"
+  done < $1
+}
+
+# --check <file>: what's wrong with an arrangements file, a line each; nothing when it's right. check_dotfiles
+# runs it on config/machine/arrangements and on this Mac's copy.
+if [[ $1 == --check ]]; then
+  typeset -A displays seen
+  for line in ${(f)"$(arrangements $2)"}; do
+    f=("${(@ps:\t:)line}")
+    at="$2:$f[1]"
+    if [[ -z $f[7] ]]; then
+      print -r -- "$at: needs <name> <displays> <main|secondary> <workspace> <shape> <app>[, <app>…]"
+      continue
+    fi
+    [[ $f[3] == <1-> ]] || print -r -- "$at: the number of displays is a number, not '$f[3]'"
+    [[ $f[4] == (main|secondary) ]] || print -r -- "$at: the display is main or secondary, not '$f[4]'"
+    [[ $f[4] == secondary && $f[3] == 1 ]] && print -r -- "$at: no secondary display in an arrangement for one"
+    [[ $f[6] == (tiles|rows|main|grid|accordion) ]] ||
+      print -r -- "$at: the shape is tiles, rows, main, grid or accordion, not '$f[6]'"
+    [[ -n $displays[$f[2]] && $displays[$f[2]] != $f[3] ]] &&
+      print -r -- "$at: $f[2]'s first line says $displays[$f[2]] for the number of displays"
+    displays[$f[2]]=${displays[$f[2]]:-$f[3]}
+    key="$f[2]:workspace $f[5]"
+    [[ -n $seen[$key] ]] && print -r -- "$at: workspace $f[5] is in $f[2] twice"
+    seen[$key]=1
+    for app in ${(s:,:)f[7]}; do
+      [[ -n $seen[$f[2]:$app] ]] && print -r -- "$at: $app is in $f[2] twice"
+      seen[$f[2]:$app]=1
+    done
+  done
+  exit 0
+fi
+
+# --apply <name>: applies an arrangement from ~/.config/dotfiles/arrangements: every window of each app it
+# names to that app's workspace, each workspace to its display, arranged in its shape with the apps in their
+# order, and each display showing its workspace, the first line's with the focus. Refuses one made for another
+# number of displays; says which apps had no window.
+if [[ $1 == --apply ]]; then
+  file=~/.config/dotfiles/arrangements tab=$'\t'
+  lines=(${(M)${(f)"$(arrangements $file)"}:#<->$tab$2$tab*})
+  if (( ! $#lines )); then
+    print -u2 -r -- "no arrangement '$2' in $file"
+    exit 1
+  fi
+  f=("${(@ps:\t:)lines[1]}")
+  have=$(aerospace list-monitors --count)
+  if (( f[3] != have )); then
+    print -u2 -r -- "$2 is for $f[3] displays, and there are $have"
+    exit 1
+  fi
+  typeset -A by_app order
+  for row in ${(f)"$(rows)"}; do
+    r=("${(@ps:\t:)row}")
+    by_app[$r[4]]+=" $r[3]"
+  done
+  skipped=()
+  for line in $lines; do
+    f=("${(@ps:\t:)line}")
+    for app in ${(s:,:)f[7]}; do
+      ids=(${=by_app[$app]})
+      (( $#ids )) || { skipped+=$app; continue }
+      for id in $ids; do aerospace move-node-to-workspace --window-id $id $f[5]; done
+      order[$f[5]]+=" $ids"
+    done
+  done
+  for line in $lines; do
+    f=("${(@ps:\t:)line}")
+    (( have > 1 )) && aerospace move-workspace-to-monitor --workspace $f[5] $f[4]
+    "$self" --arrange $f[6] $f[5] ${=order[$f[5]]}
+  done
+  for line in ${(Oa)lines}; do
+    f=("${(@ps:\t:)line}")
+    aerospace workspace $f[5]
+  done
+  (( $#skipped )) && print -r -- "no windows of ${(j:, :)skipped}: left out"
   exit 0
 fi
 

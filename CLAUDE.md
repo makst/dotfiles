@@ -21,7 +21,8 @@ agent setups: never write into a project, and format only with what the project 
 ## Several Macs
 The repo serves any number of Macs, each with a name and a kind (home-like or work-like). Shared config goes
 in the repo and every Mac gets it; what one Mac needs goes in `~/.config/dotfiles` (name, kind, gitconfig,
-zshrc, Brewfile, claude.json, forbidden), created from `config/machine` by `setup_machine` and loaded when present.
+zshrc, Brewfile, claude.json, arrangements, forbidden), created from `config/machine` by `setup_machine` and
+loaded when present.
 Nothing in the repo may name a company, work email or work host, nor any one Mac: the portability checks
 fail on a path into a home, this Mac's name, a word in `~/.config/dotfiles/forbidden` and an unpushed commit
 with another email.

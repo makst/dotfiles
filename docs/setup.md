@@ -323,6 +323,7 @@ overwrites them:
 | `zshrc` | `~/.zshrc`, sourced last | exports, aliases and tokens only this Mac needs |
 | `Brewfile` | the repo's Brewfile, read at its end | packages only this Mac needs |
 | `claude.json` | the `claude` wrapper, as `--settings` | Claude Code plugins and settings only this Mac uses, see [claude](claude.md#this-machine) |
+| `arrangements` | `alt+w`'s `windows --apply` | which apps go on which workspace and display, in what shape, for each number of displays, see [aerospace](aerospace.md#saved-arrangements) |
 | `forbidden` | `check_dotfiles` | words that must never reach the repo from this Mac, one per line: the company, the work email's domain, work hosts. The checks fail on any of them, in any case, in the repo's files and in the messages of commits not yet pushed. The words stay on this Mac, so the list itself can't leak |
 
 Hosts only one Mac connects to go in `~/.ssh/config` itself, below the line that includes the shared

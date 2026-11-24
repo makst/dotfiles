@@ -209,6 +209,16 @@ check_mermaid() {
   awk '/^```mermaid/ { on = 1; next } /^```/ { on = 0 } on && /;/ { print FILENAME ":" FNR ": a ; ends a Mermaid statement: " $0 }' $md_files
 }
 
+# arrangements: the template config/machine/arrangements and this Mac's copy are as the picker reads them
+# (config/aerospace/windows --check, which owns the format): a file it can't read breaks --apply
+check_arrangements() {
+  setopt local_options bare_glob_qual
+  local file
+  local -a files=(config/machine/arrangements ~/.config/dotfiles/arrangements(N))
+  note=$(count $#files file)
+  for file in $files; do config/aerospace/windows --check $file; done
+}
+
 group "Syntax: each file parses in the tool that reads it"
 check "zsh files parse" check_zsh
 check "bash scripts pass shellcheck" check_bash
@@ -225,4 +235,5 @@ check "Ghostty config is valid" check_ghostty
 check "starship config has only known keys" check_starship
 check "fzfrc has only options fzf knows" check_fzf
 check "AeroSpace config is valid" check_aerospace
+check "AeroSpace arrangements are valid" check_arrangements
 check "Mermaid diagrams have no ; in a line" check_mermaid

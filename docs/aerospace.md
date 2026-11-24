@@ -31,6 +31,9 @@ What it is
   you're on: side by side, stacked, one big window on the left (60%) with the others stacked on the right,
   in columns of two, or one at a time (the accordion). It goes to that workspace and arranges its tiled
   windows in the order they're in now; floating ones stay as they are.
+- **Saved arrangements**: which apps go on which workspace, which workspace on which display and in what
+  shape, saved per number of displays: Ghostty on the big display and Slack on the laptop's with two, both on
+  one workspace one at a time with one. See [Saved arrangements](#saved-arrangements).
 - **Keys** are all on `Option` (Alt), captured system-wide, so they don't reach other apps: Alt+h/j/k/l in
   nvim or zsh, for instance, are handled by AeroSpace.
 
@@ -53,6 +56,23 @@ other. `alt+e` inside that column switches it back to side by side.
 
 `ctrl+shift+alt+h/j/k/l` does the same step by step: it moves the window into the neighbouring column or row,
 or out of it again at the edge. `shift+alt+;` then `r` undoes all nesting: every window back in one row.
+
+### Saved arrangements
+`~/.config/dotfiles/arrangements` (this Mac's own, from `config/machine/arrangements`) has a line for each
+workspace of an arrangement: its name, the number of displays it's for, the display (`main` or `secondary`,
+as System Settings → Displays → "Use as" says), the workspace, the shape (as `t` in `alt+w`) and the apps, in
+the order the shape puts them:
+
+```
+desk    2  main       1  tiles      Ghostty
+desk    2  secondary  2  accordion  Slack
+laptop  1  main       1  accordion  Ghostty, Slack
+```
+
+`~/.config/aerospace/windows --apply desk` moves every window of those apps to its workspace, each workspace
+to its display, arranges each in its shape and shows it, ending on the first line's workspace. Windows of apps
+it doesn't name stay where they are; an app with no window is left out and named. It refuses an arrangement
+made for another number of displays. `check_dotfiles` checks the file (`windows --check <file>` on its own).
 
 Making an app float
 ---
@@ -122,6 +142,8 @@ To look out for
 - **A layout came out different**: `t` flattens the workspace first and then joins and moves windows by
   their order, so a window that was minimised, or that AeroSpace lists in another order, can land
   elsewhere. `t` again, or `shift+alt+;` then `r` to put every window back in one row.
+- **An app in an arrangement isn't moved**: the name must be the one AeroSpace shows
+  (`aerospace list-apps`), e.g. `Brave Browser`, not `Brave`.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.
 
 Decisions

@@ -1,0 +1,12 @@
+# This Mac's arrangements of AeroSpace workspaces on its displays. setup_machine copies this file to
+# ~/.config/dotfiles/arrangements once; `~/.config/aerospace/windows --apply <name>` applies one (see
+# docs/aerospace.md, "Arrangements"), and `--check <file>` says what's wrong with a file (check_dotfiles runs it).
+# A line for each workspace of an arrangement:
+#   <name> <displays> <main|secondary> <workspace> <shape> <app>[, <app>…]
+# displays: how many displays the arrangement is for, the same on all its lines; main or secondary: which of
+# them the workspace goes on (System Settings → Displays → "Use as"); shape: tiles, rows, main, grid or
+# accordion, as t in alt+w; the apps by the names AeroSpace gives them (aerospace list-apps), in the order the
+# shape puts them. Every window of an app goes to its workspace; windows of apps not named stay where they are.
+desk    2  main       1  tiles      Ghostty
+desk    2  secondary  2  accordion  Slack
+laptop  1  main       1  accordion  Ghostty, Slack
