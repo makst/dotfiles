@@ -1,7 +1,8 @@
 # The fzf pickers' shared part, sourced by agents (cmd+shift+j), sessionizer (cmd+k), tree (cmd+j),
-# config/github/inbox (cmd+g), buffers (C-a P), agent_resume, mdv, zi, change_theme, gsw, gfix and
-# kctx/kns/klo/kex (zsh/functions/), the history search (C-r, fzf-history-widget) and the find keys (;f, ;r, …
-# in zsh's normal mode; find_file and fif in config/fzf/fzf.zsh), and nvim's pickers (;f, ;r, …) for their keys:
+# config/github/inbox (cmd+g), config/aerospace/windows (alt+w), buffers (C-a P), agent_resume, mdv, zi,
+# change_theme, gsw, gfix and kctx/kns/klo/kex (zsh/functions/), the history search (C-r, fzf-history-widget)
+# and the find keys (;f, ;r, … in zsh's normal mode; find_file and fif in config/fzf/fzf.zsh), and nvim's
+# pickers (;f, ;r, …) for their keys:
 # the agent marks, nvim's keys, and a list and preview that stay current while fzf is open.
 
 # an agent's state as its mark, in the colours tmux uses for it (config/tmux/tmux.conf, "agents (Claude Code

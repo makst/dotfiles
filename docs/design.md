@@ -98,7 +98,7 @@ hand the job to it instead of doing it their own way.
 | Terminals, panes and anything long-running | tmux | Ghostty's `cmd` keys become tmux commands; agents get a tmux window each (`agent`); pickers open in tmux popups, nvim's shells (`,tt`, `,tm`, Android's Gradle and logcat) in tmux panes |
 | Editing text | nvim | `EDITOR`, git's `core.editor`, `git difftool` and `git mergetool`, zsh's `vv`, Claude Code's `ctrl+g`, `man` (`MANPAGER`); VS Code and Android Studio borrow its keys ([vim keys](vim-keys.md)) |
 | Reading long output | `less`, for anything a renderer has coloured; nvim for man pages | git's pager (delta) and `mdv` (glow) colour their output and hand it to `less`; `man` opens in nvim (`MANPAGER`); bat only colours files in the pickers' previews ([zsh](zsh.md#decisions)) |
-| Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups, zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
+| Choosing from a list | fzf, through `picker` (`config/tmux/picker.zsh`) | tmux popups (AeroSpace's `alt+w` too), zsh widgets, nvim's fzf-lua; every fzf reads `config/fzf/fzfrc` |
 | Projects | a tmux session per directory, from zoxide's list | `cmd+k` in tmux, `tm` in the shell |
 | Directories you visit | zoxide | `z`, the project picker (`cmd+k`, and `;p` in zsh's normal mode) |
 | Shell history | atuin | `C-r` in zsh, in the picker |
@@ -256,6 +256,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 | `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
 | `Shift+Ctrl+h/j/k/l`: move it that way | `C-w H/J/K/L` (nvim's own) | – (not bound; tmux's own `C-a {` / `}` swap panes) | – (not bound) | `alt+ctrl+shift+h/j/k/l` (the window, through the layout) |
 | split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | `alt+e` (side by side / stacked; new windows tile themselves) |
+| list them, pick one | `;b` (open files) | `cmd+j`, in the tree | `cmd+j` (the tree: sessions, windows, panes) | `alt+w` (every window by workspace; `alt+j` is focus down) |
 | close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own); any window or session: `d` in the tree (`cmd+j`) | – (the app closes it: `cmd+w`) |
 
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim

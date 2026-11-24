@@ -47,6 +47,11 @@ on-window-detected = [
   { if.app-name-regex-substring = '^qemu-system', run = ['layout floating', 'move-node-to-workspace 9'] },
 ]
 
+# what alt-w's exec-and-forget runs finds Homebrew's tmux and aerospace: AeroSpace starts at login with
+# macOS's bare PATH
+[exec.env-vars]
+PATH = '/opt/homebrew/bin:${PATH}'
+
 # 7, 8 and 9 stay on the display that isn't the main one (System Settings → Displays → "Use as"), with two
 # displays; with one, there is nowhere else for them
 [workspace-to-monitor-force-assignment]
@@ -81,6 +86,8 @@ alt-s = 'layout accordion tiles'                # windows on top of each other, 
 alt-t = 'layout floating tiling'                # float / tile
 alt-z = 'fullscreen'                            # fill the workspace (not macOS full screen)
 alt-equal = 'balance-sizes'
+# every window by workspace, as the menu-bar menu lists them, in a picker in Ghostty; Enter goes there, q back
+alt-w = 'exec-and-forget ~/.config/aerospace/windows --open'
 
 alt-1 = 'workspace 1'
 alt-2 = 'workspace 2'

@@ -1,0 +1,118 @@
+#!/usr/bin/env zsh
+# Usage: windows [--back <window id>] [fzf options]   |   windows --open   |   windows --list [id]
+# AeroSpace's windows, by workspace, as its menu-bar menu shows them, in a picker: workspace, app icon, app and
+# window title, ✓ and the cursor on the window --back names (the one you came from). Enter goes to the chosen
+# window (its workspace with it), 1-9 to that workspace, m moves your window to the chosen one's workspace and
+# follows it, d closes the chosen window; q or Esc goes back. Keys as in every picker (config/tmux/picker.zsh):
+# it opens in normal mode, j/k move, / filters, ? lists the keys. Arguments go to fzf.
+# `windows --open` is what alt+w runs (config/aerospace/aerospace.toml), from any app: it brings forward the
+# Ghostty window of the tmux client used last and opens the picker in a popup there, as tall as the list.
+# `windows --list` prints the lines alone. Linked to ~/.config/aerospace/windows by setup_aerospace.
+source ${0:A:h}/../tmux/picker.zsh
+# AeroSpace starts it without LANG: tmux would print the · in titles as _, and
+# printf would count bytes, not letters, when it lines up the columns
+[[ -n $LANG ]] || export LANG=en_US.UTF-8
+self=${0:A}
+
+if [[ $1 == --open ]]; then
+  # exec-and-forget shows no errors: they go to a log, overwritten each time
+  exec 2> ${TMPDIR:-/tmp}/aerospace-windows.log
+  back=$(aerospace list-windows --focused --format '%{window-id}')
+  # Ghostty's title is tmux's set-titles-string ("#S · #W", config/tmux/tmux.conf), which tells which Ghostty
+  # window shows which client; the client used last wins, the first Ghostty window when no title matches.
+  typeset -A ghostty
+  for line in ${(f)"$(aerospace list-windows --monitor all --app-bundle-id com.mitchellh.ghostty \
+    --format '%{window-title}'$'\t''%{window-id}')"}; do
+    ghostty[${line%$'\t'*}]=${line##*$'\t'}
+  done
+  if (( ! $#ghostty )); then
+    open -a Ghostty # no terminal yet: alt+w again once it's there
+    exit 0
+  fi
+  client= window=
+  for line in ${(f)"$(tmux list-clients -F '#{client_activity}'$'\t''#{client_name}'$'\t''#S · #W' | sort -rn)"}; do
+    fields=("${(@ps:\t:)line}")
+    [[ -z $client ]] && client=$fields[2]
+    if [[ -n ${ghostty[$fields[3]]} ]]; then
+      client=$fields[2] window=${ghostty[$fields[3]]}
+      break
+    fi
+  done
+  ids=(${(v)ghostty})
+  aerospace focus --window-id ${window:-$ids[1]}
+  [[ -n $client ]] || exit 0
+  # as tall as the list: a line each, the header, the input and the borders
+  lines=$(aerospace list-windows --monitor all --count)
+  tmux display-popup -c $client -E -B -x '#{E:@popup-x}' -y '#{E:@popup-y}' -w 80% -h $(( lines + 8 )) \
+    "$self --back ${back:-0} --height=100%"
+  exit 0
+fi
+
+# icon <app name>: the app's Nerd Font icon, a window for the ones it doesn't know
+function icon() {
+  case $1 in
+    Ghostty) print -n $'' ;;
+    Firefox*) print -n $'' ;;
+    *Chrome*) print -n $'' ;;
+    Safari) print -n $'' ;;
+    Brave*|Arc) print -n $'\U000f059f' ;;
+    Slack) print -n $'\U000f04b1' ;;
+    Claude|ChatGPT) print -n $'\U000f06a9' ;;
+    Code|*Visual\ Studio\ Code*) print -n $'\U000f0a1e' ;;
+    Xcode|Simulator) print -n $'\U000f0035' ;;
+    Android\ Studio|qemu*) print -n $'\U000f0032' ;;
+    Finder) print -n $'\U000f024b' ;;
+    Mail|Mimestream) print -n $'\U000f01ee' ;;
+    Calendar) print -n $'\U000f00ed' ;;
+    Spotify|Music) print -n $'\U000f04c7' ;;
+    zoom.us|FaceTime) print -n $'\U000f0567' ;;
+    *) print -n $'' ;;
+  esac
+}
+
+# each line is "window id<tab>what fzf shows<tab>workspace", by workspace and in AeroSpace's order within one;
+# fzf shows the second field only
+if [[ $1 == --list ]]; then
+  current=${2:-$(aerospace list-windows --focused --format '%{window-id}')}
+  aerospace list-windows --monitor all --format '%{workspace}'$'\t''%{window-id}'$'\t''%{app-name}'$'\t''%{window-title}' |
+    sort -s -t $'\t' -k 1,1n |
+    while IFS=$'\t' read -r workspace id app title; do
+      mark=' '
+      [[ $id == $current ]] && mark=$'\e[32m✓\e[0m'
+      printf '%s\t%s %s  %s %-16s \e[2m%s\e[0m\t%s\n' $id $mark $workspace "$(icon $app)" $app $title $workspace
+    done
+  exit 0
+fi
+
+back=
+if [[ $1 == --back ]]; then
+  back=$2
+  shift 2
+fi
+[[ $back == 0 ]] && back=
+
+list=$("$self" --list $back)
+# the cursor starts on the window you came from
+pos=
+if [[ -n $back ]]; then
+  lines=(${(f)list})
+  pos=${lines[(i)$back$'\t'*]}
+fi
+keys=m:alt-m,d:alt-d
+binds=()
+for n in {1..9}; do
+  keys+=,${n}:alt-$n
+  binds+=(--bind "alt-$n:become(echo workspace $n)")
+done
+choice=$(print -r -- $list | picker window --keys $keys \
+  --header 'Enter go · 1-9 workspace · m move yours there · d close · / filter · q back' \
+  --bind "load:pos(${pos:-1})+unbind(load)" $binds \
+  --bind "alt-m:become(echo move {3})" \
+  --bind "alt-d:execute-silent(aerospace close --window-id {1})+reload-sync('$self' --list $back)" "$@")
+case $choice in
+  workspace\ *) aerospace workspace ${choice#* } ;;
+  move\ *) [[ -n $back ]] && aerospace move-node-to-workspace --window-id $back --focus-follows-window ${choice#* } ;;
+  ?*) aerospace focus --window-id "${choice%%$'\t'*}" ;;
+  *) [[ -n $back ]] && aerospace focus --window-id $back ;;
+esac
+exit 0
