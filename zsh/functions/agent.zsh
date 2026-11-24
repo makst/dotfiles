@@ -254,6 +254,7 @@ function agent_resume() {
 # work straight to origin leaves the local branch behind. A worktree with ignored files (.env, node_modules),
 # which are in no commit, goes to the Trash whole instead of being removed.
 function agent_done() {
+  setopt local_options bare_glob_qual
   local force=0
   [[ $1 == --force ]] && { force=1; shift }
   local main
@@ -451,6 +452,7 @@ function _agent_resume() {
 
 # _agent_done: completion for agent_done, agent_land and agent_review: the agents' worktrees and each one's flag
 function _agent_done() {
+  setopt local_options bare_glob_qual
   local main=$(_agent_main 2> /dev/null)
   [[ -n $main ]] || return 1
   local -a flag
@@ -484,6 +486,7 @@ function setup_agent() {
 # in a skill's place goes to the Trash. The claude wrapper runs it on every start, so a skill added here,
 # pulled or not yet committed, is there without a setup step; with nothing to do it starts no process.
 function link_agent_skills() {
+  setopt local_options bare_glob_qual
   local dir=$1 skill link
   [[ -d $dir ]] || mkdir -p $dir
   for skill in $real_script_dir/config/agent/skills/*(N/); do

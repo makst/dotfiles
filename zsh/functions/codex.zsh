@@ -78,6 +78,7 @@ function _agent_codex_ask() {
 # Codex's injected context, whitespace squashed, 70 characters. A rollout whose session_meta source names a
 # review (codex review, agent_review) isn't the agent's and is left out.
 function _agent_codex_sessions() {
+  setopt local_options bare_glob_qual
   local root=$1/$_agent_worktrees f name title
   # newest first (om), and grep -l keeps that order; plain grep, so it needs nothing beyond macOS
   local -a files=(~/.codex/sessions/**/rollout-*.jsonl(N.om))

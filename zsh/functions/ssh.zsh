@@ -36,6 +36,7 @@ function setup_ssh() {
 # and adds it to GitHub: push as an ssh key (also copied for the GitLab page that opens), signing as a
 # signing key and to config/git/allowed_signers.
 function secretive_key() {
+  setopt local_options bare_glob_qual
   local role=${1:?usage: secretive_key <push|signing> [name in Secretive]} name=${2:-$1}
   [[ $role == (push|signing) ]] || { print -u2 "the role is push or signing"; return 1 }
 

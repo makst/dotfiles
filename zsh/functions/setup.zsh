@@ -116,6 +116,7 @@ auth       sufficient     pam_tid.so"
 # from there, from config/machine, leaving existing ones alone. Also points ~/dotfiles at this clone, wherever
 # it is, since ~/.ssh/config and ~/.gitconfig use that path.
 function setup_machine() {
+  setopt local_options bare_glob_qual
   local dir=~/.config/dotfiles name=$1 kind=$2 file
   if [[ -e ~/dotfiles && ! -L ~/dotfiles && ! ~/dotfiles -ef $real_script_dir ]]; then
     print -u2 "~/dotfiles exists and isn't this repo ($real_script_dir); move it away and rerun"
@@ -241,7 +242,7 @@ function check_dotfiles() {
 # nothing: prints each problem with the step that fixes it and returns 1, or one line when all is well.
 # The macOS settings the setup makes once (key repeat, Caps Lock, the Dock) aren't checked.
 function check_mac() {
-  setopt local_options extended_glob
+  setopt local_options extended_glob bare_glob_qual
   local repo=${real_script_dir:-${${:-$HOME/.zshrc}:A:h}} dir=~/.config/dotfiles
   local -i by_hand=1
   [[ $1 == --scripted ]] && by_hand=0

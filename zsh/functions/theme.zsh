@@ -11,6 +11,7 @@
 # it, so a scheme file it can't read, or a dark scheme picked for light mode (nvim tells the modes apart by
 # the background's brightness), changes nothing.
 function change_theme() {
+  setopt local_options bare_glob_qual
   local mode=$1
   if [[ -z $mode ]]; then
     [[ $(defaults read -g AppleInterfaceStyle 2>/dev/null) == Dark ]] && mode=dark || mode=light

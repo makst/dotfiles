@@ -243,6 +243,22 @@ check_quoted_substitutions() {
   note=$(count $#zsh file)
 }
 
+# glob qualifiers: a function in zsh/functions with a glob like *(N/) turns on bare_glob_qual for itself
+# (`setopt local_options bare_glob_qual`), since Claude Code's shell, a snapshot of the interactive one, has it
+# off: there *(N) is a plain pattern, which matches nothing and stops the function with "no matches found" or
+# "bad pattern" (CLAUDE.md, "Style").
+check_glob_qualifiers() {
+  local -a files=(zsh/functions/*.zsh(N))
+  awk '
+    /^function / { name = $2; sub(/\(.*/, "", name); has = 0; sets = 0; next }
+    /^}/ { if (has && !sets) print FILENAME ": " name " uses a glob qualifier without setopt local_options bare_glob_qual"; name = ""; next }
+    name == "" || /^[ \t]*#/ { next }
+    /bare_glob_qual|emulate -L zsh/ { sets = 1 }
+    /[^ \t$({=]\([-.\/@:^a-zA-Z]*N[^)]*\)/ { has = 1 }
+  ' $files
+  note=$(count $#files file)
+}
+
 # bash: the repo is zsh; only prepare-zsh-install.sh, which runs before zsh is set up, is bash (CLAUDE.md,
 # "Style"). Scripts in other languages (Python) are fine.
 check_bash() {
@@ -281,5 +297,6 @@ check -w "each file says at the top who uses it" check_top_comments
 check -w "prose and comments wrap at about 110 columns" check_prose_width
 check -w "Markdown table rows have the header's cells" check_md_tables
 check -w "\$(…) inside \${…} is quoted" check_quoted_substitutions
+check "functions with a glob qualifier turn bare_glob_qual on" check_glob_qualifiers
 check -w "scripts are zsh, bash only for prepare-zsh-install.sh" check_bash
 check "scripts are executable, executables are scripts" check_exec_bits

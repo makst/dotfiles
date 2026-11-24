@@ -95,6 +95,7 @@ function claude_settings_merge() {
 # content block with the same usage, so it is counted once per requestId. Requests Claude Code makes outside
 # the conversation (titles, summaries) aren't logged and so aren't counted.
 function claude_tokens() {
+  setopt local_options bare_glob_qual
   local days=${1:-7}
   [[ $days == <-> ]] || { print -u2 "usage: claude_tokens [days]"; return 1 }
   local -a files=(~/.claude/projects/*/*.jsonl(N.m-$days) ~/.claude/projects/*/*/subagents/*.jsonl(N.m-$days))
@@ -172,6 +173,7 @@ function _agent_claude_ask() {
 # searched for conversations that ran in $_agent_worktrees/.
 # A reviewer's conversation (agent_review, its first prompt is /code-review) is left out: it isn't the agent's.
 function _agent_claude_sessions() {
+  setopt local_options bare_glob_qual
   local root=$1/$_agent_worktrees f name title
   local -a dirs=(~/.claude/projects/${1//[^A-Za-z0-9]/-}*(N/))
   (( $#dirs )) || return 0  # rg without a path would wait for stdin

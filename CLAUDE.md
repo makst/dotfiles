@@ -87,7 +87,8 @@ edit reaches the next session, not this one. Keep the config valid at every step
 
 ## Style
 - zsh, not bash (except `prepare-zsh-install.sh`): zsh parameter expansion, `(N)` globs, `print -r`. Quote
-  `$(…)` inside `${…}`; unquoted, zsh splits it into words.
+  `$(…)` inside `${…}`; unquoted, zsh splits it into words. A function with a `(N)` glob starts with
+  `setopt local_options bare_glob_qual`: Claude Code's shell has it off, and the glob fails there.
 - A comment above each function: usage line, then what it does and why. Comments and prose in docs wrap at
   about 110 columns; tables may run longer.
 - Docs: plain, direct English; say what a thing does for the user, not how clever it is.
