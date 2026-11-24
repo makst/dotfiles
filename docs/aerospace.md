@@ -104,8 +104,9 @@ To look out for
   before AeroSpace started stays where it was: `shift+alt+7`…`9` moves it.
 - **The IDE should be on the main display**: change `'secondary'` to `'main'` under
   `[workspace-to-monitor-force-assignment]` in the config.
-- **A flicker after a pick**: the picker's Ghostty quitting hands focus back to the app you came from, up to
-  ~200 ms later; `alt+w` switches again for a second after it, so you may see that app for a moment.
+- **A pick takes ~0.2 s**: the picker's Ghostty quitting hands focus back to the app you came from, up to
+  ~200 ms later, so `alt+w` waits that out and then switches once (switching straight away flickered: there,
+  back, there again). Should a hand-back come later, it switches again, for a second after the pick.
 - **`alt+w` brought Ghostty forward instead**: the picker's own Ghostty didn't start, so it opened in a tmux
   popup of the client used last, in the Ghostty window whose title is that client's (`session · window`).
   With no tmux client it only brings Ghostty forward; with no Ghostty window it starts Ghostty.

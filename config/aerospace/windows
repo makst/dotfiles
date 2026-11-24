@@ -43,17 +43,28 @@ if [[ $1 == --open ]]; then
     --window-width=$cols --window-height=$rows --window-position-x=${x%.*} --window-position-y=${y%.*} \
     -e "$self" --back ${back:-0} --result $result "$@"
   if [[ -e $result ]]; then
-    # The picker made its switch, but a quitting app hands focus to the app active before it, up to ~200 ms later.
-    # From the picker's result (the focus it left, then the command that makes it), the switch again
-    # whenever the focus isn't that, for a second.
-    done=(${(f)"$(< $result)"})
+    # The switch is made here, not in the picker: a quitting app hands focus to the app active before it, up
+    # to ~200 ms later, which would undo it, and a switch, that hand-back and the switch again flicker. So:
+    # wait out the hand-back (0.2 s, and until the window you came from, already on screen under the picker,
+    # has focus, 0.4 s at most), switch once, and switch again whenever the focus leaves it, for a second. The result is the switch, then the
+    # command that makes it again (a moved window isn't moved twice), each word on a line and a blank between.
+    done=("${(@f)"$(< $result)"}")
     rm -f $result
     if (( $#done > 1 )); then
+      action=(${done[1,${done[(i)]}-1]}) again=(${done[${done[(i)]}+1,-1]})
       zmodload zsh/datetime
-      typeset -F end=$(( EPOCHREALTIME + 1 ))
+      typeset -F end=$(( EPOCHREALTIME + 0.4 ))
+      sleep 0.2
+      while [[ -n $back ]] && (( EPOCHREALTIME < end )) &&
+        [[ $(aerospace list-windows --focused --format '%{window-id}') != $back ]]; do
+        sleep 0.01
+      done
+      aerospace $action
+      state=$(focus_state)
+      (( end = EPOCHREALTIME + 1 ))
       while (( EPOCHREALTIME < end )); do
-        [[ $(focus_state) == $done[1] ]] || aerospace $done[2,-1]
         sleep 0.02
+        [[ $(focus_state) == $state ]] || aerospace $again
       done
     fi
     exit 0
@@ -168,8 +179,11 @@ case $choice in
   *) [[ -n $back ]] && action=(focus --window-id $back) ;;
 esac
 (( $#action )) || exit 0
-aerospace $action
-# for --open: the focus this left, then the command that makes it, a word a line
 (( $#again )) || again=($action)
-[[ -n $result ]] && print -rl -- "$(focus_state)" $again > $result
+# in its own Ghostty, --open switches once that has quit (see there)
+if [[ -n $result ]]; then
+  print -rl -- $action '' $again > $result
+else
+  aerospace $action
+fi
 exit 0
