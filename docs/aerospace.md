@@ -20,11 +20,17 @@ What it is
   `,ao` in nvim switch to it as well, since AeroSpace follows the app that comes to the front. These three
   workspaces are pinned: `shift+alt+tab` doesn't move them.
 - **Workspaces 1–9 are AeroSpace's, not macOS Spaces**: windows on other workspaces are moved just off screen.
-- **Every window at a glance** (`alt+w`): the list AeroSpace's menu-bar menu shows, workspace, app icon,
-  app and window title, without the mouse. It opens from any app in a small Ghostty window floating over the
-  workspace you're on, the cursor on the window you came from (✓): `j/k` move, `/` filters, Enter goes to
-  that window and its workspace, `1`…`9` to that workspace, `m` moves your window to the chosen one's
-  workspace, `d` closes the chosen window, `q` back to where you were.
+- **Every window at a glance** (`alt+w`): every window with its workspace, app icon, app and window title,
+  drawn as a tree like tmux's (`cmd+j`): a workspace with more than one window has them under it, and with a
+  second display each display (a laptop icon for the built-in one, a monitor for the other) has its
+  workspaces under it. It opens from any app in a small Ghostty window floating over the workspace you're on,
+  the cursor on the window you came from (✓): `j/k` move, `/` filters, Enter goes to that window, workspace
+  or display, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace (or display),
+  `t` arranges the chosen workspace in a layout, `d` closes the chosen window, `q` back to where you were.
+- **Layouts** (`t` in `alt+w`): a list of layouts with a drawing of each, for the workspace of the line
+  you're on: side by side, stacked, one big window on the left (60%) with the others stacked on the right,
+  in columns of two, or one at a time (the accordion). It goes to that workspace and arranges its tiled
+  windows in the order they're in now; floating ones stay as they are.
 - **Keys** are all on `Option` (Alt), captured system-wide, so they don't reach other apps: Alt+h/j/k/l in
   nvim or zsh, for instance, are handled by AeroSpace.
 
@@ -67,7 +73,7 @@ Keys
 | `alt+t` | float the window (toggle) |
 | `alt+z` | fill the workspace with the window (toggle), as `C-a z` zooms a tmux pane |
 | `alt+=` | make all windows equal size |
-| `alt+w` | every window by workspace, in a picker: Enter goes there, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace, `d` closes the chosen window, `q` back (see [same key, every layer](design.md#same-key-every-layer)) |
+| `alt+w` | every window by display and workspace, in a picker: Enter goes there, `1`…`9` to that workspace, `m` moves your window to the chosen one's workspace or display, `t` arranges the chosen workspace in a layout, `d` closes the chosen window, `q` back (see [same key, every layer](design.md#same-key-every-layer)) |
 | `alt+1`…`9` | go to workspace 1…9 |
 | `alt+0` | back to the previous workspace |
 | `alt+[` / `alt+]` | previous / next workspace with windows on this display, cycling: see [same key, every layer](design.md#same-key-every-layer) |
@@ -113,6 +119,9 @@ To look out for
 - **The picker isn't centred**: its position is worked out from the main display's size and Ghostty's
   `font-size` (a cell 0.6 of it wide, about 1.4 high), so another font or a second display can put it off
   centre.
+- **A layout came out different**: `t` flattens the workspace first and then joins and moves windows by
+  their order, so a window that was minimised, or that AeroSpace lists in another order, can land
+  elsewhere. `t` again, or `shift+alt+;` then `r` to put every window back in one row.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.
 
 Decisions

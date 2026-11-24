@@ -256,7 +256,7 @@ from nvim splits up to AeroSpace workspaces. A new key joins one of these famili
 | `=`: all the same size | `,=` | `C-a =` | – | `alt+=` |
 | `Shift+Ctrl+h/j/k/l`: move it that way | `C-w H/J/K/L` (nvim's own) | – (not bound; tmux's own `C-a {` / `}` swap panes) | – (not bound) | `alt+ctrl+shift+h/j/k/l` (the window, through the layout) |
 | split | `,sv` / `,ss` | `cmd+d` / `cmd+shift+d` (`C-a \|` / `C-a -`) | `cmd+t` (a new window) | `alt+e` (side by side / stacked; new windows tile themselves) |
-| list them, pick one | `;b` (open files) | `cmd+j`, in the tree | `cmd+j` (the tree: sessions, windows, panes) | `alt+w` (every window by workspace; `alt+j` is focus down) |
+| list them, pick one | `;b` (open files) | `cmd+j`, in the tree | `cmd+j` (the tree: sessions, windows, panes) | `alt+w` (the tree: displays, workspaces, windows; `alt+j` is focus down) |
 | close | `,q` (the window, without saving) | `cmd+w` (`C-a x`) | `C-a &` (tmux's own); any window or session: `d` in the tree (`cmd+j`) | – (the app closes it: `cmd+w`) |
 
 `Space`, `Backspace` and `,z` in nvim do the same in VS Code and Android Studio, `,=` in VS Code ([vim

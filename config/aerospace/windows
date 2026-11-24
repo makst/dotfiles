@@ -25,7 +25,14 @@ if [[ $1 == --open ]]; then
   # exec-and-forget shows no errors: they go to a log, overwritten each time
   exec 2> ${TMPDIR:-/tmp}/aerospace-windows.log
   back=$(aerospace list-windows --focused --format '%{window-id}')
-  lines=$(aerospace list-windows --monitor all --count)
+  # the list's lines (config/aerospace/windows --list without its icons and marks): a window each, a workspace
+  # with more than one and, with two displays or more, a display each
+  typeset -A per
+  for workspace in ${(f)"$(aerospace list-windows --monitor all --format '%{workspace}')"}; do (( per[$workspace]++ )); done
+  lines=0
+  for n in ${(v)per}; do (( lines += n > 1 ? n + 1 : 1 )); done
+  displays=$(aerospace list-monitors --count)
+  (( displays > 1 )) && (( lines += displays ))
   # as big as the list (a line each, the header, the input and the borders), centred on the main display:
   # Ghostty places a window in points from the display's top-left, and a cell of a monospace font is 0.6 of
   # the font size wide and, with adjust-cell-height, about 1.4 high
@@ -46,8 +53,9 @@ if [[ $1 == --open ]]; then
     # The switch is made here, not in the picker: a quitting app hands focus to the app active before it, up
     # to ~200 ms later, which would undo it, and a switch, that hand-back and the switch again flicker. So:
     # wait out the hand-back (0.2 s, and until the window you came from, already on screen under the picker,
-    # has focus, 0.4 s at most), switch once, and switch again whenever the focus leaves it, for a second. The result is the switch, then the
-    # command that makes it again (a moved window isn't moved twice), each word on a line and a blank between.
+    # has focus, 0.4 s at most), switch once, and switch again whenever the focus leaves it, for a second. The
+    # result is the command that switches, then the one that does it again (a moved window isn't moved twice,
+    # a workspace isn't arranged twice), each word on a line and a blank between.
     done=("${(@f)"$(< $result)"}")
     rm -f $result
     if (( $#done > 1 )); then
@@ -59,12 +67,12 @@ if [[ $1 == --open ]]; then
         [[ $(aerospace list-windows --focused --format '%{window-id}') != $back ]]; do
         sleep 0.01
       done
-      aerospace $action
+      $action
       state=$(focus_state)
       (( end = EPOCHREALTIME + 1 ))
       while (( EPOCHREALTIME < end )); do
         sleep 0.02
-        [[ $(focus_state) == $state ]] || aerospace $again
+        [[ $(focus_state) == $state ]] || $again
       done
     fi
     exit 0
@@ -119,19 +127,133 @@ function icon() {
   esac
 }
 
-# each line is "window id<tab>what fzf shows<tab>workspace", by workspace and in AeroSpace's order within one;
-# fzf shows the second field only
+# rows: the windows, a line each: "display id<tab>workspace<tab>window id<tab>app<tab>title", by display, then by
+# workspace, in AeroSpace's order within one; without the picker's own window, which isn't one to go to
+function rows() {
+  aerospace list-windows --monitor all --format "$(print -r -- '%{monitor-id}' '%{workspace}' '%{window-id}' \
+    '%{app-name}' '%{window-title}' | tr ' ' '\t')" | sort -s -t $'\t' -k 1,1n -k 2,2n |
+    awk -F '\t' '$5 != "aerospace-windows"'
+}
+
+# The list as a tree, drawn as tmux's tree (config/tmux/tree) draws its sessions: a workspace with one window
+# on a line of its own, one with more as a line with its windows under it; with two displays or more, each
+# display (a laptop icon for the built-in one, a monitor for the others) with its workspaces under it. Each
+# line is "key<tab>what fzf shows<tab>workspace": the key is the window's id, workspace:<name> or
+# monitor:<id>; fzf shows the second field only.
 if [[ $1 == --list ]]; then
   current=${2:-$(aerospace list-windows --focused --format '%{window-id}')}
-  aerospace list-windows --monitor all --format '%{workspace}'$'\t''%{window-id}'$'\t''%{app-name}'$'\t''%{window-title}' |
-    sort -s -t $'\t' -k 1,1n |
-    while IFS=$'\t' read -r workspace id app title; do
-      # the picker's own window isn't one to go to
-      [[ $title == aerospace-windows ]] && continue
-      mark=' '
-      [[ $id == $current ]] && mark=$'\e[32m✓\e[0m'
-      printf '%s\t%s %s  %s %-16s \e[2m%s\e[0m\t%s\n' $id $mark $workspace "$(icon $app)" $app $title $workspace
-    done
+  rows=(${(f)"$(rows)"})
+  typeset -A display windows workspaces last_workspace
+  for line in ${(f)"$(aerospace list-monitors --format '%{monitor-id}'$'\t''%{monitor-name}')"}; do
+    display[${line%%$'\t'*}]=${line#*$'\t'}
+  done
+  for line in $rows; do
+    f=("${(@ps:\t:)line}")
+    (( windows[$f[2]]++ )) || (( workspaces[$f[1]]++ ))
+    last_workspace[$f[1]]=$f[2]
+  done
+  # the window columns line up: the tree's part is as wide on every line
+  (( $#display > 1 )) && width=8 || width=4
+  monitor= workspace=
+  for i in {1..$#rows}; do
+    f=("${(@ps:\t:)rows[i]}")
+    next=("${(@ps:\t:)rows[i+1]}")
+    branch= stem=
+    if (( $#display > 1 )); then
+      if [[ $f[1] != $monitor ]]; then
+        monitor=$f[1]
+        [[ $display[$monitor] == Built-in* ]] && kind=$'\U000f0322' || kind=$'\U000f0379'
+        print -r -- "monitor:$monitor"$'\t'"  $kind $display[$monitor]: $workspaces[$monitor] workspace${${workspaces[$monitor]:#1}:+s}"$'\t'
+      fi
+      [[ $last_workspace[$monitor] == $f[2] ]] && branch='└─> ' stem='    ' || branch='├─> ' stem='│   '
+    fi
+    mark=' '
+    [[ $f[3] == $current ]] && mark=$'\e[32m✓\e[0m'
+    window="$(icon $f[4]) ${(r:16:)f[4]} "$'\e[2m'"$f[5]"$'\e[0m'
+    if (( windows[$f[2]] == 1 )); then
+      print -r -- "$f[3]"$'\t'"$mark ${(r:width:)${:-$branch$f[2]}} $window"$'\t'"$f[2]"
+      continue
+    fi
+    if [[ $f[2] != $workspace ]]; then
+      workspace=$f[2]
+      print -r -- "workspace:$workspace"$'\t'"  $branch$workspace: $windows[$workspace] windows"$'\t'"$workspace"
+    fi
+    [[ $next[2] == $f[2] ]] && twig='├─> ' || twig='└─> '
+    print -r -- "$f[3]"$'\t'"$mark ${(r:width:)${:-$stem$twig}} $window"$'\t'"$f[2]"
+  done
+  exit 0
+fi
+
+# the layouts t arranges a workspace in, as "name<tab>what fzf shows"
+layouts=(
+  $'tiles\tside by side, all the same width'
+  $'rows\tstacked, all the same height'
+  $'main\tone big window on the left, the others stacked on the right'
+  $'grid\tin columns of two'
+  $'accordion\tone at a time, the others behind it (alt+s)'
+)
+
+# --draw <layout>: a drawing of the layout, for the preview of t's list
+if [[ $1 == --draw ]]; then
+  case $2 in
+    tiles) print -l '┌──────┬──────┬──────┐' '│      │      │      │' '│  1   │  2   │  3   │' '│      │      │      │' \
+      '│      │      │      │' '└──────┴──────┴──────┘' ;;
+    rows) print -l '┌────────────────────┐' '│         1          │' '├────────────────────┤' '│         2          │' \
+      '├────────────────────┤' '│         3          │' '└────────────────────┘' ;;
+    main) print -l '┌────────────┬───────┐' '│            │   2   │' '│            ├───────┤' '│     1      │   3   │' \
+      '│            ├───────┤' '│            │   4   │' '└────────────┴───────┘' ;;
+    grid) print -l '┌──────────┬─────────┐' '│    1     │    3    │' '│          │         │' '├──────────┼─────────┤' \
+      '│    2     │    4    │' '│          │         │' '└──────────┴─────────┘' ;;
+    accordion) print -l '┌────────────────────┐' '│                    │' '│   1  (2, 3 behind) │' '│                    │' \
+      '│                    │' '└────────────────────┘' ;;
+  esac
+  exit 0
+fi
+
+# --layout <workspace>: t's list of layouts, in the picker's window; prints "layout <name> <workspace>" for
+# the one chosen, nothing on q
+if [[ $1 == --layout ]]; then
+  [[ -n $2 ]] || exit 0
+  # the preview on the right, not below as in the other pickers: the window is only as high as the windows' list
+  choice=$(print -rl -- $layouts | picker layout \
+    --header "Enter arranges workspace $2 · q back" --preview "'${0:A}' --draw {1}" --preview-window nohidden,right,50%)
+  [[ -n $choice ]] && print -r -- "layout ${choice%%$'\t'*} $2"
+  exit 0
+fi
+
+# --arrange <layout> <workspace>: goes to the workspace and arranges its tiled windows (not the floating
+# ones) in the layout, in the order they're in now: first every window in one row, then the layout's steps
+if [[ $1 == --arrange ]]; then
+  layout=$2 workspace=$3
+  ids=(${(f)"$(aerospace list-windows --workspace $workspace --format '%{window-id}'$'\t''%{window-layout}' |
+    awk -F '\t' '$2 != "floating" { print $1 }')"})
+  (( $#ids )) || exit 0
+  aerospace workspace $workspace
+  aerospace flatten-workspace-tree --workspace $workspace
+  case $layout in
+    rows) aerospace layout --window-id $ids[1] v_tiles ;;
+    accordion) aerospace layout --window-id $ids[1] h_accordion ;;
+    *) aerospace layout --window-id $ids[1] h_tiles ;;
+  esac
+  case $layout in
+    # 2 and 3 joined in a column, then 4 and the others moved into it
+    main) if (( $#ids > 2 )); then
+        aerospace join-with --window-id $ids[3] left
+        for id in ${ids[4,-1]}; do aerospace move --window-id $id left; done
+      fi ;;
+    # each even window joined with the one before it, in a column
+    grid) for i in {2..$#ids..2}; do aerospace join-with --window-id $ids[i] left; done ;;
+  esac
+  aerospace balance-sizes --workspace $workspace
+  # the main window 60% of its display's width
+  if [[ $layout == main ]] && (( $#ids > 1 )); then
+    screen=$(aerospace list-workspaces --all --format '%{workspace}'$'\t''%{monitor-appkit-nsscreen-screens-id}' |
+      awk -F '\t' -v w=$workspace '$1 == w { print $2 }')
+    width=$(osascript -l JavaScript -e "ObjC.import('AppKit')
+      \$.NSScreen.screens.objectAtIndex(${screen:-1} - 1).frame.size.width" 2> /dev/null)
+    width=${width%.*}
+    [[ $width == <-> ]] && aerospace resize --window-id $ids[1] width $(( width * 6 / 10 ))
+  fi
   exit 0
 fi
 
@@ -155,28 +277,38 @@ list=$("$self" --list $back)
 # the cursor starts on the window you came from
 pos=
 if [[ -n $back ]]; then
-  lines=(${(f)list})
-  pos=${lines[(i)$back$'\t'*]}
+  # $'\t' isn't expanded inside a subscript: a tab in a variable is
+  lines=(${(f)list}) tab=$'\t'
+  pos=${lines[(i)$back$tab*]}
 fi
-keys=m:alt-m,d:alt-d
+keys=m:alt-m,d:alt-d,t:alt-t
 binds=()
 for n in {1..9}; do
   keys+=,${n}:alt-$n
   binds+=(--bind "alt-$n:become(echo workspace $n)")
 done
+# d closes a window, not a whole workspace or display: on their lines it does nothing
 choice=$(print -r -- $list | picker window --keys $keys \
-  --header 'Enter go · 1-9 workspace · m move yours there · d close · / filter · q back' \
+  --header 'Enter go · 1-9 workspace · m move yours there · t layout · d close · / filter · q back' \
   --bind "load:pos(${pos:-1})+unbind(load)" $binds \
-  --bind "alt-m:become(echo move {3})" \
-  --bind "alt-d:execute-silent(aerospace close --window-id {1})+reload-sync('$self' --list $back)" "$@")
-# the switch, and what --open does again if macOS undoes it (moving the window again isn't needed)
+  --bind "alt-m:become(echo move {1} {3})" \
+  --bind "alt-t:become('$self' --layout {3})" \
+  --bind "alt-d:execute-silent(case {1} in *[!0-9]*) ;; *) aerospace close --window-id {1} ;; esac)+reload-sync('$self' --list $back)" "$@")
+# the command that switches, and what --open does again if macOS undoes it (moving the window again isn't
+# needed, nor arranging the workspace again)
 action=() again=()
+choice=${choice%%$'\t'*}
 case $choice in
-  workspace\ *) action=(workspace ${choice#* }) ;;
-  move\ *) [[ -n $back ]] && action=(move-node-to-workspace --window-id $back --focus-follows-window ${choice#* })
-    again=(focus --window-id $back) ;;
-  ?*) action=(focus --window-id "${choice%%$'\t'*}") ;;
-  *) [[ -n $back ]] && action=(focus --window-id $back) ;;
+  workspace\ *) action=(aerospace workspace ${choice#* }) ;;
+  move\ monitor:*) [[ -n $back ]] && action=(aerospace move-node-to-monitor --window-id $back --focus-follows-window
+    ${${choice#move monitor:}%% *}) again=(aerospace focus --window-id $back) ;;
+  move\ *) [[ -n $back && -n ${choice##* } ]] && action=(aerospace move-node-to-workspace --window-id $back
+    --focus-follows-window ${choice##* }) again=(aerospace focus --window-id $back) ;;
+  layout\ *) words=(${=choice}) action=("$self" --arrange $words[2] $words[3]) again=(aerospace workspace $words[3]) ;;
+  workspace:*) action=(aerospace workspace ${choice#*:}) ;;
+  monitor:*) action=(aerospace focus-monitor ${choice#*:}) ;;
+  ?*) action=(aerospace focus --window-id $choice) ;;
+  *) [[ -n $back ]] && action=(aerospace focus --window-id $back) ;;
 esac
 (( $#action )) || exit 0
 (( $#again )) || again=($action)
@@ -184,6 +316,6 @@ esac
 if [[ -n $result ]]; then
   print -rl -- $action '' $again > $result
 else
-  aerospace $action
+  $action
 fi
 exit 0
