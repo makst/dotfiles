@@ -1,25 +1,65 @@
 #!/usr/bin/env zsh
-# Usage: windows [--back <window id>] [fzf options]   |   windows --open   |   windows --list [id]
+# Usage: windows [--back <window id>] [--result <file>] [fzf options]   |   windows --open [fzf options]   |   windows --list [id]
 # AeroSpace's windows, by workspace, as its menu-bar menu shows them, in a picker: workspace, app icon, app and
 # window title, ✓ and the cursor on the window --back names (the one you came from). Enter goes to the chosen
 # window (its workspace with it), 1-9 to that workspace, m moves your window to the chosen one's workspace and
 # follows it, d closes the chosen window; q or Esc goes back. Keys as in every picker (config/tmux/picker.zsh):
 # it opens in normal mode, j/k move, / filters, ? lists the keys. Arguments go to fzf.
-# `windows --open` is what alt+w runs (config/aerospace/aerospace.toml), from any app: it brings forward the
-# Ghostty window of the tmux client used last and opens the picker in a popup there, as tall as the list.
+# `windows --open` is what alt+w runs (config/aerospace/aerospace.toml), from any app: it opens the picker in
+# a Ghostty window of its own, floating over the workspace you're on (--result), or, when Ghostty won't start,
+# in a tmux popup in the Ghostty window of the tmux client used last.
 # `windows --list` prints the lines alone. Linked to ~/.config/aerospace/windows by setup_aerospace.
 source ${0:A:h}/../tmux/picker.zsh
-# AeroSpace starts it without LANG: tmux would print the · in titles as _, and
-# printf would count bytes, not letters, when it lines up the columns
+# AeroSpace starts it without LANG: tmux would print the · in titles as _, and printf would count bytes, not
+# letters, when it lines up the columns
 [[ -n $LANG ]] || export LANG=en_US.UTF-8
 self=${0:A}
 
+# focus_state: the focused window and workspace, to tell whether a switch held
+function focus_state() {
+  print -r -- "$(aerospace list-windows --focused --format '%{window-id}') $(aerospace list-workspaces --focused)"
+}
+
 if [[ $1 == --open ]]; then
+  shift
   # exec-and-forget shows no errors: they go to a log, overwritten each time
   exec 2> ${TMPDIR:-/tmp}/aerospace-windows.log
   back=$(aerospace list-windows --focused --format '%{window-id}')
-  # Ghostty's title is tmux's set-titles-string ("#S · #W", config/tmux/tmux.conf), which tells which Ghostty
-  # window shows which client; the client used last wins, the first Ghostty window when no title matches.
+  lines=$(aerospace list-windows --monitor all --count)
+  # as big as the list (a line each, the header, the input and the borders), centred on the main display:
+  # Ghostty places a window in points from the display's top-left, and a cell of a monospace font is 0.6 of
+  # the font size wide and, with adjust-cell-height, about 1.4 high
+  cols=120 rows=$(( lines + 7 ))
+  screen=(${="$(osascript -l JavaScript -e 'ObjC.import("AppKit")
+    const f = $.NSScreen.screens.objectAtIndex(0).frame; f.size.width + " " + f.size.height')"})
+  font=$(/Applications/Ghostty.app/Contents/MacOS/ghostty +show-config | awk '$1 == "font-size" { print $3 }')
+  (( x = (screen[1] - cols * font * 0.6) / 2, y = (screen[2] - rows * font * 1.4) / 2 ))
+  # A Ghostty of its own (open -n), so the options are this window's alone: its title from the start, which
+  # AeroSpace's rule floats before it tiles it; no saved windows restored or saved; it quits with the picker,
+  # and open -W waits for that. The picker makes the result file when it starts.
+  result=$(mktemp -u -t aerospace-windows)
+  open -W -na Ghostty --args --title=aerospace-windows --window-save-state=never \
+    --quit-after-last-window-closed=true --macos-titlebar-style=hidden \
+    --window-width=$cols --window-height=$rows --window-position-x=${x%.*} --window-position-y=${y%.*} \
+    -e "$self" --back ${back:-0} --result $result "$@"
+  if [[ -e $result ]]; then
+    # The picker made its switch, but a quitting app hands focus to the app active before it, up to ~200 ms later.
+    # From the picker's result (the focus it left, then the command that makes it), the switch again
+    # whenever the focus isn't that, for a second.
+    done=(${(f)"$(< $result)"})
+    rm -f $result
+    if (( $#done > 1 )); then
+      zmodload zsh/datetime
+      typeset -F end=$(( EPOCHREALTIME + 1 ))
+      while (( EPOCHREALTIME < end )); do
+        [[ $(focus_state) == $done[1] ]] || aerospace $done[2,-1]
+        sleep 0.02
+      done
+    fi
+    exit 0
+  fi
+  # Ghostty didn't start: a tmux popup. Ghostty's title is tmux's set-titles-string ("#S · #W",
+  # config/tmux/tmux.conf), which tells which Ghostty window shows which client; the client used last wins, the first Ghostty window when no title matches.
   typeset -A ghostty
   for line in ${(f)"$(aerospace list-windows --monitor all --app-bundle-id com.mitchellh.ghostty \
     --format '%{window-title}'$'\t''%{window-id}')"}; do
@@ -41,10 +81,8 @@ if [[ $1 == --open ]]; then
   ids=(${(v)ghostty})
   aerospace focus --window-id ${window:-$ids[1]}
   [[ -n $client ]] || exit 0
-  # as tall as the list: a line each, the header, the input and the borders
-  lines=$(aerospace list-windows --monitor all --count)
   tmux display-popup -c $client -E -B -x '#{E:@popup-x}' -y '#{E:@popup-y}' -w 80% -h $(( lines + 8 )) \
-    "$self --back ${back:-0} --height=100%"
+    "$self --back ${back:-0} --height=100% ${(j: :)${(q)@}}"
   exit 0
 fi
 
@@ -77,6 +115,8 @@ if [[ $1 == --list ]]; then
   aerospace list-windows --monitor all --format '%{workspace}'$'\t''%{window-id}'$'\t''%{app-name}'$'\t''%{window-title}' |
     sort -s -t $'\t' -k 1,1n |
     while IFS=$'\t' read -r workspace id app title; do
+      # the picker's own window isn't one to go to
+      [[ $title == aerospace-windows ]] && continue
       mark=' '
       [[ $id == $current ]] && mark=$'\e[32m✓\e[0m'
       printf '%s\t%s %s  %s %-16s \e[2m%s\e[0m\t%s\n' $id $mark $workspace "$(icon $app)" $app $title $workspace
@@ -84,12 +124,21 @@ if [[ $1 == --list ]]; then
   exit 0
 fi
 
-back=
-if [[ $1 == --back ]]; then
-  back=$2
-  shift 2
-fi
+back= result=
+while [[ $1 == --back || $1 == --result ]]; do
+  case $1 in
+    --back) back=$2; shift 2 ;;
+    --result) result=$2; shift 2 ;;
+  esac
+done
 [[ $back == 0 ]] && back=
+# a Ghostty started by open gets launchd's environment, not the shell's: Homebrew's PATH and fzf's options
+# file, as tmux gives its popups (config/tmux/tmux.conf)
+if [[ -n $result ]]; then
+  : > $result
+  path=(/opt/homebrew/bin $path)
+  export FZF_DEFAULT_OPTS_FILE=$HOME/.config/tmux/../fzf/fzfrc
+fi
 
 list=$("$self" --list $back)
 # the cursor starts on the window you came from
@@ -109,10 +158,18 @@ choice=$(print -r -- $list | picker window --keys $keys \
   --bind "load:pos(${pos:-1})+unbind(load)" $binds \
   --bind "alt-m:become(echo move {3})" \
   --bind "alt-d:execute-silent(aerospace close --window-id {1})+reload-sync('$self' --list $back)" "$@")
+# the switch, and what --open does again if macOS undoes it (moving the window again isn't needed)
+action=() again=()
 case $choice in
-  workspace\ *) aerospace workspace ${choice#* } ;;
-  move\ *) [[ -n $back ]] && aerospace move-node-to-workspace --window-id $back --focus-follows-window ${choice#* } ;;
-  ?*) aerospace focus --window-id "${choice%%$'\t'*}" ;;
-  *) [[ -n $back ]] && aerospace focus --window-id $back ;;
+  workspace\ *) action=(workspace ${choice#* }) ;;
+  move\ *) [[ -n $back ]] && action=(move-node-to-workspace --window-id $back --focus-follows-window ${choice#* })
+    again=(focus --window-id $back) ;;
+  ?*) action=(focus --window-id "${choice%%$'\t'*}") ;;
+  *) [[ -n $back ]] && action=(focus --window-id $back) ;;
 esac
+(( $#action )) || exit 0
+aerospace $action
+# for --open: the focus this left, then the command that makes it, a word a line
+(( $#again )) || again=($action)
+[[ -n $result ]] && print -rl -- "$(focus_state)" $again > $result
 exit 0

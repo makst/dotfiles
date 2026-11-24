@@ -29,6 +29,8 @@ gaps.outer.right = 6
 
 # apps that float instead of tiling
 on-window-detected = [
+  # alt-w's window picker (config/aerospace/windows), over the workspace you're on
+  { if.app-id = 'com.mitchellh.ghostty', if.window-title-regex-substring = '^aerospace-windows$', run = 'layout floating' },
   { if.app-id = 'com.apple.systempreferences', run = 'layout floating' },
   { if.app-id = 'com.apple.archiveutility', run = 'layout floating' },
   { if.app-id = 'com.nordvpn.NordVPN', run = 'layout floating' },

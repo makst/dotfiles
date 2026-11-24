@@ -21,10 +21,10 @@ What it is
   workspaces are pinned: `shift+alt+tab` doesn't move them.
 - **Workspaces 1–9 are AeroSpace's, not macOS Spaces**: windows on other workspaces are moved just off screen.
 - **Every window at a glance** (`alt+w`): the list AeroSpace's menu-bar menu shows, workspace, app icon,
-  app and window title, without the mouse. It opens in a picker in Ghostty, from any app, the cursor on the
-  window you came from (✓): `j/k` move, `/` filters, Enter goes to that window and its workspace, `1`…`9` to
-  that workspace, `m` moves your window to the chosen one's workspace, `d` closes the chosen window, `q` back
-  to where you were.
+  app and window title, without the mouse. It opens from any app in a small Ghostty window floating over the
+  workspace you're on, the cursor on the window you came from (✓): `j/k` move, `/` filters, Enter goes to
+  that window and its workspace, `1`…`9` to that workspace, `m` moves your window to the chosen one's
+  workspace, `d` closes the chosen window, `q` back to where you were.
 - **Keys** are all on `Option` (Alt), captured system-wide, so they don't reach other apps: Alt+h/j/k/l in
   nvim or zsh, for instance, are handled by AeroSpace.
 
@@ -81,7 +81,9 @@ Config
 `config/aerospace/aerospace.toml`, linked to `~/.config/aerospace/aerospace.toml`. Saving it applies it.
 `config/aerospace/windows` is the window picker (`alt+w`), linked next to it; its `exec-and-forget` finds
 Homebrew's `tmux` and `aerospace` through `[exec.env-vars]`, as AeroSpace starts at login with macOS's bare
-`PATH`. `~/.config/aerospace/windows --list` prints the list alone.
+`PATH`. It starts a Ghostty of its own (`open -na Ghostty` with its own size, position and title), which the
+`on-window-detected` rule for the title `aerospace-windows` floats. `~/.config/aerospace/windows --list`
+prints the list alone; errors from `alt+w` go to `$TMPDIR/aerospace-windows.log`.
 Floating apps are in `on-window-detected`, the IDE workspaces' display in
 `[workspace-to-monitor-force-assignment]`.
 
@@ -102,9 +104,14 @@ To look out for
   before AeroSpace started stays where it was: `shift+alt+7`…`9` moves it.
 - **The IDE should be on the main display**: change `'secondary'` to `'main'` under
   `[workspace-to-monitor-force-assignment]` in the config.
-- **`alt+w` brought Ghostty forward and showed nothing**: the picker opens in a popup of the tmux client
-  used last, in the Ghostty window whose title is that client's (`session · window`). With no tmux client it
-  only brings Ghostty forward; with no Ghostty window it starts Ghostty: press `alt+w` again.
+- **A flicker after a pick**: the picker's Ghostty quitting hands focus back to the app you came from, up to
+  ~200 ms later; `alt+w` switches again for a second after it, so you may see that app for a moment.
+- **`alt+w` brought Ghostty forward instead**: the picker's own Ghostty didn't start, so it opened in a tmux
+  popup of the client used last, in the Ghostty window whose title is that client's (`session · window`).
+  With no tmux client it only brings Ghostty forward; with no Ghostty window it starts Ghostty.
+- **The picker isn't centred**: its position is worked out from the main display's size and Ghostty's
+  `font-size` (a cell 0.6 of it wide, about 1.4 high), so another font or a second display can put it off
+  centre.
 - **Minimised and hidden windows** (`cmd+m`, `cmd+h`) leave the layout until they come back.
 
 Decisions
@@ -112,10 +119,11 @@ Decisions
 - **AeroSpace, not yabai or macOS Spaces**: its own workspaces switch instantly, without Mission Control's
   animation, and System Integrity Protection stays on. It has no automatic halving as in yabai; nested
   layouts are made by hand.
-- **The window list in a tmux popup, not a macOS panel**: it's the picker every other list uses (`picker`,
-  [one tool per job](design.md#one-tool-per-job)), with its keys and filter. The price: it opens in Ghostty,
-  so `alt+w` brings Ghostty forward first and `q` goes back to the window you were in. A floating Ghostty
-  window over the current workspace (Ghostty's AppleScript) was tried and dropped: AeroSpace can't place or
-  size a floating window, so it sat where a tile would, and AeroSpace sees a new window before it has a
-  title a rule could float.
+- **The window list in a Ghostty of its own, not a macOS panel or a tmux popup**: it's the picker every other
+  list uses (`picker`, [one tool per job](design.md#one-tool-per-job)), with its keys and filter, and it
+  floats over the workspace you're on, where a tmux popup meant switching to Ghostty's workspace and back.
+  A second Ghostty (`open -na`) because its options are its own: a title from the start, which an AeroSpace
+  rule can float (a window from Ghostty's AppleScript has none yet when AeroSpace sees it, so it tiled
+  first), and a size and position, which AeroSpace can't set for a floating window. It costs ~0.5 s to
+  start and the flicker above. The tmux popup stays as the fallback.
 - **`alt+w`, not `alt+j`** as `cmd+j` lists tmux's windows: `alt+j` is focus down.
